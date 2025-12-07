@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="30000">
+
+    <setting id="custom_segment_keywords"
+             type="text"
+             label="31000"
+             default="intro,recap,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,outro,credits,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending"
+             tooltip="Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor." />
+
+    <setting type="lsep" label="31001" />
+
+    <setting id="segment_always_skip"
+             type="text"
+             label="31002"
+             default="commercial,commercials,sponsor,sponsors,ad,ads"
+             tooltip="Subset of your segment keywords that should skip automatically." />
+
+    <setting id="segment_ask_skip"
+             type="text"
+             label="31003"
+             default="intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on"
+             tooltip="Subset that should prompt you before skipping." />
+
+    <setting id="segment_never_skip"
+             type="text"
+             label="31004"
+             default="prologue,epilogue,main,credits,outro,closing,ending"
+             tooltip="Subset to always play, never skip." />
+
+	<setting id="ignore_internal_edl_actions" 
+			 type="bool" 
+			 label="31005" 
+			 default="true" 
+			 tooltip="Skippy will ignore any EDL segment whose action type is not explicitly mapped in edl_action_mapping. This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'." />
+
+
+    <setting id="edl_action_mapping"
+             type="text"
+             label="31006"
+             default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue"
+             tooltip="Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits" />
+
+	<setting id="skip_overlapping_segments" 
+			 type="bool" 
+			 label="31007" 
+			 default="true"
+			 tooltip="Configurable overlap detection to help avoid redundant or conflicting skips" />
+
+  </category>
+
+  <category label="30001">
+    <setting id="show_progress_bar"
+             type="bool"
+             label="32007"
+             default="true"
+             tooltip="Hide or show the progress bar while a skipable segment is active." />
+
+    <setting id="rewind_threshold_seconds" 
+             type="number" 
+             label="32008" 
+             default="8" 
+             min="2" 
+             max="30"
+             tooltip="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons." />
+
+    <setting id="skip_dialog_position"
+             type="labelenum"
+             label="32009" 
+             default="Bottom Right"
+             values="Bottom Right|Top Right|Top Left|Bottom Left"
+             optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
+             tooltip="Choose which corner of the screen the Skip Dialog appears in during playback." />
+
+    <setting id="show_skip_dialog_movies" 
+             type="bool" 
+             label="32010" 
+             default="true" />
+
+    <setting id="show_skip_dialog_episodes" 
+             type="bool" 
+             label="32011" 
+             default="true" />
+
+    <setting id="button_focus_style"
+             type="labelenum"
+             label="32000"
+             default="button_focus.png"
+             values="button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png"
+             optionvalues="Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D"
+             tooltip="Choose the visual style for focused buttons in the skip dialog." />
+  </category>
+
+  <category label="30002">
+
+    <setting id="show_not_found_toast_for_tv_episodes" 
+             type="bool" 
+             label="33000" 
+             default="true"
+             tooltip="Show a notification if the metadata file (chapters.xml or .edl) cannot be found or read for the current episode." />
+
+    <setting id="show_not_found_toast_for_movies" 
+             type="bool" 
+             label="33001" 
+             default="false"
+             tooltip="Show a notification if the metadata file (chapters.xml or .edl) cannot be found or read for the current movie." />
+
+    <setting id="show_toast_for_overlapping_nested_segments" 
+             type="bool" 
+             label="33002" 
+             default="false"
+             tooltip="Show a notification if the metadata file (chapters.xml or .edl) has overlapping segments." />			 
+			 
+    <setting id="show_toast_for_skipped_segment" 
+             type="bool" 
+             label="33003" 
+             default="true"
+             tooltip="Show a toast notification if a segment is skipped." />					 
+  </category>
+
+  <category label="30003">
+    <setting id="enable_verbose_logging"
+             type="bool"
+             label="34000"
+             default="false"
+             tooltip="Turn this on for verbose logging in the kodi.log file and for debugging." />
+  </category>
+</settings>

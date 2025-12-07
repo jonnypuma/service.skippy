@@ -1,0 +1,24 @@
+<addon id="service.skippy"
+       name="Skippy - Video Segment Skipper"
+       version="1.0.0"
+       provider-name="Skippy-McSkipface">
+       
+    <requires>
+        <import addon="xbmc.python" version="3.0.0" />
+    </requires>
+
+    <extension point="xbmc.service" library="service.py" />
+
+    <extension point="xbmc.addon.metadata">
+        <summary>Skippy is a video segment skipper which automatically detects and either autoskips or prompts to skip video segments, such as intros, recaps, and other chapters in video playback or never skips based on user preferences.</summary>
+        <description>Supports both Matroska-style chapters.xml and MPlayer-style .edl files. Action Type for .edl files should be set to 4 or higher (up to 99) to avoid conflicts with Kodi's internal autoskip feature. Batch script included to change .edl file action type. Uses customizable labels to identify skip-worthy segments. Monitors playback and prompts (or skips) based on labeled metadata.</description>
+        <platform>all</platform>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+            <screenshot>screenshot01.png</screenshot>
+            <screenshot>screenshot02.png</screenshot>
+            <screenshot>screenshot03.png</screenshot>
+        </assets>
+    </extension>
+</addon>

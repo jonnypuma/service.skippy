@@ -1,0 +1,131 @@
+# Kodi language file
+# Addon: service.skippy
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# Categories
+msgctxt "#30000"
+msgid "Segment Settings"
+msgstr "Segment Settings"
+
+msgctxt "#30001"
+msgid "Customize Skip Dialog Look and Behavior"
+msgstr "Customize Skip Dialog Look and Behavior"
+
+msgctxt "#30002"
+msgid "Segment Toast Notifications"
+msgstr "Segment Toast Notifications"
+
+msgctxt "#30003"
+msgid "Debug Logging"
+msgstr "Debug Logging"
+
+# Segment Settings
+msgctxt "#31000"
+msgid "Segment Keywords to Watch For"
+msgstr "Segment Keywords to Watch For"
+
+msgctxt "#31001"
+msgid "Skip Behavior Preferences"
+msgstr "Skip Behavior Preferences"
+
+msgctxt "#31002"
+msgid "Always Skip These"
+msgstr "Always Skip These"
+
+msgctxt "#31003"
+msgid "Ask to Skip These"
+msgstr "Ask to Skip These"
+
+msgctxt "#31004"
+msgid "Never Skip These"
+msgstr "Never Skip These"
+
+msgctxt "#31005"
+msgid "Ignore unmapped EDL actions"
+msgstr "Ignore unmapped EDL actions"
+
+msgctxt "#31006"
+msgid "EDL Action Type Mapping"
+msgstr "EDL Action Type Mapping"
+
+msgctxt "#31007"
+msgid "Skip overlapping segments"
+msgstr "Skip overlapping segments"
+
+# Dialog Settings
+msgctxt "#32000"
+msgid "Button Focus Style"
+msgstr "Button Focus Style"
+
+msgctxt "#32001"
+msgid "Default"
+msgstr "Default"
+
+msgctxt "#32002"
+msgid "Aqua"
+msgstr "Aqua"
+
+msgctxt "#32003"
+msgid "Aqua Bevel"
+msgstr "Aqua Bevel"
+
+msgctxt "#32004"
+msgid "Aqua Dark"
+msgstr "Aqua Dark"
+
+msgctxt "#32005"
+msgid "Aqua Vignette"
+msgstr "Aqua Vignette"
+
+msgctxt "#32012"
+msgid "Aqua Rounded"
+msgstr "Aqua Rounded"
+
+msgctxt "#32006"
+msgid "Blue"
+msgstr "Blue"
+
+msgctxt "#32007"
+msgid "Show Progress Bar in Skip Dialog"
+msgstr "Show Progress Bar in Skip Dialog"
+
+msgctxt "#32008"
+msgid "Major Rewind Threshold (Seconds)"
+msgstr "Major Rewind Threshold (Seconds)"
+
+msgctxt "#32009"
+msgid "Skip Dialog Position"
+msgstr "Skip Dialog Position"
+
+msgctxt "#32010"
+msgid "Show Skip Dialog for Movies"
+msgstr "Show Skip Dialog for Movies"
+
+msgctxt "#32011"
+msgid "Show Skip Dialog for Episodes"
+msgstr "Show Skip Dialog for Episodes"
+
+# Toast Settings
+msgctxt "#33000"
+msgid "Enable Missing Segment File Toast for TV Episodes"
+msgstr "Enable Missing Segment File Toast for TV Episodes"
+
+msgctxt "#33001"
+msgid "Enable Missing Segment File Toast for Movies"
+msgstr "Enable Missing Segment File Toast for Movies"
+
+msgctxt "#33002"
+msgid "Enable overlapping segment toast if found in segment file"
+msgstr "Enable overlapping segment toast if found in segment file"
+
+msgctxt "#33003"
+msgid "Enable toast notification for skipped segment"
+msgstr "Enable toast notification for skipped segment"
+
+# Debug Settings
+msgctxt "#34000"
+msgid "Enable Verbose Logging"
+msgstr "Enable Verbose Logging"
