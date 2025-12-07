@@ -1,4 +1,5 @@
-<img width="1024" height="1024" alt="icon" src="https://github.com/user-attachments/assets/a9566ad0-f74c-45b7-8243-85357f33b194" />
+<img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
+
 # 📼 Skippy — The XML-EDL Segment Skipper
 
 Skippy is a Kodi service that detects and can skip predefined video segments such as intros, recaps, ads, or credits using companion `.xml` or `.edl` files. 
@@ -561,4 +562,5 @@ ________________________________________________________________________________
 
 🧑‍💻 Contributors
 jonnyp — Architect, debugger
+
 
