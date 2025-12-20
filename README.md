@@ -153,13 +153,16 @@ Default settings file loaded at first start located in: .../addons/service.skipp
 | segment_never_skip          |	Comma-separated list of labels to never skip                                  |
 | ignore_internal_edl_actions | Ignore internal EDL action types not in mapping (default: true)              |
 | edl_action_mapping          |	Map .edl action codes to skip labels (e.g. 4:intro,5:credits)                 |
-| skip_overlapping_segments   | Configurable overlap detection to help avoid redundant or conflicting skips   |
+| skip_overlapping_segments   | Ignore overlapping segments to help avoid redundant or conflicting skips   |
 
 |Category:                    | Customize Skip Dialog Look and Behavior                                       | 
 |-----------------------------|-------------------------------------------------------------------------------|
 | show_progress_bar			      | Enables visual progress bar during skip dialog                                |    
 | skip_dialog_position	    	| Chooses layout position for the skip confirmation dialog                      |
 | button_focus_style          | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
+| skip_button_format          | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
+| hide_close_button           | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
+| hide_skip_icon              | Hide both the skip icon and close icon, leaving only the Skip and Close buttons visible (default: false) |
 | rewind_threshold_seconds	  | Threshold for detecting rewind and clearing dialog suppression states         |
 | show_skip_dialog_movies	    | Show skip dialog for movies when behavior is set to ask	                      |
 | show_skip_dialog_episodes	  | Show skip dialog for TV episodes when behavior is set to ask                  |
@@ -240,6 +243,114 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 - Located at the bottom of the skip dialog
 - Uses custom textures: `progress_left.png`, `progress_mid.png`, `progress_right.png`, `progress_background.png`
 - Setting is read dynamically - no caching issues
+
+---
+
+🎯 Skip Button Format Customization
+
+Skippy allows you to customize how the skip button label is displayed in the skip dialog:
+
+**Available Formats:**
+- **Skip**: Shows only "Skip" (no segment type or duration)
+- **Skip + Type**: Shows segment type, e.g., "Skip Intro" or "Skip Recap"
+- **Skip + Type + Duration**: Shows segment type and duration, e.g., "Skip Intro (29s)" or "Skip Recap (1m15s)" (default)
+
+**How to Change:**
+1. Go to `Settings → Add-ons → My Add-ons → Services → Skippy`
+2. Navigate to "Customize Skip Dialog Look and Behavior"
+3. Select your preferred "Skip Button Format"
+4. Changes apply immediately for new skip dialogs
+
+**Examples:**
+- Format: "Skip" → Button shows: `Skip`
+- Format: "Skip + Type" → Button shows: `Skip Intro`
+- Format: "Skip + Type + Duration" → Button shows: `Skip Intro (29s)`
+
+---
+
+📝 Dynamic Segment Type Display
+
+The skip dialog now intelligently displays the segment type in the countdown text:
+
+**Behavior:**
+- **With Segment Type**: Shows "Intro ending in: 00:05" or "Recap ending in: 00:10"
+- **Without Segment Type**: Falls back to "Segment ending in: 00:05" if no specific type is identified
+
+**How It Works:**
+- The dialog automatically detects the segment type from your metadata files
+- Uses the segment label (e.g., "Intro", "Recap", "Credits") from your `.xml` or `.edl` files
+- If the segment type is generic or unidentified, it defaults to "Segment"
+
+**Example:**
+If your segment file contains:
+```xml
+<ChapterString>Intro</ChapterString>
+```
+The dialog will show: **"Intro ending in: 00:29"**
+
+If no specific type is found, it shows: **"Segment ending in: 00:29"**
+
+---
+
+🚫 Hide Close Button Option
+
+You can now hide the Close button and its icon to create a minimal skip dialog with only the Skip button:
+
+**Features:**
+- **Minimal Interface**: Removes both the Close button and close icon
+- **Full-Width Skip Button**: When enabled, the Skip button expands to 350px width with centered text
+- **Smart Positioning**: Button starts at left=30px when skip icon is visible, or left=5px when skip icon is hidden
+- **Cleaner Look**: Only the Skip button remains visible
+- **Still Closable**: Dialog can still be closed using ESC/Back actions
+
+**How to Enable:**
+1. Go to `Settings → Add-ons → My Add-ons → Services → Skippy`
+2. Navigate to "Customize Skip Dialog Look and Behavior"
+3. Toggle "Hide Close Button" on
+4. Changes apply immediately for new skip dialogs
+
+**Note:** When the Close button is hidden, you can still dismiss the dialog using:
+- ESC key
+- Back button on remote/keyboard
+- The dialog will auto-close when the segment ends
+
+---
+
+🎨 Hide Skip and Close Icons Option
+
+You can hide both the skip icon and close icon while keeping the buttons visible:
+
+**Features:**
+- **Icon-Free Interface**: Removes both icons, leaving only the text buttons
+- **Balanced Layout**: When skip icon is hidden, the close icon is automatically hidden too for visual balance
+- **Button Visibility**: Both Skip and Close buttons remain fully functional
+
+**How to Enable:**
+1. Go to `Settings → Add-ons → My Add-ons → Services → Skippy`
+2. Navigate to "Customize Skip Dialog Look and Behavior"
+3. Toggle "Hide Skip and Close Icons" on
+4. Changes apply immediately for new skip dialogs
+
+**Behavior:**
+- When skip icon is hidden, the close icon is automatically hidden as well
+- This ensures a balanced appearance when icons are disabled
+- All button functionality remains unchanged
+
+---
+
+📐 Button Text Centering
+
+All button texts in the skip dialog are now centered for a consistent, professional appearance:
+
+**Features:**
+- **Centered Text**: All buttons (Skip, Close, and full-width variants) display centered text
+- **Consistent Layout**: Uniform appearance across all button configurations
+- **Professional Look**: Clean, balanced button design
+
+**Applies To:**
+- Normal Skip button (when Close button is visible)
+- Close button
+- Full-width Skip button (when Close button is hidden)
 
 ---
 
@@ -435,10 +546,10 @@ Skippy supports optional filtering of Kodi-native EDL action types (`0`, `1`, `2
 ```
 ---
 
-🔁 Skip Overlapping Segments
+🔁 Ignore Overlapping Segments
 Skippy now supports configurable overlap detection to help avoid redundant or conflicting skips. This feature ensures that segments which overlap in time are handled according to your preference.
 
-⚙️ Setting: Skip overlapping segments
+⚙️ Setting: Ignore overlapping segments
 Location: settings.xml → Segment Settings
 
 Type: Boolean toggle (true / false)
@@ -501,7 +612,7 @@ Behavior:
 🧪 How to Test
 Enable verbose logging in settings.
 
-Toggle Skip overlapping segments on/off.
+Toggle Ignore overlapping segments on/off.
 
 Observe logs like:
 
@@ -562,5 +673,3 @@ ________________________________________________________________________________
 
 🧑‍💻 Contributors
 jonnyp — Architect, debugger
-
-
