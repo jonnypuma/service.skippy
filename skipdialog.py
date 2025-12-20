@@ -57,9 +57,72 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         duration = int(self.segment.end_seconds - self.segment.start_seconds)
         m, s = divmod(duration, 60)
         duration_str = f"{m}m{s}s" if m else f"{s}s"
-        label = f"Skip {self.segment.segment_type_label.title()} ({duration_str})"
-        self.getControl(3012).setLabel(label)
+        
+        # Get skip button format setting
+        addon = get_addon()
+        format_setting = addon.getSetting("skip_button_format") if addon else "Skip + Type + Duration"
+        
+        # Format label based on setting
+        if format_setting == "Skip":
+            label = "Skip"
+        elif format_setting == "Skip + Type":
+            label = f"Skip {self.segment.segment_type_label.title()}"
+        else:  # "Skip + Type + Duration" (default)
+            label = f"Skip {self.segment.segment_type_label.title()} ({duration_str})"
+        
+        # Set label on all button variants (normal and full-width)
+        try:
+            self.getControl(3012).setLabel(label)
+        except:
+            pass
+        try:
+            self.getControl(3015).setLabel(label)  # Full-width with skip icon visible
+        except:
+            pass
+        try:
+            self.getControl(3016).setLabel(label)  # Full-width with skip icon hidden
+        except:
+            pass
         self.setProperty("countdown", "")
+        
+        # Set the ending text property with segment type, falling back to "Segment" if no specific type identified
+        # segment_type_label is normalized to lowercase, so "segment" is the default/generic type
+        if self.segment.segment_type_label and self.segment.segment_type_label.lower() != "segment":
+            segment_type = self.segment.segment_type_label.title()
+        else:
+            segment_type = "Segment"
+        self.setProperty("ending_text", f"{segment_type} ending in:")
+        
+        # Check if ending text should be hidden
+        hide_ending_text = addon.getSettingBool("hide_ending_text") if addon else False
+        self.setProperty("hide_ending_text", "true" if hide_ending_text else "false")
+        
+        # Check if close button should be hidden
+        hide_close = addon.getSettingBool("hide_close_button") if addon else False
+        self.setProperty("hide_close_button", "true" if hide_close else "false")
+        
+        # Check if skip icon should be hidden
+        hide_skip_icon = addon.getSettingBool("hide_skip_icon") if addon else False
+        self.setProperty("hide_skip_icon", "true" if hide_skip_icon else "false")
+        
+        if hide_close:
+            try:
+                close_button = self.getControl(3013)
+                close_button.setVisible(False)
+                log("🚫 Close button hidden per setting")
+                # Set default control to full-width button when close is hidden
+                try:
+                    if hide_skip_icon:
+                        self.setFocusId(3016)  # Full-width button when skip icon is hidden
+                        log("📐 Default control set to full-width button (3016, skip icon hidden)")
+                    else:
+                        self.setFocusId(3015)  # Full-width button when skip icon is visible
+                        log("📐 Default control set to full-width button (3015, skip icon visible)")
+                except:
+                    pass
+            except Exception as e:
+                log(f"⚠️ Error hiding close button: {e}")
+        
         self._closing = False
         self.response = None
         self.player = xbmc.Player()
@@ -171,7 +234,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             time.sleep(delay)
 
     def onClick(self, controlId):
-        if controlId == 3012:
+        if controlId == 3012 or controlId == 3015 or controlId == 3016:  # All skip button variants
             self.response = self.segment.next_segment_start or self.segment.end_seconds + 1.0
             log(f"🖱️ User clicked skip → skipping to {self.response}s")
         else:

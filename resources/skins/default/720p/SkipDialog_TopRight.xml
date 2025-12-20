@@ -38,12 +38,14 @@
         <left>5</left><top>13</top>
         <width>20</width><height>20</height>
         <texture>icon_skip.png</texture>
+        <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
 
       <control type="image">
         <left>280</left><top>13</top>
         <width>20</width><height>20</height>
         <texture>icon_close.png</texture>
+        <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
 
       <control type="button" id="3012">
@@ -60,7 +62,45 @@
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
-        <textoffsetx>10</textoffsetx>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+      </control>
+
+      <control type="button" id="3015">
+        <left>30</left><top>10</top>
+        <width>350</width><height>25</height>
+        <label>Skip</label>
+        <font>font16</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>white</textcolorfocus>
+        <shadowcolor>black</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <visible>String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+      </control>
+
+      <control type="button" id="3016">
+        <left>5</left><top>10</top>
+        <width>350</width><height>25</height>
+        <label>Skip</label>
+        <font>font16</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>white</textcolorfocus>
+        <shadowcolor>black</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <visible>String.IsEqual(Window.Property(hide_close_button),true) + String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
 
       <control type="button" id="3013">
@@ -78,7 +118,9 @@
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
-        <textoffsetx>10</textoffsetx>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
       </control>
 
       <control type="label">
@@ -95,11 +137,11 @@
       <control type="label" id="2">
         <left>5</left><top>60</top>
         <width>360</width><height>20</height>
-        <label>Segment ending in: $INFO[Window.Property(countdown)]</label>
+        <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
         <align>left</align>
-        <visible>true</visible>
+        <visible>!String.IsEqual(Window.Property(hide_ending_text),true)</visible>
       </control>
 
       <control type="progress" id="3014">

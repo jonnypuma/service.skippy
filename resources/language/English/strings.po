@@ -52,8 +52,8 @@ msgid "EDL Action Type Mapping"
 msgstr "EDL Action Type Mapping"
 
 msgctxt "#31007"
-msgid "Skip overlapping segments"
-msgstr "Skip overlapping segments"
+msgid "Ignore overlapping segments"
+msgstr "Ignore overlapping segments"
 
 # Dialog Settings
 msgctxt "#32000"
@@ -107,6 +107,22 @@ msgstr "Show Skip Dialog for Movies"
 msgctxt "#32011"
 msgid "Show Skip Dialog for Episodes"
 msgstr "Show Skip Dialog for Episodes"
+
+msgctxt "#32013"
+msgid "Skip Button Format"
+msgstr "Skip Button Format"
+
+msgctxt "#32014"
+msgid "Hide Close Button"
+msgstr "Hide Close Button"
+
+msgctxt "#32015"
+msgid "Hide Skip and Close Icons"
+msgstr "Hide Skip and Close Icons"
+
+msgctxt "#32016"
+msgid "Hide segment ending in text"
+msgstr "Hide segment ending in text"
 
 # Toast Settings
 msgctxt "#33000"

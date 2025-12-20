@@ -89,6 +89,32 @@
              values="button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png"
              optionvalues="Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D"
              tooltip="Choose the visual style for focused buttons in the skip dialog." />
+
+    <setting id="skip_button_format"
+             type="labelenum"
+             label="32013"
+             default="Skip + Type + Duration"
+             values="Skip|Skip + Type|Skip + Type + Duration"
+             optionvalues="Skip|Skip + Type|Skip + Type + Duration"
+             tooltip="Choose how the skip button label is displayed in the skip dialog." />
+
+    <setting id="hide_close_button"
+             type="bool"
+             label="32014"
+             default="false"
+             tooltip="Hide the Close button and its icon, leaving only the Skip button visible." />
+
+    <setting id="hide_skip_icon"
+             type="bool"
+             label="32015"
+             default="false"
+             tooltip="Hide both the skip icon and close icon, leaving only the Skip and Close buttons visible." />
+
+    <setting id="hide_ending_text"
+             type="bool"
+             label="32016"
+             default="false"
+             tooltip="Hide the 'Segment ending in:' countdown text line." />
   </category>
 
   <category label="30002">
