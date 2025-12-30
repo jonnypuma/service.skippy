@@ -42,16 +42,29 @@ def log_always(msg):
 
 class SkipDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args)
-        self.segment = kwargs.get("segment", None)
-        log(f"📦 Loaded dialog layout: {args[0]}")
+        try:
+            super().__init__(*args)
+            self.segment = kwargs.get("segment", None)
+            log(f"📦 Loaded dialog layout: {args[0]}")
+        except Exception as e:
+            log_always(f"❌ Failed to initialize SkipDialog (possible Kodi/device limitation): {e}")
+            log_always(f"❌ Dialog initialization failed with args: {args}, kwargs: {kwargs}")
+            raise
 
     def onInit(self):
-        log_always(f"🔍 onInit called — segment={getattr(self, 'segment', None)}")
+        try:
+            log_always(f"🔍 onInit called — segment={getattr(self, 'segment', None)}")
 
-        if not hasattr(self, "segment") or not self.segment:
-            log("❌ Segment not set — aborting dialog init")
-            self.close()
+            if not hasattr(self, "segment") or not self.segment:
+                log("❌ Segment not set — aborting dialog init")
+                self.close()
+                return
+        except Exception as e:
+            log_always(f"❌ Error in onInit before segment check (possible Kodi/device limitation): {e}")
+            try:
+                self.close()
+            except:
+                pass
             return
 
         duration = int(self.segment.end_seconds - self.segment.start_seconds)
@@ -175,8 +188,17 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         except Exception as e:
             log(f"⚠️ Progress bar control error: {e}")
 
-        log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
-        threading.Thread(target=self._monitor_segment_end, daemon=True).start()
+        try:
+            log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
+            threading.Thread(target=self._monitor_segment_end, daemon=True).start()
+            log("✅ Dialog onInit completed successfully")
+        except Exception as e:
+            log_always(f"❌ Error during dialog onInit completion (possible Kodi/device limitation): {e}")
+            log_always(f"❌ Dialog initialization failed for segment: {getattr(self.segment, 'segment_type_label', 'unknown')}")
+            try:
+                self.close()
+            except:
+                pass
 
     def _monitor_segment_end(self):
         delay = 0.25

@@ -72,15 +72,29 @@
              optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
              tooltip="Choose which corner of the screen the Skip Dialog appears in during playback." />
 
-    <setting id="show_skip_dialog_movies" 
+    <setting id="enable_skip_movies" 
              type="bool" 
              label="32010" 
-             default="true" />
+             default="true"
+             tooltip="Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies." />
+
+    <setting id="enable_skip_episodes" 
+             type="bool" 
+             label="32011" 
+             default="true"
+             tooltip="Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes." />
+
+    <setting id="show_skip_dialog_movies" 
+             type="bool" 
+             label="32017" 
+             default="true"
+             tooltip="Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled." />
 
     <setting id="show_skip_dialog_episodes" 
              type="bool" 
-             label="32011" 
-             default="true" />
+             label="32018" 
+             default="true"
+             tooltip="Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled." />
 
     <setting id="button_focus_style"
              type="labelenum"

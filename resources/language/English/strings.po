@@ -101,10 +101,18 @@ msgid "Skip Dialog Position"
 msgstr "Skip Dialog Position"
 
 msgctxt "#32010"
+msgid "Enable Skip for Movies"
+msgstr "Enable Skip for Movies"
+
+msgctxt "#32011"
+msgid "Enable Skip for Episodes"
+msgstr "Enable Skip for Episodes"
+
+msgctxt "#32017"
 msgid "Show Skip Dialog for Movies"
 msgstr "Show Skip Dialog for Movies"
 
-msgctxt "#32011"
+msgctxt "#32018"
 msgid "Show Skip Dialog for Episodes"
 msgstr "Show Skip Dialog for Episodes"
 

@@ -10,7 +10,7 @@ import xbmcgui
 import xbmcvfs
 import xbmcaddon
 
-from settings_utils import is_skip_dialog_enabled
+from settings_utils import is_skip_dialog_enabled, is_skip_enabled
 from skipdialog import SkipDialog
 from segment_item import SegmentItem
 from settings_utils import (
@@ -65,6 +65,12 @@ def _update_button_textures(texture_path):
     except Exception as e:
         log(f"⚠️ Failed to update XML files: {e}")
 
+def log_if_changed(key, msg):
+    """Only log if the message is different from the last logged message for this key."""
+    if key not in monitor._last_log_state or monitor._last_log_state[key] != msg:
+        monitor._last_log_state[key] = msg
+        log(msg)
+
 CHECK_INTERVAL = 1
 ICON_PATH = os.path.join(get_addon().getAddonInfo("path"), "icon.png")
 
@@ -87,6 +93,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.last_toast_for_file = {}
         self.toast_overlap_shown = False
         self.skipped_to_nested_segment = {}  # Track when we've skipped to nested segments
+        self._last_log_state = {}  # Cache for logging state changes only
+        self.cleared_parent_dismissals = set()  # Track which parent dismissals have been cleared for nested segments
 
 monitor = PlayerMonitor()
 player = xbmc.Player()
@@ -352,12 +360,16 @@ def is_overlapping_segment(segment_a, segment_b):
     
     return True
 
-def should_suppress_segment_dialog(current_segment, all_segments, current_time):
+def should_suppress_segment_dialog(current_segment, all_segments, current_time, recently_dismissed=None):
     """
     Check if the current segment dialog should be suppressed because we're inside
     a nested or overlapping segment that should take priority.
     
     Returns True if the dialog should be suppressed.
+    
+    Args:
+        recently_dismissed: Set of dismissed segment IDs. If a parent segment is dismissed,
+                          nested segments should still be allowed to show.
     """
     # Find all segments that are currently active (contain current_time)
     active_segments = [seg for seg in all_segments if seg.is_active(current_time)]
@@ -374,13 +386,34 @@ def should_suppress_segment_dialog(current_segment, all_segments, current_time):
     except ValueError:
         return False  # Current segment not in active list
     
-    # Check if there are any segments that start after the current segment
+    # Use same seg_id format as main loop (round then int) for consistent matching
+    current_seg_id = (int(round(current_segment.start_seconds)), int(round(current_segment.end_seconds)))
+    
+    # FIRST: Check if current segment is nested within a dismissed parent
+    # If so, allow it to show (don't suppress)
+    if recently_dismissed:
+        for i in range(current_index):
+            parent_segment = active_segments[i]
+            # Use same seg_id format as main loop (round then int) for consistent matching
+            parent_seg_id = (int(round(parent_segment.start_seconds)), int(round(parent_segment.end_seconds)))
+            # If current segment is nested within a dismissed parent, allow it to show
+            if parent_seg_id in recently_dismissed and is_nested_segment(parent_segment, current_segment):
+                log(f"✅ Allowing nested segment '{current_segment.segment_type_label}' to show even though parent '{parent_segment.segment_type_label}' was dismissed")
+                return False
+    
+    # SECOND: Check if there are any segments that start after the current segment
     # and are nested within it - these should take priority
     for i in range(current_index + 1, len(active_segments)):
         later_segment = active_segments[i]
         
         # If the later segment is nested within the current segment, suppress current
+        # BUT: if the parent (current) segment was dismissed, allow nested segments to show
         if is_nested_segment(current_segment, later_segment):
+            if recently_dismissed:
+                # If parent was dismissed, don't suppress - let nested segment show
+                if current_seg_id in recently_dismissed:
+                    log(f"✅ Allowing nested segment '{later_segment.segment_type_label}' to show even though parent '{current_segment.segment_type_label}' was dismissed")
+                    return False
             log(f"🚫 Suppressing dialog for '{current_segment.segment_type_label}' because '{later_segment.segment_type_label}' is nested within it")
             return True
         
@@ -466,6 +499,21 @@ def parse_and_process_segments(path, current_time=None):
     Parses segments, filters them based on settings, and then links overlapping/nested segments.
     If current_time is provided, the linking logic will be context-aware.
     """
+    # CRITICAL: Defensive check - never process segments when paused
+    # This prevents toast spamming even if this function is called while paused
+    # Always check pause state first, before doing ANY processing
+    try:
+        is_playing_parse = player.isPlayingVideo()
+        is_paused_parse = xbmc.getCondVisibility("Player.Paused")
+        if is_paused_parse or not is_playing_parse:
+            # Always log this (not using log_if_changed) to help debug toast spamming
+            log(f"🔕 parse_and_process_segments called while paused — returning empty list to prevent toast spamming (is_playing={is_playing_parse}, is_paused={is_paused_parse})")
+            return []
+    except RuntimeError:
+        # Always log this (not using log_if_changed) to help debug toast spamming
+        log("🔕 parse_and_process_segments called but player state unavailable — returning empty list")
+        return []
+    
     log(f"🚦 Starting new segment parse and process for: {path}")
     parsed = parse_chapters(path)
     if not parsed:
@@ -558,7 +606,50 @@ def parse_and_process_segments(path, current_time=None):
                 break
     
     # Show toast notification if overlaps were found and setting is enabled
-    if has_overlap_or_nested and show_overlapping_toast() and not monitor.toast_overlap_shown:
+    # Don't show toast if any segment has been dismissed by the user, or if playback is paused
+    # CRITICAL: Check toast_overlap_shown FIRST to prevent re-evaluation
+    if monitor.toast_overlap_shown:
+        log_if_changed("toast_already_shown", "🔕 Overlapping segments toast already shown — skipping")
+        return filtered_segments
+    
+    should_show_toast = has_overlap_or_nested and show_overlapping_toast()
+    if not should_show_toast:
+        return filtered_segments
+    
+    # CRITICAL: Check if playback is paused FIRST (before any other checks)
+    # This is the most important check to prevent toast spamming when paused
+    # Double-check pause state right before showing toast (defensive programming)
+    try:
+        is_playing_toast = player.isPlayingVideo()
+        is_paused_toast = xbmc.getCondVisibility("Player.Paused")
+        if is_paused_toast or not is_playing_toast:
+            # Always log this (not using log_if_changed) to help debug toast spamming
+            log(f"🔕 Suppressing overlapping segments toast because playback is paused or not playing (is_playing={is_playing_toast}, is_paused={is_paused_toast})")
+            return filtered_segments
+    except RuntimeError:
+        # Always log this (not using log_if_changed) to help debug toast spamming
+        log("🔕 Suppressing overlapping segments toast because player state unavailable")
+        return filtered_segments
+    
+    # If any segment has been dismissed, don't show the overlapping toast
+    if monitor.recently_dismissed:
+        log_if_changed("toast_dismissed", "🔕 Suppressing overlapping segments toast because user has dismissed a segment dialog")
+        return filtered_segments
+    
+    # All checks passed - show the toast
+    # CRITICAL: One final pause check right before showing (triple-check for safety)
+    try:
+        final_is_playing = player.isPlayingVideo()
+        final_is_paused = xbmc.getCondVisibility("Player.Paused")
+        if final_is_paused or not final_is_playing:
+            log(f"🔕 Final pause check: Suppressing overlapping segments toast because playback is paused or not playing (is_playing={final_is_playing}, is_paused={final_is_paused})")
+            return filtered_segments
+    except RuntimeError:
+        log("🔕 Final pause check: Suppressing overlapping segments toast because player state unavailable")
+        return filtered_segments
+    
+    log("🔔 Attempting to show toast notification for overlapping segments")
+    try:
         xbmcgui.Dialog().notification(
             heading="Skippy",
             message="Overlapping/Nested segments detected.",
@@ -566,7 +657,11 @@ def parse_and_process_segments(path, current_time=None):
             time=4000
         )
         monitor.toast_overlap_shown = True
-        log("Toast notification displayed for overlapping segments.")
+        log("✅ Toast notification displayed for overlapping segments")
+    except Exception as e:
+        log(f"❌ Failed to display overlapping segments toast notification (possible Kodi/device limitation): {e}")
+        # Don't set toast_overlap_shown = True if the toast failed to display
+        # This allows retry on next parse (though parse_and_process_segments shouldn't be called when paused)
         
     log(f"✅ Pass 2 complete. Final segments to process: {len(filtered_segments)}")
     return filtered_segments
@@ -577,55 +672,143 @@ while not monitor.abortRequested():
     if player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo"):
         video = get_video_file()
         if not video:
-            log("⚠ get_video_file() returned None — skipping this cycle")
-            monitor.last_video = None
+            log_if_changed("no_video", "⚠ get_video_file() returned None — skipping this cycle")
+            # CRITICAL: Don't set last_video to None here - this causes video change detection to trigger incorrectly
+            # when video becomes available again (e.g., after pause/resume)
+            # Only clear last_video if we're sure playback has actually stopped
+            continue
 
         if video:
             # 🔁 Detect replay of same video
+            # CRITICAL: Only check if NOT paused - don't reset state when paused
+            # CRITICAL: Do NOT clear recently_dismissed on replay if we have dismissed segments
+            # This prevents clearing on resume from pause (which can look like a replay)
             try:
-                current_playback_time = player.getTime()
-                if (
-                    video == monitor.last_video
-                    and monitor.playback_ready
-                    and current_playback_time < 5.0
-                    and time.time() - monitor.playback_ready_time > 5.0
-                ):
-                    log("🔁 Replay of same video detected — resetting monitor state")
-                    monitor.shown_missing_file_toast = False
-                    monitor.prompted.clear()
-                    monitor.recently_dismissed.clear()
-                    monitor.playback_ready = False
-                    monitor.play_start_time = time.time()
-                    monitor.last_time = 0
-                    monitor.last_toast_time = 0
-                    monitor.toast_overlap_shown = False
-                    monitor.skipped_to_nested_segment.clear()
+                is_playing_replay = player.isPlayingVideo()
+                is_paused_replay = xbmc.getCondVisibility("Player.Paused")
+                if not is_paused_replay and is_playing_replay:
+                    current_playback_time = player.getTime()
+                    if (
+                        video == monitor.last_video
+                        and monitor.playback_ready
+                        and current_playback_time < 5.0
+                        and time.time() - monitor.playback_ready_time > 5.0
+                    ):
+                        # CRITICAL: Double-check pause state right before clearing
+                        # CRITICAL: Use last_time to distinguish genuine replay from resume
+                        # On genuine replay: playback jumps from higher position to < 5.0 seconds
+                        # On resume: playback continues from where it was paused (won't jump to < 5.0)
+                        try:
+                            final_replay_playing = player.isPlayingVideo()
+                            final_replay_paused = xbmc.getCondVisibility("Player.Paused")
+                            if final_replay_paused or not final_replay_playing:
+                                log(f"🔕 CRITICAL: Replay detected but paused - NOT clearing recently_dismissed (is_playing={final_replay_playing}, is_paused={final_replay_paused})")
+                            else:
+                                # Check if this is a genuine replay by comparing current position to last known position
+                                # If last_time was much higher (> 10s), this is likely a replay, not a resume
+                                is_genuine_replay = monitor.last_time > 10.0
+                                
+                                if not is_genuine_replay:
+                                    # last_time is low - might be a resume from early in video
+                                    # Also check if we're currently in any active segments
+                                    is_in_active_segment = False
+                                    if monitor.current_segments:
+                                        for seg in monitor.current_segments:
+                                            if seg.is_active(current_playback_time):
+                                                is_in_active_segment = True
+                                                break
+                                    
+                                    if is_in_active_segment:
+                                        log(f"🔒 Replay detected but we're in an active segment at {current_playback_time:.2f}s - NOT clearing (likely resume, not replay)")
+                                    else:
+                                        # Not in active segment and last_time is low - still might be a replay from very early
+                                        # But to be safe, only clear if we're very close to start (< 2.0s) and last_time was at least 5s
+                                        if current_playback_time < 2.0 and monitor.last_time >= 5.0:
+                                            is_genuine_replay = True
+                                            log(f"🔍 Replay detected: current={current_playback_time:.2f}s, last={monitor.last_time:.2f}s - treating as genuine replay")
+                                        else:
+                                            log(f"🔒 Replay detected but last_time={monitor.last_time:.2f}s is low - NOT clearing (likely resume from early position)")
+                                
+                                if is_genuine_replay:
+                                    # This is a genuine replay - clear dismissed state so dialogs can reappear
+                                    log("🔁 Replay of same video detected — resetting monitor state")
+                                    log(f"🔍 Debug: About to clear recently_dismissed (currently has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)})")
+                                    log(f"🔍 Debug: Replay detected: current={current_playback_time:.2f}s, last={monitor.last_time:.2f}s")
+                                    monitor.shown_missing_file_toast = False
+                                    monitor.prompted.clear()
+                                    monitor.recently_dismissed.clear()
+                                    log(f"🔍 Debug: recently_dismissed cleared - now has {len(monitor.recently_dismissed)} items")
+                                    monitor.cleared_parent_dismissals.clear()
+                                    monitor.playback_ready = False
+                                    monitor.play_start_time = time.time()
+                                    monitor.last_time = 0
+                                    monitor.last_toast_time = 0
+                                    # CRITICAL: Do NOT reset toast_overlap_shown on replay - it should only show once per video
+                                    # Only reset on new video (see line 766)
+                                    monitor.skipped_to_nested_segment.clear()
+                                    # Clear log cache on replay to allow re-logging
+                                    monitor._last_log_state.clear()
+                                    log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
+                        except RuntimeError:
+                            log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
             except RuntimeError:
                 # Playback may have stopped, skip replay detection
                 pass
 
-            log(f"🚀 Entered video block — video={video}, last_video={monitor.last_video}")
-            log(f"🎬 Now playing: {os.path.basename(video)}")
-
+            # Only log when video changes
+            # CRITICAL: Video path change = new video, so clear recently_dismissed
+            # The video path does NOT change on pause/resume, only when a different video is playing
             if video != monitor.last_video:
-                log("🆕 New video detected — resetting monitor state")
-                monitor.last_video = video
-                monitor.segment_file_found = False
-                monitor.shown_missing_file_toast = False
-                monitor.prompted.clear()
-                monitor.recently_dismissed.clear()
-                monitor.playback_ready = False
-                monitor.play_start_time = time.time()
-                monitor.last_time = 0
-                monitor.last_toast_time = 0
-                monitor.toast_overlap_shown = False
-                monitor.skipped_to_nested_segment.clear()
+                try:
+                    is_playing_new = player.isPlayingVideo()
+                    is_paused_new = xbmc.getCondVisibility("Player.Paused")
+                    
+                    if not is_paused_new and is_playing_new:
+                        # CRITICAL: Double-check pause state right before clearing
+                        try:
+                            final_new_playing = player.isPlayingVideo()
+                            final_new_paused = xbmc.getCondVisibility("Player.Paused")
+                            if final_new_paused or not final_new_playing:
+                                log(f"🔕 CRITICAL: Video path changed but paused - NOT clearing recently_dismissed (is_playing={final_new_playing}, is_paused={final_new_paused})")
+                                monitor.last_video = video  # Still update last_video
+                            else:
+                                # Video path changed and we're playing - this is a new video
+                                log(f"🚀 New video detected: {os.path.basename(video)}")
+                                log("🆕 New video detected — resetting monitor state")
+                                log(f"🔍 Debug: About to clear recently_dismissed (currently has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)})")
+                                monitor.last_video = video
+                                monitor.segment_file_found = False
+                                monitor.shown_missing_file_toast = False
+                                monitor.prompted.clear()
+                                monitor.recently_dismissed.clear()
+                                log(f"🔍 Debug: recently_dismissed cleared - now has {len(monitor.recently_dismissed)} items")
+                                monitor.cleared_parent_dismissals.clear()
+                                monitor.playback_ready = False
+                                monitor.play_start_time = time.time()
+                                monitor.last_time = 0
+                                monitor.last_toast_time = 0
+                                monitor.toast_overlap_shown = False
+                                monitor.skipped_to_nested_segment.clear()
+                                # Clear log cache on new video to allow re-logging
+                                monitor._last_log_state.clear()
+                                log(f"✅ New video state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
+                        except RuntimeError:
+                            log(f"🔕 CRITICAL: Cannot verify pause state during new video detection - NOT clearing recently_dismissed to prevent clearing on pause/resume")
+                            monitor.last_video = video  # Still update last_video
+                    else:
+                        # Video changed but paused - just update last_video, don't clear state
+                        log(f"🚀 Video path changed but paused - updating last_video only (not clearing state)")
+                        monitor.last_video = video
+                except RuntimeError:
+                    # If we can't check pause state, be safe and don't clear
+                    log(f"🚀 Video path changed but can't verify pause state - updating last_video only (not clearing state)")
+                    monitor.last_video = video
             
             addon = get_addon()
             try:
                 allow_toast, item = should_show_missing_file_toast()
                 playback_type = infer_playback_type(item)
-                log(f"🔍 Playback type inferred via toast logic: '{playback_type}'")
+                log_if_changed("playback_type", f"🔍 Playback type: '{playback_type}'")
             except Exception as e:
                 log(f"❌ Failed to infer playback type via toast logic: {e}")
                 playback_type = ""
@@ -635,19 +818,49 @@ while not monitor.abortRequested():
             toast_movies = addon.getSettingBool("show_not_found_toast_for_movies")
             toast_episodes = addon.getSettingBool("show_not_found_toast_for_tv_episodes")
 
-            log(f"🧪 Raw setting values → show_dialogs: {show_dialogs}, show_not_found_toast_for_movies: {toast_movies}, show_not_found_toast_for_tv_episodes: {toast_episodes}")
+            log_if_changed("settings", f"🧪 Settings → show_dialogs: {show_dialogs}, toast_movies: {toast_movies}, toast_episodes: {toast_episodes}")
 
         try:
             current_time = player.getTime()
-            log(f"🧪 Current playback time: {current_time}, last_time: {monitor.last_time}")
+            # Only log time changes, not every second
+            log_if_changed("playback_time", f"⏱️ Playback time: {current_time:.2f}s")
         except RuntimeError:
             log("⚠ player.getTime() failed — no media playing")
             continue
 
+        # Check if playback is paused - do this FIRST, before any segment processing
+        # Initialize to safe defaults (assume paused to be safe)
+        is_playing = False
+        is_paused = True
+        try:
+            is_playing = player.isPlayingVideo()
+            is_paused = xbmc.getCondVisibility("Player.Paused")
+        except RuntimeError:
+            is_playing = False
+            is_paused = True
+        
+        # Log pause state changes for debugging (use log_if_changed to reduce clutter)
+        log_if_changed("pause_state", f"⏸️ Playback state: is_playing={is_playing}, is_paused={is_paused}")
+        
+        # CRITICAL: If video is paused or not playing, skip ALL segment processing
+        # This prevents ANY dialogs from appearing when paused, regardless of dismissal status
+        # This also prevents parse_and_process_segments from being called when paused, which prevents toast spamming
+        if is_paused or not is_playing:
+            # Log pause state (use log_if_changed to reduce clutter, but log when state changes)
+            log_if_changed("paused_all", f"⏸️ Video paused or not playing — skipping ALL segment processing (is_playing={is_playing}, is_paused={is_paused})")
+            # CRITICAL: Don't update last_time when paused - this could cause issues with rewind detection
+            # Only update last_time if we were previously playing (to track position)
+            if monitor.last_time == 0:
+                monitor.last_time = current_time
+            continue
+
+        # Only parse segments when NOT paused
         if not playback_type:
             log("⚠ Playback type not detected — skipping segment parsing")
             monitor.current_segments = []
         else:
+            # CRITICAL: Only call parse_and_process_segments when NOT paused
+            # This prevents toast spamming when paused
             monitor.current_segments = parse_and_process_segments(video, current_time) or []
             log(f"📦 Parsed {len(monitor.current_segments)} segments for playback_type: {playback_type}")
 
@@ -666,37 +879,166 @@ while not monitor.abortRequested():
             rewind_detected = False
         
         if rewind_detected:
-            log(f"⏪ Significant rewind detected ({monitor.last_time:.2f} → {current_time:.2f}) — threshold: {rewind_threshold}s")
-            monitor.prompted.clear()
-            monitor.recently_dismissed.clear()
-            monitor.skipped_to_nested_segment.clear()
-            
-            # Re-evaluate segment jump points after major rewind to ensure correct jump targets
-            if monitor.current_segments:
-                re_evaluate_segment_jump_points(monitor.current_segments, current_time)
-            
-            major_rewind_detected = True
-            log("🧹 recently_dismissed cleared due to rewind, nested segment tracking cleared, jump points re-evaluated")
+            # CRITICAL: Only clear state if NOT paused - don't clear dismissals when paused
+            # The pause check above should prevent this, but add defensive check here too
+            try:
+                is_playing_rewind = player.isPlayingVideo()
+                is_paused_rewind = xbmc.getCondVisibility("Player.Paused")
+                if not is_paused_rewind and is_playing_rewind:
+                    # CRITICAL: Double-check pause state right before clearing
+                    try:
+                        final_rewind_playing = player.isPlayingVideo()
+                        final_rewind_paused = xbmc.getCondVisibility("Player.Paused")
+                        if final_rewind_paused or not final_rewind_playing:
+                            log(f"🔕 CRITICAL: Rewind detected but paused - NOT clearing recently_dismissed (is_playing={final_rewind_playing}, is_paused={final_rewind_paused})")
+                        else:
+                            log(f"⏪ Significant rewind detected ({monitor.last_time:.2f} → {current_time:.2f}) — threshold: {rewind_threshold}s")
+                            log(f"🔍 Debug: About to clear recently_dismissed (currently has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)})")
+                            monitor.prompted.clear()
+                            monitor.recently_dismissed.clear()
+                            log(f"🔍 Debug: recently_dismissed cleared - now has {len(monitor.recently_dismissed)} items")
+                            monitor.cleared_parent_dismissals.clear()
+                            monitor.skipped_to_nested_segment.clear()
+                            
+                            # Re-evaluate segment jump points after major rewind to ensure correct jump targets
+                            if monitor.current_segments:
+                                re_evaluate_segment_jump_points(monitor.current_segments, current_time)
+                            
+                            major_rewind_detected = True
+                            log("🧹 recently_dismissed cleared due to rewind, nested segment tracking cleared, jump points re-evaluated")
+                            log(f"✅ Rewind state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
+                    except RuntimeError:
+                        log(f"🔕 CRITICAL: Cannot verify pause state during rewind - NOT clearing recently_dismissed to prevent clearing on pause")
+                else:
+                    log(f"⏪ Rewind detected but paused - NOT clearing recently_dismissed")
+            except RuntimeError:
+                log(f"⏪ Rewind detected but can't verify pause state - NOT clearing recently_dismissed")
         
-        # Check if we've exited any nested segments and need to re-enable parent segment dialogs
+        # CRITICAL: Check if we're inside a nested segment and clear its parent from recently_dismissed
+        # Only clear when we're actually INSIDE the nested segment (current_time is past nested segment start)
+        # This allows parent dialog to reappear after nested segment ends
+        # CRITICAL: This check happens AFTER the pause check, so it only runs when NOT paused
+        # NOTE: This handles natural entry into nested segments (not explicit skips)
+        # Explicit skips handle clearing in the skip blocks above
+        if monitor.current_segments and monitor.recently_dismissed:
+            # Only proceed if we have segments and dismissed items
+            log_if_changed("nested_clear_check", f"🔍 Checking nested segment clearing: {len(monitor.current_segments)} segments, {len(monitor.recently_dismissed)} dismissed, current_time={current_time:.2f}")
+            
+            # CRITICAL: First, identify which segments are actually nested (have a parent)
+            # We only want to process segments that are nested inside other segments
+            for nested_seg in monitor.current_segments:
+                nested_seg_id = (int(round(nested_seg.start_seconds)), int(round(nested_seg.end_seconds)))
+                is_inside_nested = (current_time >= nested_seg.start_seconds and current_time <= nested_seg.end_seconds)
+                
+                # CRITICAL: Only process if we're inside this segment AND it's actually nested (has a parent)
+                # Check if this segment has a parent by looking for segments that contain it
+                has_parent = False
+                parent_seg_for_nested = None
+                for potential_parent in monitor.current_segments:
+                    if potential_parent != nested_seg and is_nested_segment(potential_parent, nested_seg):
+                        has_parent = True
+                        parent_seg_for_nested = potential_parent
+                        break
+                
+                if not has_parent:
+                    # This segment is not nested, skip it
+                    continue
+                
+                log_if_changed(f"nested_check_{nested_seg_id}", f"🔍 Nested segment {nested_seg_id} ({nested_seg.segment_type_label}): start={nested_seg.start_seconds:.2f}, end={nested_seg.end_seconds:.2f}, current={current_time:.2f}, is_inside={is_inside_nested}, has_parent={has_parent}")
+                
+                if is_inside_nested:
+                    # CRITICAL: When entering a nested segment naturally, ONLY clear the parent segment from recently_dismissed
+                    # Do NOT clear the nested segment itself - if it was dismissed, it should stay dismissed until we exit it
+                    # The nested segment will be cleared from recently_dismissed when we EXIT it (see exit logic below)
+                    
+                    # CRITICAL: Check if the parent segment was dismissed and clear it
+                    if parent_seg_for_nested:
+                        parent_seg_id_check = (int(round(parent_seg_for_nested.start_seconds)), int(round(parent_seg_for_nested.end_seconds)))
+                        is_parent_dismissed = parent_seg_id_check in monitor.recently_dismissed
+                        
+                        log(f"🔍 Inside nested segment {nested_seg_id} ({nested_seg.segment_type_label}) - checking parent {parent_seg_id_check} ({parent_seg_for_nested.segment_type_label}): dismissed={is_parent_dismissed}")
+                        log(f"🔍 Debug: recently_dismissed contains: {list(monitor.recently_dismissed)}")
+                        
+                        if is_parent_dismissed:
+                            # Use a key to track that we've cleared this parent for this nested segment
+                            clearance_key = (parent_seg_id_check, nested_seg_id)
+                            if clearance_key not in monitor.cleared_parent_dismissals:
+                                # First time clearing for this parent-nested pair - we're inside the nested segment
+                                log(f"🔓 About to clear parent segment {parent_seg_id_check} from recently_dismissed (currently has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)})")
+                                if parent_seg_id_check in monitor.recently_dismissed:
+                                    monitor.recently_dismissed.remove(parent_seg_id_check)
+                                    monitor.cleared_parent_dismissals.add(clearance_key)
+                                    log(f"🔓 SUCCESS: Cleared parent segment {parent_seg_id_check} ({parent_seg_for_nested.segment_type_label}) from recently_dismissed because we're inside nested segment {nested_seg.segment_type_label} (current_time={current_time:.2f})")
+                                    log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                                    # CRITICAL: Also remove parent from prompted so its dialog can show again after nested segment ends
+                                    if parent_seg_id_check in monitor.prompted:
+                                        monitor.prompted.remove(parent_seg_id_check)
+                                        log(f"🔓 Also removed parent segment {parent_seg_id_check} from prompted set so dialog can show again after nested segment ends")
+                                        log(f"🔍 Debug: prompted now has {len(monitor.prompted)} items: {list(monitor.prompted)}")
+                                else:
+                                    log(f"⚠️ WARNING: Parent {parent_seg_id_check} was supposed to be in recently_dismissed but wasn't found!")
+                            else:
+                                log(f"🔍 Already cleared parent {parent_seg_id_check} for nested {nested_seg_id} - skipping (clearance_key already exists)")
+                        else:
+                            log(f"🔍 Parent {parent_seg_id_check} is not dismissed, no need to clear")
+        
+        # CRITICAL: Check if we've exited any nested segments (both skipped-to and naturally entered)
+        # and remove them from recently_dismissed if they were dismissed
+        # This must happen BEFORE processing segments so that parent dialogs can show immediately
+        if monitor.current_segments:
+            for nested_seg in monitor.current_segments:
+                nested_seg_id_exit = (int(round(nested_seg.start_seconds)), int(round(nested_seg.end_seconds)))
+                # Check if we're no longer inside this nested segment
+                if current_time > nested_seg.end_seconds:
+                    # We've exited this nested segment - clear it from recently_dismissed so it can show again if re-entered
+                    if nested_seg_id_exit in monitor.recently_dismissed:
+                        monitor.recently_dismissed.remove(nested_seg_id_exit)
+                        log(f"🔓 Removed nested segment {nested_seg_id_exit} ({nested_seg.segment_type_label}) from recently_dismissed after exiting nested segment")
+                        log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+        
+        # Check if we've exited any nested segments we skipped to and need to re-enable parent segment dialogs
         if monitor.skipped_to_nested_segment:
-            log(f"🔍 Checking {len(monitor.skipped_to_nested_segment)} tracked nested segments at time {current_time:.2f}")
+            log_if_changed("checking_nested", f"🔍 Checking {len(monitor.skipped_to_nested_segment)} tracked nested segments at time {current_time:.2f}")
         
         segments_to_remove = []
         for parent_seg_id, nested_segment in monitor.skipped_to_nested_segment.items():
             # Check if we're no longer in the nested segment
             is_nested_active = nested_segment.is_active(current_time)
-            log(f"🔍 Nested segment '{nested_segment.segment_type_label}' ({nested_segment.start_seconds}-{nested_segment.end_seconds}) active at {current_time:.2f}: {is_nested_active}")
+            log_if_changed(f"nested_check_{parent_seg_id}", f"🔍 Nested segment '{nested_segment.segment_type_label}' ({nested_segment.start_seconds}-{nested_segment.end_seconds}) active at {current_time:.2f}: {is_nested_active}")
             
             if not is_nested_active:
                 # We've exited the nested segment, remove from tracking
                 segments_to_remove.append(parent_seg_id)
+                
+                # CRITICAL: Remove nested segment from recently_dismissed if it was dismissed
+                # The nested segment dismissal should only last until we exit the nested segment
+                nested_seg_id = (int(round(nested_segment.start_seconds)), int(round(nested_segment.end_seconds)))
+                if nested_seg_id in monitor.recently_dismissed:
+                    monitor.recently_dismissed.remove(nested_seg_id)
+                    log(f"🔓 Removed nested segment {nested_seg_id} ({nested_segment.segment_type_label}) from recently_dismissed after exiting nested segment")
+                    log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                
                 # Re-enable the parent segment dialog by removing it from prompted set
-                if parent_seg_id in monitor.prompted:
-                    monitor.prompted.remove(parent_seg_id)
-                    log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', re-enabled parent segment {parent_seg_id} dialog")
+                # BUT: Only if the parent was NOT dismissed by the user
+                if parent_seg_id not in monitor.recently_dismissed:
+                    if parent_seg_id in monitor.prompted:
+                        monitor.prompted.remove(parent_seg_id)
+                        log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', re-enabled parent segment {parent_seg_id} dialog (removed from prompted)")
+                        # CRITICAL: Re-evaluate jump points for the parent segment to ensure it can show its dialog
+                        # Find the parent segment in current_segments and update its jump point
+                        for seg in monitor.current_segments:
+                            # Use same seg_id format as main loop (round then int) for consistent matching
+                            seg_id_check = (int(round(seg.start_seconds)), int(round(seg.end_seconds)))
+                            if seg_id_check == parent_seg_id:
+                                # Re-evaluate jump point for this parent segment
+                                seg.next_segment_start = None
+                                seg.next_segment_info = None
+                                log(f"🔄 Reset jump point for parent segment {parent_seg_id} to allow dialog to show")
+                                break
+                    else:
+                        log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', parent segment {parent_seg_id} was not in prompted set (will show if active)")
                 else:
-                    log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', parent segment {parent_seg_id} was not in prompted set")
+                    log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', but parent segment {parent_seg_id} was dismissed — NOT re-enabling")
                 
                 # Re-evaluate segment jump points since we've exited a nested segment
                 if monitor.current_segments:
@@ -706,6 +1048,7 @@ while not monitor.abortRequested():
         # Remove exited nested segments from tracking
         for seg_id in segments_to_remove:
             del monitor.skipped_to_nested_segment[seg_id]
+            log(f"🗑️ Removed parent segment {seg_id} from skipped_to_nested_segment tracking")
 
         if not monitor.playback_ready and current_time > 0:
             monitor.playback_ready = True
@@ -718,40 +1061,64 @@ while not monitor.abortRequested():
             and time.time() - monitor.playback_ready_time >= 2
             and not monitor.segment_file_found
         ):
-            log("⚠ [TOAST BLOCK] Entered toast logic block")
+            # CRITICAL: Check if playback is paused BEFORE showing toast to prevent spamming when paused
             try:
-                toast_enabled = (
-                    (playback_type == "movie" and toast_movies) or
-                    (playback_type == "episode" and toast_episodes)
-                )
-
-                if toast_enabled:
-                    cooldown = 6
-                    now = time.time()
-                    if now - monitor.last_toast_time >= cooldown:
-                        msg_type = "episode" if playback_type == "episode" else "movie"
-
-                        xbmcgui.Dialog().notification(
-                            heading="Skippy",
-                            message=f"No skip segments found for this {msg_type}.",
-                            icon=ICON_PATH,
-                            time=3000,
-                            sound=False
-                        )
-                        monitor.last_toast_time = now
-                        monitor.shown_missing_file_toast = True
-                        log(f"⚠ [TOAST BLOCK] Toast displayed for {msg_type}")
-                    else:
-                        log(f"⏳ [TOAST BLOCK] Suppressed — cooldown active ({int(now - monitor.last_toast_time)}s since last toast)")
+                toast_is_playing = player.isPlayingVideo()
+                toast_is_paused = xbmc.getCondVisibility("Player.Paused")
+                if toast_is_paused or not toast_is_playing:
+                    log(f"🔕 Missing segments toast suppressed — playback is paused or not playing (is_playing={toast_is_playing}, is_paused={toast_is_paused})")
+                    # Don't set shown_missing_file_toast = True here - allow retry when resumed
+                    # This prevents the toast from being suppressed permanently when paused
                 else:
-                    log("✅ [TOAST BLOCK] Toast suppressed — toast toggle disabled for this type")
-                    monitor.shown_missing_file_toast = True
-            except Exception as e:
-                log(f"❌ [TOAST BLOCK] should_show_missing_file_toast() failed: {e}")
-                monitor.shown_missing_file_toast = True
+                    log("⚠ [TOAST BLOCK] Entered toast logic block")
+                    try:
+                        toast_enabled = (
+                            (playback_type == "movie" and toast_movies) or
+                            (playback_type == "episode" and toast_episodes)
+                        )
+
+                        if toast_enabled:
+                            cooldown = 6
+                            now = time.time()
+                            if now - monitor.last_toast_time >= cooldown:
+                                msg_type = "episode" if playback_type == "episode" else "movie"
+                                log(f"🔔 Attempting to show toast notification for missing segments ({msg_type})")
+
+                                # CRITICAL: Double-check pause state right before showing toast
+                                try:
+                                    final_toast_is_playing = player.isPlayingVideo()
+                                    final_toast_is_paused = xbmc.getCondVisibility("Player.Paused")
+                                    if final_toast_is_paused or not final_toast_is_playing:
+                                        log(f"🔕 Missing segments toast suppressed — playback paused right before showing (is_playing={final_toast_is_playing}, is_paused={final_toast_is_paused})")
+                                    else:
+                                        try:
+                                            xbmcgui.Dialog().notification(
+                                                heading="Skippy",
+                                                message=f"No skip segments found for this {msg_type}.",
+                                                icon=ICON_PATH,
+                                                time=3000,
+                                                sound=False
+                                            )
+                                            monitor.last_toast_time = now
+                                            monitor.shown_missing_file_toast = True
+                                            log(f"✅ Toast displayed for {msg_type}")
+                                        except Exception as e:
+                                            log(f"❌ Failed to display missing segments toast notification (possible Kodi/device limitation): {e}")
+                                except RuntimeError:
+                                    log("🔕 Missing segments toast suppressed — player state unavailable right before showing")
+                            else:
+                                log(f"⏳ [TOAST BLOCK] Suppressed — cooldown active ({int(now - monitor.last_toast_time)}s since last toast)")
+                        else:
+                            log("✅ [TOAST BLOCK] Toast suppressed — toast toggle disabled for this type")
+                            monitor.shown_missing_file_toast = True
+                    except Exception as e:
+                        log(f"❌ [TOAST BLOCK] should_show_missing_file_toast() failed: {e}")
+                        monitor.shown_missing_file_toast = True
+            except RuntimeError:
+                log("🔕 Missing segments toast suppressed — player state unavailable")
 
         if not monitor.playback_ready:
-            log("⏳ Playback not ready — waiting before processing segments")
+            log_if_changed("playback_ready", "⏳ Playback not ready — waiting before processing segments")
             monitor.last_time = current_time
             continue
 
@@ -759,51 +1126,98 @@ while not monitor.abortRequested():
         segments_to_process = monitor.current_segments
         if major_rewind_detected:
             log("🔄 Major rewind detected — re-evaluating all segments for active dialogs")
+            # Clear log cache on major rewind to allow re-logging
+            monitor._last_log_state.clear()
         
-        # Debug: Show current state of tracking sets
-        log(f"📊 Current state: prompted={len(monitor.prompted)} items, recently_dismissed={len(monitor.recently_dismissed)} items, skipped_to_nested={len(monitor.skipped_to_nested_segment)} items")
-        if monitor.recently_dismissed:
-            log(f"📊 Recently dismissed segments: {list(monitor.recently_dismissed)}")
+        # Debug: Show current state of tracking sets (only log when counts change)
+        log_if_changed("state_summary", f"📊 Current state: prompted={len(monitor.prompted)} items, recently_dismissed={len(monitor.recently_dismissed)} items, skipped_to_nested={len(monitor.skipped_to_nested_segment)} items")
         
         for segment in segments_to_process:
-            seg_id = (int(segment.start_seconds), int(segment.end_seconds))
+            # Generate segment ID consistently - use round() then int() to handle floating point precision
+            # This ensures consistent matching even if segment times have slight floating point differences
+            seg_id = (int(round(segment.start_seconds)), int(round(segment.end_seconds)))
+            
+            # CRITICAL: Check if dismissed FIRST, before any other checks
+            # This ensures dismissed dialogs never reappear, even after pause/resume
+            # This check must happen before is_active, prompted, or any other checks
+            # This is the ABSOLUTE FIRST check - nothing else matters if the segment was dismissed
+            if seg_id in monitor.recently_dismissed:
+                # Always log this (not using log_if_changed) to help debug dismissal issues
+                # Log every time to catch any cases where this check might be bypassed
+                log(f"🚫 Segment {seg_id} ({segment.segment_type_label}) was dismissed — skipping ALL processing (will not reappear after pause/resume)")
+                log(f"🔍 Debug: segment.start_seconds={segment.start_seconds}, segment.end_seconds={segment.end_seconds}, seg_id={seg_id}")
+                log(f"🔍 Debug: recently_dismissed contains {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                # Ensure it's also in prompted to prevent any further checks
+                monitor.prompted.add(seg_id)
+                # CRITICAL: Use continue to skip ALL further processing for this segment
+                continue
             
             if seg_id in monitor.prompted:
-                log(f"⏭ Segment {seg_id} already prompted — skipping")
-                continue
-                
-            if seg_id in monitor.recently_dismissed:
-                log(f"🙅 Segment {seg_id} is in recently_dismissed — skipping")
+                # Only log once per segment when it's first marked as prompted
                 continue
 
             if not segment.is_active(current_time):
-                log(f"⏳ Segment {seg_id} not active at {current_time:.2f} — skipping")
+                # Don't log inactive segments - they're checked every second
                 continue
             
             # Check if this segment dialog should be suppressed due to overlapping/nested segments
-            if should_suppress_segment_dialog(segment, monitor.current_segments, current_time):
-                log(f"🚫 Segment {seg_id} dialog suppressed due to overlapping/nested segment priority")
+            # Pass recently_dismissed so nested segments can show even if parent was dismissed
+            # The should_suppress_segment_dialog function handles the logic for nested segments in dismissed parents
+            if should_suppress_segment_dialog(segment, monitor.current_segments, current_time, monitor.recently_dismissed):
+                log_if_changed(f"suppressed_{seg_id}", f"🚫 Segment {seg_id} dialog suppressed due to overlapping/nested segment priority")
                 continue
             
             # Check if this segment dialog should be suppressed because we've skipped to a nested segment
+            # BUT: Only suppress if we're still within the nested segment
+            # If we've exited the nested segment, the parent should show its dialog again
+            # NOTE: This check should rarely be needed since we clean up exited nested segments above,
+            # but it's here as a defensive check in case we missed something
             if seg_id in monitor.skipped_to_nested_segment:
-                log(f"🚫 Segment {seg_id} dialog suppressed because we've skipped to nested segment")
-                continue
+                nested_segment = monitor.skipped_to_nested_segment[seg_id]
+                # Only suppress if we're still in the nested segment
+                if nested_segment.is_active(current_time):
+                    log_if_changed(f"nested_{seg_id}", f"🚫 Segment {seg_id} dialog suppressed because we're still in nested segment '{nested_segment.segment_type_label}'")
+                    continue
+                else:
+                    # We've exited the nested segment, but the parent is still active
+                    # This should have been handled above, but clean up here as well
+                    log(f"🔄 Exited nested segment '{nested_segment.segment_type_label}', parent {seg_id} is still active — allowing parent dialog to show (defensive cleanup)")
+                    
+                    # CRITICAL: Remove nested segment from recently_dismissed if it was dismissed
+                    nested_seg_id_defensive = (int(round(nested_segment.start_seconds)), int(round(nested_segment.end_seconds)))
+                    if nested_seg_id_defensive in monitor.recently_dismissed:
+                        monitor.recently_dismissed.remove(nested_seg_id_defensive)
+                        log(f"🔓 Removed nested segment {nested_seg_id_defensive} ({nested_segment.segment_type_label}) from recently_dismissed after exiting nested segment (defensive cleanup)")
+                    
+                    del monitor.skipped_to_nested_segment[seg_id]
+                    # Also remove from prompted if it's there, so the parent dialog can show again
+                    # BUT: Only if the parent was NOT dismissed by the user
+                    if seg_id not in monitor.recently_dismissed:
+                        if seg_id in monitor.prompted:
+                            monitor.prompted.remove(seg_id)
+                            log(f"🔄 Removed parent segment {seg_id} from prompted set to allow dialog to show (defensive cleanup)")
+                    # Don't continue - let the parent segment dialog show
             
-            log(f"🔎 Raw segment label before skip mode check: '{segment.segment_type_label}'")
+            # Only log segment processing when it's a new active segment
+            log(f"🔎 Processing active segment: '{segment.segment_type_label}' [{segment.start_seconds}-{segment.end_seconds}]")
             behavior = get_user_skip_mode(segment.segment_type_label)
-            log(f"🧪 Segment behavior for '{segment.segment_type_label}': {behavior}")
+            log(f"🧪 Segment behavior: {behavior}")
 
             if not show_dialogs:
-                log(f"🚫 Dialogs disabled in settings — suppressing dialog for segment {seg_id} (behavior: {behavior})")
+                log_if_changed(f"dialogs_disabled_{seg_id}", f"🚫 Dialogs disabled in settings — suppressing dialog for segment {seg_id} (behavior: {behavior})")
                 monitor.prompted.add(seg_id)
                 continue  
             if behavior == "never":
-                log(f"🚫 Skipping dialog for '{segment.segment_type_label}' (user preference: never)")
+                log_if_changed(f"never_{seg_id}", f"🚫 Skipping dialog for '{segment.segment_type_label}' (user preference: never)")
                 continue
 
             log(f"🕒 Active segment: {segment.segment_type_label} [{segment.start_seconds}-{segment.end_seconds}] → {behavior}")
-            log(f"📘 Segment source: {segment.source}")
+
+            # Check if skipping is enabled for this playback type
+            if not is_skip_enabled(playback_type):
+                log(f"🚫 Skipping disabled for {playback_type} — segment {seg_id} will not be skipped")
+                monitor.prompted.add(seg_id)
+                continue
 
             # Correctly handle jump point from the new logic
             jump_to = segment.next_segment_start if segment.next_segment_start is not None else segment.end_seconds + 1.0
@@ -825,20 +1239,43 @@ while not monitor.abortRequested():
                         monitor.skipped_to_nested_segment[seg_id] = target_segment
                         log(f"🔗 Tracked skip to nested segment: {seg_id} -> {target_segment.segment_type_label}")
                         log(f"🔗 Parent segment {seg_id} will be re-enabled when exiting nested segment {target_segment.start_seconds}-{target_segment.end_seconds}")
+                        # CRITICAL: Add parent to prompted to suppress its dialog while in nested segment
+                        # This will be removed when nested segment ends (in the cleanup logic above)
+                        monitor.prompted.add(seg_id)
+                        log(f"🔗 Added parent segment {seg_id} to prompted set to suppress dialog while in nested segment")
+                        # CRITICAL: Clear parent from recently_dismissed if it was dismissed
+                        # This allows the parent dialog to reappear after the nested segment ends
+                        if seg_id in monitor.recently_dismissed:
+                            nested_seg_id = (int(round(target_segment.start_seconds)), int(round(target_segment.end_seconds)))
+                            clearance_key = (seg_id, nested_seg_id)
+                            if clearance_key not in monitor.cleared_parent_dismissals:
+                                monitor.recently_dismissed.remove(seg_id)
+                                monitor.cleared_parent_dismissals.add(clearance_key)
+                                log(f"🔓 Cleared parent segment {seg_id} from recently_dismissed because user skipped to nested segment {target_segment.segment_type_label}")
+                                log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                            else:
+                                log(f"🔍 Parent segment {seg_id} dismissal already cleared for nested segment {nested_seg_id}")
                 
                 player.seekTime(jump_to)
                 monitor.last_time = jump_to
-                monitor.prompted.add(seg_id)
+                # Only add to prompted if we're NOT skipping to a nested segment
+                # (If we are, it was already added above)
+                if seg_id not in monitor.prompted:
+                    monitor.prompted.add(seg_id)
 
                 if addon.getSettingBool("show_toast_for_skipped_segment"):
                     log("🔔 Showing toast notification for auto-skipped segment")
-                    xbmcgui.Dialog().notification(
-                        heading="Skipped",
-                        message=f"{segment.segment_type_label.title()} skipped",
-                        icon=ICON_PATH,
-                        time=2000,
-                        sound=False
-                    )
+                    try:
+                        xbmcgui.Dialog().notification(
+                            heading="Skipped",
+                            message=f"{segment.segment_type_label.title()} skipped",
+                            icon=ICON_PATH,
+                            time=2000,
+                            sound=False
+                        )
+                        log("✅ Toast notification displayed successfully")
+                    except Exception as e:
+                        log(f"❌ Failed to display toast notification (possible Kodi/device limitation): {e}")
                 else:
                     log("🔕 Skipped segment toast disabled by user setting")
 
@@ -847,9 +1284,21 @@ while not monitor.abortRequested():
             elif behavior == "ask":
                 log(f"🧠 Ask-skip behavior triggered for segment ID {seg_id} ({segment.segment_type_label})")
 
-                if not player.isPlayingVideo():
-                    log("⚠ Playback not active — skipping dialog")
-                    monitor.prompted.add(seg_id)
+                # Note: Dismissal check and pause check are already done at the top of the loop
+                # This ensures dismissed dialogs never reappear
+                # Pause check prevents dialogs from appearing when paused
+
+                # Double-check pause state right before showing dialog (defensive programming)
+                try:
+                    dialog_is_playing = player.isPlayingVideo()
+                    dialog_is_paused = xbmc.getCondVisibility("Player.Paused")
+                except RuntimeError:
+                    dialog_is_playing = False
+                    dialog_is_paused = True
+                
+                if dialog_is_paused or not dialog_is_playing:
+                    log(f"⏸️ Video paused/stopped right before dialog — skipping dialog for segment {seg_id}")
+                    # Don't add to prompted, allow retry when resumed
                     continue
 
                 try:
@@ -869,10 +1318,35 @@ while not monitor.abortRequested():
                     except Exception as e:
                         log(f"⚠️ Failed to set button focus texture: {e}")
 
-                    dialog = SkipDialog(dialog_name, addon.getAddonInfo("path"), "default", segment=segment)
-                    dialog.doModal()
+                    log(f"🎬 Attempting to create skip dialog: {dialog_name}")
+                    try:
+                        dialog = SkipDialog(dialog_name, addon.getAddonInfo("path"), "default", segment=segment)
+                        log("✅ Skip dialog created successfully")
+                    except Exception as e:
+                        log(f"❌ Failed to create skip dialog (possible Kodi/device limitation): {e}")
+                        log(f"❌ Dialog creation failed for segment {seg_id} ({segment.segment_type_label})")
+                        monitor.prompted.add(seg_id)
+                        continue
+                    
+                    try:
+                        log("🔄 Calling dialog.doModal()")
+                        dialog.doModal()
+                        log("✅ Dialog doModal() completed")
+                    except Exception as e:
+                        log(f"❌ Dialog doModal() failed (possible Kodi/device limitation): {e}")
+                        log(f"❌ Dialog display failed for segment {seg_id} ({segment.segment_type_label})")
+                        try:
+                            del dialog
+                        except:
+                            pass
+                        monitor.prompted.add(seg_id)
+                        continue
+                    
                     confirmed = getattr(dialog, "response", None)
-                    del dialog
+                    try:
+                        del dialog
+                    except:
+                        pass
 
                     if confirmed:
                         log(f"✅ User confirmed skip for segment ID {seg_id}")
@@ -891,29 +1365,64 @@ while not monitor.abortRequested():
                                 monitor.skipped_to_nested_segment[seg_id] = target_segment
                                 log(f"🔗 Tracked skip to nested segment: {seg_id} -> {target_segment.segment_type_label}")
                                 log(f"🔗 Parent segment {seg_id} will be re-enabled when exiting nested segment {target_segment.start_seconds}-{target_segment.end_seconds}")
+                                # CRITICAL: Add parent to prompted to suppress its dialog while in nested segment
+                                # This will be removed when nested segment ends (in the cleanup logic above)
+                                monitor.prompted.add(seg_id)
+                                log(f"🔗 Added parent segment {seg_id} to prompted set to suppress dialog while in nested segment")
+                                # CRITICAL: Clear parent from recently_dismissed if it was dismissed
+                                # This allows the parent dialog to reappear after the nested segment ends
+                                if seg_id in monitor.recently_dismissed:
+                                    nested_seg_id = (int(round(target_segment.start_seconds)), int(round(target_segment.end_seconds)))
+                                    clearance_key = (seg_id, nested_seg_id)
+                                    if clearance_key not in monitor.cleared_parent_dismissals:
+                                        monitor.recently_dismissed.remove(seg_id)
+                                        monitor.cleared_parent_dismissals.add(clearance_key)
+                                        log(f"🔓 Cleared parent segment {seg_id} from recently_dismissed because user skipped to nested segment {target_segment.segment_type_label}")
+                                        log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                                    else:
+                                        log(f"🔍 Parent segment {seg_id} dismissal already cleared for nested segment {nested_seg_id}")
                         
-                        monitor.prompted.add(seg_id)
+                        # Only add to prompted if we're NOT skipping to a nested segment
+                        # (If we are, it was already added above)
+                        if seg_id not in monitor.prompted:
+                            monitor.prompted.add(seg_id)
                         player.seekTime(jump_to)
                         monitor.last_time = jump_to
 
                         if addon.getSettingBool("show_toast_for_skipped_segment"):
                             log("🔔 Showing toast notification for user-confirmed skip")
-                            xbmcgui.Dialog().notification(
-                                heading="Skipped",
-                                message=f"{segment.segment_type_label.title()} skipped",
-                                icon=ICON_PATH,
-                                time=2000,
-                                sound=False
-                            )
+                            try:
+                                xbmcgui.Dialog().notification(
+                                    heading="Skipped",
+                                    message=f"{segment.segment_type_label.title()} skipped",
+                                    icon=ICON_PATH,
+                                    time=2000,
+                                    sound=False
+                                )
+                                log("✅ Toast notification displayed successfully")
+                            except Exception as e:
+                                log(f"❌ Failed to display toast notification (possible Kodi/device limitation): {e}")
                         else:
                             log("🔕 Skipped segment toast disabled by user setting")
 
                         log(f"🚀 Jumped to {jump_to}")
                     else:
                         log(f"🙅 User dismissed skip dialog for segment ID {seg_id}")
+                        log(f"🔍 Debug: segment.start_seconds={segment.start_seconds}, segment.end_seconds={segment.end_seconds}, seg_id={seg_id}")
+                        # CRITICAL: Use the same seg_id that was calculated at the start of the loop
+                        # This ensures perfect matching with the recently_dismissed check
+                        # The seg_id was already calculated as (int(round(segment.start_seconds)), int(round(segment.end_seconds)))
                         monitor.recently_dismissed.add(seg_id)
                         monitor.prompted.add(seg_id)
                         log(f"📊 Added {seg_id} to recently_dismissed and prompted sets")
+                        log(f"🔍 Debug: recently_dismissed now contains {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
+                        log(f"🔒 Segment {seg_id} ({segment.segment_type_label}) is now permanently dismissed for this playback session")
+                        log(f"🔒 This segment will NOT reappear after pause/resume unless there is a major rewind")
+                        # Verify the dismissal was recorded
+                        if seg_id in monitor.recently_dismissed:
+                            log(f"✅ Verification: Segment {seg_id} confirmed in recently_dismissed set")
+                        else:
+                            log(f"❌ ERROR: Segment {seg_id} NOT found in recently_dismissed set after adding!")
                 except Exception as e:
                     log(f"❌ Error showing skip dialog: {e}")
                     monitor.prompted.add(seg_id)

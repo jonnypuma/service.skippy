@@ -57,10 +57,10 @@
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>lightgrey</textcolor>
-        <textcolorfocus>white</textcolorfocus>
-        <shadowcolor>black</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
@@ -75,10 +75,10 @@
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>lightgrey</textcolor>
-        <textcolorfocus>white</textcolorfocus>
-        <shadowcolor>black</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
@@ -93,10 +93,10 @@
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>lightgrey</textcolor>
-        <textcolorfocus>white</textcolorfocus>
-        <shadowcolor>black</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
@@ -114,7 +114,7 @@
         <texturenofocus>-</texturenofocus>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>white</textcolorfocus>
-        <shadowcolor>black</shadowcolor>
+        <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -123,29 +123,34 @@
         <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
       </control>
 
-      <control type="label">
-        <left>5</left><top>40</top>
-        <width>360</width><height>20</height>
-        <label>$INFO[Window.Property(next_jump_label)]</label>
-        <font>font12</font>
-        <!-- Updated text color to a light blue to make it more visible -->
-        <textcolor>FFADD8E6</textcolor>
-        <align>left</align>
-        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
-      </control>
+      <control type="label">
+        <left>5</left><top>41</top>
+        <width>360</width><height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
 
       <control type="label" id="2">
-        <left>5</left><top>60</top>
+        <left>5</left><top>66</top>
         <width>360</width><height>20</height>
         <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
+        <textcolor>FFB0B0B0</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
         <align>left</align>
         <visible>!String.IsEqual(Window.Property(hide_ending_text),true)</visible>
       </control>
 
       <control type="progress" id="3014">
-        <left>5</left><top>85</top>
+        <left>5</left><top>90</top>
         <width>370</width><height>5</height>
         <texturebg>progress_background.png</texturebg>
         <textureleft>progress_left.png</textureleft>

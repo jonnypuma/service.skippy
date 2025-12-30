@@ -17,7 +17,26 @@ def normalize_label(label):
     # Normalize and lowercase labels for consistent matching
     return unicodedata.normalize("NFKC", label or "").strip().lower()
 
+def is_skip_enabled(playback_type):
+    """Check if skipping is enabled at all for the given playback type."""
+    addon = get_addon()
+    if playback_type == "movie":
+        enabled = addon.getSettingBool("enable_skip_movies")
+        log(f"🎬 Skip enabled for movies: {enabled}")
+        return enabled
+    elif playback_type == "episode":
+        enabled = addon.getSettingBool("enable_skip_episodes")
+        log(f"📺 Skip enabled for episodes: {enabled}")
+        return enabled
+    log(f"⚠ Unknown playback type '{playback_type}' — skip disabled")
+    return False
+
 def is_skip_dialog_enabled(playback_type):
+    """Check if skip dialog should be shown. Requires both skip and dialog to be enabled."""
+    if not is_skip_enabled(playback_type):
+        log(f"🚫 Skipping disabled for {playback_type} — dialog will not be shown")
+        return False
+    
     addon = get_addon()
     if playback_type == "movie":
         enabled = addon.getSettingBool("show_skip_dialog_movies")

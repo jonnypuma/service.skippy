@@ -1,5 +1,4 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
-
 # 📼 Skippy — The XML-EDL Segment Skipper
 
 Skippy is a Kodi service that detects and can skip predefined video segments such as intros, recaps, ads, or credits using companion `.xml` or `.edl` files. 
@@ -163,9 +162,12 @@ Default settings file loaded at first start located in: .../addons/service.skipp
 | skip_button_format          | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button           | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
 | hide_skip_icon              | Hide both the skip icon and close icon, leaving only the Skip and Close buttons visible (default: false) |
+| hide_ending_text            | Hide the 'Segment ending in:' countdown text line (default: false) |
+| enable_skip_movies          | Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies (default: true) |
+| enable_skip_episodes        | Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes (default: true) |
 | rewind_threshold_seconds	  | Threshold for detecting rewind and clearing dialog suppression states         |
-| show_skip_dialog_movies	    | Show skip dialog for movies when behavior is set to ask	                      |
-| show_skip_dialog_episodes	  | Show skip dialog for TV episodes when behavior is set to ask                  |
+| show_skip_dialog_movies	    | Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled (default: true) |
+| show_skip_dialog_episodes	  | Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled (default: true) |
 
 |Category:                                    | Segment Toast Notifications                                    |
 |---------------------------------------------|----------------------------------------------------------------|
@@ -354,6 +356,59 @@ All button texts in the skip dialog are now centered for a consistent, professio
 
 ---
 
+🚫 Hide Segment Ending Text Option
+
+You can hide the countdown text line that shows "Segment ending in:" or "Intro ending in:":
+
+**Features:**
+- **Cleaner Interface**: Removes the countdown text line
+- **Minimal Display**: Only buttons and progress bar remain visible
+- **Flexible Control**: Can be combined with other visibility options
+
+**How to Enable:**
+1. Go to `Settings → Add-ons → My Add-ons → Services → Skippy`
+2. Navigate to "Customize Skip Dialog Look and Behavior"
+3. Toggle "Hide segment ending in text" on
+4. Changes apply immediately for new skip dialogs
+
+---
+
+⚙️ Enable/Disable Skipping for Content Types
+
+You can now completely disable skipping for movies or TV episodes:
+
+**Features:**
+- **Master Control**: When disabled, no segments will be skipped (no auto-skip, no dialogs, no prompts)
+- **Per Content Type**: Separate controls for movies and TV episodes
+- **Complete Suppression**: Segments are detected but not processed when skipping is disabled
+
+**Settings:**
+- **Enable Skip for Movies**: Master switch for skipping in movies (default: true)
+- **Enable Skip for Episodes**: Master switch for skipping in TV episodes (default: true)
+
+**How It Works:**
+- When "Enable Skip for Movies" is disabled:
+  - No segments in movies will be auto-skipped
+  - No skip dialogs will appear for movies
+  - Segments are detected but playback continues normally
+- When "Enable Skip for Episodes" is disabled:
+  - Same behavior applies to TV episodes
+
+**Relationship with Dialog Settings:**
+- The dialog settings (`Show Skip Dialog for Movies/Episodes`) only apply when skipping is enabled
+- If skipping is disabled, dialog settings are ignored
+- This allows you to:
+  - Disable skipping entirely for a content type
+  - Enable skipping but disable dialogs (auto-skip only)
+  - Enable both skipping and dialogs (full functionality)
+
+**Example Use Cases:**
+- **Movies Only**: Set `enable_skip_episodes = False` to skip only in movies, not TV shows
+- **No Auto-Skip**: Set `enable_skip_movies = True` and `show_skip_dialog_movies = False` to show dialogs but disable auto-skip
+- **Complete Disable**: Set `enable_skip_movies = False` to completely disable skipping for movies
+
+---
+
 📁 File Support
 Skippy supports the following segment definition files:
 
@@ -454,20 +509,38 @@ XML takes priority if both exist.
 ---
 
 ✅ Segment Behavior Logic Summary
-|Behavior	        | Dialogs Enabled (show_dialogs = True)	       | Dialogs Disabled (show_dialogs = False) |
-|-----------------|----------------------------------------------|-----------------------------------------|
-|never	           | ❌ Skip silently	                           | ❌ Skip silently                        |
-|ask	             | ✅ Show dialog	                              | ❌ Suppress dialog                      |
-|auto	            | ✅ Skip automatically	                      | ✅ Skip automatically                   |
 
-If show_skip_dialog_movies = False, then dialogs will be suppressed for movie segments even if their behavior is "ask".
+**Skip Enable/Disable Settings:**
+- `enable_skip_movies`: Master control for skipping in movies
+- `enable_skip_episodes`: Master control for skipping in TV episodes
 
-If show_skip_dialog_episodes = False, then dialogs will be suppressed for episode segments with "ask" behavior.
+When skipping is disabled for a content type, no segments will be processed (no auto-skip, no dialogs, no prompts).
 
-This suppression is independent of the segment file presence or toast settings.
+**Dialog Enable/Disable Settings:**
+- `show_skip_dialog_movies`: Controls dialog display for movies (requires `enable_skip_movies = True`)
+- `show_skip_dialog_episodes`: Controls dialog display for episodes (requires `enable_skip_episodes = True`)
 
-✅ Example
-If a segment in a movie has behavior "ask" and show_skip_dialog_movies = False, the dialog will not appear. Instead, the segment will be silently skipped or ignored depending on other settings.
+|Behavior	        | Skip Enabled + Dialogs Enabled	       | Skip Enabled + Dialogs Disabled | Skip Disabled |
+|-----------------|----------------------------------------------|-----------------------------------------|-------------------|
+|never	           | ❌ Skip silently	                           | ❌ Skip silently                        | ❌ Skip silently |
+|ask	             | ✅ Show dialog	                              | ❌ Suppress dialog                      | ❌ Skip silently |
+|auto	            | ✅ Skip automatically	                      | ✅ Skip automatically                   | ❌ Skip silently |
+
+**Examples:**
+
+1. **Skipping Disabled:**
+   - If `enable_skip_movies = False`, no segments in movies will be skipped, regardless of their behavior (auto, ask, or never)
+   - Segments are marked as processed but playback continues normally
+
+2. **Skipping Enabled, Dialog Disabled:**
+   - If `enable_skip_movies = True` and `show_skip_dialog_movies = False`:
+     - Segments with "ask" behavior will be suppressed (no dialog shown)
+     - Segments with "auto" behavior will still auto-skip
+     - Segments with "never" behavior will play normally
+
+3. **Both Enabled:**
+   - If both `enable_skip_movies = True` and `show_skip_dialog_movies = True`:
+     - All skip behaviors work as configured (auto-skip, ask dialog, or never skip)
 
 More detailed
 
@@ -632,14 +705,41 @@ Observe logs like:
 ---
 
 🚨 Logging
-Verbose logging reveals:
 
+Verbose logging provides detailed insight into Skippy's operation. When enabled, it reveals:
+
+**What Gets Logged:**
 - Parsed segments and labels
 - Playback state and detection
 - Toast decision logic and suppression
 - Skip dialog flow and user choice
 - Overlapping/nested segments
-- Enable via enable_verbose_logging for full insight.
+- Dialog and toast creation failures (helps identify Kodi/device limitations)
+- State changes and new events
+
+**Smart Logging to Reduce Clutter:**
+Skippy uses intelligent state-based logging to keep log files manageable:
+
+- **State Changes Only**: Logs only when values change, not on every check
+- **No Repetition**: Same messages aren't logged repeatedly (e.g., "segment not active" won't spam the log)
+- **Event-Based**: New events and errors are always logged
+- **Cache Management**: Log cache is cleared on video changes, replays, and major rewinds
+
+**Examples:**
+- ✅ Logs when a new segment becomes active
+- ✅ Logs when playback type changes
+- ✅ Logs when state counts change (prompted, dismissed, etc.)
+- ❌ Doesn't log "segment not active" every second for inactive segments
+- ❌ Doesn't log "already prompted" repeatedly for the same segment
+
+**Enable via `enable_verbose_logging` for full insight.**
+
+**Troubleshooting Device Limitations:**
+When verbose logging is enabled, Skippy will log when dialog or toast creation fails with messages like:
+- `❌ Failed to create skip dialog (possible Kodi/device limitation)`
+- `❌ Failed to display toast notification (possible Kodi/device limitation)`
+
+This helps identify when Kodi stops creating UI elements due to memory or resource constraints on resource-limited devices (e.g., Amlogic/CoreELEC).
 
 ---
 
@@ -666,10 +766,11 @@ ________________________________________________________________________________
 
 🧼 Developer Notes
 - UI driven by WindowXMLDialog
-- EDL action types 0 and 3 (Kodi-native) are ignored
+- EDL action types 0 and 3 (Kodi-native) are ignored by Skippy. Use batch tool to convert to other action types.
 - Only -chapters.xml and _chapters.xml and .edl files are scanned
 
 ---
 
 🧑‍💻 Contributors
 jonnyp — Architect, debugger
+
