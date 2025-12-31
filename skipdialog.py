@@ -118,21 +118,12 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         hide_skip_icon = addon.getSettingBool("hide_skip_icon") if addon else False
         self.setProperty("hide_skip_icon", "true" if hide_skip_icon else "false")
         
+        # Hide close button if setting requires it
         if hide_close:
             try:
                 close_button = self.getControl(3013)
                 close_button.setVisible(False)
                 log("🚫 Close button hidden per setting")
-                # Set default control to full-width button when close is hidden
-                try:
-                    if hide_skip_icon:
-                        self.setFocusId(3016)  # Full-width button when skip icon is hidden
-                        log("📐 Default control set to full-width button (3016, skip icon hidden)")
-                    else:
-                        self.setFocusId(3015)  # Full-width button when skip icon is visible
-                        log("📐 Default control set to full-width button (3015, skip icon visible)")
-                except:
-                    pass
             except Exception as e:
                 log(f"⚠️ Error hiding close button: {e}")
         
@@ -187,6 +178,31 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 log("📊 Progress bar hidden due to setting")
         except Exception as e:
             log(f"⚠️ Progress bar control error: {e}")
+
+        # CRITICAL: Always set focus explicitly at the END of onInit, after all controls are initialized
+        # This ensures a button is focused and select/ok works properly
+        # This prevents issues where no button is focused (no focus texture visible, select doesn't work)
+        try:
+            if hide_close:
+                # Close button is hidden, use full-width button
+                if hide_skip_icon:
+                    focus_id = 3016  # Full-width button when skip icon is hidden
+                else:
+                    focus_id = 3015  # Full-width button when skip icon is visible
+            else:
+                # Close button is visible, use regular skip button (3012)
+                focus_id = 3012
+            
+            self.setFocusId(focus_id)
+            log(f"📐 Focus set to control {focus_id} (hide_close={hide_close}, hide_skip_icon={hide_skip_icon})")
+        except Exception as e:
+            log(f"⚠️ Error setting dialog focus: {e}")
+            # Fallback: try to set focus to skip button (3012) as last resort
+            try:
+                self.setFocusId(3012)
+                log("📐 Fallback: Focus set to skip button (3012)")
+            except Exception as e2:
+                log_always(f"❌ CRITICAL: Failed to set focus to any button - dialog may not be functional: {e2}")
 
         try:
             log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
