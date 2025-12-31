@@ -4,14 +4,33 @@ import xbmc
 import xbmcvfs
 
 def get_addon():
-    return xbmcaddon.Addon()
+    """Get the addon object, handling cases where addon is being updated/uninstalled."""
+    try:
+        # We pass the ID explicitly so Kodi knows exactly what we want
+        return xbmcaddon.Addon('service.skippy')
+    except RuntimeError:
+        # If the addon is currently being uninstalled/updated, 
+        # this will return None instead of crashing
+        return None
 
 def log(msg):
-    if get_addon().getSettingBool("enable_verbose_logging"):
-        xbmc.log(f"[{get_addon().getAddonInfo('id')} - SettingsUtils] {msg}", xbmc.LOGINFO)
+    """Log a message if verbose logging is enabled. Handles addon update scenarios gracefully."""
+    addon = get_addon()
+    if addon:
+        if addon.getSettingBool("enable_verbose_logging"):
+            xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGINFO)
+    else:
+        # If addon is None (during update/uninstall), just log to the console without checking settings
+        xbmc.log(f"[service.skippy - SettingsUtils] {msg} (shutdown)", xbmc.LOGINFO)
 
 def log_always(msg):
-    xbmc.log(f"[{get_addon().getAddonInfo('id')} - SettingsUtils] {msg}", xbmc.LOGINFO)
+    """Always log a message, even if verbose logging is disabled. Handles addon update scenarios gracefully."""
+    addon = get_addon()
+    if addon:
+        xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGINFO)
+    else:
+        # If addon is None (during update/uninstall), just log to the console
+        xbmc.log(f"[service.skippy - SettingsUtils] {msg} (shutdown)", xbmc.LOGINFO)
 
 def normalize_label(label):
     # Normalize and lowercase labels for consistent matching
@@ -20,6 +39,8 @@ def normalize_label(label):
 def is_skip_enabled(playback_type):
     """Check if skipping is enabled at all for the given playback type."""
     addon = get_addon()
+    if not addon:
+        return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
         enabled = addon.getSettingBool("enable_skip_movies")
         log(f"🎬 Skip enabled for movies: {enabled}")
@@ -38,6 +59,8 @@ def is_skip_dialog_enabled(playback_type):
         return False
     
     addon = get_addon()
+    if not addon:
+        return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
         enabled = addon.getSettingBool("show_skip_dialog_movies")
         log(f"🎬 Skip dialog enabled for movies: {enabled}")
@@ -53,8 +76,12 @@ def get_user_skip_mode(label):
     title = normalize_label(label)
     log(f"🔍 Determining skip mode for: '{title}'")
 
+    addon = get_addon()
+    if not addon:
+        return "ask"  # During update/uninstall, default to ask
+
     def parse_setting(key):
-        raw = get_addon().getSetting(key)
+        raw = addon.getSetting(key)
         if not raw:
             log(f"⚠ Setting '{key}' is empty")
         return set(normalize_label(x) for x in raw.split(",") if x.strip())
@@ -80,7 +107,10 @@ def get_user_skip_mode(label):
     return "ask"
 
 def get_edl_type_map():
-    raw = get_addon().getSetting("edl_action_mapping")
+    addon = get_addon()
+    if not addon:
+        return {}  # During update/uninstall, return empty mapping
+    raw = addon.getSetting("edl_action_mapping")
     log(f"🔁 Raw EDL mapping string: {raw}")
     pairs = [entry.strip() for entry in raw.split(",") if ":" in entry]
     mapping = {}
@@ -98,8 +128,11 @@ def get_edl_type_map():
 # This function has been updated to use the correct API for Kodi v21.2 Omega
 def show_overlapping_toast():
     try:
+        addon = get_addon()
+        if not addon:
+            return False  # During update/uninstall, default to False
         # Get the settings object from the addon
-        settings = get_addon().getSettings()
+        settings = addon.getSettings()
         # Call the getBool method on the settings object
         return settings.getBool("show_toast_for_overlapping_nested_segments")
     except Exception as e:

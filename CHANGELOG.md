@@ -5,6 +5,17 @@ All notable changes to Skippy will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2024-12-31
+
+### Fixed
+- Updated fanart file reference from fanart.jpg to fanart.png in addon.xml
+
+## [1.0.2] - 2024-12-31
+
+### Fixed
+- Fixed "Unknown addon id 'service.skippy'" error during addon updates in Kodi
+- Graceful handling of addon shutdown during repository updates - no more error messages in logs when updating the addon
+
 ## [1.0.0] - 2024-12-XX
 
 ### Added
