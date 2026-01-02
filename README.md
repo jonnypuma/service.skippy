@@ -66,7 +66,7 @@ service.skippy/
 ```
 
 ✅ Supported Kodi Versions and Platforms
-Tested on **Kodi Omega 21.2** across:
+Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 
 | Platform       			      | Status     |
 |---------------------------|------------|
