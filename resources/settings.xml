@@ -50,51 +50,77 @@
   </category>
 
   <category label="30001">
+    <setting type="lsep" label="32019" />
+
+    <setting id="rewind_threshold_seconds"
+             type="number"
+             label="32008"
+             default="8"
+             min="2"
+             max="30"
+             tooltip="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons." />
+
+    <setting id="enable_skip_movies"
+             type="bool"
+             label="32010"
+             default="true"
+             tooltip="Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies." />
+
+    <setting id="enable_skip_episodes"
+             type="bool"
+             label="32011"
+             default="true"
+             tooltip="Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes." />
+
+    <setting id="show_skip_dialog_movies"
+             type="bool"
+             label="32017"
+             default="true"
+             tooltip="Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled." />
+
+    <setting id="show_skip_dialog_episodes"
+             type="bool"
+             label="32018"
+             default="true"
+             tooltip="Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled." />
+
+    <setting id="hide_ending_text"
+             type="bool"
+             label="32016"
+             default="false"
+             tooltip="Hide the segment countdown line for both Full and Minimal skip dialogs." />
+
+    <setting id="skip_dialog_mode"
+             type="labelenum"
+             label="32020"
+             default="Full"
+             values="Full|Minimal"
+             optionvalues="Full|Minimal"
+             tooltip="Full: classic skip dialog with progress bar and icons. Minimal: single plate image and text only." />
+
+    <setting id="skip_dialog_font_color"
+             type="labelenum"
+             label="32026"
+             default="FFFFFFFF"
+             values="White|Light grey|Grey|Dark grey|Black|Blue|Red|Green|Aquamarine|Pink|Purple|Peach|Orange|Yellow"
+             optionvalues="FFFFFFFF|FF8E8E8E|FF6E6E6E|FF3D3D3D|FF000000|FF1976D2|FFE5392F|FF43A047|FF00ACC1|FFE91E63|FF8E24AA|FFFF8A65|FFEF6C00|FFF9A825"
+             tooltip="Full and Minimal: color for skip dialog text (skip buttons, close, countdown, and next-jump line). Uses stored ARGB hex so Kodi always receives a valid color." />
+
+    <setting type="lsep" label="32021" />
+
     <setting id="show_progress_bar"
              type="bool"
              label="32007"
              default="true"
-             tooltip="Hide or show the progress bar while a skipable segment is active." />
-
-    <setting id="rewind_threshold_seconds" 
-             type="number" 
-             label="32008" 
-             default="8" 
-             min="2" 
-             max="30"
-             tooltip="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons." />
+             tooltip="Full mode: show or hide the progress bar while a skippable segment is active." />
 
     <setting id="skip_dialog_position"
              type="labelenum"
-             label="32009" 
+             label="32009"
              default="Bottom Right"
              values="Bottom Right|Top Right|Top Left|Bottom Left"
              optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
-             tooltip="Choose which corner of the screen the Skip Dialog appears in during playback." />
-
-    <setting id="enable_skip_movies" 
-             type="bool" 
-             label="32010" 
-             default="true"
-             tooltip="Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies." />
-
-    <setting id="enable_skip_episodes" 
-             type="bool" 
-             label="32011" 
-             default="true"
-             tooltip="Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes." />
-
-    <setting id="show_skip_dialog_movies" 
-             type="bool" 
-             label="32017" 
-             default="true"
-             tooltip="Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled." />
-
-    <setting id="show_skip_dialog_episodes" 
-             type="bool" 
-             label="32018" 
-             default="true"
-             tooltip="Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled." />
+             tooltip="Full mode: which corner the skip dialog appears in during playback." />
 
     <setting id="button_focus_style"
              type="labelenum"
@@ -102,7 +128,7 @@
              default="button_focus.png"
              values="button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png"
              optionvalues="Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D"
-             tooltip="Choose the visual style for focused buttons in the skip dialog." />
+             tooltip="Full mode: focused texture for Skip and Close buttons." />
 
     <setting id="skip_button_format"
              type="labelenum"
@@ -110,26 +136,48 @@
              default="Skip + Type + Duration"
              values="Skip|Skip + Type|Skip + Type + Duration"
              optionvalues="Skip|Skip + Type|Skip + Type + Duration"
-             tooltip="Choose how the skip button label is displayed in the skip dialog." />
+             tooltip="Full mode: wording on the Skip action buttons." />
 
     <setting id="hide_close_button"
              type="bool"
              label="32014"
              default="false"
-             tooltip="Hide the Close button and its icon, leaving only the Skip button visible." />
+             tooltip="Full mode: hide the Close button and its icon." />
 
     <setting id="hide_skip_icon"
              type="bool"
              label="32015"
              default="false"
-             tooltip="Hide both the skip icon and close icon, leaving only the Skip and Close buttons visible." />
+             tooltip="Full mode: hide both the skip and close icons." />
 
-    <setting id="hide_ending_text"
-             type="bool"
-             label="32016"
-             default="false"
-             tooltip="Hide the 'Segment ending in:' countdown text line." />
+    <setting type="lsep" label="32022" />
+
+    <setting id="minimal_button_style"
+             type="labelenum"
+             label="32023"
+             default="minimal_rounded_gray_640.png"
+             values="minimal_rounded_gray_640.png|minimal_rectangular_aquamarine-blue_640.png|minimal_rectangular_blue_640.png|minimal_rectangular_yellow_640.png|minimal_rounded_baby-purple_640.png|minimal_rounded_blue-red-gradient_640.png|minimal_rounded_bright-aqua_640.png|minimal_rounded_bright-blue-sky_640.png|minimal_rounded_bright-cyan_640.png|minimal_rounded_burnt-pink_640.png|minimal_rounded_cranberry_640.png|minimal_rounded_deep-pink_640.png|minimal_rounded_greyish-blue_640.png|minimal_rounded_languid-lavender_640.png|minimal_rounded_light-green-7284348_640.png|minimal_rounded_light-grey_640.png|minimal_rounded_light-yellow_640.png|minimal_rounded_minty-green_640.png|minimal_rounded_mustard-yellow_640.png|minimal_rounded_pale-gold_640.png|minimal_rounded_pale-sky-blue_640.png|minimal_rounded_pastel-green_640.png|minimal_rounded_pattens-blue_640.png|minimal_rounded_peach-orange_640.png|minimal_rounded_pink-daisy_640.png|minimal_rounded_pink-lemonade_640.png|minimal_rounded_pinkish-orange_640.png|minimal_rounded_sunset_640.png|minimal_rounded_white_640.png"
+             optionvalues="Rounded Gray|Rectangular Aquamarine Blue|Rectangular Blue|Rectangular Yellow|Rounded Baby Purple|Rounded Blue Red Gradient|Rounded Bright Aqua|Rounded Bright Blue Sky|Rounded Bright Cyan|Rounded Burnt Pink|Rounded Cranberry|Rounded Deep Pink|Rounded Greyish Blue|Rounded Languid Lavender|Rounded Light Green 7284348|Rounded Light Grey|Rounded Light Yellow|Rounded Minty Green|Rounded Mustard Yellow|Rounded Pale Gold|Rounded Pale Sky Blue|Rounded Pastel Green|Rounded Pattens Blue|Rounded Peach Orange|Rounded Pink Daisy|Rounded Pink Lemonade|Rounded Pinkish Orange|Rounded Sunset|Rounded White"
+             tooltip="Minimal mode: background art for the skip plate (PNG filenames; same storage pattern as Full mode button focus textures)." />
+
+    <setting id="minimal_skip_button_format"
+             type="labelenum"
+             label="32025"
+             default="Skip + Type"
+             values="Skip|Skip + Type|Skip + Type + Duration"
+             optionvalues="Skip|Skip + Type|Skip + Type + Duration"
+             tooltip="Minimal mode: primary text shown on the skip plate." />
+
+    <setting id="minimal_skip_dialog_position"
+             type="labelenum"
+             label="32024"
+             default="Bottom Right"
+             values="Bottom Right|Top Right|Top Left|Bottom Left"
+             optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
+             tooltip="Minimal mode: which corner the skip plate appears in during playback." />
+
   </category>
+
 
   <category label="30002">
 

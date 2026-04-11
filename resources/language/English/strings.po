@@ -132,6 +132,38 @@ msgctxt "#32016"
 msgid "Hide segment ending in text"
 msgstr "Hide segment ending in text"
 
+msgctxt "#32019"
+msgid "Global options"
+msgstr "Global options"
+
+msgctxt "#32020"
+msgid "Skip dialog mode"
+msgstr "Skip dialog mode"
+
+msgctxt "#32021"
+msgid "Full mode"
+msgstr "Full mode"
+
+msgctxt "#32022"
+msgid "Minimal mode"
+msgstr "Minimal mode"
+
+msgctxt "#32023"
+msgid "Minimal plate style"
+msgstr "Minimal plate style"
+
+msgctxt "#32024"
+msgid "Minimal skip dialog position"
+msgstr "Minimal skip dialog position"
+
+msgctxt "#32025"
+msgid "Minimal skip label format"
+msgstr "Minimal skip label format"
+
+msgctxt "#32026"
+msgid "Skip dialog font color"
+msgstr "Skip dialog font color"
+
 # Toast Settings
 msgctxt "#33000"
 msgid "Enable Missing Segment File Toast for TV Episodes"

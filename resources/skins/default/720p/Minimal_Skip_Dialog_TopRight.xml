@@ -1,0 +1,58 @@
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+
+  <zorder>1</zorder>
+  <defaultcontrol>3012</defaultcontrol>
+
+  <animation type="WindowOpen">
+    <effect type="slide" start="0,-100" end="0,0" time="300" tween="quadratic" easing="out" />
+    <effect type="fade" start="0" end="100" time="400" />
+  </animation>
+
+  <animation type="WindowClose">
+    <effect type="slide" start="0,0" end="0,-100" time="300" tween="quadratic" easing="in" />
+    <effect type="fade" start="100" end="0" time="300" />
+  </animation>
+
+  <controls>
+    <control type="group">
+      <posx>1045</posx>
+      <posy>0</posy>
+      <width>120</width>
+      <height>46</height>
+
+      <control type="image" id="3021">
+        <left>0</left>
+        <top>0</top>
+        <width>120</width>
+        <height>46</height>
+        <texture>minimal_rounded_gray_640.png</texture>
+        <aspectratio>stretch</aspectratio>
+      </control>
+
+      <control type="button" id="3012">
+        <left>0</left>
+        <top>0</top>
+        <width>120</width>
+        <height>46</height>
+        <label>Skip</label>
+        <font>font16</font>
+        <texturefocus>minimal_rounded_gray_640.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+      </control>
+    </control>
+  </controls>
+</window>

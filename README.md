@@ -39,11 +39,15 @@ service.skippy/
 │   └── skins/
 │       └── default/
 │           ├── 720p/
-│           │   ├── SkipDialog.xml              # Default fallback skip dialog located bottom right
-│           │   ├── SkipDialog_TopRight.xml     # Skip dialog located top right corner
-│           │   ├── SkipDialog_TopLeft.xml      # Skip dialog located top left corner
-│           │   ├── SkipDialog_BottomRight.xml  # Skip dialog located bottom right corner
-│           │   └── SkipDialog_BottomLeft.xml   # Skip dialog located bottom left corner
+│           │   ├── SkipDialog.xml              # Default fallback skip dialog (Full mode)
+│           │   ├── SkipDialog_TopRight.xml     # Full skip dialog — top right
+│           │   ├── SkipDialog_TopLeft.xml      # Full skip dialog — top left
+│           │   ├── SkipDialog_BottomRight.xml  # Full skip dialog — bottom right
+│           │   ├── SkipDialog_BottomLeft.xml   # Full skip dialog — bottom left
+│           │   ├── Minimal_Skip_Dialog_TopRight.xml    # Minimal chip — top right
+│           │   ├── Minimal_Skip_Dialog_TopLeft.xml     # Minimal chip — top left
+│           │   ├── Minimal_Skip_Dialog_BottomRight.xml # Minimal chip — bottom right
+│           │   └── Minimal_Skip_Dialog_BottomLeft.xml  # Minimal chip — bottom left
 │           └── media/
 │               ├── icon_skip.png               # Skip button icon
 │               ├── icon_close.png              # Close button icon
@@ -85,10 +89,34 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 - 🧠 Label logic allows fine-grained control: `"intro"`, `"recap"`, `"ads"`, etc.
 - 🛡️ Platform-agnostic compatibility: Works seamlessly across Android, Windows, CoreELEC, and Linux.
 - 📊 Progress Bar Display toggle: Progress bar which fills up until end of segment. On/off toggle available under settings.
-- 🖼️ Skip Dialog Placement: Choose dialog layout position (Bottom Right, Top Right, Top Left, Bottom Left)
+- 🖼️ Skip Dialog Placement: Choose dialog layout position (Bottom Right, Top Right, Top Left, Bottom Left) — separate positions for **Full** and **Minimal** mode.
+- 🪟 **Full** vs **Minimal** skip UI: Full = classic panel (icons, optional Close, progress bar). Minimal = small plate + Skip only; font color and plate style are configurable.
+- 🎨 **Skip dialog font color**: Global preset colors (including black) applied reliably on Full and Minimal dialogs via the Python API.
 - ⏪ Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - 📺 Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - 🧹 Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
+
+---
+
+## Release notes
+
+### v1.0.17 (April 2026)
+
+**Minimal skip dialog**
+
+- **Minimal mode** is a small corner chip only: background plate (**Minimal plate style**) plus one **Skip** button—no progress bar, Close control, or skip/close icons. Dismiss with **Back** / **ESC**; the dialog still closes when the segment ends.
+- Layout follows the **720p** skin grid so the chip stays on-screen. Chip size **120×46** (skin coordinates); bottom/top right variants are offset inward so the chip is not clipped at the screen edge.
+- Skin templates: `Minimal_Skip_Dialog_BottomRight.xml`, `Minimal_Skip_Dialog_BottomLeft.xml`, `Minimal_Skip_Dialog_TopRight.xml`, `Minimal_Skip_Dialog_TopLeft.xml` in `resources/skins/default/720p/`. The service patches plate and skip-button focus textures from settings (same pattern as Full mode button focus textures).
+
+**Skip dialog font color**
+
+- **Skip dialog font color** (Playback behavior) offers named presets—white, light/dark grey, black, blue, red, green, aquamarine, pink, purple, peach, orange, yellow—with values stored as **ARGB hex** (`optionvalues`) for consistent reads across Kodi builds.
+- Colors are applied in **`skipdialog.py`** via **`Control.setLabel`** with explicit text and shadow colors, because `$INFO[Window.Property(…)]` inside `textcolor` / `textcolorfocus` is unreliable for **WindowXML** script dialogs on many builds. Skin XML keeps static fallbacks. Full mode: **next-jump** line control id **3011**; **countdown** line id **2** is refreshed as playback time updates.
+
+**Playback and segment file detection**
+
+- **`get_video_file()`** treats **`Player.HasVideo`** like active playback when resolving **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so **chapters.xml** / **.edl** resolve during startup when Kodi reports video before playback is fully started.
+- **JSON-RPC `Player.GetItem`** no longer discards the item when **title** is temporarily missing; **file**-based inference still runs. If JSON-RPC fails, **playback type** falls back from the **resolved video path** so segment parsing is not skipped.
 
 ---
 

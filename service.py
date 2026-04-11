@@ -11,7 +11,7 @@ import xbmcvfs
 import xbmcaddon
 
 from settings_utils import is_skip_dialog_enabled, is_skip_enabled
-from skipdialog import SkipDialog
+from skipdialog import SkipDialog, _minimal_plate_filename
 from segment_item import SegmentItem
 from settings_utils import (
     get_user_skip_mode,
@@ -23,47 +23,114 @@ from settings_utils import (
     show_overlapping_toast,
 )
 
-def _update_button_textures(texture_path):
-    """Update button textures in XML files dynamically"""
+_SKIP_DIALOG_FULL_FILES = (
+    'SkipDialog_BottomRight.xml',
+    'SkipDialog_BottomLeft.xml',
+    'SkipDialog_TopLeft.xml',
+    'SkipDialog_TopRight.xml',
+)
+_SKIP_DIALOG_MINIMAL_FILES = (
+    'Minimal_Skip_Dialog_BottomRight.xml',
+    'Minimal_Skip_Dialog_BottomLeft.xml',
+    'Minimal_Skip_Dialog_TopLeft.xml',
+    'Minimal_Skip_Dialog_TopRight.xml',
+)
+_FULL_MODE_BUTTON_IDS = frozenset({'3012', '3013', '3015', '3016'})
+_MINIMAL_PLATE_IMAGE_ID = '3021'
+_DEFAULT_SKIP_DIALOG_CORNER = 'Bottom Right'
+
+
+def _skip_dialog_layout_suffix(addon, setting_id):
+    """Stored value matches Full mode: e.g. 'Bottom Right' from values list."""
+    raw = (addon.getSetting(setting_id) or '').strip() or _DEFAULT_SKIP_DIALOG_CORNER
+    return raw.replace(' ', '')
+
+
+def _get_skins_720p_dir():
+    addon = get_addon()
+    if not addon:
+        return None
+    return os.path.join(addon.getAddonInfo('path'), 'resources', 'skins', 'default', '720p')
+
+
+def _set_button_texturefocus(control, texture_path):
+    for child in control:
+        if child.tag == 'texturefocus':
+            child.text = texture_path
+            return
+    el = ET.SubElement(control, 'texturefocus')
+    el.text = texture_path
+
+
+def _write_skin_xml(tree, xml_path):
     try:
-        import os
-        import re
-        
-        # Get the addon path
-        addon = get_addon()
-        addon_path = addon.getAddonInfo('path')
-        xml_dir = os.path.join(addon_path, 'resources', 'skins', 'default', '720p')
-        
-        # List of XML files to update
-        xml_files = [
-            'SkipDialog_BottomRight.xml',
-            'SkipDialog_BottomLeft.xml', 
-            'SkipDialog_TopLeft.xml',
-            'SkipDialog_TopRight.xml'
-        ]
-        
-        for xml_file in xml_files:
+        ET.indent(tree, space='  ')
+    except AttributeError:
+        pass
+    kwargs = {"encoding": "utf-8", "xml_declaration": True}
+    try:
+        tree.write(xml_path, short_empty_elements=False, **kwargs)
+    except TypeError:
+        tree.write(xml_path, **kwargs)
+
+
+def _update_full_skip_dialog_textures(texture_path):
+    """Set texturefocus on Full mode skip/close buttons only (by control id)."""
+    try:
+        xml_dir = _get_skins_720p_dir()
+        if not xml_dir or not texture_path:
+            return
+        for xml_file in _SKIP_DIALOG_FULL_FILES:
             xml_path = os.path.join(xml_dir, xml_file)
-            if os.path.exists(xml_path):
-                # Read the file
-                with open(xml_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                # Replace the texture path
-                content = re.sub(
-                    r'<texturefocus>.*?</texturefocus>',
-                    f'<texturefocus>{texture_path}</texturefocus>',
-                    content
-                )
-                
-                # Write back to file
-                with open(xml_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                
-                log(f"📝 Updated {xml_file} with texture: {texture_path}")
-                
+            if not os.path.isfile(xml_path):
+                continue
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+            for control in root.iter('control'):
+                if control.get('type') != 'button':
+                    continue
+                cid = control.get('id')
+                if cid in _FULL_MODE_BUTTON_IDS:
+                    _set_button_texturefocus(control, texture_path)
+            _write_skin_xml(tree, xml_path)
+            log(f"📝 Updated Full dialog {xml_file} button focus texture: {texture_path}")
     except Exception as e:
-        log(f"⚠️ Failed to update XML files: {e}")
+        log(f"⚠️ Failed to update Full skip dialog XML: {e}")
+
+
+def _set_image_texture(control, texture_path):
+    for child in control:
+        if child.tag == 'texture':
+            child.text = texture_path
+            return
+    el = ET.SubElement(control, 'texture')
+    el.text = texture_path
+
+
+def _update_minimal_skip_dialog_textures(texture_filename):
+    """Minimal chip: plate image 3021 + single skip button 3012 texturefocus."""
+    try:
+        xml_dir = _get_skins_720p_dir()
+        if not xml_dir or not texture_filename:
+            return
+        for xml_file in _SKIP_DIALOG_MINIMAL_FILES:
+            xml_path = os.path.join(xml_dir, xml_file)
+            if not os.path.isfile(xml_path):
+                continue
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+            for control in root.iter('control'):
+                ctype = control.get('type')
+                cid = control.get('id')
+                if ctype == 'image' and cid == _MINIMAL_PLATE_IMAGE_ID:
+                    _set_image_texture(control, texture_filename)
+                if ctype == 'button' and cid == '3012':
+                    _set_button_texturefocus(control, texture_filename)
+            _write_skin_xml(tree, xml_path)
+            log(f"📝 Updated Minimal dialog {xml_file}: plate + button focus → {texture_filename}")
+    except Exception as e:
+        log(f"⚠️ Failed to update Minimal skip dialog XML: {e}")
+
 
 def log_if_changed(key, msg):
     """Only log if the message is different from the last logged message for this key."""
@@ -123,11 +190,17 @@ def safe_file_read(*paths):
     return None
 
 def get_video_file():
+    """Resolve the playing file path. Matches the main loop: use Player.HasVideo as well as isPlayingVideo,
+    because during startup/buffering Kodi often reports HasVideo before isPlayingVideo becomes true — the old
+    isPlayingVideo-only check caused get_video_file() to return None while the outer loop still thought a video
+    was active, so segments/metadata were never parsed until a later stop/start."""
+    path = None
     try:
-        if not player.isPlayingVideo():
-            return None
-        path = player.getPlayingFile()
+        if player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo"):
+            path = player.getPlayingFile()
     except RuntimeError:
+        path = None
+    if not path:
         return None
 
     log(f"🎯 Kodi playback path: {path}")
@@ -209,9 +282,11 @@ def should_show_missing_file_toast():
     item_result = json.loads(response_item)
     item = item_result.get("result", {}).get("item", {})
 
-    if not item or "title" not in item:
-        log("⚠ Player.GetItem returned empty or missing title — metadata not ready")
+    if not item:
+        log("⚠ Player.GetItem returned empty item — metadata not ready")
         return False, {}
+    if not item.get("title") and not item.get("label"):
+        log("⚠ Player.GetItem missing title/label — metadata may still be loading (file-based inference will be used)")
 
     playback_type = infer_playback_type(item)
     log(f"🧠 Inferred playback type: {playback_type}")
@@ -807,12 +882,24 @@ while not monitor.abortRequested():
             addon = get_addon()
             try:
                 allow_toast, item = should_show_missing_file_toast()
-                playback_type = infer_playback_type(item)
+                playback_type = infer_playback_type(item) if item else ""
                 log_if_changed("playback_type", f"🔍 Playback type: '{playback_type}'")
             except Exception as e:
-                log(f"❌ Failed to infer playback type via toast logic: {e}")
-                playback_type = ""
+                log(f"❌ JSON-RPC / toast path failed ({type(e).__name__}): {e}")
                 item = None
+                playback_type = ""
+            if not playback_type and video:
+                synthetic = {
+                    "file": video,
+                    "title": os.path.basename(video),
+                    "showtitle": "",
+                    "episode": -1,
+                }
+                playback_type = infer_playback_type(synthetic)
+                log_if_changed(
+                    "playback_type_fallback",
+                    f"🔍 Playback type (fallback from path): '{playback_type}'",
+                )
 
             show_dialogs = is_skip_dialog_enabled(playback_type)
             toast_movies = addon.getSettingBool("show_not_found_toast_for_movies")
@@ -1305,18 +1392,31 @@ while not monitor.abortRequested():
                     log("🛑 Debouncing skip dialog for 300ms")
                     xbmc.sleep(300)
 
-                    layout_value = addon.getSetting("skip_dialog_position").replace(" ", "")
-                    dialog_name = f"SkipDialog_{layout_value}.xml"
-                    log(f"📐 Using skip dialog layout: {dialog_name}")
+                    dialog_mode = (addon.getSetting("skip_dialog_mode") or "Full").strip()
+                    if dialog_mode == "Minimal":
+                        layout_value = _skip_dialog_layout_suffix(
+                            addon, "minimal_skip_dialog_position"
+                        )
+                        dialog_name = f"Minimal_Skip_Dialog_{layout_value}.xml"
+                    else:
+                        layout_value = _skip_dialog_layout_suffix(
+                            addon, "skip_dialog_position"
+                        )
+                        dialog_name = f"SkipDialog_{layout_value}.xml"
+                    log(f"📐 Using skip dialog ({dialog_mode}): {dialog_name}")
 
-                    # 🎨 Update button focus texture before creating dialog
                     try:
-                        focus_texture_file = addon.getSetting("button_focus_style")
-                        if focus_texture_file:
-                            _update_button_textures(focus_texture_file)
-                            log(f"🎨 Button focus texture set to: {focus_texture_file}")
+                        if dialog_mode == "Minimal":
+                            plate_file = _minimal_plate_filename(addon)
+                            _update_minimal_skip_dialog_textures(plate_file)
+                            log(f"🎨 Minimal textures set to: {plate_file}")
+                        else:
+                            focus_texture_file = addon.getSetting("button_focus_style")
+                            if focus_texture_file:
+                                _update_full_skip_dialog_textures(focus_texture_file)
+                                log(f"🎨 Button focus texture set to: {focus_texture_file}")
                     except Exception as e:
-                        log(f"⚠️ Failed to set button focus texture: {e}")
+                        log(f"⚠️ Failed to update skip dialog skin XML: {e}")
 
                     log(f"🎬 Attempting to create skip dialog: {dialog_name}")
                     try:
