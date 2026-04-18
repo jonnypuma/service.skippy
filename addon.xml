@@ -1,6 +1,6 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="1.0.18"
+       version="1.0.36"
        provider-name="Skippy-McSkipface">
        
     <requires>

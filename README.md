@@ -95,6 +95,22 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 - ⏪ Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - 📺 Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - 🧹 Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
+- 🌐 **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
+
+---
+
+## Online segment lookup (TheIntroDB / IntroDB.app)
+
+Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi’s internal database IDs. Skippy reads those from Kodi’s **`uniqueid`** (and can lift **show-level** TMDB when the episode row only has TVDB/Sonarr-style IDs). If metadata is incomplete, Skippy can call **api.themoviedb.org** to resolve missing IDs, **but only when a TMDB v3 API key is available**.
+
+**For reliable online lookup**, plan on one of these (you do **not** need both):
+
+1. **TMDB API key in Skippy** — In **Add-on settings → Segment sources → Online APIs (TMDB)**, paste a key from [themoviedb.org API settings](https://www.themoviedb.org/settings/api) (free tier is enough), **or**
+2. **[TheMovieDB Helper](https://kodi.wiki/view/Add-on:The_Movie_Database_Helper)** (`plugin.video.themoviedb.helper`) — Install and configure that add-on’s TMDB key, then enable **Use TheMovieDB Helper addon API key when empty** in Skippy’s same **Online APIs (TMDB)** section.
+
+If neither a Skippy key nor the helper path is available, online lookup only works when Kodi’s library already exposes the IDs TheIntroDB/IntroDB need—**which is often not true** for partial or non-TMDB scrapes.
+
+Turn on **Resolve missing TMDB / IMDb via TMDB API** when you use online lookup and expect enrichment. Filter `kodi.log` for `service.skippy - remote` when **verbose logging** is enabled.
 
 ---
 

@@ -47,6 +47,14 @@
 			 default="true"
 			 tooltip="Configurable overlap detection to help avoid redundant or conflicting skips" />
 
+    <setting type="lsep" label="32045" />
+
+    <setting id="save_online_segments_to_chapters_xml"
+             type="bool"
+             label="32046"
+             default="false"
+             tooltip="32047" />
+
   </category>
 
   <category label="30001">
@@ -178,6 +186,73 @@
 
   </category>
 
+  <category label="30004">
+    <setting type="lsep" label="32036" />
+
+    <setting id="tv_tmdb_resolve_missing_ids"
+             type="bool"
+             label="32031"
+             default="true"
+             tooltip="32035" />
+
+    <setting id="tv_tmdb_api_key"
+             type="text"
+             label="32032"
+             default=""
+             option="hidden"
+             tooltip="32033" />
+
+    <setting id="tv_tmdb_use_helper_api_key"
+             type="bool"
+             label="32034"
+             default="true"
+             tooltip="32037" />
+
+    <setting type="lsep" label="32059" />
+
+    <setting id="tv_use_local_chapter_edl"
+             type="bool"
+             label="32028"
+             default="true"
+             tooltip="32061" />
+
+    <setting id="tv_use_online_segment_lookup"
+             type="bool"
+             label="32029"
+             default="false"
+             tooltip="32062" />
+
+    <setting id="tv_segment_source_priority"
+             type="labelenum"
+             label="32030"
+             default="LocalFirst"
+             values="Local first|Online first"
+             optionvalues="LocalFirst|OnlineFirst"
+             tooltip="32063" />
+
+    <setting type="lsep" label="32060" />
+
+    <setting id="movie_use_local_chapter_edl"
+             type="bool"
+             label="32028"
+             default="true"
+             tooltip="32052" />
+
+    <setting id="movie_use_online_segment_lookup"
+             type="bool"
+             label="32049"
+             default="false"
+             tooltip="32064" />
+
+    <setting id="movie_segment_source_priority"
+             type="labelenum"
+             label="32030"
+             default="LocalFirst"
+             values="Local first|Online first"
+             optionvalues="LocalFirst|OnlineFirst"
+             tooltip="32054" />
+  </category>
+
 
   <category label="30002">
 
@@ -211,6 +286,6 @@
              type="bool"
              label="34000"
              default="false"
-             tooltip="Turn this on for verbose logging in the kodi.log file and for debugging." />
+             tooltip="34001" />
   </category>
 </settings>

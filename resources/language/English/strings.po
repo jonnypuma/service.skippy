@@ -11,8 +11,12 @@ msgid "Segment Settings"
 msgstr "Segment Settings"
 
 msgctxt "#30001"
-msgid "Customize Skip Dialog Look and Behavior"
-msgstr "Customize Skip Dialog Look and Behavior"
+msgid "Playback & skip dialog"
+msgstr "Playback & skip dialog"
+
+msgctxt "#30004"
+msgid "Segment sources"
+msgstr "Segment sources"
 
 msgctxt "#30002"
 msgid "Segment Toast Notifications"
@@ -164,6 +168,94 @@ msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Skip dialog font color"
 
+msgctxt "#32028"
+msgid "Use local chapter / EDL files"
+msgstr "Use local chapter / EDL files"
+
+msgctxt "#32029"
+msgid "Use online segment lookup (TheIntroDB / IntroDB.app)"
+msgstr "Use online segment lookup (TheIntroDB / IntroDB.app)"
+
+msgctxt "#32030"
+msgid "Prefer when both local and online are enabled"
+msgstr "Prefer when both local and online are enabled"
+
+msgctxt "#32036"
+msgid "Online APIs (TMDB)"
+msgstr "Online APIs (TMDB)"
+
+msgctxt "#32031"
+msgid "Resolve missing TMDB / IMDb via TMDB API"
+msgstr "Resolve missing TMDB / IMDb via TMDB API"
+
+msgctxt "#32032"
+msgid "TMDB API key (optional)"
+msgstr "TMDB API key (optional)"
+
+msgctxt "#32033"
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+msgstr "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+
+msgctxt "#32034"
+msgid "Use TheMovieDB Helper addon API key when empty"
+msgstr "Use TheMovieDB Helper addon API key when empty"
+
+msgctxt "#32035"
+msgid "When TV or movie online lookup is enabled and Kodi has no TMDB/IMDb in uniqueid, call api.themoviedb.org to fill gaps (same IDs TheIntroDB / IntroDB.app need). Applies to both episodes and movies. Disable to use only library scraper metadata."
+msgstr "When TV or movie online lookup is enabled and Kodi has no TMDB/IMDb in uniqueid, call api.themoviedb.org to fill gaps (same IDs TheIntroDB / IntroDB.app need). Applies to both episodes and movies. Disable to use only library scraper metadata."
+
+msgctxt "#32037"
+msgid "If the TMDB API key field above is empty, read the key from plugin.video.themoviedb.helper when installed. One key for both TV episodes and movies."
+msgstr "If the TMDB API key field above is empty, read the key from plugin.video.themoviedb.helper when installed. One key for both TV episodes and movies."
+
+msgctxt "#32059"
+msgid "TV episodes"
+msgstr "TV episodes"
+
+msgctxt "#32060"
+msgid "Movies"
+msgstr "Movies"
+
+msgctxt "#32061"
+msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
+
+msgctxt "#32062"
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgstr "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+
+msgctxt "#32063"
+msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other."
+msgstr "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other."
+
+msgctxt "#32064"
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgstr "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+
+msgctxt "#32045"
+msgid "Online segments sidecar"
+msgstr "Online segments sidecar"
+
+msgctxt "#32046"
+msgid "Save online segments to chapters.xml"
+msgstr "Save online segments to chapters.xml"
+
+msgctxt "#32047"
+msgid "When online lookup returns intro/recap windows, write them to a Matroska-style chapters.xml file next to the video (filename-chapters.xml). Only runs if no chapter XML exists there yet — existing files are never overwritten. Applies to TV episodes and movies."
+msgstr "When online lookup returns intro/recap windows, write them to a Matroska-style chapters.xml file next to the video (filename-chapters.xml). Only runs if no chapter XML exists there yet — existing files are never overwritten. Applies to TV episodes and movies."
+
+msgctxt "#32049"
+msgid "Use online segment lookup (TheIntroDB)"
+msgstr "Use online segment lookup (TheIntroDB)"
+
+msgctxt "#32052"
+msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
+
+msgctxt "#32054"
+msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other."
+msgstr "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other."
+
 # Toast Settings
 msgctxt "#33000"
 msgid "Enable Missing Segment File Toast for TV Episodes"
@@ -185,3 +277,7 @@ msgstr "Enable toast notification for skipped segment"
 msgctxt "#34000"
 msgid "Enable Verbose Logging"
 msgstr "Enable Verbose Logging"
+
+msgctxt "#34001"
+msgid "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
+msgstr "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"

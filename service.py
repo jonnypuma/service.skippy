@@ -13,6 +13,11 @@ import xbmcaddon
 from settings_utils import is_skip_dialog_enabled, is_skip_enabled
 from skipdialog import SkipDialog, _minimal_plate_filename
 from segment_item import SegmentItem
+from remote_segments import (
+    fetch_remote_tv_segments,
+    fetch_remote_movie_segments,
+    _addon_get_bool,
+)
 from settings_utils import (
     get_user_skip_mode,
     get_edl_type_map,
@@ -162,6 +167,7 @@ class PlayerMonitor(xbmc.Monitor):
         self.skipped_to_nested_segment = {}  # Track when we've skipped to nested segments
         self._last_log_state = {}  # Cache for logging state changes only
         self.cleared_parent_dismissals = set()  # Track which parent dismissals have been cleared for nested segments
+        self.remote_segment_cache = {}  # Online lookup cache (TV: TheIntroDB+IntroDB; movies: TheIntroDB)
 
 monitor = PlayerMonitor()
 player = xbmc.Player()
@@ -308,31 +314,118 @@ def should_show_missing_file_toast():
 
     return True, item
 
-def parse_chapters(video_path):
+def _chapter_xml_paths_to_try(video_path):
     base = os.path.splitext(video_path)[0]
     suffixes = ["-chapters.xml", "_chapters.xml"]
     fallback_base = None
-
     try:
         if player.isPlayingVideo():
             fallback_base = player.getPlayingFile().rsplit('.', 1)[0]
             log(f"🔄 Fallback base path from player: {fallback_base}")
     except RuntimeError:
-        log("⚠️ getPlayingFile() failed inside parse_chapters fallback")
-
+        log("⚠️ getPlayingFile() failed inside chapter path resolution")
     paths_to_try = [f"{base}{s}" for s in suffixes]
     if fallback_base:
         paths_to_try += [f"{fallback_base}{s}" for s in suffixes]
+    return paths_to_try
+
+def _edl_paths_to_try(video_path):
+    base = video_path.rsplit('.', 1)[0]
+    fallback_base = None
+    try:
+        if player.isPlayingVideo():
+            fallback_base = player.getPlayingFile().rsplit('.', 1)[0]
+            log(f"🔄 Fallback base path from player: {fallback_base}")
+    except RuntimeError:
+        log("⚠️ getPlayingFile() failed inside EDL path resolution")
+    paths_to_try = [f"{base}.edl"]
+    if fallback_base:
+        paths_to_try.append(f"{fallback_base}.edl")
+    return paths_to_try
+
+def local_chapter_or_edl_file_exists(video_path):
+    for p in _chapter_xml_paths_to_try(video_path):
+        if p and xbmcvfs.exists(p):
+            return True
+    for p in _edl_paths_to_try(video_path):
+        if p and xbmcvfs.exists(p):
+            return True
+    return False
+
+
+def _sidecar_chapter_xml_exists(video_path):
+    for p in _chapter_xml_paths_to_try(video_path):
+        if p and xbmcvfs.exists(p):
+            return True
+    return False
+
+
+def _seconds_to_chapter_hms(sec):
+    sec = max(0.0, float(sec))
+    h = int(sec // 3600)
+    m = int((sec % 3600) // 60)
+    s = sec - h * 3600 - m * 60
+    return "%02d:%02d:%06.3f" % (h, m, s)
+
+
+def maybe_save_online_segments_to_chapters_xml(video_path, segments):
+    """
+    When enabled, write Matroska-style chapters.xml beside the video from online SegmentItems.
+    Skips if a chapter XML already exists (does not overwrite).
+    """
+    addon = get_addon()
+    if not addon or not _addon_get_bool(addon, "save_online_segments_to_chapters_xml", False):
+        return
+    if not video_path or not segments:
+        return
+    if _sidecar_chapter_xml_exists(video_path):
+        log("Skipping save chapters.xml: chapter XML already exists beside the video")
+        return
+    root = ET.Element("Chapters")
+    edition = ET.SubElement(root, "EditionEntry")
+    for seg in segments:
+        atom = ET.SubElement(edition, "ChapterAtom")
+        ET.SubElement(atom, "ChapterTimeStart").text = _seconds_to_chapter_hms(
+            seg.start_seconds
+        )
+        ET.SubElement(atom, "ChapterTimeEnd").text = _seconds_to_chapter_hms(
+            seg.end_seconds
+        )
+        disp = ET.SubElement(atom, "ChapterDisplay")
+        ET.SubElement(disp, "ChapterString").text = seg.segment_type_label or "segment"
+    try:
+        ET.indent(root, space="  ")
+    except AttributeError:
+        pass
+    out_path = os.path.splitext(video_path)[0] + "-chapters.xml"
+    try:
+        data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    except TypeError:
+        data = ET.tostring(root, encoding="utf-8")
+        data = b'<?xml version="1.0" encoding="utf-8"?>\n' + data
+    try:
+        f = xbmcvfs.File(out_path, "w")
+        f.write(data)
+        f.close()
+        log("💾 Saved online segments to %s" % out_path)
+    except Exception as e:
+        log("⚠️ Could not save chapters.xml: %s" % e)
+
+
+def parse_chapters(video_path, update_monitor=True):
+    paths_to_try = _chapter_xml_paths_to_try(video_path)
 
     log(f"🔍 Attempting chapter XML paths: {paths_to_try}")
     xml_data = safe_file_read(*paths_to_try)
     if not xml_data:
-        monitor.segment_file_found = False
-        log("🚫 No chapter XML file found — segment_file_found set to False")
+        if update_monitor:
+            monitor.segment_file_found = False
+            log("🚫 No chapter XML file found — segment_file_found set to False")
         return None
 
-    monitor.segment_file_found = True
-    log("✅ Chapter XML file found — segment_file_found set to True")
+    if update_monitor:
+        monitor.segment_file_found = True
+        log("✅ Chapter XML file found — segment_file_found set to True")
 
     try:
         root = ET.fromstring(xml_data)
@@ -359,30 +452,20 @@ def parse_chapters(video_path):
         log(f"❌ XML parse failed: {e}")
     return None
 
-def parse_edl(video_path):
-    base = video_path.rsplit('.', 1)[0]
-    fallback_base = None
-
-    try:
-        if player.isPlayingVideo():
-            fallback_base = player.getPlayingFile().rsplit('.', 1)[0]
-            log(f"🔄 Fallback base path from player: {fallback_base}")
-    except RuntimeError:
-        log("⚠️ getPlayingFile() failed inside parse_edl fallback")
-
-    paths_to_try = [f"{base}.edl"]
-    if fallback_base:
-        paths_to_try.append(f"{fallback_base}.edl")
+def parse_edl(video_path, update_monitor=True):
+    paths_to_try = _edl_paths_to_try(video_path)
 
     log(f"🔍 Attempting EDL paths: {paths_to_try}")
     edl_data = safe_file_read(*paths_to_try)
     if not edl_data:
-        monitor.segment_file_found = False
-        log("🚫 No EDL file found — segment_file_found set to False")
+        if update_monitor:
+            monitor.segment_file_found = False
+            log("🚫 No EDL file found — segment_file_found set to False")
         return []
 
-    monitor.segment_file_found = True
-    log("✅ EDL file found — segment_file_found set to True")
+    if update_monitor:
+        monitor.segment_file_found = True
+        log("✅ EDL file found — segment_file_found set to True")
     log(f"🧾 Raw EDL content:\n{edl_data}")
 
     segments = []
@@ -569,10 +652,11 @@ def re_evaluate_segment_jump_points(segments, current_time):
                         current_seg.next_segment_info = f"remaining {parent_seg.segment_type_label}"
                     break
 
-def parse_and_process_segments(path, current_time=None):
+def parse_and_process_segments(path, current_time=None, playback_type=None):
     """
     Parses segments, filters them based on settings, and then links overlapping/nested segments.
     If current_time is provided, the linking logic will be context-aware.
+    For TV episodes, optional local files and online APIs are controlled by TV-only settings.
     """
     # CRITICAL: Defensive check - never process segments when paused
     # This prevents toast spamming even if this function is called while paused
@@ -590,18 +674,104 @@ def parse_and_process_segments(path, current_time=None):
         return []
     
     log(f"🚦 Starting new segment parse and process for: {path}")
-    parsed = parse_chapters(path)
-    if not parsed:
-        parsed = parse_edl(path)
-    
+    addon = get_addon()
+    if not addon:
+        return []
+
+    if playback_type == "episode":
+        tv_local = _addon_get_bool(addon, "tv_use_local_chapter_edl", True)
+        tv_online = _addon_get_bool(addon, "tv_use_online_segment_lookup", False)
+        try:
+            priority = addon.getSetting("tv_segment_source_priority") or "LocalFirst"
+        except Exception:
+            priority = "LocalFirst"
+
+        if not tv_local and not tv_online:
+            log("📺 TV episode: local and online segment sources disabled — no segments")
+            monitor.segment_file_found = False
+            return []
+
+        local_list = []
+        if tv_local:
+            pxml = parse_chapters(path, update_monitor=False)
+            if pxml:
+                local_list = pxml
+            else:
+                local_list = parse_edl(path, update_monitor=False)
+        local_file_found = local_chapter_or_edl_file_exists(path) if tv_local else False
+
+        remote_list = []
+        if tv_online:
+            try:
+                total_time = player.getTotalTime()
+            except RuntimeError:
+                total_time = 0
+            remote_list = fetch_remote_tv_segments(total_time, monitor.remote_segment_cache)
+            if remote_list and _addon_get_bool(
+                addon, "save_online_segments_to_chapters_xml", False
+            ):
+                maybe_save_online_segments_to_chapters_xml(path, remote_list)
+
+        if priority == "OnlineFirst":
+            parsed = remote_list if remote_list else local_list
+        else:
+            parsed = local_list if local_list else remote_list
+
+        monitor.segment_file_found = local_file_found or bool(remote_list)
+    elif playback_type == "movie":
+        movie_local = _addon_get_bool(addon, "movie_use_local_chapter_edl", True)
+        movie_online = _addon_get_bool(addon, "movie_use_online_segment_lookup", False)
+        try:
+            priority = addon.getSetting("movie_segment_source_priority") or "LocalFirst"
+        except Exception:
+            priority = "LocalFirst"
+
+        if not movie_local and not movie_online:
+            log("🎬 Movie: local and online segment sources disabled — no segments")
+            monitor.segment_file_found = False
+            return []
+
+        local_list = []
+        if movie_local:
+            pxml = parse_chapters(path, update_monitor=False)
+            if pxml:
+                local_list = pxml
+            else:
+                local_list = parse_edl(path, update_monitor=False)
+        local_file_found = local_chapter_or_edl_file_exists(path) if movie_local else False
+
+        remote_list = []
+        if movie_online:
+            try:
+                total_time = player.getTotalTime()
+            except RuntimeError:
+                total_time = 0
+            remote_list = fetch_remote_movie_segments(
+                total_time, monitor.remote_segment_cache
+            )
+            if remote_list and _addon_get_bool(
+                addon, "save_online_segments_to_chapters_xml", False
+            ):
+                maybe_save_online_segments_to_chapters_xml(path, remote_list)
+
+        if priority == "OnlineFirst":
+            parsed = remote_list if remote_list else local_list
+        else:
+            parsed = local_list if local_list else remote_list
+
+        monitor.segment_file_found = local_file_found or bool(remote_list)
+    else:
+        parsed = parse_chapters(path)
+        if not parsed:
+            parsed = parse_edl(path)
+
     if not parsed:
         log("🚫 No segment file found or parsed segments were empty.")
         return []
 
     # --- Pass 1: Filter segments based on user settings ---
     log("⚙️ Pass 1: Filtering segments...")
-    addon = get_addon()
-    skip_overlaps = addon.getSettingBool("skip_overlapping_segments")
+    skip_overlaps = _addon_get_bool(addon, "skip_overlapping_segments", True)
     
     # Sort parsed segments to process them in order
     segments = sorted(parsed, key=lambda s: s.start_seconds)
@@ -853,6 +1023,7 @@ while not monitor.abortRequested():
                                 log(f"🔍 Debug: About to clear recently_dismissed (currently has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)})")
                                 monitor.last_video = video
                                 monitor.segment_file_found = False
+                                monitor.remote_segment_cache.clear()
                                 monitor.shown_missing_file_toast = False
                                 monitor.prompted.clear()
                                 monitor.recently_dismissed.clear()
@@ -948,7 +1119,9 @@ while not monitor.abortRequested():
         else:
             # CRITICAL: Only call parse_and_process_segments when NOT paused
             # This prevents toast spamming when paused
-            monitor.current_segments = parse_and_process_segments(video, current_time) or []
+            monitor.current_segments = parse_and_process_segments(
+                video, current_time, playback_type
+            ) or []
             log(f"📦 Parsed {len(monitor.current_segments)} segments for playback_type: {playback_type}")
 
         if not show_dialogs:
