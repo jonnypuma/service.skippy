@@ -8,7 +8,6 @@
   </coordinates>
 
   <zorder>1</zorder>
-  <defaultcontrol>3012</defaultcontrol>
 
   <animation type="WindowOpen">
     <effect type="slide" start="0,100" end="0,0" time="300" tween="quadratic" easing="out" />

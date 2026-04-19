@@ -13,6 +13,8 @@ Supported Video Formats: Works for MKV and AVI containers.
 
 Known Limitations: Video files in MP4 containers are currently not working, seems to be a Kodi issue and not addon issue.
 
+When **Save online segments to chapters.xml** is enabled, Skippy does not write a sidecar next to **`plugin://` playback**, **`.strm`** files, or common **stream URLs** (only a real on-disk video path gets a `-chapters.xml`). If a sidecar already exists, you can **skip**, **overwrite** (with optional confirmation), **merge** (add non-overlapping online windows), and optionally **back up** the previous file as `*.bck` (see Segment Settings).
+
 ---
 
 ```xml
@@ -111,6 +113,10 @@ Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi
 If neither a Skippy key nor the helper path is available, online lookup only works when Kodi’s library already exposes the IDs TheIntroDB/IntroDB need—**which is often not true** for partial or non-TMDB scrapes.
 
 Turn on **Resolve missing TMDB / IMDb via TMDB API** when you use online lookup and expect enrichment. Filter `kodi.log` for `service.skippy - remote` when **verbose logging** is enabled.
+
+Under **Segment sources**, **TV episodes** and **Movies** each have **online API overlap priority** (TheIntroDB first vs IntroDB.app first). That controls which service wins when both return a segment in the same time range; the other can still add segments that do not overlap. For movies, IntroDB.app currently returns no data, so this usually matches TheIntroDB-only behavior.
+
+**Seconds to pause remote API calls after errors** (same category) sets the **base** backoff per host (TheIntroDB, IntroDB.app, TMDB). After errors, wait time **doubles** on repeated failures (capped at one hour) until a call succeeds. **HTTP 429** responses may carry a **`Retry-After`** header; when the server sends it (as seconds), Skippy honors that wait (still capped). **HTTP 404** does not trigger backoff.
 
 ---
 

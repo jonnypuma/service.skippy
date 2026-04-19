@@ -1,15 +1,17 @@
 import xbmc
-import xbmcaddon
 import unicodedata
 
-ADDON = xbmcaddon.Addon()
+from settings_utils import get_addon, log_segment, log_segment_detail
+
 
 def log(msg):
-    if ADDON.getSettingBool("enable_verbose_logging"):
-        xbmc.log(f"[{ADDON.getAddonInfo('id')} - SegmentItem] {msg}", xbmc.LOGINFO)
+    log_segment(msg)
+
 
 def log_always(msg):
-    xbmc.log(f"[{ADDON.getAddonInfo('id')} - SegmentItem] {msg}", xbmc.LOGINFO)
+    addon = get_addon()
+    aid = addon.getAddonInfo("id") if addon else "service.skippy"
+    xbmc.log(f"[{aid} - SegmentItem] {msg}", xbmc.LOGINFO)
 
 def normalize_label(text):
     # Normalize and lowercase labels for consistent matching
@@ -30,19 +32,23 @@ class SegmentItem:
         self.next_segment_start = next_segment_start  # New attribute for overlapping/nested skips
         self.next_segment_info = next_segment_info  # New attribute for describing the next segment
 
-        log(f"🧩 New SegmentItem created: {self}")
+        log_segment(f"🧩 New SegmentItem created: {self}")
 
     def is_active(self, current_time):
         # Check if current time falls within segment bounds
         active = self.start_seconds <= current_time <= self.end_seconds
-        log(f"⏱️ Checking is_active: time={current_time:.2f}, segment=({self.start_seconds}-{self.end_seconds}) → {active}")
+        log_segment_detail(
+            f"is_active({current_time}) -> {active} for [{self.start_seconds}-{self.end_seconds}] {self.segment_type_label}"
+        )
         return active
 
     def get_duration(self):
         # Return duration of the segment
-        duration = self.end_seconds - self.start_seconds
-        log(f"📏 Duration of {self}: {duration:.2f}s")
-        return duration
+        d = self.end_seconds - self.start_seconds
+        log_segment_detail(
+            f"get_duration() -> {d}s for [{self.start_seconds}-{self.end_seconds}] {self.segment_type_label}"
+        )
+        return d
 
     def to_dict(self):
         # Convert segment to dictionary format
@@ -55,7 +61,7 @@ class SegmentItem:
             "next_segment_start": self.next_segment_start, # Include new attribute
             "next_segment_info": self.next_segment_info # Include new attribute
         }
-        log(f"📦 Converted SegmentItem to dict: {result}")
+        log_segment(f"📦 Converted SegmentItem to dict: {result}")
         return result
 
     def __str__(self):
@@ -74,11 +80,13 @@ def should_show_skip_dialog(current_time, segments, last_shown_times, debounce_s
 
             if time_since_last > debounce_seconds:
                 last_shown_times[segment_id] = current_time
-                log(f"📌 Triggering skip dialog for segment: {segment}")
+                log_segment(f"📌 Triggering skip dialog for segment: {segment}")
                 return segment
             else:
-                log(f"⏳ Debounce active for segment {segment_id} — last shown {time_since_last:.2f}s ago")
-    log("🔕 No eligible segment found for skip dialog at current time")
+                log_segment_detail(
+                    f"⏳ Debounce active for segment {segment_id} — last shown {time_since_last:.2f}s ago"
+                )
+    log_segment_detail("🔕 No eligible segment found for skip dialog at current time")
     return None
 
 # Optional: Unit test block (can be moved to a separate test file)

@@ -12,6 +12,7 @@ Debug: enable **Settings → Debug logging**, then filter `kodi.log` for `servic
 import json
 import os
 import re
+import time
 
 import xbmcaddon
 from contextlib import closing
@@ -22,49 +23,28 @@ from urllib.request import Request, urlopen
 import xbmc
 
 from segment_item import SegmentItem
-from settings_utils import get_addon
+from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log_remote
 
 ADDON_ID = "service.skippy"
 
+# Stored labelenum values for settings tv_online_merge_priority / movie_online_merge_priority
+ONLINE_MERGE_THEINTRODB_FIRST = "TheIntroDBFirst"
+ONLINE_MERGE_INTRODB_FIRST = "IntroDBFirst"
 
-def _addon_get_bool(addon, key, default=False):
-    """
-    Read bool settings without getSettingBool (CoreELEC may log Invalid setting type).
-    Prefer getSettingString when available — some builds handle mixed types better.
-    """
-    if not addon:
-        return default
-    try:
-        if hasattr(addon, "getSettingString"):
-            s = addon.getSettingString(key)
-        else:
-            s = addon.getSetting(key)
-        if s is None or s == "":
-            return default
-        return str(s).lower() in ("true", "1", "yes")
-    except Exception:
-        return default
-
-
-def _addon_get_setting_text(addon, key, default=""):
-    """Read a text/hidden setting; prefer getSettingString to avoid Invalid setting type on some builds."""
-    if not addon:
-        return default
-    try:
-        if hasattr(addon, "getSettingString"):
-            s = addon.getSettingString(key)
-        else:
-            s = addon.getSetting(key)
-        return str(s) if s is not None else default
-    except Exception:
-        return default
+# Keys TheIntroDB / IntroDB may expose (see API docs). Order is display/priority preference.
+REMOTE_SEGMENT_PAYLOAD_KEYS = (
+    "intro",
+    "recap",
+    "credits",
+    "preview",
+    "outro",
+    "commercial",
+)
 
 
 def _rlog(msg):
-    """Verbose-only; use tag [remote] so kodi.log filtering is easy when debugging online lookup."""
-    addon = get_addon()
-    if addon and _addon_get_bool(addon, "enable_verbose_logging", default=False):
-        xbmc.log("[service.skippy - remote] %s" % msg, xbmc.LOGINFO)
+    """Verbose Normal/All only; tag [service.skippy - remote] for kodi.log filtering."""
+    log_remote(msg)
 
 
 THEINTRODB_BASE_URL = "https://api.theintrodb.org/v2/media"
@@ -73,7 +53,15 @@ TMDB_API3_BASE = "https://api.themoviedb.org/3"
 TMDB_HELPER_ADDON_ID = "plugin.video.themoviedb.helper"
 REMOTE_LOOKUP_TIMEOUT = 5
 
+# Monotonic deadline per API bucket after a transport/server failure (see fetch_remote_json).
+_REMOTE_FETCH_COOL_UNTIL = {}
+# Consecutive qualifying failures per bucket (reset on success). Drives exponential backoff.
+_REMOTE_FETCH_FAILURE_STREAK = {}
+
 _SXXEXX = re.compile(r"[Ss](\d{1,2})[Ee](\d{1,2})")
+
+_REMOTE_BACKOFF_CAP_SECONDS = 3600
+_REMOTE_BACKOFF_EXPONENT_CAP = 12
 
 # Kodi VideoLibrary.GetEpisodeDetails: only valid Video.Fields.Episode names for this API.
 # Do **not** request `imdbnumber` — not in the Episode enum (error at index 3).
@@ -188,15 +176,24 @@ def _tmdb_helper_addon_api_key():
         "tmdb_api_key",
         "api_key",
     ):
+        raw = None
+        get_ok = False
         try:
-            if hasattr(h, "getSettingString"):
-                v = h.getSettingString(sid)
-            else:
-                v = h.getSetting(sid)
-            if v and str(v).strip():
-                return str(v).strip()
+            raw = h.getSetting(sid)
+            get_ok = True
         except Exception:
             pass
+        if get_ok:
+            if raw is not None and str(raw).strip():
+                return str(raw).strip()
+            continue
+        if hasattr(h, "getSettingString"):
+            try:
+                raw = h.getSettingString(sid)
+                if raw is not None and str(raw).strip():
+                    return str(raw).strip()
+            except Exception:
+                pass
     return None
 
 
@@ -208,10 +205,10 @@ def _get_tmdb_api_key():
     addon = get_addon()
     if not addon:
         return None
-    k = _addon_get_setting_text(addon, "tv_tmdb_api_key", "")
+    k = addon_get_setting_text(addon, "tv_tmdb_api_key", "")
     if k and str(k).strip():
         return str(k).strip()
-    if not _addon_get_bool(addon, "tv_tmdb_use_helper_api_key", default=True):
+    if not addon_get_bool(addon, "tv_tmdb_use_helper_api_key", True):
         return None
     return _tmdb_helper_addon_api_key()
 
@@ -342,7 +339,100 @@ def _safe_log_url(url):
     return url
 
 
+def _remote_cooldown_bucket(source_name):
+    if source_name == "TMDB":
+        return "tmdb"
+    if source_name == "TheIntroDB":
+        return "theintrodb"
+    if source_name == "IntroDB.app":
+        return "introdb"
+    return "other"
+
+
+def _remote_failure_cooldown_seconds():
+    addon = get_addon()
+    if not addon:
+        return 120
+    raw = addon_get_setting_text(addon, "remote_api_failure_cooldown_seconds", "120")
+    try:
+        n = int(str(raw).strip())
+    except (TypeError, ValueError):
+        n = 120
+    return max(0, min(n, 3600))
+
+
+def _remote_fetch_cooldown_active(bucket):
+    secs = _remote_failure_cooldown_seconds()
+    if secs <= 0:
+        _REMOTE_FETCH_COOL_UNTIL.pop(bucket, None)
+        _REMOTE_FETCH_FAILURE_STREAK.pop(bucket, None)
+        return False
+    until = _REMOTE_FETCH_COOL_UNTIL.get(bucket)
+    if until is None:
+        return False
+    now = time.monotonic()
+    if now >= until:
+        _REMOTE_FETCH_COOL_UNTIL.pop(bucket, None)
+        return False
+    return True
+
+
+def _retry_after_seconds_from_http_error(exc):
+    """
+    HTTP 429 often includes Retry-After (seconds). Some servers send an HTTP-date; we only parse integer seconds.
+    """
+    if not isinstance(exc, HTTPError) or exc.code != 429:
+        return None
+    try:
+        ra = exc.headers.get("Retry-After")
+        if ra is None:
+            return None
+        return int(str(ra).strip())
+    except (TypeError, ValueError):
+        return None
+
+
+def _remote_fetch_begin_failure_cooldown(bucket, source_name, http_exc=None):
+    base = _remote_failure_cooldown_seconds()
+    if base <= 0:
+        return
+
+    streak = _REMOTE_FETCH_FAILURE_STREAK.get(bucket, 0) + 1
+    _REMOTE_FETCH_FAILURE_STREAK[bucket] = streak
+
+    retry_after = _retry_after_seconds_from_http_error(http_exc)
+    if retry_after is not None:
+        delay = max(retry_after, base)
+        _rlog(
+            "%s: HTTP 429 — using Retry-After=%ss (clamped with base %ss)"
+            % (source_name, retry_after, base)
+        )
+    else:
+        exp = min(streak - 1, _REMOTE_BACKOFF_EXPONENT_CAP)
+        delay = min(base * (2**exp), _REMOTE_BACKOFF_CAP_SECONDS)
+
+    delay = max(1, min(int(delay), _REMOTE_BACKOFF_CAP_SECONDS))
+    _REMOTE_FETCH_COOL_UNTIL[bucket] = time.monotonic() + delay
+    _rlog(
+        "%s: failure backoff %ds (streak=%d, bucket=%s)"
+        % (source_name, delay, streak, bucket)
+    )
+
+
+def _remote_fetch_mark_success(bucket):
+    _REMOTE_FETCH_COOL_UNTIL.pop(bucket, None)
+    _REMOTE_FETCH_FAILURE_STREAK.pop(bucket, None)
+
+
 def fetch_remote_json(url, source_name):
+    bucket = _remote_cooldown_bucket(source_name)
+    if _remote_fetch_cooldown_active(bucket):
+        _rlog(
+            "%s: skipping request (%s cooldown active — reduce spam after errors)"
+            % (source_name, bucket)
+        )
+        return None
+
     _rlog("%s lookup request -> %s" % (source_name, _safe_log_url(url)))
     request = Request(
         url,
@@ -359,19 +449,26 @@ def fetch_remote_json(url, source_name):
             _rlog(f"{source_name} lookup returned 404 (no metadata match)")
         else:
             _rlog(f"{source_name} lookup failed with HTTP {exc.code}")
+            _remote_fetch_begin_failure_cooldown(bucket, source_name, exc)
         return None
     except URLError as exc:
         _rlog(f"{source_name} lookup failed: {exc.reason}")
+        _remote_fetch_begin_failure_cooldown(bucket, source_name, None)
         return None
     except Exception as exc:
         _rlog(f"{source_name} lookup failed: {exc}")
+        _remote_fetch_begin_failure_cooldown(bucket, source_name, None)
         return None
 
     try:
-        return json.loads(body)
+        data = json.loads(body)
     except (TypeError, ValueError) as exc:
         _rlog(f"{source_name} lookup returned invalid JSON: {exc}")
+        _remote_fetch_begin_failure_cooldown(bucket, source_name, None)
         return None
+
+    _remote_fetch_mark_success(bucket)
+    return data
 
 
 def get_active_video_player_id():
@@ -759,7 +856,7 @@ def build_movie_context(item):
     tmdb_id, imdb_id = _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id)
 
     addon = get_addon()
-    if addon and _addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", default=True):
+    if addon and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True):
         key = _get_tmdb_api_key()
         if key and (tmdb_id is None or not imdb_id):
             tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, key)
@@ -971,8 +1068,8 @@ def build_tv_episode_context(item):
     addon = get_addon()
     if (
         addon
-        and _addon_get_bool(addon, "tv_use_online_segment_lookup", default=False)
-        and _addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", default=True)
+        and addon_get_bool(addon, "tv_use_online_segment_lookup", False)
+        and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
     ):
         key = _get_tmdb_api_key()
         if key and (tmdb_id is None or not imdb_id or show_imdb_id is None):
@@ -1070,7 +1167,7 @@ def normalize_remote_segment_window(segment, total_time):
 
 def _theintrodb_segment_entries(payload, total_time):
     out = []
-    for segment_name in ("recap", "intro"):
+    for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
         entries = payload.get(segment_name) or []
         for entry in entries:
             if not isinstance(entry, dict):
@@ -1146,7 +1243,10 @@ def fetch_theintrodb_segments(context, total_time):
         _rlog("TheIntroDB: using %d segment(s) %s" % (len(segs), [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in segs]))
     else:
         keys = list(payload.keys()) if isinstance(payload, dict) else type(payload).__name__
-        _rlog("TheIntroDB: response OK but no usable intro/recap after normalization (keys=%s)" % keys)
+        _rlog(
+            "TheIntroDB: response OK but no usable segment windows after normalization (keys=%s)"
+            % keys
+        )
     return segs
 
 
@@ -1175,28 +1275,41 @@ def fetch_introdb_segments(context, total_time):
         return []
 
     out = []
-    for segment_name in ("recap", "intro"):
-        segment = payload.get(segment_name)
-        window = normalize_remote_segment_window(segment, total_time)
-        if window:
-            out.append(
-                SegmentItem(
-                    window[0],
-                    window[1],
-                    segment_name,
-                    source="introdb",
+    for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
+        val = payload.get(segment_name)
+        if val is None:
+            continue
+        if isinstance(val, list):
+            for entry in val:
+                if not isinstance(entry, dict):
+                    continue
+                window = normalize_remote_segment_window(entry, total_time)
+                if window:
+                    out.append(
+                        SegmentItem(
+                            window[0],
+                            window[1],
+                            segment_name,
+                            source="introdb",
+                        )
+                    )
+        else:
+            window = normalize_remote_segment_window(val, total_time)
+            if window:
+                out.append(
+                    SegmentItem(
+                        window[0],
+                        window[1],
+                        segment_name,
+                        source="introdb",
+                    )
                 )
-            )
     if out:
         _rlog("IntroDB.app: using %d segment(s) %s" % (len(out), [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in out]))
     else:
         _rlog(
-            "IntroDB.app: no intro/recap windows (payload keys=%s; recap=%s intro=%s)"
-            % (
-                list(payload.keys()),
-                type(payload.get("recap")).__name__,
-                type(payload.get("intro")).__name__,
-            )
+            "IntroDB.app: no segment windows (payload keys=%s)"
+            % (list(payload.keys()),)
         )
     return out
 
@@ -1208,13 +1321,32 @@ def _segments_overlap(a, b, tol=1.5):
     )
 
 
-def merge_remote_segments(theintrodb_segs, introdb_segs):
-    """Prefer TheIntroDB where both cover the same window; append IntroDB-only."""
-    out = list(theintrodb_segs)
-    for b in introdb_segs:
+def merge_remote_segments(primary_segs, secondary_segs):
+    """Primary wins when both sources cover the same time window; secondary adds non-overlapping only."""
+    out = list(primary_segs)
+    for b in secondary_segs:
         if not any(_segments_overlap(b, a) for a in out):
             out.append(b)
     return sorted(out, key=lambda s: s.start_seconds)
+
+
+def _online_merge_introdb_primary(playback_kind):
+    """
+    playback_kind: 'tv' or 'movie' — which setting key to read.
+    Returns True if IntroDB.app should win overlapping windows vs TheIntroDB.
+    """
+    addon = get_addon()
+    key = (
+        "tv_online_merge_priority"
+        if playback_kind == "tv"
+        else "movie_online_merge_priority"
+    )
+    raw = (
+        addon_get_setting_text(addon, key, ONLINE_MERGE_THEINTRODB_FIRST)
+        if addon
+        else ONLINE_MERGE_THEINTRODB_FIRST
+    )
+    return (raw or "").strip() == ONLINE_MERGE_INTRODB_FIRST
 
 
 def fetch_remote_movie_segments(total_time, cache):
@@ -1244,12 +1376,25 @@ def fetch_remote_movie_segments(total_time, cache):
         return []
 
     the_segs = fetch_theintrodb_segments(context, tt)
-    cache[key] = the_segs
-    if the_segs:
-        _rlog("TheIntroDB (movie): using %d segment(s)" % len(the_segs))
+    intro_segs = fetch_introdb_segments(context, tt)
+    if _online_merge_introdb_primary("movie"):
+        merged = merge_remote_segments(intro_segs, the_segs)
+        _rlog(
+            "Remote movie segments: merge order IntroDB.app primary (TheIntroDB=%d, IntroDB=%d pre-merge)"
+            % (len(the_segs), len(intro_segs))
+        )
     else:
-        _rlog("TheIntroDB (movie): empty")
-    return list(the_segs)
+        merged = merge_remote_segments(the_segs, intro_segs)
+        _rlog(
+            "Remote movie segments: merge order TheIntroDB primary (TheIntroDB=%d, IntroDB=%d pre-merge)"
+            % (len(the_segs), len(intro_segs))
+        )
+    cache[key] = merged
+    if merged:
+        _rlog("TheIntroDB/IntroDB merge (movie): using %d segment(s)" % len(merged))
+    else:
+        _rlog("TheIntroDB/IntroDB merge (movie): empty")
+    return list(merged)
 
 
 def fetch_remote_tv_segments(total_time, cache):
@@ -1280,16 +1425,24 @@ def fetch_remote_tv_segments(total_time, cache):
 
     the_segs = fetch_theintrodb_segments(context, tt)
     intro_segs = fetch_introdb_segments(context, tt)
-    merged = merge_remote_segments(the_segs, intro_segs)
-    cache[key] = merged
-    if merged:
+    if _online_merge_introdb_primary("tv"):
+        merged = merge_remote_segments(intro_segs, the_segs)
         _rlog(
-            "merged remote: %d segment(s) total (TheIntroDB=%d, IntroDB.app=%d before dedupe)"
+            "merged remote (TV): IntroDB.app wins overlaps — %d segment(s) total "
+            "(TheIntroDB=%d, IntroDB.app=%d pre-merge)"
             % (len(merged), len(the_segs), len(intro_segs))
         )
     else:
+        merged = merge_remote_segments(the_segs, intro_segs)
         _rlog(
-            "merged remote: empty (TheIntroDB=%d, IntroDB.app=%d segments before merge)"
+            "merged remote (TV): TheIntroDB wins overlaps — %d segment(s) total "
+            "(TheIntroDB=%d, IntroDB.app=%d pre-merge)"
+            % (len(merged), len(the_segs), len(intro_segs))
+        )
+    cache[key] = merged
+    if not merged:
+        _rlog(
+            "merged remote (TV): empty (TheIntroDB=%d, IntroDB.app=%d segments before merge)"
             % (len(the_segs), len(intro_segs))
         )
     return list(merged)

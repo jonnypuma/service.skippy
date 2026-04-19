@@ -232,6 +232,30 @@ msgctxt "#32064"
 msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
 msgstr "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
 
+msgctxt "#32065"
+msgid "TV episodes: online API overlap priority"
+msgstr "TV episodes: online API overlap priority"
+
+msgctxt "#32066"
+msgid "When both TheIntroDB and IntroDB.app return a segment in the same time range, the primary source is kept for that range and the other is dropped there. The secondary source can still add segments that do not overlap the primary."
+msgstr "When both TheIntroDB and IntroDB.app return a segment in the same time range, the primary source is kept for that range and the other is dropped there. The secondary source can still add segments that do not overlap the primary."
+
+msgctxt "#32067"
+msgid "Movies: online API overlap priority"
+msgstr "Movies: online API overlap priority"
+
+msgctxt "#32068"
+msgid "Same merge rule as TV episodes. Today IntroDB.app does not return movie segments (only TheIntroDB is used for movies), so this usually behaves like TheIntroDB-only; it stays available for consistency and if IntroDB adds movies later."
+msgstr "Same merge rule as TV episodes. Today IntroDB.app does not return movie segments (only TheIntroDB is used for movies), so this usually behaves like TheIntroDB-only; it stays available for consistency and if IntroDB adds movies later."
+
+msgctxt "#32073"
+msgid "Seconds to pause remote API calls after errors"
+msgstr "Seconds to pause remote API calls after errors"
+
+msgctxt "#32074"
+msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
+msgstr "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
+
 msgctxt "#32045"
 msgid "Online segments sidecar"
 msgstr "Online segments sidecar"
@@ -241,8 +265,32 @@ msgid "Save online segments to chapters.xml"
 msgstr "Save online segments to chapters.xml"
 
 msgctxt "#32047"
-msgid "When online lookup returns intro/recap windows, write them to a Matroska-style chapters.xml file next to the video (filename-chapters.xml). Only runs if no chapter XML exists there yet — existing files are never overwritten. Applies to TV episodes and movies."
-msgstr "When online lookup returns intro/recap windows, write them to a Matroska-style chapters.xml file next to the video (filename-chapters.xml). Only runs if no chapter XML exists there yet — existing files are never overwritten. Applies to TV episodes and movies."
+msgid "When online lookup returns segment windows, write them to a Matroska-style chapters.xml file next to the video (same -chapters.xml / _chapters.xml naming as local sidecars). The next two settings control skip, overwrite, merge, and backup. Applies to TV episodes and movies."
+msgstr "When online lookup returns segment windows, write them to a Matroska-style chapters.xml file next to the video (same -chapters.xml / _chapters.xml naming as local sidecars). The next two settings control skip, overwrite, merge, and backup. Applies to TV episodes and movies."
+
+msgctxt "#32069"
+msgid "If chapter XML already exists"
+msgstr "If chapter XML already exists"
+
+msgctxt "#32070"
+msgid "Skip: do nothing when a sidecar is already present (default, legacy behavior). Overwrite: replace the file with online segments only (optional prompt). Merge: keep existing chapter atoms and add online segments that do not overlap an existing time range."
+msgstr "Skip: do nothing when a sidecar is already present (default, legacy behavior). Overwrite: replace the file with online segments only (optional prompt). Merge: keep existing chapter atoms and add online segments that do not overlap an existing time range."
+
+msgctxt "#32071"
+msgid "Back up chapter XML before overwrite or merge"
+msgstr "Back up chapter XML before overwrite or merge"
+
+msgctxt "#32072"
+msgid "When enabled, the existing sidecar is copied to the same path with an extra `.bck` extension (e.g. `video-chapters.xml.bck`) immediately before it is replaced or merged."
+msgstr "When enabled, the existing sidecar is copied to the same path with an extra `.bck` extension (e.g. `video-chapters.xml.bck`) immediately before it is replaced or merged."
+
+msgctxt "#35000"
+msgid "Replace chapter XML?"
+msgstr "Replace chapter XML?"
+
+msgctxt "#35001"
+msgid "A chapter sidecar file already exists. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgstr "A chapter sidecar file already exists. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
 
 msgctxt "#32049"
 msgid "Use online segment lookup (TheIntroDB)"
@@ -281,3 +329,11 @@ msgstr "Enable Verbose Logging"
 msgctxt "#34001"
 msgid "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
 msgstr "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
+
+msgctxt "#34002"
+msgid "Log detail level"
+msgstr "Log detail level"
+
+msgctxt "#34003"
+msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
+msgstr "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."

@@ -55,6 +55,20 @@
              default="false"
              tooltip="32047" />
 
+    <setting id="save_online_chapters_existing_policy"
+             type="labelenum"
+             label="32069"
+             default="SkipIfExists"
+             values="Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing"
+             optionvalues="SkipIfExists|OverwriteSilent|OverwriteAsk|Merge"
+             tooltip="32070" />
+
+    <setting id="save_online_chapters_backup_before_overwrite"
+             type="bool"
+             label="32071"
+             default="true"
+             tooltip="32072" />
+
   </category>
 
   <category label="30001">
@@ -208,6 +222,14 @@
              default="true"
              tooltip="32037" />
 
+    <setting id="remote_api_failure_cooldown_seconds"
+             type="number"
+             label="32073"
+             default="120"
+             min="0"
+             max="3600"
+             tooltip="32074" />
+
     <setting type="lsep" label="32059" />
 
     <setting id="tv_use_local_chapter_edl"
@@ -221,6 +243,14 @@
              label="32029"
              default="false"
              tooltip="32062" />
+
+    <setting id="tv_online_merge_priority"
+             type="labelenum"
+             label="32065"
+             default="TheIntroDBFirst"
+             values="TheIntroDB first|IntroDB.app first"
+             optionvalues="TheIntroDBFirst|IntroDBFirst"
+             tooltip="32066" />
 
     <setting id="tv_segment_source_priority"
              type="labelenum"
@@ -243,6 +273,14 @@
              label="32049"
              default="false"
              tooltip="32064" />
+
+    <setting id="movie_online_merge_priority"
+             type="labelenum"
+             label="32067"
+             default="TheIntroDBFirst"
+             values="TheIntroDB first|IntroDB.app first"
+             optionvalues="TheIntroDBFirst|IntroDBFirst"
+             tooltip="32068" />
 
     <setting id="movie_segment_source_priority"
              type="labelenum"
@@ -287,5 +325,13 @@
              label="34000"
              default="false"
              tooltip="34001" />
+    <setting id="skippy_log_detail_level"
+             type="labelenum"
+             label="34002"
+             default="Normal"
+             values="Errors only|Normal|All detail"
+             optionvalues="ErrorOnly|Normal|All"
+             visible="eq(-1,true)"
+             tooltip="34003" />
   </category>
 </settings>

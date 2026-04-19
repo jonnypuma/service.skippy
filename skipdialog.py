@@ -6,10 +6,24 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
+from settings_utils import (
+    SKIPPY_LOG_ERROR_ONLY,
+    addon_get_bool,
+    addon_get_setting_text,
+    skippy_log_effective_detail_level,
+)
+
 # Define a global variable to cache the addon object
 _addon = None
 
 FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
+
+
+def _full_skip_focus_id(hide_close, hide_skip_icon):
+    """3012 is hidden when the close button is hidden; match Full dialog XML visibility."""
+    if hide_close:
+        return 3016 if hide_skip_icon else 3015
+    return 3012
 
 # Human-readable fallbacks if settings.xml ever omits optionvalues (older installs).
 _SKIP_DIALOG_FONT_COLOR_ARGB = {
@@ -57,7 +71,7 @@ def _skip_dialog_font_color_argb(addon):
     fallback = "FF6E6E6E"
     if not addon:
         return fallback
-    raw = (addon.getSetting("skip_dialog_font_color") or "FFFFFFFF").strip()
+    raw = (addon_get_setting_text(addon, "skip_dialog_font_color", "FFFFFFFF") or "FFFFFFFF").strip()
     if not raw:
         return fallback
     # Stored hex from optionvalues (preferred).
@@ -76,7 +90,7 @@ def _skip_dialog_font_color_argb(addon):
 
 
 def _minimal_plate_filename(addon):
-    raw = (addon.getSetting("minimal_button_style") or "").strip()
+    raw = (addon_get_setting_text(addon, "minimal_button_style", "") or "").strip()
     if raw.endswith(".png"):
         return raw
     return "minimal_rounded_gray_640.png"
@@ -93,13 +107,15 @@ def get_addon():
 
 def log(msg):
     addon = get_addon()
-    if addon and addon.getSettingBool("enable_verbose_logging"):
-        # The addon context might be lost, so check again before calling getAddonInfo
-        try:
-            xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {msg}", xbmc.LOGINFO)
-        except RuntimeError:
-            # Fallback if the addon info can't be retrieved
-            xbmc.log(f"[service.skippy - SkipDialog] {msg}", xbmc.LOGINFO)
+    if not addon:
+        return
+    lv = skippy_log_effective_detail_level(addon)
+    if lv == "Off" or lv == SKIPPY_LOG_ERROR_ONLY:
+        return
+    try:
+        xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {msg}", xbmc.LOGINFO)
+    except RuntimeError:
+        xbmc.log(f"[service.skippy - SkipDialog] {msg}", xbmc.LOGINFO)
 
 def log_always(msg):
     # This function is now more robust against shutdown failures
@@ -239,13 +255,13 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         addon = get_addon()
         self._skip_text_color_argb = _skip_dialog_font_color_argb(addon)
         self.setProperty("skip_dialog_text_color", self._skip_text_color_argb)
-        self._minimal_mode = (addon.getSetting("skip_dialog_mode") or "Full").strip() == "Minimal"
+        self._minimal_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip() == "Minimal"
 
         if self._minimal_mode:
-            fmt = (addon.getSetting("minimal_skip_button_format") if addon else None) or "Skip + Type"
+            fmt = addon_get_setting_text(addon, "minimal_skip_button_format", "Skip + Type") or "Skip + Type"
             log(f"🖼️ Minimal plate (XML patched in service): {_minimal_plate_filename(addon)}")
         else:
-            fmt = (addon.getSetting("skip_button_format") if addon else None) or "Skip + Type + Duration"
+            fmt = addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration") or "Skip + Type + Duration"
         label = _build_skip_button_label(self.segment, fmt, duration_str)
         for cid in FULL_SKIP_BUTTON_IDS:
             try:
@@ -261,15 +277,15 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             segment_type = "Segment"
         self.setProperty("ending_text", f"{segment_type} ending in:")
 
-        hide_ending_text = addon.getSettingBool("hide_ending_text") if addon else False
+        hide_ending_text = addon_get_bool(addon, "hide_ending_text", False) if addon else False
         self.setProperty("hide_ending_text", "true" if hide_ending_text else "false")
 
         hide_close = False
         hide_skip_icon = False
         if not self._minimal_mode:
-            hide_close = addon.getSettingBool("hide_close_button") if addon else False
+            hide_close = addon_get_bool(addon, "hide_close_button", False) if addon else False
             self.setProperty("hide_close_button", "true" if hide_close else "false")
-            hide_skip_icon = addon.getSettingBool("hide_skip_icon") if addon else False
+            hide_skip_icon = addon_get_bool(addon, "hide_skip_icon", False) if addon else False
             self.setProperty("hide_skip_icon", "true" if hide_skip_icon else "false")
             if hide_close:
                 try:
@@ -320,8 +336,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         if not self._minimal_mode:
             try:
                 addon = get_addon()
-                raw_setting = addon.getSetting("show_progress_bar")
-                show_progress = addon.getSettingBool("show_progress_bar")
+                raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
+                show_progress = addon_get_bool(addon, "show_progress_bar", False)
                 log(f"🧩 show_progress_bar raw setting: '{raw_setting}' -> bool: {show_progress}")
                 progress = self.getControl(3014)
                 progress.setVisible(show_progress)
@@ -337,18 +353,22 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             if self._minimal_mode:
                 self.setFocusId(3012)
                 log("📐 Minimal: focus on skip chip (3012)")
-            elif hide_close:
-                focus_id = 3016 if hide_skip_icon else 3015
-                self.setFocusId(focus_id)
-                log(f"📐 Focus set to control {focus_id} (hide_close={hide_close}, hide_skip_icon={hide_skip_icon})")
             else:
-                self.setFocusId(3012)
-                log(f"📐 Focus set to control 3012 (hide_close={hide_close}, hide_skip_icon={hide_skip_icon})")
+                focus_id = _full_skip_focus_id(hide_close, hide_skip_icon)
+                self.setFocusId(focus_id)
+                log(
+                    f"📐 Focus set to control {focus_id} (hide_close={hide_close}, hide_skip_icon={hide_skip_icon})"
+                )
         except Exception as e:
             log(f"⚠️ Error setting dialog focus: {e}")
             try:
-                self.setFocusId(3012)
-                log("📐 Fallback: Focus set to control 3012")
+                fid = (
+                    3012
+                    if self._minimal_mode
+                    else _full_skip_focus_id(hide_close, hide_skip_icon)
+                )
+                self.setFocusId(fid)
+                log(f"📐 Fallback: Focus set to control {fid}")
             except Exception as e2:
                 log_always(f"❌ CRITICAL: Failed to set focus to any button - dialog may not be functional: {e2}")
 
@@ -382,8 +402,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             if not self._minimal_mode:
                 try:
                     addon = get_addon()
-                    raw_setting = addon.getSetting("show_progress_bar")
-                    show_progress = addon.getSettingBool("show_progress_bar")
+                    raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
+                    show_progress = addon_get_bool(addon, "show_progress_bar", False)
                     progress = self.getControl(3014)
                     progress.setVisible(show_progress)
                     if show_progress:
@@ -487,7 +507,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         try:
             if getattr(self, "_minimal_mode", False):
                 return
-            show_progress = get_addon().getSettingBool("show_progress_bar")
+            _ad = get_addon()
+            show_progress = addon_get_bool(_ad, "show_progress_bar", False) if _ad else False
             if show_progress:
                 self.getControl(3014).setPercent(0)
                 log("🔄 Progress bar reset on close")
