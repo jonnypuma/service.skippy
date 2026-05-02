@@ -5,7 +5,7 @@
     <setting id="custom_segment_keywords"
              type="text"
              label="31000"
-             default="intro,recap,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,outro,credits,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending"
+             default="intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending"
              tooltip="Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor." />
 
     <setting type="lsep" label="31001" />
@@ -38,7 +38,7 @@
     <setting id="edl_action_mapping"
              type="text"
              label="31006"
-             default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue"
+             default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open"
              tooltip="Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits" />
 
 	<setting id="skip_overlapping_segments" 
@@ -47,7 +47,21 @@
 			 default="true"
 			 tooltip="Configurable overlap detection to help avoid redundant or conflicting skips" />
 
+    <setting id="use_embedded_chapters_fallback"
+             type="bool"
+             label="31008"
+             default="true"
+             tooltip="31009" />
+
     <setting type="lsep" label="32045" />
+
+    <setting id="save_online_segments_format"
+             type="labelenum"
+             label="32077"
+             default="Both"
+             values="Both|EDL only|Chapters XML only"
+             optionvalues="Both|EDL|XML"
+             tooltip="32078" />
 
     <setting id="save_online_segments_to_chapters_xml"
              type="bool"
@@ -260,6 +274,12 @@
              optionvalues="LocalFirst|OnlineFirst"
              tooltip="32063" />
 
+    <setting id="tv_prefetch_next_episode"
+             type="bool"
+             label="32075"
+             default="true"
+             tooltip="32076" />
+
     <setting type="lsep" label="32060" />
 
     <setting id="movie_use_local_chapter_edl"
@@ -270,7 +290,7 @@
 
     <setting id="movie_use_online_segment_lookup"
              type="bool"
-             label="32049"
+             label="32029"
              default="false"
              tooltip="32064" />
 
@@ -298,25 +318,209 @@
              type="bool" 
              label="33000" 
              default="true"
-             tooltip="Show a notification if the metadata file (chapters.xml or .edl) cannot be found or read for the current episode." />
+             tooltip="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode." />
 
     <setting id="show_not_found_toast_for_movies" 
              type="bool" 
              label="33001" 
              default="false"
-             tooltip="Show a notification if the metadata file (chapters.xml or .edl) cannot be found or read for the current movie." />
+             tooltip="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie." />
 
     <setting id="show_toast_for_overlapping_nested_segments" 
              type="bool" 
              label="33002" 
              default="false"
-             tooltip="Show a notification if the metadata file (chapters.xml or .edl) has overlapping segments." />			 
+             tooltip="Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments." />			 
 			 
     <setting id="show_toast_for_skipped_segment" 
              type="bool" 
              label="33003" 
              default="true"
              tooltip="Show a toast notification if a segment is skipped." />					 
+  </category>
+
+  <category label="30005">
+    <setting id="segment_marker_enabled"
+             type="bool"
+             label="36000"
+             default="false"
+             tooltip="36001" />
+
+    <setting id="segment_marker_auto_save"
+             type="bool"
+             label="36002"
+             default="false"
+             visible="eq(-1,true)"
+             tooltip="36003" />
+
+    <setting id="segment_marker_show_indicator"
+             type="bool"
+             label="36004"
+             default="true"
+             visible="eq(-2,true)"
+             tooltip="36005" />
+
+    <setting id="segment_marker_save_format"
+             type="labelenum"
+             label="36017"
+             default="Both"
+             values="Both|EDL only|Chapters XML only"
+             optionvalues="Both|EDL|XML"
+             visible="eq(-3,true)"
+             tooltip="36018" />
+
+    <setting id="segment_marker_file_permissions"
+             type="labelenum"
+             label="36006"
+             default="Default"
+             values="Default|World-readable (644)|World-writable (666)"
+             optionvalues="Default|644|666"
+             visible="eq(-4,true)"
+             tooltip="36007" />
+
+    <setting id="segment_marker_existing_policy"
+             type="labelenum"
+             label="36031"
+             default="MergeNonOverlapping"
+             values="Merge non-overlapping|Keep both (old starts after new)|Overwrite overlapping|Append always|Replace file|Ask each time"
+             optionvalues="MergeNonOverlapping|KeepBothOldAfterNew|OverwriteOverlapping|AppendAlways|ReplaceFile|AskEachTime"
+             visible="eq(-5,true)"
+             tooltip="36032" />
+
+    <setting id="segment_marker_backup_before_write"
+             type="bool"
+             label="36033"
+             default="true"
+             visible="eq(-6,true)"
+             tooltip="36034" />
+
+    <setting id="segment_marker_keyboard_shortcut"
+             type="text"
+             label="36019"
+             default="ctrl+e"
+             visible="eq(-7,true)"
+             tooltip="36020" />
+
+    <setting id="segment_marker_keyboard_press_type"
+             type="labelenum"
+             label="36029"
+             default="normal"
+             values="Normal press|Long press"
+             optionvalues="normal|longpress"
+             visible="eq(-8,true)"
+             tooltip="36030" />
+
+    <setting id="segment_marker_remote_button"
+             type="text"
+             label="36021"
+             default=""
+             visible="eq(-9,true)"
+             tooltip="36022" />
+
+    <setting id="segment_marker_remote_press_type"
+             type="labelenum"
+             label="36027"
+             default="normal"
+             values="Normal press|Long press"
+             optionvalues="normal|longpress"
+             visible="eq(-10,true)"
+             tooltip="36028" />
+
+    <setting type="action"
+             label="36023"
+             action="RunScript(service.skippy,discover_button)"
+             visible="eq(-11,true)"
+             tooltip="36024" />
+
+    <setting type="action"
+             label="36025"
+             action="RunScript(service.skippy,install_keymap)"
+             visible="eq(-12,true)"
+             tooltip="36026" />
+  </category>
+
+  <category label="30006">
+    <setting id="segment_editor_enabled"
+             type="bool"
+             label="37000"
+             default="false"
+             tooltip="37001" />
+
+    <setting id="segment_editor_save_format"
+             type="labelenum"
+             label="36017"
+             default="Both"
+             values="Both|EDL only|Chapters XML only"
+             optionvalues="Both|EDL|XML"
+             visible="eq(-1,true)"
+             tooltip="37002" />
+
+    <setting id="segment_editor_file_permissions"
+             type="labelenum"
+             label="36006"
+             default="Default"
+             values="Default|World-readable (644)|World-writable (666)"
+             optionvalues="Default|644|666"
+             visible="eq(-2,true)"
+             tooltip="36007" />
+
+    <setting id="segment_editor_backup_before_write"
+             type="bool"
+             label="36033"
+             default="true"
+             visible="eq(-3,true)"
+             tooltip="36034" />
+
+    <setting id="segment_editor_fullscreen_overlay"
+             type="bool"
+             label="37010"
+             default="false"
+             visible="eq(-4,true)"
+             tooltip="37011" />
+
+    <setting id="segment_editor_keyboard_shortcut"
+             type="text"
+             label="37004"
+             default="ctrl+shift+e"
+             visible="eq(-5,true)"
+             tooltip="37005" />
+
+    <setting id="segment_editor_keyboard_press_type"
+             type="labelenum"
+             label="36029"
+             default="normal"
+             values="Normal press|Long press"
+             optionvalues="normal|longpress"
+             visible="eq(-6,true)"
+             tooltip="36030" />
+
+    <setting id="segment_editor_remote_button"
+             type="text"
+             label="37006"
+             default=""
+             visible="eq(-7,true)"
+             tooltip="37007" />
+
+    <setting id="segment_editor_remote_press_type"
+             type="labelenum"
+             label="37008"
+             default="normal"
+             values="Normal press|Long press"
+             optionvalues="normal|longpress"
+             visible="eq(-8,true)"
+             tooltip="37009" />
+
+    <setting type="action"
+             label="37014"
+             action="RunScript(service.skippy,discover_editor_button)"
+             visible="eq(-9,true)"
+             tooltip="37015" />
+
+    <setting type="action"
+             label="37016"
+             action="RunScript(service.skippy,install_editor_keymap)"
+             visible="eq(-10,true)"
+             tooltip="37017" />
   </category>
 
   <category label="30003">

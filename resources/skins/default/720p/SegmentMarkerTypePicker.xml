@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+
+  <zorder>2</zorder>
+  <defaultcontrol>9100</defaultcontrol>
+
+  <animation type="WindowOpen">
+    <effect type="fade" start="0" end="100" time="150" />
+  </animation>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="100" />
+  </animation>
+
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1280</width>
+      <height>720</height>
+      <texture>white.png</texture>
+      <colordiffuse>80000000</colordiffuse>
+    </control>
+
+    <control type="group">
+      <left>320</left>
+      <top>100</top>
+      <width>640</width>
+      <height>500</height>
+
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>640</width>
+        <height>500</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0202020</colordiffuse>
+      </control>
+
+      <control type="label" id="9101">
+        <left>30</left>
+        <top>25</top>
+        <width>580</width>
+        <height>45</height>
+        <label>Choose segment type</label>
+        <font>font30</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+      </control>
+
+      <control type="label" id="9102">
+        <left>30</left>
+        <top>80</top>
+        <width>580</width>
+        <height>30</height>
+        <label>Choose the label for the marked segment.</label>
+        <font>font14</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+      </control>
+
+      <control type="list" id="9100">
+        <left>30</left>
+        <top>125</top>
+        <width>580</width>
+        <height>300</height>
+        <itemlayout width="580" height="44">
+          <control type="label">
+            <left>16</left>
+            <top>6</top>
+            <width>548</width>
+            <height>32</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="580" height="44">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>580</width>
+            <height>44</height>
+            <texture>button_focus.png</texture>
+          </control>
+          <control type="label">
+            <left>16</left>
+            <top>6</top>
+            <width>548</width>
+            <height>32</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <aligny>center</aligny>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <control type="label" id="9103">
+        <left>30</left>
+        <top>450</top>
+        <width>580</width>
+        <height>30</height>
+        <label>Enter/OK selects. Back/Esc cancels.</label>
+        <font>font12</font>
+        <textcolor>FFB0B0B0</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+      </control>
+    </control>
+  </controls>
+</window>

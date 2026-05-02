@@ -1,6 +1,7 @@
 import os
 import threading
 import time
+import unicodedata
 
 import xbmc
 import xbmcaddon
@@ -17,6 +18,10 @@ from settings_utils import (
 _addon = None
 
 FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
+
+
+def _ascii_log_text(msg):
+    return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
 
 
 def _full_skip_focus_id(hide_close, hide_skip_icon):
@@ -113,9 +118,9 @@ def log(msg):
     if lv == "Off" or lv == SKIPPY_LOG_ERROR_ONLY:
         return
     try:
-        xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {msg}", xbmc.LOGINFO)
+        xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
     except RuntimeError:
-        xbmc.log(f"[service.skippy - SkipDialog] {msg}", xbmc.LOGINFO)
+        xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 def log_always(msg):
     # This function is now more robust against shutdown failures
@@ -123,12 +128,12 @@ def log_always(msg):
     if addon:
         # Check if the addon is still in context
         try:
-            xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {msg}", xbmc.LOGINFO)
+            xbmc.log(f"[{addon.getAddonInfo('id')} - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
         except RuntimeError:
             # Fallback for when context is lost
-            xbmc.log(f"[service.skippy - SkipDialog] {msg}", xbmc.LOGINFO)
+            xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
     else:
-        xbmc.log(f"[service.skippy - SkipDialog] {msg}", xbmc.LOGINFO)
+        xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 def _build_skip_button_label(segment, format_setting, duration_str):
     if format_setting == "Skip":

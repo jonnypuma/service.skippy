@@ -8,10 +8,14 @@ def log(msg):
     log_segment(msg)
 
 
+def _ascii_log_text(msg):
+    return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
+
+
 def log_always(msg):
     addon = get_addon()
     aid = addon.getAddonInfo("id") if addon else "service.skippy"
-    xbmc.log(f"[{aid} - SegmentItem] {msg}", xbmc.LOGINFO)
+    xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 def normalize_label(text):
     # Normalize and lowercase labels for consistent matching

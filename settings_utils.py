@@ -9,6 +9,10 @@ SKIPPY_LOG_NORMAL = "Normal"
 SKIPPY_LOG_ALL = "All"
 
 
+def _ascii_log_text(msg):
+    return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
+
+
 def get_addon():
     """Get the addon object, handling cases where addon is being updated/uninstalled."""
     try:
@@ -109,12 +113,12 @@ def log(msg):
     """Standard INFO trace when verbose is on and log level is Normal or All detail."""
     addon = get_addon()
     if not addon:
-        xbmc.log(f"[service.skippy - SettingsUtils] {msg} (shutdown)", xbmc.LOGINFO)
+        xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)} (shutdown)", xbmc.LOGINFO)
         return
     lv = skippy_log_effective_detail_level(addon)
     if lv == "Off" or lv == SKIPPY_LOG_ERROR_ONLY:
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGINFO)
+    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
 def log_error(msg):
@@ -125,7 +129,7 @@ def log_error(msg):
     lv = skippy_log_effective_detail_level(addon)
     if lv == "Off":
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGERROR)
+    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGERROR)
 
 
 def log_remote(msg):
@@ -136,7 +140,7 @@ def log_remote(msg):
     lv = skippy_log_effective_detail_level(addon)
     if lv not in (SKIPPY_LOG_NORMAL, SKIPPY_LOG_ALL):
         return
-    xbmc.log("[service.skippy - remote] %s" % msg, xbmc.LOGINFO)
+    xbmc.log("[service.skippy - remote] %s" % _ascii_log_text(msg), xbmc.LOGINFO)
 
 
 def log_segment_detail(msg):
@@ -150,7 +154,7 @@ def log_segment_detail(msg):
         aid = addon.getAddonInfo("id")
     except Exception:
         aid = "service.skippy"
-    xbmc.log(f"[{aid} - SegmentItem] {msg}", xbmc.LOGINFO)
+    xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
 def log_service_detail(msg):
@@ -160,7 +164,7 @@ def log_service_detail(msg):
         return
     if skippy_log_effective_detail_level(addon) != SKIPPY_LOG_ALL:
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGINFO)
+    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
 def log_segment(msg):
@@ -175,7 +179,7 @@ def log_segment(msg):
         aid = addon.getAddonInfo("id")
     except Exception:
         aid = "service.skippy"
-    xbmc.log(f"[{aid} - SegmentItem] {msg}", xbmc.LOGINFO)
+    xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
 def _playback_snap_trim(s, max_len=120):
@@ -245,6 +249,7 @@ def log_playback_settings_snapshot(addon=None):
             "movie_segment_source_priority=%s" % tx("movie_segment_source_priority", "LocalFirst"),
             "movie_online_merge_priority=%s" % tx("movie_online_merge_priority", "TheIntroDBFirst"),
             "save_online_segments_to_chapters_xml=%s" % bo("save_online_segments_to_chapters_xml", False),
+            "save_online_segments_format=%s" % tx("save_online_segments_format", "Both"),
             "save_online_chapters_existing_policy=%s" % tx("save_online_chapters_existing_policy", "SkipIfExists"),
             "save_online_chapters_backup_before_overwrite=%s" % bo("save_online_chapters_backup_before_overwrite", True),
         ]
@@ -289,6 +294,57 @@ def log_always(msg):
 def normalize_label(label):
     # Normalize and lowercase labels for consistent matching
     return unicodedata.normalize("NFKC", label or "").strip().lower()
+
+
+# Must stay in sync with ``resources/settings.xml`` default for ``custom_segment_keywords``.
+_DEFAULT_CUSTOM_SEGMENT_KEYWORDS = (
+    "intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,"
+    "commercial,commercials,preview,next time on,next on,sneak peek,last time on,"
+    "last on,previously on,closing,ending"
+)
+
+
+def format_segment_label_for_ui(label):
+    """Format comma-list keywords for picker display (title-like when all lowercase)."""
+    value = (label or "").strip()
+    if not value:
+        return value
+    if any(ch.isupper() for ch in value):
+        return value
+    return " ".join(word[:1].upper() + word[1:] for word in value.split())
+
+
+def get_custom_segment_keyword_labels(addon=None):
+    """
+    Ordered unique labels from **Segment keywords to watch for** (comma-separated).
+    Shared by Segment Marker and Segment Editor label pickers.
+    """
+    if addon:
+        raw = addon_get_setting_text(
+            addon,
+            "custom_segment_keywords",
+            _DEFAULT_CUSTOM_SEGMENT_KEYWORDS,
+        )
+        if raw is None or not str(raw).strip():
+            raw = _DEFAULT_CUSTOM_SEGMENT_KEYWORDS
+    else:
+        raw = _DEFAULT_CUSTOM_SEGMENT_KEYWORDS
+    keywords = [k.strip() for k in str(raw).split(",") if k.strip()]
+    if not keywords:
+        keywords = [
+            k.strip()
+            for k in _DEFAULT_CUSTOM_SEGMENT_KEYWORDS.split(",")
+            if k.strip()
+        ]
+    seen = set()
+    unique = []
+    for k in keywords:
+        kl = normalize_label(k)
+        if kl not in seen:
+            seen.add(kl)
+            unique.append(format_segment_label_for_ui(k))
+    return unique
+
 
 def is_skip_enabled(playback_type):
     """Check if skipping is enabled at all for the given playback type."""
@@ -360,24 +416,68 @@ def get_user_skip_mode(label):
     log(f"🕳️ No skip mode match found for: {title} → using default: ask")
     return "ask"
 
-def get_edl_type_map():
-    addon = get_addon()
-    if not addon:
-        return {}  # During update/uninstall, return empty mapping
-    raw = addon_get_setting_text(addon, "edl_action_mapping", "") or ""
-    log(f"🔁 Raw EDL mapping string: {raw}")
-    pairs = [entry.strip() for entry in raw.split(",") if ":" in entry]
+# Must stay in sync with ``resources/settings.xml`` default for ``edl_action_mapping``.
+_DEFAULT_EDL_ACTION_MAPPING = (
+    "4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,"
+    "12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open"
+)
+
+
+def _parse_edl_type_map_pairs(raw):
+    """Parse mapping string into action_int -> normalized label."""
     mapping = {}
-    for pair in pairs:
+    for pair in [entry.strip() for entry in (raw or "").split(",") if ":" in entry]:
         try:
             action, label = pair.split(":", 1)
             action_int = int(action.strip())
-            normalized_label = normalize_label(label)
-            mapping[action_int] = normalized_label
-            log(f"✅ Parsed mapping: {action_int} → '{normalized_label}'")
-        except Exception as e:
-            log(f"⚠️ Skipped invalid mapping '{pair}': {e}")
+            mapping[action_int] = normalize_label(label)
+        except Exception:
+            pass
     return mapping
+
+
+def _parse_edl_label_to_action_pairs(raw):
+    """Last entry wins for duplicate labels in the same string."""
+    label_to_action = {}
+    for pair in [entry.strip() for entry in (raw or "").split(",") if ":" in entry]:
+        try:
+            action, label = pair.split(":", 1)
+            label_to_action[normalize_label(label)] = int(action.strip())
+        except Exception:
+            pass
+    return label_to_action
+
+
+def get_edl_type_map():
+    """action int -> normalized label; user mapping overlays addon defaults."""
+    addon = get_addon()
+    if not addon:
+        return {}
+    raw = addon_get_setting_text(addon, "edl_action_mapping", "") or ""
+    log(f"🔁 Raw EDL mapping string: {raw}")
+    base = _parse_edl_type_map_pairs(_DEFAULT_EDL_ACTION_MAPPING)
+    user = _parse_edl_type_map_pairs(raw)
+    merged = {**base, **user}
+    log(
+        "🔁 EDL action map: %d type(s) merged (%d from user string)"
+        % (len(merged), len(user))
+    )
+    return merged
+
+
+def get_edl_label_to_action_map():
+    """
+    Normalized label -> EDL action int; user mapping overlays addon defaults
+    (same merge as get_edl_type_map) so legacy installs get e.g. Outro → 13.
+    """
+    addon = get_addon()
+    if not addon:
+        return {}
+    raw = addon_get_setting_text(addon, "edl_action_mapping", "") or ""
+    base = _parse_edl_label_to_action_pairs(_DEFAULT_EDL_ACTION_MAPPING)
+    user = _parse_edl_label_to_action_pairs(raw)
+    return {**base, **user}
+
 
 # This function has been updated to use the correct API for Kodi v21.2 Omega
 def show_overlapping_toast():

@@ -11,16 +11,16 @@ msgid "Segment Settings"
 msgstr "Segment Settings"
 
 msgctxt "#30001"
-msgid "Playback & skip dialog"
-msgstr "Playback & skip dialog"
+msgid "Playback & Skip Dialog"
+msgstr "Playback & Skip Dialog"
 
 msgctxt "#30004"
-msgid "Segment sources"
-msgstr "Segment sources"
+msgid "Segment Sources"
+msgstr "Segment Sources"
 
 msgctxt "#30002"
-msgid "Segment Toast Notifications"
-msgstr "Segment Toast Notifications"
+msgid "Toast Notifications"
+msgstr "Toast Notifications"
 
 msgctxt "#30003"
 msgid "Debug Logging"
@@ -58,6 +58,14 @@ msgstr "EDL Action Type Mapping"
 msgctxt "#31007"
 msgid "Ignore overlapping segments"
 msgstr "Ignore overlapping segments"
+
+msgctxt "#31008"
+msgid "Use embedded chapters as fallback"
+msgstr "Use embedded chapters as fallback"
+
+msgctxt "#31009"
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
+msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
 
 # Dialog Settings
 msgctxt "#32000"
@@ -233,20 +241,20 @@ msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (no
 msgstr "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
 
 msgctxt "#32065"
-msgid "TV episodes: online API overlap priority"
-msgstr "TV episodes: online API overlap priority"
+msgid "TV episodes: online API priority"
+msgstr "TV episodes: online API priority"
 
 msgctxt "#32066"
-msgid "When both TheIntroDB and IntroDB.app return a segment in the same time range, the primary source is kept for that range and the other is dropped there. The secondary source can still add segments that do not overlap the primary."
-msgstr "When both TheIntroDB and IntroDB.app return a segment in the same time range, the primary source is kept for that range and the other is dropped there. The secondary source can still add segments that do not overlap the primary."
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgstr "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
 
 msgctxt "#32067"
-msgid "Movies: online API overlap priority"
-msgstr "Movies: online API overlap priority"
+msgid "Movies: online API priority"
+msgstr "Movies: online API priority"
 
 msgctxt "#32068"
-msgid "Same merge rule as TV episodes. Today IntroDB.app does not return movie segments (only TheIntroDB is used for movies), so this usually behaves like TheIntroDB-only; it stays available for consistency and if IntroDB adds movies later."
-msgstr "Same merge rule as TV episodes. Today IntroDB.app does not return movie segments (only TheIntroDB is used for movies), so this usually behaves like TheIntroDB-only; it stays available for consistency and if IntroDB adds movies later."
+msgid "Same rule as for TV episodes. For movies, only TheIntroDB is used today (IntroDB.app has no movie segments); this setting stays for consistency if that changes later."
+msgstr "Same rule as for TV episodes. For movies, only TheIntroDB is used today (IntroDB.app has no movie segments); this setting stays for consistency if that changes later."
 
 msgctxt "#32073"
 msgid "Seconds to pause remote API calls after errors"
@@ -256,45 +264,73 @@ msgctxt "#32074"
 msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
 msgstr "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
 
+msgctxt "#32075"
+msgid "Pre-fetch segments for next episode"
+msgstr "Pre-fetch segments for next episode"
+
+msgctxt "#32076"
+msgid "When TV online lookup is enabled and a playlist contains more episodes, Skippy pre-fetches segment data for the next episode in the background so it is ready when playback transitions."
+msgstr "When TV online lookup is enabled and a playlist contains more episodes, Skippy pre-fetches segment data for the next episode in the background so it is ready when playback transitions."
+
 msgctxt "#32045"
 msgid "Online segments sidecar"
 msgstr "Online segments sidecar"
 
+msgctxt "#32077"
+msgid "Save format (online segments)"
+msgstr "Save format (online segments)"
+
+msgctxt "#32078"
+msgid "Write fetched online segments to `.edl` next to the video, to Matroska-style `-chapters.xml` / `_chapters.xml`, or both. Separate from Segment Marker save format."
+msgstr "Write fetched online segments to `.edl` next to the video, to Matroska-style `-chapters.xml` / `_chapters.xml`, or both. Separate from Segment Marker save format."
+
 msgctxt "#32046"
-msgid "Save online segments to chapters.xml"
-msgstr "Save online segments to chapters.xml"
+msgid "Save online segments"
+msgstr "Save online segments"
 
 msgctxt "#32047"
-msgid "When online lookup returns segment windows, write them to a Matroska-style chapters.xml file next to the video (same -chapters.xml / _chapters.xml naming as local sidecars). The next two settings control skip, overwrite, merge, and backup. Applies to TV episodes and movies."
-msgstr "When online lookup returns segment windows, write them to a Matroska-style chapters.xml file next to the video (same -chapters.xml / _chapters.xml naming as local sidecars). The next two settings control skip, overwrite, merge, and backup. Applies to TV episodes and movies."
+msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgstr "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
 
 msgctxt "#32069"
-msgid "If chapter XML already exists"
-msgstr "If chapter XML already exists"
+msgid "If matching sidecar already exists"
+msgstr "If matching sidecar already exists"
 
 msgctxt "#32070"
-msgid "Skip: do nothing when a sidecar is already present (default, legacy behavior). Overwrite: replace the file with online segments only (optional prompt). Merge: keep existing chapter atoms and add online segments that do not overlap an existing time range."
-msgstr "Skip: do nothing when a sidecar is already present (default, legacy behavior). Overwrite: replace the file with online segments only (optional prompt). Merge: keep existing chapter atoms and add online segments that do not overlap an existing time range."
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range."
+msgstr "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range."
 
 msgctxt "#32071"
-msgid "Back up chapter XML before overwrite or merge"
-msgstr "Back up chapter XML before overwrite or merge"
+msgid "Back up sidecar files before overwrite or merge"
+msgstr "Back up sidecar files before overwrite or merge"
 
 msgctxt "#32072"
-msgid "When enabled, the existing sidecar is copied to the same path with an extra `.bck` extension (e.g. `video-chapters.xml.bck`) immediately before it is replaced or merged."
-msgstr "When enabled, the existing sidecar is copied to the same path with an extra `.bck` extension (e.g. `video-chapters.xml.bck`) immediately before it is replaced or merged."
+msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced or merged."
+msgstr "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced or merged."
 
 msgctxt "#35000"
-msgid "Replace chapter XML?"
-msgstr "Replace chapter XML?"
+msgid "Replace local files with online segment data?"
+msgstr "Replace local files with online segment data?"
 
 msgctxt "#35001"
-msgid "A chapter sidecar file already exists. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
-msgstr "A chapter sidecar file already exists. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgstr "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
 
-msgctxt "#32049"
-msgid "Use online segment lookup (TheIntroDB)"
-msgstr "Use online segment lookup (TheIntroDB)"
+msgctxt "#35002"
+msgid "Replace local chapter XML and EDL with online data?"
+msgstr "Replace local chapter XML and EDL with online data?"
+
+msgctxt "#35003"
+msgid "Both a chapter XML file and an `.edl` already exist beside this video. Replace both with segments from online lookup? (Existing content will be lost unless backup is enabled in settings or you use Merge policy.)"
+msgstr "Both a chapter XML file and an `.edl` already exist beside this video. Replace both with segments from online lookup? (Existing content will be lost unless backup is enabled in settings or you use Merge policy.)"
+
+msgctxt "#35004"
+msgid "Existing chapter XML will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Existing chapter XML will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+
+msgctxt "#35005"
+msgid "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
@@ -337,3 +373,212 @@ msgstr "Log detail level"
 msgctxt "#34003"
 msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
 msgstr "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
+
+# Segment Marker Settings
+msgctxt "#30005"
+msgid "Segment Marker"
+msgstr "Segment Marker"
+
+msgctxt "#30006"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#37000"
+msgid "Enable Segment Editor"
+msgstr "Enable Segment Editor"
+
+msgctxt "#37001"
+msgid "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
+msgstr "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
+
+msgctxt "#37002"
+msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and -chapters.xml. EDL only or Chapters XML only: a single format."
+msgstr "Which sidecar file(s) the editor writes when you save. Both: .edl and -chapters.xml. EDL only or Chapters XML only: a single format."
+
+msgctxt "#37004"
+msgid "Keyboard editor shortcut"
+msgstr "Keyboard editor shortcut"
+
+msgctxt "#37005"
+msgid "Free-form shortcut written to userdata/keymaps/skippy_editor.xml (separate from the marker keymap). Examples: ctrl+shift+e, f8. Use Keyboard press type below for normal vs long press."
+msgstr "Free-form shortcut written to userdata/keymaps/skippy_editor.xml (separate from the marker keymap). Examples: ctrl+shift+e, f8. Use Keyboard press type below for normal vs long press."
+
+msgctxt "#37006"
+msgid "Remote editor button"
+msgstr "Remote editor button"
+
+msgctxt "#37007"
+msgid "Optional remote button for opening Segment Editor only (independent of Segment Marker). Same format as marker: button name (e.g. info) or discovered key:<code>."
+msgstr "Optional remote button for opening Segment Editor only (independent of Segment Marker). Same format as marker: button name (e.g. info) or discovered key:<code>."
+
+msgctxt "#37008"
+msgid "Remote editor press type"
+msgstr "Remote editor press type"
+
+msgctxt "#37009"
+msgid "Choose whether the configured editor remote button uses a normal press or long press in the keymap."
+msgstr "Choose whether the configured editor remote button uses a normal press or long press in the keymap."
+
+msgctxt "#37010"
+msgid "Full-screen dark overlay"
+msgstr "Full-screen dark overlay"
+
+msgctxt "#37011"
+msgid "When enabled, darkens the video behind the editor. When disabled, the video stays fully visible while editing."
+msgstr "When enabled, darkens the video behind the editor. When disabled, the video stays fully visible while editing."
+
+msgctxt "#37014"
+msgid "Discover remote button (editor)"
+msgstr "Discover remote button (editor)"
+
+msgctxt "#37015"
+msgid "Capture the next remote press and store it in Remote editor button, then refresh skippy_editor.xml."
+msgstr "Capture the next remote press and store it in Remote editor button, then refresh skippy_editor.xml."
+
+msgctxt "#37016"
+msgid "Update editor keymap now"
+msgstr "Update editor keymap now"
+
+msgctxt "#37017"
+msgid "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+msgstr "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+
+msgctxt "#36000"
+msgid "Enable Segment Marker"
+msgstr "Enable Segment Marker"
+
+msgctxt "#36001"
+msgid "Mark segment start/end times during playback with a configurable hotkey (default: CTRL+E) or remote button. After marking start and end, choose a segment type and save to sidecar files."
+msgstr "Mark segment start/end times during playback with a configurable hotkey (default: CTRL+E) or remote button. After marking start and end, choose a segment type and save to sidecar files."
+
+msgctxt "#36002"
+msgid "Auto-save marked segments"
+msgstr "Auto-save marked segments"
+
+msgctxt "#36003"
+msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
+msgstr "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
+
+msgctxt "#36004"
+msgid "Show pending marker indicator"
+msgstr "Show pending marker indicator"
+
+msgctxt "#36005"
+msgid "While waiting for the second marker press, shows a semi-transparent label at the top-left of the screen (during playback) with the pending start time. After you set the end time, it shows the full range until you finish or cancel saving. Requires the Skippy service to be running."
+msgstr "While waiting for the second marker press, shows a semi-transparent label at the top-left of the screen (during playback) with the pending start time. After you set the end time, it shows the full range until you finish or cancel saving. Requires the Skippy service to be running."
+
+msgctxt "#36006"
+msgid "Saved file permissions"
+msgstr "Saved file permissions"
+
+msgctxt "#36007"
+msgid "Set permissions on saved segment files. Default: inherit from system. 644: owner read/write, others read. 666: everyone read/write (useful for network shares)."
+msgstr "Set permissions on saved segment files. Default: inherit from system. 644: owner read/write, others read. 666: everyone read/write (useful for network shares)."
+
+msgctxt "#36008"
+msgid "Start time set"
+msgstr "Start time set"
+
+msgctxt "#36009"
+msgid "End time set"
+msgstr "End time set"
+
+msgctxt "#36010"
+msgid "Choose segment type"
+msgstr "Choose segment type"
+
+msgctxt "#36011"
+msgid "Save segment?"
+msgstr "Save segment?"
+
+msgctxt "#36012"
+msgid "Segment saved"
+msgstr "Segment saved"
+
+msgctxt "#36013"
+msgid "Error saving segment"
+msgstr "Error saving segment"
+
+msgctxt "#36014"
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgctxt "#36015"
+msgid "No video playing"
+msgstr "No video playing"
+
+msgctxt "#36016"
+msgid "Segment Marker disabled"
+msgstr "Segment Marker disabled"
+
+msgctxt "#36017"
+msgid "Save format"
+msgstr "Save format"
+
+msgctxt "#36018"
+msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and -chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to -chapters.xml file."
+msgstr "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and -chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to -chapters.xml file."
+
+msgctxt "#36019"
+msgid "Keyboard marker shortcut"
+msgstr "Keyboard marker shortcut"
+
+msgctxt "#36020"
+msgid "Type the Kodi keyboard shortcut to write to userdata/keymaps/skippy_marker.xml. Examples: ctrl+e, e, f9, ctrl+shift+m. Use Keyboard marker press type below for normal press vs long press. The keymap is refreshed automatically when settings change."
+msgstr "Type the Kodi keyboard shortcut to write to userdata/keymaps/skippy_marker.xml. Examples: ctrl+e, e, f9, ctrl+shift+m. Use Keyboard marker press type below for normal press vs long press. The keymap is refreshed automatically when settings change."
+
+msgctxt "#36021"
+msgid "Remote marker button"
+msgstr "Remote marker button"
+
+msgctxt "#36022"
+msgid "Optional Kodi remote button name (red, green, blue, yellow, record, select, info, etc.) or discovered raw key code (for example key:61505). CEC remotes usually save as button names; Bluetooth/remotes with raw codes usually save as key:<code>. Leave empty when only using the keyboard hotkey."
+msgstr "Optional Kodi remote button name (red, green, blue, yellow, record, select, info, etc.) or discovered raw key code (for example key:61505). CEC remotes usually save as button names; Bluetooth/remotes with raw codes usually save as key:<code>. Leave empty when only using the keyboard hotkey."
+
+msgctxt "#36023"
+msgid "Discover remote button code"
+msgstr "Discover remote button code"
+
+msgctxt "#36024"
+msgid "Opens a small capture dialog. Press the remote button you want to use; Skippy stores the button code in the Remote marker button setting and updates the keymap. Use Remote marker press type to choose normal press or long press."
+msgstr "Opens a small capture dialog. Press the remote button you want to use; Skippy stores the button code in the Remote marker button setting and updates the keymap. Use Remote marker press type to choose normal press or long press."
+
+msgctxt "#36025"
+msgid "Update marker keymap now"
+msgstr "Update marker keymap now"
+
+msgctxt "#36026"
+msgid "Writes the current keyboard and remote marker settings to Kodi's userdata keymap and reloads keymaps."
+msgstr "Writes the current keyboard and remote marker settings to Kodi's userdata keymap and reloads keymaps."
+
+msgctxt "#36027"
+msgid "Remote marker press type"
+msgstr "Remote marker press type"
+
+msgctxt "#36028"
+msgid "Choose whether the configured remote marker button triggers on a normal press or long press. For discovered raw key codes, Skippy writes this as a keymap longpress modifier."
+msgstr "Choose whether the configured remote marker button triggers on a normal press or long press. For discovered raw key codes, Skippy writes this as a keymap longpress modifier."
+
+msgctxt "#36029"
+msgid "Keyboard marker press type"
+msgstr "Keyboard marker press type"
+
+msgctxt "#36030"
+msgid "Choose whether the configured keyboard shortcut triggers on a normal press or long press. Default is normal press."
+msgstr "Choose whether the configured keyboard shortcut triggers on a normal press or long press. Default is normal press."
+
+msgctxt "#36031"
+msgid "How to save marked segments"
+msgstr "How to save marked segments"
+
+msgctxt "#36032"
+msgid "Controls how Segment Marker combines a new marked range with existing EDL/XML sidecar entries. Merge non-overlapping: add the marker only when it does not overlap existing entries. Keep both (old starts after new): add the new segment and shorten any overlapping existing segment so it starts where the new one ends (drops the old entry if the new range fully covers it). Overwrite overlapping: remove overlapping entries and add the new one. Append always: add the new entry even if it overlaps. Replace file: write only the newly marked segment. Ask each time: choose during marker save, before selecting the segment type."
+msgstr "Controls how Segment Marker combines a new marked range with existing EDL/XML sidecar entries. Merge non-overlapping: add the marker only when it does not overlap existing entries. Keep both (old starts after new): add the new segment and shorten any overlapping existing segment so it starts where the new one ends (drops the old entry if the new range fully covers it). Overwrite overlapping: remove overlapping entries and add the new one. Append always: add the new entry even if it overlaps. Replace file: write only the newly marked segment. Ask each time: choose during marker save, before selecting the segment type."
+
+msgctxt "#36033"
+msgid "Back up files before marker save"
+msgstr "Back up files before marker save"
+
+msgctxt "#36034"
+msgid "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
+msgstr "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."

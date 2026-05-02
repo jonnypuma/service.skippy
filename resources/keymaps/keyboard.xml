@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Skippy Segment Marker keymap.
+  Default: CTRL+E during video playback triggers segment marking.
+
+  Skippy can now generate this userdata keymap from Add-on settings:
+    Segment Marker → Keyboard marker shortcut
+    Segment Marker → Keyboard marker press type
+    Segment Marker → Remote marker button
+    Segment Marker → Remote marker press type
+    Segment Marker → Discover remote button code
+
+  To customize by hand, copy this file to your userdata keymaps folder:
+    Linux/macOS: ~/.kodi/userdata/keymaps/skippy_marker.xml
+    Windows:     %APPDATA%\Kodi\userdata\keymaps\skippy_marker.xml
+
+  Remote button examples (add inside <remote> section):
+    <red>RunScript(service.skippy)</red>
+    <green>RunScript(service.skippy)</green>
+    <blue>RunScript(service.skippy)</blue>
+    <yellow>RunScript(service.skippy)</yellow>
+    <record>RunScript(service.skippy)</record>
+
+  Raw button-code example from the discovery tool (add inside <keyboard> section):
+    <key id="61505">RunScript(service.skippy)</key>
+    <key id="61505" mod="longpress">RunScript(service.skippy)</key>
+
+  Keyboard examples (add inside <keyboard> section):
+    <e mod="ctrl">RunScript(service.skippy)</e>           (CTRL+E, normal press)
+    <m mod="ctrl">RunScript(service.skippy)</m>           (CTRL+M, normal press)
+    <m mod="ctrl,longpress">RunScript(service.skippy)</m> (CTRL+M, long-press)
+    <f9>RunScript(service.skippy)</f9>                    (F9, normal press)
+    <f9 mod="longpress">RunScript(service.skippy)</f9>    (F9, long-press)
+
+  See https://kodi.wiki/view/Keymap for more key names and details.
+
+  Segment Editor (separate file; Skippy generates userdata/keymaps/skippy_editor.xml):
+    <e mod="ctrl,shift">RunScript(service.skippy,open_segment_editor)</e>
+-->
+<keymap>
+  <global>
+    <keyboard>
+      <e mod="ctrl">RunScript(service.skippy)</e>
+    </keyboard>
+  </global>
+  <FullscreenVideo>
+    <keyboard>
+      <e mod="ctrl">RunScript(service.skippy)</e>
+    </keyboard>
+    <!-- Uncomment to enable remote button:
+    <remote>
+      <red>RunScript(service.skippy)</red>
+    </remote>
+    -->
+  </FullscreenVideo>
+  <VideoOSD>
+    <keyboard>
+      <e mod="ctrl">RunScript(service.skippy)</e>
+    </keyboard>
+    <!-- Uncomment to enable remote button:
+    <remote>
+      <red>RunScript(service.skippy)</red>
+    </remote>
+    -->
+  </VideoOSD>
+  <VideoMenu>
+    <keyboard>
+      <e mod="ctrl">RunScript(service.skippy)</e>
+    </keyboard>
+    <!-- Uncomment to enable remote button:
+    <remote>
+      <red>RunScript(service.skippy)</red>
+    </remote>
+    -->
+  </VideoMenu>
+</keymap>

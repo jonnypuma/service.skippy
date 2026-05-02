@@ -27,7 +27,9 @@ from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, lo
 
 ADDON_ID = "service.skippy"
 
-# Stored labelenum values for settings tv_online_merge_priority / movie_online_merge_priority
+# Settings tv_online_merge_priority / movie_online_merge_priority — UI labels them
+# "online API priority"; ids use "merge" because the code merges two API responses and
+# this chooses which source wins when both define the same time window.
 ONLINE_MERGE_THEINTRODB_FIRST = "TheIntroDBFirst"
 ONLINE_MERGE_INTRODB_FIRST = "IntroDBFirst"
 
@@ -1446,3 +1448,99 @@ def fetch_remote_tv_segments(total_time, cache):
             % (len(the_segs), len(intro_segs))
         )
     return list(merged)
+
+
+# ---------------------------------------------------------------------------
+# Playlist / Up-Next prefetch
+# ---------------------------------------------------------------------------
+
+
+def _get_playlist_next_episode():
+    """
+    Return the next item in Kodi's video playlist after the current position,
+    or None if there is no next item or the playlist is not applicable.
+    """
+    try:
+        query = {
+            "jsonrpc": "2.0",
+            "id": "PlaylistGetItems",
+            "method": "Playlist.GetItems",
+            "params": {
+                "playlistid": 1,
+                "properties": ["file", "showtitle", "season", "episode", "uniqueid", "tvshowid", "title"],
+            },
+        }
+        resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
+        items = resp.get("result", {}).get("items", [])
+        if not items or len(items) < 2:
+            return None
+
+        query_pos = {
+            "jsonrpc": "2.0",
+            "id": "PlayerGetProperties",
+            "method": "Player.GetProperties",
+            "params": {"playerid": 1, "properties": ["playlistposition"]},
+        }
+        resp_pos = json.loads(xbmc.executeJSONRPC(json.dumps(query_pos)))
+        pos = resp_pos.get("result", {}).get("playlistposition", -1)
+        if pos < 0 or pos + 1 >= len(items):
+            return None
+
+        next_item = items[pos + 1]
+        if (next_item.get("type") or "").lower() != "episode":
+            return None
+        return next_item
+    except Exception as e:
+        _rlog(f"Playlist next episode lookup failed: {e}")
+        return None
+
+
+def prefetch_next_episode_segments(cache):
+    """
+    If the setting is enabled and the playlist has a next episode,
+    build context and fetch segments so they're cached for instant use.
+    Call this in background (e.g. after current episode's segments are loaded).
+    """
+    addon = get_addon()
+    if not addon:
+        return
+    if not addon_get_bool(addon, "tv_use_online_segment_lookup", False):
+        return
+    if not addon_get_bool(addon, "tv_prefetch_next_episode", True):
+        return
+
+    next_item = _get_playlist_next_episode()
+    if not next_item:
+        _rlog("Prefetch: no next episode in playlist")
+        return
+
+    context = build_tv_episode_context(next_item)
+    if not context:
+        _rlog("Prefetch: could not build context for next episode")
+        return
+
+    key = build_tv_cache_key(context)
+    if key in cache:
+        _rlog(f"Prefetch: cache already has key={key}")
+        return
+
+    _rlog(
+        "Prefetch: fetching segments for next episode S%sE%s show='%s'"
+        % (
+            context.get("season"),
+            context.get("episode"),
+            (context.get("show_title") or "")[:40],
+        )
+    )
+
+    the_segs = fetch_theintrodb_segments(context, 0)
+    intro_segs = fetch_introdb_segments(context, 0)
+    if _online_merge_introdb_primary("tv"):
+        merged = merge_remote_segments(intro_segs, the_segs)
+    else:
+        merged = merge_remote_segments(the_segs, intro_segs)
+    cache[key] = merged
+    _rlog(
+        "Prefetch: cached %d segment(s) for key=%s (TheIntroDB=%d, IntroDB.app=%d)"
+        % (len(merged), key, len(the_segs), len(intro_segs))
+    )

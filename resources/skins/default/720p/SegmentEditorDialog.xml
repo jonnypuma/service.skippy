@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+
+  <zorder>1</zorder>
+  <defaultcontrol>5018</defaultcontrol>
+
+  <animation type="WindowOpen">
+    <effect type="slide" start="0,100" end="0,0" time="300" tween="quadratic" easing="out" />
+    <effect type="fade" start="0" end="100" time="400" />
+  </animation>
+
+  <animation type="WindowClose">
+    <effect type="slide" start="0,0" end="0,100" time="300" tween="quadratic" easing="in" />
+    <effect type="fade" start="100" end="0" time="300" />
+  </animation>
+
+  <controls>
+    <!-- Background - semi-transparent black overlay like Skippy -->
+    <!-- Only visible if EnableFullscreenOverlay property is set to "true" -->
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture>white.png</texture>
+      <colordiffuse>F0000000</colordiffuse>
+      <visible>String.IsEqual(Window.Property(EnableFullscreenOverlay),true)</visible>
+    </control>
+
+    <!-- Main panel - centered and sized to fit within video window -->
+    <control type="group">
+      <left>50</left>
+      <top>60</top>
+      <width>1170</width>
+      <height>570</height>
+
+      <!-- Panel background - darker semi-transparent background -->
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1170</width>
+        <height>570</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0202020</colordiffuse>
+      </control>
+
+      <!-- Title -->
+      <control type="label">
+        <left>20</left>
+        <top>20</top>
+        <width>1130</width>
+        <height>40</height>
+        <label>Segment Editor</label>
+        <font>font30</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <!-- Current time label -->
+      <control type="label" id="5001">
+        <left>20</left>
+        <top>70</top>
+        <width>480</width>
+        <height>30</height>
+        <label>Current Time: --:--:--</label>
+        <font>font16</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <!-- Status label (for marked times) -->
+      <control type="label" id="5008">
+        <left>520</left>
+        <top>70</top>
+        <width>460</width>
+        <height>30</height>
+        <label></label>
+        <font>font14</font>
+        <textcolor>FFFFAA00</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <!-- Segments list -->
+      <control type="list" id="5000">
+        <left>20</left>
+        <top>110</top>
+        <width>1140</width>
+        <height>290</height>
+        <ondown>5009</ondown>
+        <onup>5009</onup>
+        <onright>5021</onright>
+        <itemlayout width="1140" height="50">
+          <!-- Main segment text (without nested or overlapping indicator) -->
+          <!-- Show when both is_nested and is_overlapping are "false" -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>1120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
+          </control>
+          <!-- Segment text with nested indicator - split into multiple labels for red text -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>140</left>
+            <top>5</top>
+            <width>100</width>
+            <height>25</height>
+            <label>(Nested)</label>
+            <font>font14</font>
+            <textcolor>FFFF0000</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>240</left>
+            <top>5</top>
+            <width>870</width>
+            <height>25</height>
+            <label>- $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <!-- Segment text with overlapping indicator - split into multiple labels for blue text -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>140</left>
+            <top>5</top>
+            <width>155</width>
+            <height>25</height>
+            <label>(Overlapping)</label>
+            <font>font14</font>
+            <textcolor>FF0080FF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>295</left>
+            <top>5</top>
+            <width>835</width>
+            <height>25</height>
+            <label>- $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1120</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FFB0B0B0</textcolor>
+            <align>left</align>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1140" height="50">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1140</width>
+            <height>50</height>
+            <texture colordiffuse="40FFFFFF">white.png</texture>
+          </control>
+          <!-- Main segment text (without nested or overlapping indicator) -->
+          <!-- Show when both is_nested and is_overlapping are "false" -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>1120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
+          </control>
+          <!-- Segment text with nested indicator - split into multiple labels for red text -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>140</left>
+            <top>5</top>
+            <width>100</width>
+            <height>25</height>
+            <label>(Nested)</label>
+            <font>font14</font>
+            <textcolor>FFFF0000</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>240</left>
+            <top>5</top>
+            <width>890</width>
+            <height>25</height>
+            <label>- $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <!-- Segment text with overlapping indicator - split into multiple labels for blue text -->
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>120</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>140</left>
+            <top>5</top>
+            <width>155</width>
+            <height>25</height>
+            <label>(Overlapping)</label>
+            <font>font14</font>
+            <textcolor>FF0080FF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>295</left>
+            <top>5</top>
+            <width>845</width>
+            <height>25</height>
+            <label>- $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1120</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FFB0B0B0</textcolor>
+            <align>left</align>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <!-- Edit and Delete buttons - positioned to the right of the list -->
+      <control type="button" id="5021">
+        <left>920</left>
+        <top>110</top>
+        <width>100</width>
+        <height>30</height>
+        <label>Edit</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onright>5022</onright>
+        <onleft>5000</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5022">
+        <left>1030</left>
+        <top>110</top>
+        <width>100</width>
+        <height>30</height>
+        <label>Delete</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onleft>5021</onleft>
+        <onright>5000</onright>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+
+      <!-- Darkening overlay for bottom button rows (seek row and action row) -->
+      <control type="image">
+        <left>0</left>
+        <top>450</top>
+        <width>1170</width>
+        <height>120</height>
+        <texture>white.png</texture>
+        <colordiffuse>E0000000</colordiffuse>
+      </control>
+
+      <!-- Seek controls row - centered horizontally with 20px margins -->
+      <control type="button" id="5011">
+        <left>20</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>-30s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onright>5010</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5010">
+        <left>80</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>-10s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5011</onleft>
+        <onright>5009</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5009">
+        <left>140</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>-5s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5010</onleft>
+        <onright>5019</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5019">
+        <left>200</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>-1s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5009</onleft>
+        <onright>5020</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5020">
+        <left>260</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>+1s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5019</onleft>
+        <onright>5012</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5012">
+        <left>320</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>+5s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5020</onleft>
+        <onright>5013</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5013">
+        <left>380</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>+10s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5012</onleft>
+        <onright>5014</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5014">
+        <left>440</left>
+        <top>460</top>
+        <width>50</width>
+        <height>30</height>
+        <label>+30s</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5013</onleft>
+        <onright>5018</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <!-- Pause/Play button -->
+      <control type="button" id="5018">
+        <left>500</left>
+        <top>460</top>
+        <width>75</width>
+        <height>30</height>
+        <label>Pause</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5014</onleft>
+        <onright>5015</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <!-- Mark buttons -->
+      <control type="button" id="5015">
+        <left>583</left>
+        <top>460</top>
+        <width>95</width>
+        <height>30</height>
+        <label>Set as Start</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5018</onleft>
+        <onright>5016</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5016">
+        <left>686</left>
+        <top>460</top>
+        <width>95</width>
+        <height>30</height>
+        <label>Set as End</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5015</onleft>
+        <onright>5017</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5017">
+        <left>789</left>
+        <top>460</top>
+        <width>70</width>
+        <height>30</height>
+        <label>Create</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5016</onleft>
+        <onright>5023</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5023">
+        <left>867</left>
+        <top>460</top>
+        <width>135</width>
+        <height>30</height>
+        <label>Start at End of</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5017</onleft>
+        <onright>5024</onright>
+        <ondown>5005</ondown>
+      </control>
+
+      <control type="button" id="5024">
+        <left>1010</left>
+        <top>460</top>
+        <width>135</width>
+        <height>30</height>
+        <label>End at Start of</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5000</onup>
+        <onleft>5023</onleft>
+        <ondown>5005</ondown>
+      </control>
+
+
+      <!-- Buttons -->
+      <control type="button" id="5025">
+        <left>20</left>
+        <top>500</top>
+        <width>135</width>
+        <height>40</height>
+        <label>Jump To</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onright>5005</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5005">
+        <left>192</left>
+        <top>500</top>
+        <width>280</width>
+        <height>40</height>
+        <label>Add at Current Time + User Set Time</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5025</onleft>
+        <onright>5002</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5002">
+        <left>509</left>
+        <top>500</top>
+        <width>250</width>
+        <height>40</height>
+        <label>Add Manual Start and End Points</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5005</onleft>
+        <onright>5004</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5004">
+        <left>796</left>
+        <top>500</top>
+        <width>120</width>
+        <height>40</height>
+        <label>Delete All</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5002</onleft>
+        <onright>5006</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5006">
+        <left>953</left>
+        <top>500</top>
+        <width>80</width>
+        <height>40</height>
+        <label>Save</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5004</onleft>
+        <onright>5007</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5007">
+        <left>1070</left>
+        <top>500</top>
+        <width>80</width>
+        <height>40</height>
+        <label>Exit</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5006</onleft>
+        <ondown>5000</ondown>
+      </control>
+    </control>
+  </controls>
+</window>
+
