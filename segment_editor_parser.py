@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import stat
@@ -361,6 +362,7 @@ def parse_chapters(video_path):
 
         segments = _segments_from_chapter_xml(data, path)
         if segments:
+            segments = dedupe_overlapping_same_label_segments(segments)
             log(f"Total segments parsed from XML: {len(segments)} (using {path})")
             return segments
         log(f"No usable ChapterAtom entries in {path}, trying next chapter path if any")
@@ -513,7 +515,10 @@ def parse_embedded_chapters(video_path, timeout=3):
             log(f"Skipping invalid embedded chapter at {start_s}: end={end_s}")
             continue
 
-    return result if result else None
+    if not result:
+        return None
+    result = dedupe_overlapping_same_label_segments(result)
+    return result
 
 
 def segments_chronological(segments):
@@ -521,6 +526,65 @@ def segments_chronological(segments):
     if not segments:
         return segments
     return sorted(segments, key=lambda s: (s.start_seconds, s.end_seconds))
+
+
+def _intervals_overlap_or_touch(s1, e1, s2, e2, tolerance=1.5):
+    """True when [s1,e1] and [s2,e2] overlap or are within ``tolerance`` seconds of touching."""
+    return not (e1 + tolerance <= s2 or e2 + tolerance <= s1)
+
+
+def dedupe_overlapping_same_label_segments(segments, tolerance=1.5):
+    """Merge consecutive same-label windows that overlap or touch (common bad chapter XML).
+
+    Operates on objects with ``start_seconds``, ``end_seconds``, and
+    ``segment_type_label``. Uses :func:`copy.copy` on the first segment of each
+    merged pair so constructors / logging are not re-run.
+    """
+    if not segments:
+        return []
+    if len(segments) == 1:
+        return list(segments)
+
+    sorted_segs = sorted(
+        segments,
+        key=lambda s: (float(s.start_seconds), float(s.end_seconds)),
+    )
+    out = []
+    for seg in sorted_segs:
+        raw_lab = getattr(seg, "segment_type_label", None)
+        lab_key = normalize_label(raw_lab) if raw_lab is not None else ""
+        if not lab_key:
+            out.append(seg)
+            continue
+        if out:
+            prev = out[-1]
+            prev_raw = getattr(prev, "segment_type_label", None)
+            prev_key = (
+                normalize_label(prev_raw) if prev_raw is not None else ""
+            )
+            if prev_key == lab_key:
+                ps = float(prev.start_seconds)
+                pe = float(prev.end_seconds)
+                ss = float(seg.start_seconds)
+                se = float(seg.end_seconds)
+                if _intervals_overlap_or_touch(ps, pe, ss, se, tolerance):
+                    merged = copy.copy(prev)
+                    merged.start_seconds = min(ps, ss)
+                    merged.end_seconds = max(pe, se)
+                    if hasattr(merged, "next_segment_start"):
+                        merged.next_segment_start = None
+                    if hasattr(merged, "next_segment_info"):
+                        merged.next_segment_info = None
+                    out[-1] = merged
+                    continue
+        out.append(seg)
+
+    if len(out) < len(segments):
+        log(
+            "Deduped overlapping same-label segments: %d -> %d"
+            % (len(segments), len(out))
+        )
+    return out
 
 
 def save_chapters(video_path, segments):
@@ -731,6 +795,7 @@ def save_segments(video_path, segments, save_format=None):
     _backup_editor_sidecars(video_path, save_format, backup_on)
 
     segments = segments_chronological(segments)
+    segments = dedupe_overlapping_same_label_segments(segments)
 
     edl_success = False
     xml_success = False

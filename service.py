@@ -34,11 +34,16 @@ from settings_utils import (
     normalize_label,
     show_overlapping_toast,
     skippy_notification_icon,
-    format_segment_label_for_ui,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
 from marker_indicator import sync_marker_pending_indicator
-from segment_editor_parser import safe_file_write, save_edl, SegmentItem as EditorSegmentItem, CHAPTER_XML_SIDECAR_SUFFIXES
+from playback_segment_cache import publish_parse_cache
+from segment_editor_parser import (
+    safe_file_write,
+    save_edl,
+    CHAPTER_XML_SIDECAR_SUFFIXES,
+    dedupe_overlapping_same_label_segments,
+)
 
 # save_online_chapters_existing_policy (labelenum optionvalues)
 _SAVE_CHAPTERS_SKIP_IF_EXISTS = "SkipIfExists"
@@ -268,6 +273,7 @@ class PlayerMonitor(xbmc.Monitor):
         self.cleared_parent_dismissals = set()  # Track which parent dismissals have been cleared for nested segments
         self.remote_segment_cache = {}  # Online lookup cache (TV: TheIntroDB+IntroDB; movies: TheIntroDB)
         self.segment_parse_cache = None  # Parsed source segments for current playback; refreshed when sidecars change
+        self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
 
     def onNotification(self, sender, method, data):
         """Open segment editor when triggered via JSON-RPC NotifyAll (legacy: service.segmenteditor)."""
@@ -711,7 +717,7 @@ def _parse_chapter_xml_string(xml_data):
                 )
             except Exception:
                 continue
-    return out
+    return dedupe_overlapping_same_label_segments(out)
 
 
 def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
@@ -734,7 +740,7 @@ def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
             )
         )
     merged.sort(key=lambda s: s.start_seconds)
-    return merged
+    return dedupe_overlapping_same_label_segments(merged, tol)
 
 
 def _segments_signature_for_save_compare(segments, time_decimals=3):
@@ -907,6 +913,7 @@ def _build_chapters_xml_tree(segment_items):
 
 
 def _write_chapters_xml_to_path(out_path, segment_items):
+    segment_items = dedupe_overlapping_same_label_segments(list(segment_items))
     root = _build_chapters_xml_tree(segment_items)
     try:
         xml_body = ET.tostring(root, encoding="unicode")
@@ -1083,6 +1090,7 @@ def _invalidate_segment_parse_cache_if_path(video_path):
             "Clearing segment parse cache after online sidecar save for this file"
         )
         monitor.segment_parse_cache = None
+        publish_parse_cache(None)
 
 
 def _maybe_save_online_segments_chapters_xml(
@@ -1303,6 +1311,13 @@ def parse_chapters(video_path, update_monitor=True):
                 ))
                 log_service_detail(f"📘 Parsed XML segment: {start} → {end} | label='{label}'")
         if result:
+            n0 = len(result)
+            result = dedupe_overlapping_same_label_segments(result)
+            if len(result) != n0:
+                log(
+                    "✅ Deduped chapter XML segments: %d → %d"
+                    % (n0, len(result))
+                )
             log(f"✅ Total segments parsed from XML: {len(result)}")
         else:
             log("⚠ Chapter XML parsed but no valid segments found")
@@ -1783,99 +1798,6 @@ def _parse_source_segments_uncached(path, playback_type):
     return parsed or [], segment_origin
 
 
-def _get_active_video_player_item():
-    """Return the current video Player.GetItem ``item`` dict, or None."""
-    try:
-        active_result = json.loads(
-            xbmc.executeJSONRPC(
-                json.dumps(
-                    {
-                        "jsonrpc": "2.0",
-                        "id": 1,
-                        "method": "Player.GetActivePlayers",
-                    }
-                )
-            )
-        )
-        players = active_result.get("result") or []
-        video_player = next((p for p in players if p.get("type") == "video"), None)
-        if not video_player:
-            return None
-        pid = video_player.get("playerid")
-        item_result = json.loads(
-            xbmc.executeJSONRPC(
-                json.dumps(
-                    {
-                        "jsonrpc": "2.0",
-                        "id": 2,
-                        "method": "Player.GetItem",
-                        "params": {
-                            "playerid": pid,
-                            "properties": ["file", "title", "showtitle", "episode"],
-                        },
-                    }
-                )
-            )
-        )
-        return item_result.get("result", {}).get("item") or None
-    except Exception:
-        return None
-
-
-def get_initial_segments_for_segment_editor(video_path):
-    """If the service cache holds **remote** (online) segments for this file, convert them
-    to segment-editor ``SegmentItem`` instances with ``source='online'``. Otherwise
-    return ``None`` so the editor loads from disk (chapters / EDL) as before."""
-    if not video_path:
-        return None
-    cache = monitor.segment_parse_cache
-    if not cache or cache.get("path") != video_path:
-        return None
-    if cache.get("segment_origin") != "remote":
-        return None
-    raw_segs = cache.get("segments") or []
-    if not raw_segs:
-        return None
-
-    item = _get_active_video_player_item()
-    file_from_player = (item or {}).get("file")
-    if file_from_player and file_from_player != video_path:
-        try:
-            if xbmcvfs.translatePath(file_from_player) != xbmcvfs.translatePath(
-                video_path
-            ):
-                log_service_detail(
-                    "Segment editor: playing file differs from editor path — not using online cache"
-                )
-                return None
-        except Exception:
-            log_service_detail(
-                "Segment editor: could not compare paths — not using online cache"
-            )
-            return None
-
-    editor_segments = []
-    for seg in _clone_segments(raw_segs):
-        try:
-            label_ui = format_segment_label_for_ui(seg.segment_type_label)
-            editor_segments.append(
-                EditorSegmentItem(
-                    seg.start_seconds,
-                    seg.end_seconds,
-                    label_ui,
-                    source="online",
-                    action_type=seg.action_type,
-                )
-            )
-        except (TypeError, ValueError) as err:
-            log(f"Segment editor: skip invalid online segment: {err}")
-    if editor_segments:
-        log(
-            f"Segment editor: loaded {len(editor_segments)} segment(s) from online cache (source=online)"
-        )
-    return editor_segments or None
-
-
 def get_cached_source_segments(path, playback_type):
     addon = get_addon()
     if not addon:
@@ -1919,6 +1841,7 @@ def get_cached_source_segments(path, playback_type):
         "segments": _clone_segments(parsed),
         "segment_origin": segment_origin,
     }
+    publish_parse_cache(monitor.segment_parse_cache)
     return _clone_segments(parsed)
 
 
@@ -2197,6 +2120,7 @@ while not monitor.abortRequested():
                                     monitor.prompted.clear()
                                     monitor.recently_dismissed.clear()
                                     monitor.segment_parse_cache = None
+                                    publish_parse_cache(None)
                                     log(f"🔍 Debug: recently_dismissed cleared - now has {len(monitor.recently_dismissed)} items")
                                     monitor.cleared_parent_dismissals.clear()
                                     monitor.playback_ready = False
@@ -2240,6 +2164,7 @@ while not monitor.abortRequested():
                                 monitor.segment_file_found = False
                                 monitor.remote_segment_cache.clear()
                                 monitor.segment_parse_cache = None
+                                publish_parse_cache(None)
                                 monitor.shown_missing_file_toast = False
                                 monitor.prompted.clear()
                                 monitor.recently_dismissed.clear()
@@ -2785,6 +2710,15 @@ while not monitor.abortRequested():
                     # Don't add to prompted, allow retry when resumed
                     continue
 
+                if monitor.skip_dialog_modal_active:
+                    log_if_changed(
+                        "skip_dialog_in_flight",
+                        "⏳ Skip dialog already active — skipping duplicate ask for segment %s (%s)"
+                        % (seg_id, segment.segment_type_label),
+                    )
+                    continue
+
+                monitor.skip_dialog_modal_active = True
                 try:
                     log("🛑 Debouncing skip dialog for 300ms")
                     xbmc.sleep(300)
@@ -2824,7 +2758,7 @@ while not monitor.abortRequested():
                         log(f"❌ Dialog creation failed for segment {seg_id} ({segment.segment_type_label})")
                         monitor.prompted.add(seg_id)
                         continue
-                    
+
                     try:
                         log("🔄 Calling dialog.doModal()")
                         dialog.doModal()
@@ -2834,20 +2768,20 @@ while not monitor.abortRequested():
                         log(f"❌ Dialog display failed for segment {seg_id} ({segment.segment_type_label})")
                         try:
                             del dialog
-                        except:
+                        except Exception:
                             pass
                         monitor.prompted.add(seg_id)
                         continue
-                    
+
                     confirmed = getattr(dialog, "response", None)
                     try:
                         del dialog
-                    except:
+                    except Exception:
                         pass
 
                     if confirmed:
                         log(f"✅ User confirmed skip for segment ID {seg_id}")
-                        
+
                         # Track if we're skipping to a nested segment
                         if segment.next_segment_start is not None:
                             # Find the target segment we're jumping to
@@ -2856,7 +2790,7 @@ while not monitor.abortRequested():
                                 if seg.start_seconds == segment.next_segment_start:
                                     target_segment = seg
                                     break
-                            
+
                             if target_segment and is_nested_segment(segment, target_segment):
                                 # We're skipping to a nested segment, track this
                                 monitor.skipped_to_nested_segment[seg_id] = target_segment
@@ -2878,7 +2812,7 @@ while not monitor.abortRequested():
                                         log(f"🔍 Debug: recently_dismissed now has {len(monitor.recently_dismissed)} items: {list(monitor.recently_dismissed)}")
                                     else:
                                         log(f"🔍 Parent segment {seg_id} dismissal already cleared for nested segment {nested_seg_id}")
-                        
+
                         # Only add to prompted if we're NOT skipping to a nested segment
                         # (If we are, it was already added above)
                         if seg_id not in monitor.prompted:
@@ -2928,7 +2862,8 @@ while not monitor.abortRequested():
                 except Exception as e:
                     log(f"❌ Error showing skip dialog: {e}")
                     monitor.prompted.add(seg_id)
-                    continue
+                finally:
+                    monitor.skip_dialog_modal_active = False
 
         # Update last_time at the end of each main loop cycle for next iteration's rewind detection
         monitor.last_time = current_time

@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] - 2026-05-04
+
+### Fixed
+- **Segment Editor hotkey / remote**: Opening the editor from **RunScript** (CTRL+SHIFT+E, editor remote, etc.) hung because the session imported **`service`**, which runs the service’s blocking main loop on load. The playback segment cache is now published via **`playback_segment_cache.py`** and the editor reads that snapshot — **no `import service` from script paths**. Remote/keyboard editor entry works again; online-segment bootstrap for the editor is unchanged in behavior.
+
 ## [2.1.0] - 2026-05-04
 
 ### Added

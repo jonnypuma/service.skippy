@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 """Open the segment editor dialog (integrated in Skippy)."""
+import copy
+import json
 import os
 
 import xbmc
 import xbmcgui
+import xbmcvfs
 
+from playback_segment_cache import get_parse_cache_snapshot
 from segment_editor_dialog import SegmentEditorDialog
 from segment_editor_parser import (
+    SegmentItem as EditorSegmentItem,
     delete_segment_files,
     parse_chapters,
     parse_edl,
@@ -20,6 +25,111 @@ from segment_editor_utils import (
     get_video_file,
     set_editor_modal_open,
 )
+from settings_utils import format_segment_label_for_ui
+
+
+def _clone_playback_segments_for_editor(segments):
+    cloned = []
+    for seg in segments or []:
+        item = copy.copy(seg)
+        if hasattr(item, "next_segment_start"):
+            item.next_segment_start = None
+        if hasattr(item, "next_segment_info"):
+            item.next_segment_info = None
+        cloned.append(item)
+    return cloned
+
+
+def _get_active_video_player_item():
+    try:
+        active_result = json.loads(
+            xbmc.executeJSONRPC(
+                json.dumps(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "method": "Player.GetActivePlayers",
+                    }
+                )
+            )
+        )
+        players = active_result.get("result") or []
+        video_player = next((p for p in players if p.get("type") == "video"), None)
+        if not video_player:
+            return None
+        pid = video_player.get("playerid")
+        item_result = json.loads(
+            xbmc.executeJSONRPC(
+                json.dumps(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 2,
+                        "method": "Player.GetItem",
+                        "params": {
+                            "playerid": pid,
+                            "properties": ["file", "title", "showtitle", "episode"],
+                        },
+                    }
+                )
+            )
+        )
+        return item_result.get("result", {}).get("item") or None
+    except Exception:
+        return None
+
+
+def get_initial_segments_for_segment_editor(video_path):
+    """Build editor segments from published playback cache when origin is remote."""
+    if not video_path:
+        return None
+    cache = get_parse_cache_snapshot()
+    if not cache or cache.get("path") != video_path:
+        return None
+    if cache.get("segment_origin") != "remote":
+        return None
+    raw_segs = cache.get("segments") or []
+    if not raw_segs:
+        return None
+
+    item = _get_active_video_player_item()
+    file_from_player = (item or {}).get("file")
+    if file_from_player and file_from_player != video_path:
+        try:
+            if xbmcvfs.translatePath(file_from_player) != xbmcvfs.translatePath(
+                video_path
+            ):
+                log_always(
+                    "Segment editor: playing file differs from editor path "
+                    "(not using online cache snapshot)"
+                )
+                return None
+        except Exception:
+            log_always(
+                "Segment editor: could not compare paths (not using online cache snapshot)"
+            )
+            return None
+
+    editor_segments = []
+    for seg in _clone_playback_segments_for_editor(raw_segs):
+        try:
+            label_ui = format_segment_label_for_ui(seg.segment_type_label)
+            editor_segments.append(
+                EditorSegmentItem(
+                    seg.start_seconds,
+                    seg.end_seconds,
+                    label_ui,
+                    source="online",
+                    action_type=seg.action_type,
+                )
+            )
+        except (TypeError, ValueError) as err:
+            log_always(f"Segment editor: skip invalid online segment: {err}")
+    if editor_segments:
+        log_always(
+            f"Segment editor: loaded {len(editor_segments)} segment(s) "
+            "from playback online cache (source=online)"
+        )
+    return editor_segments or None
 
 _editor_active = False
 
@@ -59,13 +169,7 @@ def open_segment_editor(video_path=None):
     set_editor_modal_open(True)
 
     try:
-        segments = None
-        try:
-            from service import get_initial_segments_for_segment_editor
-
-            segments = get_initial_segments_for_segment_editor(video_path)
-        except Exception as exc:
-            log_always(f"No service online segment bootstrap ({exc})")
+        segments = get_initial_segments_for_segment_editor(video_path)
 
         if not segments:
             segments = parse_chapters(video_path)
