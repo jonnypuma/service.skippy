@@ -33,10 +33,12 @@ from settings_utils import (
     log_service_detail,
     normalize_label,
     show_overlapping_toast,
+    skippy_notification_icon,
+    format_segment_label_for_ui,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
 from marker_indicator import sync_marker_pending_indicator
-from segment_editor_parser import safe_file_write, save_edl
+from segment_editor_parser import safe_file_write, save_edl, SegmentItem as EditorSegmentItem, CHAPTER_XML_SIDECAR_SUFFIXES
 
 # save_online_chapters_existing_policy (labelenum optionvalues)
 _SAVE_CHAPTERS_SKIP_IF_EXISTS = "SkipIfExists"
@@ -241,7 +243,7 @@ def log_if_changed(key, msg):
 
 CHECK_INTERVAL = 1
 SIDECAR_MTIME_CHECK_INTERVAL = 5
-ICON_PATH = os.path.join(get_addon().getAddonInfo("path"), "icon.png")
+ICON_PATH = skippy_notification_icon(get_addon()) or ""
 
 class PlayerMonitor(xbmc.Monitor):
     def __init__(self):
@@ -488,7 +490,7 @@ def _chapter_xml_paths_to_try(video_path):
     base = os.path.splitext(video_path)[0]
     ext = os.path.splitext(video_path)[1].lower()
     log_service_detail(f"🎬 Video container extension: {ext}")
-    suffixes = ["-chapters.xml", "_chapters.xml"]
+    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
     fallback_base = None
     try:
         if player.isPlayingVideo():
@@ -1600,12 +1602,20 @@ def re_evaluate_segment_jump_points(segments, current_time):
 
 
 def _parse_source_segments_uncached(path, playback_type):
-    """Read/select segment sources. Per-time filtering/linking remains in parse_and_process_segments."""
+    """Read/select segment sources. Per-time filtering/linking remains in parse_and_process_segments.
+
+    Returns (segments, segment_origin) where segment_origin is one of:
+    ``remote``, ``local``, ``embedded``, ``none`` — which family of sources won
+    priority for the returned list (used by the segment editor when online data
+    is active before sidecar save).
+    """
     addon = get_addon()
     if not addon:
-        return []
+        return [], "none"
 
     parsed = []
+    segment_origin = "none"
+
     if playback_type == "episode":
         tv_local = addon_get_bool(addon, "tv_use_local_chapter_edl", True)
         tv_online = addon_get_bool(addon, "tv_use_online_segment_lookup", False)
@@ -1617,7 +1627,7 @@ def _parse_source_segments_uncached(path, playback_type):
         if not tv_local and not tv_online:
             log("📺 TV episode: local and online segment sources disabled — no segments")
             monitor.segment_file_found = False
-            return []
+            return [], "none"
 
         local_list = []
         if tv_local:
@@ -1659,9 +1669,9 @@ def _parse_source_segments_uncached(path, playback_type):
 
         monitor.segment_file_found = local_file_found or bool(remote_list) or bool(embedded_list)
         if priority == "OnlineFirst":
-            chosen = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list else "none")
+            segment_origin = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list else "none")
         else:
-            chosen = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list else "none")
+            segment_origin = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list else "none")
         _src_tags = sorted({getattr(s, "source", "?") for s in (parsed or [])})
         log(
             "📺 Episode segment summary: local=%d remote=%d embedded=%d priority=%s → using %s (%d segs, sources %s)"
@@ -1670,7 +1680,7 @@ def _parse_source_segments_uncached(path, playback_type):
                 len(remote_list),
                 len(embedded_list),
                 priority,
-                chosen,
+                segment_origin,
                 len(parsed or []),
                 _src_tags,
             )
@@ -1694,7 +1704,7 @@ def _parse_source_segments_uncached(path, playback_type):
         if not movie_local and not movie_online:
             log("🎬 Movie: local and online segment sources disabled — no segments")
             monitor.segment_file_found = False
-            return []
+            return [], "none"
 
         local_list = []
         if movie_local:
@@ -1739,9 +1749,9 @@ def _parse_source_segments_uncached(path, playback_type):
 
         monitor.segment_file_found = local_file_found or bool(remote_list) or bool(embedded_list_m)
         if priority == "OnlineFirst":
-            chosen = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list_m else "none")
+            segment_origin = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list_m else "none")
         else:
-            chosen = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list_m else "none")
+            segment_origin = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list_m else "none")
         _src_tags_m = sorted({getattr(s, "source", "?") for s in (parsed or [])})
         log(
             "🎬 Movie segment summary: local=%d remote=%d embedded=%d priority=%s → using %s (%d segs, sources %s)"
@@ -1750,19 +1760,120 @@ def _parse_source_segments_uncached(path, playback_type):
                 len(remote_list),
                 len(embedded_list_m),
                 priority,
-                chosen,
+                segment_origin,
                 len(parsed or []),
                 _src_tags_m,
             )
         )
     else:
-        parsed = parse_chapters(path)
-        if not parsed:
-            parsed = parse_edl(path)
+        pxml = parse_chapters(path)
+        if pxml:
+            parsed = pxml
+            segment_origin = "local"
+        else:
+            pedl = parse_edl(path)
+            if pedl:
+                parsed = pedl
+                segment_origin = "local"
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
             parsed = parse_embedded_chapters()
+            if parsed:
+                segment_origin = "embedded"
 
-    return parsed or []
+    return parsed or [], segment_origin
+
+
+def _get_active_video_player_item():
+    """Return the current video Player.GetItem ``item`` dict, or None."""
+    try:
+        active_result = json.loads(
+            xbmc.executeJSONRPC(
+                json.dumps(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "method": "Player.GetActivePlayers",
+                    }
+                )
+            )
+        )
+        players = active_result.get("result") or []
+        video_player = next((p for p in players if p.get("type") == "video"), None)
+        if not video_player:
+            return None
+        pid = video_player.get("playerid")
+        item_result = json.loads(
+            xbmc.executeJSONRPC(
+                json.dumps(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 2,
+                        "method": "Player.GetItem",
+                        "params": {
+                            "playerid": pid,
+                            "properties": ["file", "title", "showtitle", "episode"],
+                        },
+                    }
+                )
+            )
+        )
+        return item_result.get("result", {}).get("item") or None
+    except Exception:
+        return None
+
+
+def get_initial_segments_for_segment_editor(video_path):
+    """If the service cache holds **remote** (online) segments for this file, convert them
+    to segment-editor ``SegmentItem`` instances with ``source='online'``. Otherwise
+    return ``None`` so the editor loads from disk (chapters / EDL) as before."""
+    if not video_path:
+        return None
+    cache = monitor.segment_parse_cache
+    if not cache or cache.get("path") != video_path:
+        return None
+    if cache.get("segment_origin") != "remote":
+        return None
+    raw_segs = cache.get("segments") or []
+    if not raw_segs:
+        return None
+
+    item = _get_active_video_player_item()
+    file_from_player = (item or {}).get("file")
+    if file_from_player and file_from_player != video_path:
+        try:
+            if xbmcvfs.translatePath(file_from_player) != xbmcvfs.translatePath(
+                video_path
+            ):
+                log_service_detail(
+                    "Segment editor: playing file differs from editor path — not using online cache"
+                )
+                return None
+        except Exception:
+            log_service_detail(
+                "Segment editor: could not compare paths — not using online cache"
+            )
+            return None
+
+    editor_segments = []
+    for seg in _clone_segments(raw_segs):
+        try:
+            label_ui = format_segment_label_for_ui(seg.segment_type_label)
+            editor_segments.append(
+                EditorSegmentItem(
+                    seg.start_seconds,
+                    seg.end_seconds,
+                    label_ui,
+                    source="online",
+                    action_type=seg.action_type,
+                )
+            )
+        except (TypeError, ValueError) as err:
+            log(f"Segment editor: skip invalid online segment: {err}")
+    if editor_segments:
+        log(
+            f"Segment editor: loaded {len(editor_segments)} segment(s) from online cache (source=online)"
+        )
+    return editor_segments or None
 
 
 def get_cached_source_segments(path, playback_type):
@@ -1796,7 +1907,7 @@ def get_cached_source_segments(path, playback_type):
         log("🔄 Sidecar file change detected — reparsing segments")
 
     sidecar_sig_before = _sidecar_signature(path)
-    parsed = _parse_source_segments_uncached(path, playback_type)
+    parsed, segment_origin = _parse_source_segments_uncached(path, playback_type)
     sidecar_sig_after = _sidecar_signature(path)
     monitor.segment_parse_cache = {
         "path": path,
@@ -1806,6 +1917,7 @@ def get_cached_source_segments(path, playback_type):
         "last_sidecar_check": now,
         "segment_file_found": monitor.segment_file_found,
         "segments": _clone_segments(parsed),
+        "segment_origin": segment_origin,
     }
     return _clone_segments(parsed)
 

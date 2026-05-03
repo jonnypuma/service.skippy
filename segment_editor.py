@@ -8,6 +8,7 @@ import xbmcgui
 import xbmcvfs
 
 from keymap_utils import install_editor_keymap
+from settings_utils import skippy_notification_icon
 from segment_editor_utils import (
     get_addon,
     log,
@@ -22,12 +23,7 @@ _KEYBOARD_CONFIRM_BUTTON_CODES = (13, 61453)
 
 def _skippy_toast(addon, message, time_ms=3000):
     """Match Segment Marker: heading + addon icon so notifications show Skippy artwork."""
-    icon = ""
-    if addon:
-        try:
-            icon = os.path.join(addon.getAddonInfo("path"), "icon.png")
-        except Exception:
-            icon = ""
+    icon = skippy_notification_icon(addon) if addon else ""
     xbmcgui.Dialog().notification("Skippy", message, icon, time_ms, sound=False)
 
 

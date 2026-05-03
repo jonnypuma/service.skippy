@@ -59,10 +59,20 @@ def open_segment_editor(video_path=None):
     set_editor_modal_open(True)
 
     try:
-        segments = parse_chapters(video_path)
-        if not segments:
-            segments = parse_edl(video_path)
+        segments = None
+        try:
+            from service import get_initial_segments_for_segment_editor
 
+            segments = get_initial_segments_for_segment_editor(video_path)
+        except Exception as exc:
+            log_always(f"No service online segment bootstrap ({exc})")
+
+        if not segments:
+            segments = parse_chapters(video_path)
+            if not segments:
+                segments = parse_edl(video_path)
+
+        segments = segments or []
         current_time = None
         try:
             player = xbmc.Player()

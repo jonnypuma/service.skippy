@@ -23,7 +23,16 @@ import xbmcgui
 import xbmcvfs
 
 from keymap_utils import install_marker_keymap
-from settings_utils import get_edl_label_to_action_map, normalize_label, get_custom_segment_keyword_labels
+from segment_editor_parser import (
+    CHAPTER_XML_SIDECAR_SUFFIXES,
+    DEFAULT_NEW_CHAPTER_XML_SUFFIX,
+)
+from settings_utils import (
+    get_edl_label_to_action_map,
+    normalize_label,
+    get_custom_segment_keyword_labels,
+    skippy_notification_icon,
+)
 
 ADDON_ID = "service.skippy"
 
@@ -156,11 +165,7 @@ def get_pending_path():
 
 def show_toast(msg, time_ms=3000):
     addon = get_addon()
-    icon = ""
-    try:
-        icon = os.path.join(addon.getAddonInfo("path"), "icon.png")
-    except Exception:
-        pass
+    icon = skippy_notification_icon(addon) if addon else ""
     xbmcgui.Dialog().notification("Skippy", msg, icon, time_ms, sound=False)
 
 
@@ -508,11 +513,11 @@ def marker_edl_path(video_path):
 
 def marker_chapters_xml_path(video_path):
     base = video_path.rsplit(".", 1)[0]
-    for suffix in ("-chapters.xml", "_chapters.xml"):
+    for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
         path = f"{base}{suffix}"
         if xbmcvfs.exists(path):
             return path
-    return f"{base}-chapters.xml"
+    return f"{base}{DEFAULT_NEW_CHAPTER_XML_SUFFIX}"
 
 
 def backup_marker_files_for_save_format(video_path, save_format, enabled):

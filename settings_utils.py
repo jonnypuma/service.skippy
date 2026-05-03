@@ -1,3 +1,4 @@
+import os
 import unicodedata
 import xbmcaddon
 import xbmc
@@ -22,6 +23,43 @@ def get_addon():
         # If the addon is currently being uninstalled/updated, 
         # this will return None instead of crashing
         return None
+
+
+def skippy_notification_icon(addon):
+    """
+    Filesystem path for Dialog().notification(..., icon=...).
+
+    Prefer metadata icon from Kodi (correct for packaged assets); fall back to icon.png
+    beside addon.xml. Forward slashes — some builds ignore Windows backslash paths for
+    toast images and show the default info glyph instead.
+    """
+    if not addon:
+        return ""
+    candidates = []
+    try:
+        meta = addon.getAddonInfo("icon")
+        if meta:
+            candidates.append(meta)
+    except Exception:
+        pass
+    try:
+        root = addon.getAddonInfo("path")
+        if root:
+            candidates.append(os.path.join(root, "icon.png"))
+    except Exception:
+        pass
+    for raw in candidates:
+        if not raw:
+            continue
+        path = raw.replace("\\", "/")
+        try:
+            if xbmcvfs.exists(path):
+                return path
+        except Exception:
+            pass
+    if candidates:
+        return (candidates[0] or "").replace("\\", "/")
+    return ""
 
 
 def _addon_read_setting_raw(addon, key):

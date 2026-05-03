@@ -35,6 +35,49 @@ from segment_editor_utils import get_addon, log, log_always, log_error
 from settings_utils import get_custom_segment_keyword_labels, normalize_label
 
 
+def _select_segment_label_from_list(options):
+    """
+    Skinned list (same as Segment Marker) so every keyword from custom_segment_keywords
+    is shown. xbmcgui.Dialog().select() can omit or mishandle items on some platforms.
+
+    Returns:
+        int: index of selection (0 = Custom..., -1 = user cancelled the picker)
+        None: skinned picker unavailable (caller may use Dialog().select())
+    """
+    addon = get_addon()
+    if not addon:
+        return None
+    try:
+        from segment_marker import SegmentTypePickerDialog
+    except Exception as exc:
+        log_error(f"Cannot load SegmentTypePickerDialog: {exc}")
+        return None
+
+    dialog = None
+    try:
+        path = addon.getAddonInfo("path")
+        dialog = SegmentTypePickerDialog(
+            "SegmentMarkerTypePicker.xml",
+            path,
+            "default",
+            title="Select Segment Label",
+            subtitle="Choose a label from Segment keywords, or Custom to type your own.",
+            footer="Enter/OK selects. Back/Esc cancels.",
+            options=options,
+        )
+        dialog.doModal()
+        return getattr(dialog, "selected_index", -1)
+    except Exception as exc:
+        log_error(f"Skinned segment label picker failed: {exc}")
+        return None
+    finally:
+        try:
+            if dialog:
+                del dialog
+        except Exception:
+            pass
+
+
 class _EditorPlayerListener(xbmc.Player):
     """xbmc.Player subclass that pushes pause/resume events to the dialog."""
 
@@ -1027,7 +1070,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def get_label_from_user(self, default=""):
         predefined = self.get_predefined_labels()
         options = ["Custom..."] + predefined
-        selected = xbmcgui.Dialog().select("Select Segment Label", options)
+        selected = _select_segment_label_from_list(options)
+        if selected is None:
+            selected = xbmcgui.Dialog().select("Select Segment Label", options)
 
         if selected == 0:
             label = xbmcgui.Dialog().input(

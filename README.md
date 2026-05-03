@@ -9,7 +9,7 @@ You can rely on **local files only**, blend in **online segment lookup**, tune s
 
 Supported containers include **MKV**, **MP4**, **AVI**, and other common formats Kodi plays.
 
-When **Save online segments** is enabled, Skippy can write fetched ranges next to the video as **`-chapters.xml` / `_chapters.xml`**, **`.edl`**, or **both** (see **Save format** under *Online segments sidecar* in Segment Settings). It does not write sidecars next to **`plugin://` playback**, **`.strm`** files, or common **stream URLs** (only a real on-disk video path). If a matching sidecar already exists, you can **skip**, **overwrite** (with optional confirmation), **merge** (add non-overlapping online windows), and optionally **back up** the previous file as `*.bck`.
+When **Save online segments** is enabled, Skippy can write fetched ranges next to the video as **`-chapters.xml` / `_chapters.xml` / `.chapters.xml`**, **`.edl`**, or **both** (see **Save format** under *Online segments sidecar* in Segment Settings). It does not write sidecars next to **`plugin://` playback**, **`.strm`** files, or common **stream URLs** (only a real on-disk video path). If a matching sidecar already exists, you can **skip**, **overwrite** (with optional confirmation), **merge** (add non-overlapping online windows), and optionally **back up** the previous file as `*.bck`.
 
 ---
 
@@ -478,22 +478,24 @@ You can now completely disable skipping for movies or TV episodes:
 ---
 
 ## File Support
-Skippy supports the following segment definition files:
+Skippy supports the following segment definition files (same directory as the video, same **basename** as the file):
 
-filename.edl
+- **`basename.edl`**
+- **Chapter XML (Matroska-style)** — any of:
+  - `basename-chapters.xml`
+  - `basename_chapters.xml`
+  - `basename.chapters.xml`
+  - `basename-chapter.xml`, `basename_chapter.xml`, `basename.chapter.xml` (singular `chapter`, same patterns)
+- Optionally a directory-level **`chapters.xml`** next to the video (editor / parser fallback)
 
-filename-chapters.xml
-
-filename_chapters.xml
-
-These should reside in the same directory as the video file. EDL files follow Kodi’s native format with start, end, and action code lines. XML files use a chapter-based structure. See section below.
+EDL files follow Kodi’s native format with start, end, and action code lines. XML files use a chapter-based structure. If several XML sidecars exist, Skippy tries paths in a fixed order and uses the **first file that contains usable chapter entries**. See section below.
 
 ---
 
 ## File Example
 Breaking.Bad.S01E02.mkv
-├── Breaking.Bad.S01E02-chapters.xml or Breaking.Bad.S01E02_chapters.xml    # XML chapter file
-└── Breaking.Bad.S01E02.edl                                                 # Fallback if no XML found
+├── Breaking.Bad.S01E02-chapters.xml — or `_chapters.xml`, `.chapters.xml`, or singular `chapter` variants    # XML chapter file
+└── Breaking.Bad.S01E02.edl                                                                                    # Fallback if no XML found
 
 XML takes priority if both exist.
 
@@ -503,7 +505,7 @@ XML takes priority if both exist.
 Skippy supports two segment metadata formats, placed alongside the .mkv or video file:
 
 1. XML Chapter Files (Preferred)
-- Filenames: filename-chapters.xml or filename_chapters.xml
+- Filenames: **`basename-chapters.xml`**, **`basename_chapters.xml`**, **`basename.chapters.xml`**, plus singular **`chapter`** variants (`-`, `_`, `.`); or a sibling **`chapters.xml`**
 - Format: Matroska-style (e.g. exported by Jellyfin)
 - Label: `<ChapterString>Intro</ChapterString>`
 - Configurable behavior per label: auto-skip / ask to skip / never
@@ -569,8 +571,8 @@ Labels are normalized (e.g. Intro, intro, INTRO all match)
 
 ## File Example
 Breaking.Bad.S01E02.mkv
-├── Breaking.Bad.S01E02-chapters.xml or Breaking.Bad.S01E02_chapters.xml    # XML chapter file
-└── Breaking.Bad.S01E02.edl                                                 # Fallback if no XML found
+├── Breaking.Bad.S01E02-chapters.xml — or `_chapters.xml`, `.chapters.xml`, or singular `chapter` variants    # XML chapter file
+└── Breaking.Bad.S01E02.edl                                                                                    # Fallback if no XML found
 
 XML takes priority if both exist.
 
@@ -835,7 +837,7 @@ ________________________________________________________________________________
 ## Developer notes
 - UI driven by WindowXMLDialog
 - EDL action types 0 and 3 (Kodi-native) are ignored by Skippy. Use batch tool to convert to other action types.
-- Only -chapters.xml and _chapters.xml and .edl files are scanned
+- Chapter XML sidecars: **`basename-chapters.xml`**, **`basename_chapters.xml`**, **`basename.chapters.xml`**, singular **`chapter`** variants (`-` / `_` / `.`), optional directory **`chapters.xml`**, and **`.edl`** files are considered when resolving sidecars
 
 ---
 

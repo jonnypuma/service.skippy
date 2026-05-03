@@ -10,6 +10,17 @@ import unicodedata
 from segment_editor_utils import get_addon, log
 from settings_utils import get_edl_label_to_action_map, get_edl_type_map
 
+# Matroska-style chapter sidecars next to ``video.mkv`` (also used by ``service`` / Segment Marker).
+CHAPTER_XML_SIDECAR_SUFFIXES = (
+    "-chapters.xml",
+    "_chapters.xml",
+    ".chapters.xml",
+    "-chapter.xml",
+    "_chapter.xml",
+    ".chapter.xml",
+)
+DEFAULT_NEW_CHAPTER_XML_SUFFIX = "-chapters.xml"
+
 
 def _apply_skippy_file_permissions(path):
     """Apply Default / 644 / 666 from Skippy settings (same as segment marker)."""
@@ -323,7 +334,7 @@ def parse_chapters(video_path):
     """
     base = os.path.splitext(video_path)[0]
     video_dir = os.path.dirname(video_path)
-    suffixes = ["-chapters.xml", "_chapters.xml", "-chapter.xml", "_chapter.xml"]
+    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
 
     paths_to_try = [f"{base}{s}" for s in suffixes]
     if video_dir:
@@ -519,15 +530,14 @@ def save_chapters(video_path, segments):
     else:
         base = video_path
 
-    suffixes = ["-chapters.xml", "_chapters.xml"]
     output_path = None
-    for suffix in suffixes:
+    for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
         path = f"{base}{suffix}"
         if xbmcvfs.exists(path):
             output_path = path
             break
     if not output_path:
-        output_path = f"{base}{suffixes[0]}"
+        output_path = f"{base}{DEFAULT_NEW_CHAPTER_XML_SUFFIX}"
 
     log(f"Saving {len(segments)} segments to: {output_path}")
 
@@ -697,7 +707,7 @@ def _backup_editor_sidecars(video_path, save_format, enabled):
     if save_format in (SAVE_FORMAT_BOTH, SAVE_FORMAT_EDL):
         _backup_file(f"{base}.edl", True)
     if save_format in (SAVE_FORMAT_BOTH, SAVE_FORMAT_XML):
-        for suffix in ("-chapters.xml", "_chapters.xml"):
+        for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
             _backup_file(f"{base}{suffix}", True)
 
 
@@ -744,7 +754,7 @@ def delete_segment_files(video_path, save_format=None):
         save_format = normalize_save_format(save_format)
 
     base = os.path.splitext(video_path)[0]
-    all_xml = [f"{base}-chapters.xml", f"{base}_chapters.xml"]
+    all_xml = [f"{base}{s}" for s in CHAPTER_XML_SIDECAR_SUFFIXES]
     all_edl = [f"{base}.edl"]
 
     if save_format == SAVE_FORMAT_BOTH:

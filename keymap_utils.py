@@ -9,6 +9,8 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
+from settings_utils import skippy_notification_icon
+
 
 ADDON_ID = "service.skippy"
 SCRIPT_ACTION = "RunScript(service.skippy)"
@@ -302,9 +304,11 @@ def install_editor_keymap(addon=None, notify=False):
             f"{path}; remote={remote_value!r}; remote_press={remote_press!r}"
         )
         if notify:
+            icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
                 "Skippy",
                 "Segment editor keymap updated",
+                icon=icon,
                 time=2500,
                 sound=False,
             )
@@ -312,9 +316,11 @@ def install_editor_keymap(addon=None, notify=False):
     except Exception as exc:
         _log(f"Failed to install segment editor keymap: {exc}")
         if notify:
+            icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
                 "Skippy",
                 "Could not update editor keymap",
+                icon=icon,
                 time=3500,
                 sound=False,
             )
@@ -349,9 +355,11 @@ def install_marker_keymap(addon=None, notify=False):
             f"keyboard_sections={KEYBOARD_TARGET_SECTIONS}; remote_sections={REMOTE_TARGET_SECTIONS}"
         )
         if notify:
+            icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
                 "Skippy",
                 "Segment marker keymap updated",
+                icon=icon,
                 time=2500,
                 sound=False,
             )
@@ -359,9 +367,11 @@ def install_marker_keymap(addon=None, notify=False):
     except Exception as exc:
         _log(f"Failed to install segment marker keymap: {exc}")
         if notify:
+            icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
                 "Skippy",
                 "Could not update marker keymap",
+                icon=icon,
                 time=3500,
                 sound=False,
             )
