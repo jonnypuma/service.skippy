@@ -555,6 +555,61 @@ def local_chapter_or_edl_file_exists(video_path):
     return False
 
 
+def _both_segment_sources_disabled_for_playback(playback_type):
+    """True when both local chapter/EDL and online lookup are off for this type."""
+    addon = get_addon()
+    if not addon:
+        return True
+    if playback_type == "episode":
+        loc = addon_get_bool(addon, "tv_use_local_chapter_edl", True)
+        onl = addon_get_bool(addon, "tv_use_online_segment_lookup", False)
+        return not loc and not onl
+    if playback_type == "movie":
+        loc = addon_get_bool(addon, "movie_use_local_chapter_edl", True)
+        onl = addon_get_bool(addon, "movie_use_online_segment_lookup", False)
+        return not loc and not onl
+    return False
+
+
+def _missing_segments_toast_message(playback_type, video_path):
+    """Copy for the 'no segments' notification from current TV/movie source toggles."""
+    addon = get_addon()
+    if playback_type == "episode":
+        loc = addon_get_bool(addon, "tv_use_local_chapter_edl", True) if addon else True
+        onl = (
+            addon_get_bool(addon, "tv_use_online_segment_lookup", False) if addon else False
+        )
+        type_word = "episode"
+    elif playback_type == "movie":
+        loc = addon_get_bool(addon, "movie_use_local_chapter_edl", True) if addon else True
+        onl = (
+            addon_get_bool(addon, "movie_use_online_segment_lookup", False)
+            if addon
+            else False
+        )
+        type_word = "movie"
+    else:
+        return "No skip segments found for this video."
+
+    has_sidecar = bool(video_path) and local_chapter_or_edl_file_exists(video_path)
+
+    if not loc and onl:
+        if has_sidecar:
+            return (
+                "No online segment data found; local segment data is available for this %s."
+                % type_word
+            )
+        return "No online segment data found for this %s." % type_word
+
+    if loc and not onl:
+        return "No local segment data found for this %s." % type_word
+
+    if loc and onl:
+        return "No segments found locally or online for this %s." % type_word
+
+    return "No skip segments found for this %s." % type_word
+
+
 def _dedupe_paths(paths):
     seen = set()
     result = []
@@ -2464,6 +2519,7 @@ while not monitor.abortRequested():
             and not monitor.shown_missing_file_toast
             and time.time() - monitor.playback_ready_time >= 2
             and not monitor.segment_file_found
+            and not _both_segment_sources_disabled_for_playback(playback_type)
         ):
             # CRITICAL: Check if playback is paused BEFORE showing toast to prevent spamming when paused
             try:
@@ -2496,9 +2552,12 @@ while not monitor.abortRequested():
                                         log(f"🔕 Missing segments toast suppressed — playback paused right before showing (is_playing={final_toast_is_playing}, is_paused={final_toast_is_paused})")
                                     else:
                                         try:
+                                            toast_msg = _missing_segments_toast_message(
+                                                playback_type, video
+                                            )
                                             xbmcgui.Dialog().notification(
                                                 heading="Skippy",
-                                                message=f"No skip segments found for this {msg_type}.",
+                                                message=toast_msg,
                                                 icon=ICON_PATH,
                                                 time=3000,
                                                 sound=False
