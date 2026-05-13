@@ -19,6 +19,9 @@ _addon = None
 
 FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 
+_FULL_SKIP_PANEL_GROUP_ID = 3080
+_FULL_SKIP_PANEL_BACKDROP_ID = 3081
+
 
 def _ascii_log_text(msg):
     return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
@@ -222,6 +225,22 @@ def _label_set_colors(control, label, font, text_argb, shadow_argb=None):
     _control_set_label_colors(control, label, font, text_argb)
 
 
+def _elapsed_progress_percent(current_time, segment_start, total_duration):
+    if not total_duration or total_duration <= 0:
+        return 0
+    elapsed = max(current_time - segment_start, 0)
+    p = int((elapsed / total_duration) * 100)
+    return min(max(p, 0), 100)
+
+
+def _progress_display_percent(elapsed_pct, countdown):
+    return 100 - elapsed_pct if countdown else elapsed_pct
+
+
+def _progress_initial_percent(countdown):
+    return 100 if countdown else 0
+
+
 class SkipDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         try:
@@ -336,23 +355,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             self.setProperty("show_next_jump", "false")
             log("➡️ Dialog configured for normal skip to end of segment")
 
-        self._apply_dialog_text_colors()
-
         if not self._minimal_mode:
-            try:
-                addon = get_addon()
-                raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
-                show_progress = addon_get_bool(addon, "show_progress_bar", False)
-                log(f"🧩 show_progress_bar raw setting: '{raw_setting}' -> bool: {show_progress}")
-                progress = self.getControl(3014)
-                progress.setVisible(show_progress)
-                if show_progress:
-                    progress.setPercent(0)
-                    log("📊 Progress bar initialized at 0%")
-                else:
-                    log("📊 Progress bar hidden due to setting")
-            except Exception as e:
-                log(f"⚠️ Progress bar control error: {e}")
+            self._apply_full_skip_layout(addon)
+
+        self._apply_dialog_text_colors()
 
         try:
             if self._minimal_mode:
@@ -389,6 +395,76 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             except:
                 pass
 
+    def _apply_full_skip_layout(self, addon):
+        """Re-stack optional Full rows and shrink the panel so invisible rows do not reserve space."""
+        CONTENT_TOP = 41
+        GAP_AFTER_JUMP = 5
+        GAP_BEFORE_PROGRESS = 4
+        BOTTOM_MARGIN = 5
+        META_LINE_H = 20
+        PROGRESS_H = 5
+        BTN_BOTTOM = 35
+        UNDER_BTNS_FALLBACK = 14
+        LEFT_MARGIN = 5
+
+        ad = addon if addon is not None else get_addon()
+        show_jump = self.getProperty("show_next_jump") == "true"
+        hide_end = self.getProperty("hide_ending_text") == "true"
+        raw_prog = addon_get_setting_text(ad, "show_progress_bar", "") if ad else ""
+        show_progress = addon_get_bool(ad, "show_progress_bar", False) if ad else False
+        countdown = addon_get_bool(ad, "progress_bar_countdown", False) if ad else False
+
+        bottom = CONTENT_TOP
+
+        try:
+            if show_jump:
+                label_j = self.getControl(3011)
+                label_j.setPosition(LEFT_MARGIN, bottom)
+                bottom += META_LINE_H
+                if not hide_end or show_progress:
+                    bottom += GAP_AFTER_JUMP
+
+            if not hide_end:
+                label_e = self.getControl(2)
+                label_e.setPosition(LEFT_MARGIN, bottom)
+                bottom += META_LINE_H
+                if show_progress:
+                    bottom += GAP_BEFORE_PROGRESS
+
+            progress = self.getControl(3014)
+            progress.setVisible(show_progress)
+            if show_progress:
+                progress.setPosition(LEFT_MARGIN, bottom)
+                bottom += PROGRESS_H
+                init_pct = _progress_initial_percent(countdown)
+                progress.setPercent(init_pct)
+                log(
+                    f"📊 Progress bar stacked (raw '{raw_prog}', countdown={countdown}) "
+                    f"→ {init_pct}% at y≈{bottom - PROGRESS_H}"
+                )
+            else:
+                log(f"📊 Progress hidden (raw '{raw_prog}')")
+
+            has_meta = show_jump or (not hide_end) or show_progress
+            total_h = (bottom + BOTTOM_MARGIN) if has_meta else (BTN_BOTTOM + UNDER_BTNS_FALLBACK)
+            total_h = max(total_h, BTN_BOTTOM + UNDER_BTNS_FALLBACK)
+
+            try:
+                self.getControl(_FULL_SKIP_PANEL_GROUP_ID).setHeight(total_h)
+            except Exception as e:
+                log(f"⚠️ Full skip group resize: {e}")
+            try:
+                self.getControl(_FULL_SKIP_PANEL_BACKDROP_ID).setHeight(total_h)
+            except Exception as e:
+                log(f"⚠️ Full skip backdrop resize: {e}")
+
+            log(
+                f"📐 Full skip panel → {total_h}px (next_jump_line={show_jump}, "
+                f"segment_end_line={not hide_end}, progress={show_progress})"
+            )
+        except Exception as e:
+            log(f"⚠️ Full skip vertical layout failed: {e}")
+
     def _monitor_segment_end(self):
         delay = 0.25
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
@@ -409,14 +485,18 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     addon = get_addon()
                     raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
                     show_progress = addon_get_bool(addon, "show_progress_bar", False)
+                    countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
                     progress = self.getControl(3014)
                     progress.setVisible(show_progress)
                     if show_progress:
-                        elapsed = max(current - self.segment.start_seconds, 0)
-                        percent = int((elapsed / self._total_duration) * 100)
-                        percent = min(max(percent, 0), 100)
-                        progress.setPercent(percent)
-                        log(f"📊 Progress bar visible: {percent}% (raw: '{raw_setting}')")
+                        elapsed_pct = _elapsed_progress_percent(
+                            current, self.segment.start_seconds, self._total_duration
+                        )
+                        disp = _progress_display_percent(elapsed_pct, countdown)
+                        progress.setPercent(disp)
+                        log(
+                            f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
+                        )
                     else:
                         progress.setVisible(False)
                         log(f"📊 Progress bar hidden due to setting (raw: '{raw_setting}')")

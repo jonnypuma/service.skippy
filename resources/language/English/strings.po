@@ -176,6 +176,10 @@ msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Skip dialog font color"
 
+msgctxt "#32027"
+msgid "Progress bar shows remaining (countdown)"
+msgstr "Progress bar shows remaining (countdown)"
+
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
 msgstr "Use local chapter / EDL files"

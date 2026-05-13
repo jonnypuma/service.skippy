@@ -273,6 +273,7 @@ def log_playback_settings_snapshot(addon=None):
             "skip_dialog_mode=%s" % tx("skip_dialog_mode", "Full"),
             "skip_dialog_positions_full_minimal=%s" % positions,
             "show_progress_bar=%s" % bo("show_progress_bar", True),
+            "progress_bar_countdown=%s" % bo("progress_bar_countdown", False),
             "hide_ending_text=%s" % bo("hide_ending_text", False),
         ]
     )

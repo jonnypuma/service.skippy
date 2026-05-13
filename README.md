@@ -225,6 +225,7 @@ Default settings file loaded at first start located in: .../addons/service.skipp
 | Category: | Customize Skip Dialog Look and Behavior |
 | ----------------------------- | ------------------------------------------------------------------------------- |
 | show_progress_bar | Enables visual progress bar during skip dialog |
+| progress_bar_countdown | Full mode: bar starts full and shrinks (remaining time) instead of filling with elapsed time (default: false) |
 | skip_dialog_position | Chooses layout position for the skip confirmation dialog |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
@@ -297,7 +298,7 @@ Skippy supports multiple visual styles for the focused buttons in the skip dialo
 Skippy includes a visual progress bar that shows the elapsed time of the current skip segment:
 
 **Features:**
-- **Visual Progress**: Fills up as the segment progresses toward its end
+- **Visual Progress**: Fills up as the segment progresses toward its end (default), or use **Progress bar shows remaining (countdown)** so the bar starts full and shrinks toward empty
 - **Real-time Updates**: Updates every 0.25 seconds during segment playback
 - **Toggle Control**: Can be enabled/disabled in addon settings
 - **Dynamic Setting**: Changes to the setting take effect immediately without restart
@@ -305,7 +306,7 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 **How to Control:**
 1. Go to `Settings -> Add-ons -> My Add-ons -> Services -> Skippy`
 2. Navigate to "Customize Skip Dialog Look and Behavior"
-3. Toggle "Show Progress Bar in Skip Dialog" on/off
+3. Toggle "Show Progress Bar in Skip Dialog" on/off; optionally enable **Progress bar shows remaining (countdown)** when the bar is on
 4. Changes apply immediately for new skip dialogs
 
 **Technical Details:**

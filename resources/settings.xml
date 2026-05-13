@@ -150,6 +150,13 @@
              default="true"
              tooltip="Full mode: show or hide the progress bar while a skippable segment is active." />
 
+    <setting id="progress_bar_countdown"
+             type="bool"
+             label="32027"
+             default="false"
+             enable="eq(-1,true)"
+             tooltip="Full mode: bar starts full (100%) and shrinks toward empty as the segment plays. When off, the bar fills from 0% to 100% with elapsed time." />
+
     <setting id="skip_dialog_position"
              type="labelenum"
              label="32009"

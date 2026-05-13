@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.3] - 2026-05-13
+
+### Added
+- **Full skip dialog — progress bar countdown**: New setting **Progress bar shows remaining (countdown)** (`progress_bar_countdown`). When enabled, the bar starts at **100%** and shrinks toward **0%** as the segment plays; when disabled, behavior is unchanged (fills with elapsed time).
+
 ## [2.1.2] - 2026-05-09
 
 ### Fixed
