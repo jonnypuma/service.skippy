@@ -136,7 +136,9 @@ _SKIP_DIALOG_FULL_FILES = (
     'SkipDialog_BottomLeft.xml',
     'SkipDialog_TopLeft.xml',
     'SkipDialog_TopRight.xml',
+    'SkipDialog.xml',
 )
+_FULL_MODE_PROGRESS_ID = '3014'
 _SKIP_DIALOG_MINIMAL_FILES = (
     'Minimal_Skip_Dialog_BottomRight.xml',
     'Minimal_Skip_Dialog_BottomLeft.xml',
@@ -170,6 +172,15 @@ def _set_button_texturefocus(control, texture_path):
     el.text = texture_path
 
 
+def _set_progress_midtexture(control, texture_path):
+    for child in control:
+        if child.tag == 'midtexture':
+            child.text = texture_path
+            return
+    el = ET.SubElement(control, 'midtexture')
+    el.text = texture_path
+
+
 def _write_skin_xml(tree, xml_path):
     try:
         ET.indent(tree, space='  ')
@@ -182,12 +193,16 @@ def _write_skin_xml(tree, xml_path):
         tree.write(xml_path, **kwargs)
 
 
-def _update_full_skip_dialog_textures(texture_path):
-    """Set texturefocus on Full mode skip/close buttons only (by control id)."""
+def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None):
+    """Set texturefocus on Full mode skip/close buttons; optional progress midtexture."""
     try:
         xml_dir = _get_skins_720p_dir()
-        if not xml_dir or not texture_path:
+        if not xml_dir:
             return
+        if not focus_texture_path and not (mid_texture_path or "").strip():
+            return
+        mid_texture_path = (mid_texture_path or "").strip() or None
+        updated = []
         for xml_file in _SKIP_DIALOG_FULL_FILES:
             xml_path = os.path.join(xml_dir, xml_file)
             if not os.path.isfile(xml_path):
@@ -195,13 +210,27 @@ def _update_full_skip_dialog_textures(texture_path):
             tree = ET.parse(xml_path)
             root = tree.getroot()
             for control in root.iter('control'):
-                if control.get('type') != 'button':
-                    continue
+                ctype = control.get('type')
                 cid = control.get('id')
-                if cid in _FULL_MODE_BUTTON_IDS:
-                    _set_button_texturefocus(control, texture_path)
+                if ctype == 'button' and cid in _FULL_MODE_BUTTON_IDS and focus_texture_path:
+                    _set_button_texturefocus(control, focus_texture_path)
+                if (
+                    mid_texture_path
+                    and ctype == 'progress'
+                    and cid == _FULL_MODE_PROGRESS_ID
+                ):
+                    _set_progress_midtexture(control, mid_texture_path)
             _write_skin_xml(tree, xml_path)
-            log(f"📝 Updated Full dialog {xml_file} button focus texture: {texture_path}")
+            updated.append(xml_file)
+        if updated:
+            log(
+                "📝 Full skip dialog skin XML (%s): button focus=%s, progress mid=%s"
+                % (
+                    ", ".join(updated),
+                    focus_texture_path or "-",
+                    mid_texture_path or "-",
+                )
+            )
     except Exception as e:
         log(f"⚠️ Failed to update Full skip dialog XML: {e}")
 
@@ -2801,10 +2830,17 @@ while not monitor.abortRequested():
                             _update_minimal_skip_dialog_textures(plate_file)
                             log(f"🎨 Minimal textures set to: {plate_file}")
                         else:
-                            focus_texture_file = addon_get_setting_text(addon, "button_focus_style", "")
-                            if focus_texture_file:
-                                _update_full_skip_dialog_textures(focus_texture_file)
-                                log(f"🎨 Button focus texture set to: {focus_texture_file}")
+                            focus_texture_file = addon_get_setting_text(addon, "button_focus_style", "") or ""
+                            mid_texture_file = addon_get_setting_text(addon, "progress_bar_style", "") or ""
+                            if not focus_texture_file:
+                                focus_texture_file = "button_focus.png"
+                            if addon_get_bool(addon, "hide_close_button", False) and not addon_get_bool(
+                                addon, "show_skip_button_focus_texture", True
+                            ):
+                                focus_texture_file = "-"
+                            if not mid_texture_file:
+                                mid_texture_file = "progress_mid.png"
+                            _update_full_skip_dialog_textures(focus_texture_file, mid_texture_file)
                     except Exception as e:
                         log(f"⚠️ Failed to update skip dialog skin XML: {e}")
 

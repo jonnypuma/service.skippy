@@ -10,6 +10,7 @@ import xbmcgui
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
+    addon_get_int,
     addon_get_setting_text,
     skippy_log_effective_detail_level,
 )
@@ -402,7 +403,6 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         GAP_BEFORE_PROGRESS = 4
         BOTTOM_MARGIN = 5
         META_LINE_H = 20
-        PROGRESS_H = 5
         BTN_BOTTOM = 35
         UNDER_BTNS_FALLBACK = 14
         LEFT_MARGIN = 5
@@ -413,6 +413,12 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         raw_prog = addon_get_setting_text(ad, "show_progress_bar", "") if ad else ""
         show_progress = addon_get_bool(ad, "show_progress_bar", False) if ad else False
         countdown = addon_get_bool(ad, "progress_bar_countdown", False) if ad else False
+
+        progress_h = (
+            addon_get_int(ad, "progress_bar_height", 16, minimum=5, maximum=32)
+            if ad
+            else 16
+        )
 
         bottom = CONTENT_TOP
 
@@ -435,12 +441,13 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             progress.setVisible(show_progress)
             if show_progress:
                 progress.setPosition(LEFT_MARGIN, bottom)
-                bottom += PROGRESS_H
+                progress.setHeight(progress_h)
+                bottom += progress_h
                 init_pct = _progress_initial_percent(countdown)
                 progress.setPercent(init_pct)
                 log(
                     f"📊 Progress bar stacked (raw '{raw_prog}', countdown={countdown}) "
-                    f"→ {init_pct}% at y≈{bottom - PROGRESS_H}"
+                    f"→ {init_pct}% at y≈{bottom - progress_h} height={progress_h}"
                 )
             else:
                 log(f"📊 Progress hidden (raw '{raw_prog}')")

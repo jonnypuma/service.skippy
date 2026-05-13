@@ -67,6 +67,10 @@ msgctxt "#31009"
 msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
 msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
 
+msgctxt "#31010"
+msgid "Segment Keywords"
+msgstr "Segment Keywords"
+
 # Dialog Settings
 msgctxt "#32000"
 msgid "Button Focus Style"
@@ -179,6 +183,22 @@ msgstr "Skip dialog font color"
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
 msgstr "Progress bar shows remaining (countdown)"
+
+msgctxt "#32079"
+msgid "Progress bar style"
+msgstr "Progress bar style"
+
+msgctxt "#32080"
+msgid "Progress bar height (pixels)"
+msgstr "Progress bar height (pixels)"
+
+msgctxt "#32081"
+msgid "Show skip button focus frame"
+msgstr "Show skip button focus frame"
+
+msgctxt "#32082"
+msgid "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
+msgstr "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -476,8 +496,8 @@ msgid "Saved file permissions"
 msgstr "Saved file permissions"
 
 msgctxt "#36007"
-msgid "Set permissions on saved segment files. Default: inherit from system. 644: owner read/write, others read. 666: everyone read/write (useful for network shares)."
-msgstr "Set permissions on saved segment files. Default: inherit from system. 644: owner read/write, others read. 666: everyone read/write (useful for network shares)."
+msgid "Permissions applied after saving EDL/chapters files. Leave unchanged: Skippy does not call chmod; the file keeps whatever mode the OS or Kodi created (umask / platform default). 644: owner read/write, group and others read only. 666: all users read/write (use sparingly; sometimes used on shared folders)."
+msgstr "Permissions applied after saving EDL/chapters files. Leave unchanged: Skippy does not call chmod; the file keeps whatever mode the OS or Kodi created (umask / platform default). 644: owner read/write, group and others read only. 666: all users read/write (use sparingly; sometimes used on shared folders)."
 
 msgctxt "#36008"
 msgid "Start time set"

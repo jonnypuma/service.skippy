@@ -1,548 +1,829 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <category label="30000">
-
-    <setting id="custom_segment_keywords"
-             type="text"
-             label="31000"
-             default="intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending"
-             tooltip="Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor." />
-
-    <setting type="lsep" label="31001" />
-
-    <setting id="segment_always_skip"
-             type="text"
-             label="31002"
-             default="commercial,commercials,sponsor,sponsors,ad,ads"
-             tooltip="Subset of your segment keywords that should skip automatically." />
-
-    <setting id="segment_ask_skip"
-             type="text"
-             label="31003"
-             default="intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on"
-             tooltip="Subset that should prompt you before skipping." />
-
-    <setting id="segment_never_skip"
-             type="text"
-             label="31004"
-             default="prologue,epilogue,main,credits,outro,closing,ending"
-             tooltip="Subset to always play, never skip." />
-
-	<setting id="ignore_internal_edl_actions" 
-			 type="bool" 
-			 label="31005" 
-			 default="true" 
-			 tooltip="Skippy will ignore any EDL segment whose action type is not explicitly mapped in edl_action_mapping. This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'." />
-
-
-    <setting id="edl_action_mapping"
-             type="text"
-             label="31006"
-             default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open"
-             tooltip="Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits" />
-
-	<setting id="skip_overlapping_segments" 
-			 type="bool" 
-			 label="31007" 
-			 default="true"
-			 tooltip="Configurable overlap detection to help avoid redundant or conflicting skips" />
-
-    <setting id="use_embedded_chapters_fallback"
-             type="bool"
-             label="31008"
-             default="true"
-             tooltip="31009" />
-
-    <setting type="lsep" label="32045" />
-
-    <setting id="save_online_segments_format"
-             type="labelenum"
-             label="32077"
-             default="Both"
-             values="Both|EDL only|Chapters XML only"
-             optionvalues="Both|EDL|XML"
-             tooltip="32078" />
-
-    <setting id="save_online_segments_to_chapters_xml"
-             type="bool"
-             label="32046"
-             default="false"
-             tooltip="32047" />
-
-    <setting id="save_online_chapters_existing_policy"
-             type="labelenum"
-             label="32069"
-             default="SkipIfExists"
-             values="Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing"
-             optionvalues="SkipIfExists|OverwriteSilent|OverwriteAsk|Merge"
-             tooltip="32070" />
-
-    <setting id="save_online_chapters_backup_before_overwrite"
-             type="bool"
-             label="32071"
-             default="true"
-             tooltip="32072" />
-
-  </category>
-
-  <category label="30001">
-    <setting type="lsep" label="32019" />
-
-    <setting id="rewind_threshold_seconds"
-             type="number"
-             label="32008"
-             default="8"
-             min="2"
-             max="30"
-             tooltip="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons." />
-
-    <setting id="enable_skip_movies"
-             type="bool"
-             label="32010"
-             default="true"
-             tooltip="Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies." />
-
-    <setting id="enable_skip_episodes"
-             type="bool"
-             label="32011"
-             default="true"
-             tooltip="Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes." />
-
-    <setting id="show_skip_dialog_movies"
-             type="bool"
-             label="32017"
-             default="true"
-             tooltip="Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled." />
-
-    <setting id="show_skip_dialog_episodes"
-             type="bool"
-             label="32018"
-             default="true"
-             tooltip="Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled." />
-
-    <setting id="hide_ending_text"
-             type="bool"
-             label="32016"
-             default="false"
-             tooltip="Hide the segment countdown line for both Full and Minimal skip dialogs." />
-
-    <setting id="skip_dialog_mode"
-             type="labelenum"
-             label="32020"
-             default="Full"
-             values="Full|Minimal"
-             optionvalues="Full|Minimal"
-             tooltip="Full: classic skip dialog with progress bar and icons. Minimal: single plate image and text only." />
-
-    <setting id="skip_dialog_font_color"
-             type="labelenum"
-             label="32026"
-             default="FFFFFFFF"
-             values="White|Light grey|Grey|Dark grey|Black|Blue|Red|Green|Aquamarine|Pink|Purple|Peach|Orange|Yellow"
-             optionvalues="FFFFFFFF|FF8E8E8E|FF6E6E6E|FF3D3D3D|FF000000|FF1976D2|FFE5392F|FF43A047|FF00ACC1|FFE91E63|FF8E24AA|FFFF8A65|FFEF6C00|FFF9A825"
-             tooltip="Full and Minimal: color for skip dialog text (skip buttons, close, countdown, and next-jump line). Uses stored ARGB hex so Kodi always receives a valid color." />
-
-    <setting type="lsep" label="32021" />
-
-    <setting id="show_progress_bar"
-             type="bool"
-             label="32007"
-             default="true"
-             tooltip="Full mode: show or hide the progress bar while a skippable segment is active." />
-
-    <setting id="progress_bar_countdown"
-             type="bool"
-             label="32027"
-             default="false"
-             enable="eq(-1,true)"
-             tooltip="Full mode: bar starts full (100%) and shrinks toward empty as the segment plays. When off, the bar fills from 0% to 100% with elapsed time." />
-
-    <setting id="skip_dialog_position"
-             type="labelenum"
-             label="32009"
-             default="Bottom Right"
-             values="Bottom Right|Top Right|Top Left|Bottom Left"
-             optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
-             tooltip="Full mode: which corner the skip dialog appears in during playback." />
-
-    <setting id="button_focus_style"
-             type="labelenum"
-             label="32000"
-             default="button_focus.png"
-             values="button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png"
-             optionvalues="Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D"
-             tooltip="Full mode: focused texture for Skip and Close buttons." />
-
-    <setting id="skip_button_format"
-             type="labelenum"
-             label="32013"
-             default="Skip + Type + Duration"
-             values="Skip|Skip + Type|Skip + Type + Duration"
-             optionvalues="Skip|Skip + Type|Skip + Type + Duration"
-             tooltip="Full mode: wording on the Skip action buttons." />
-
-    <setting id="hide_close_button"
-             type="bool"
-             label="32014"
-             default="false"
-             tooltip="Full mode: hide the Close button and its icon." />
-
-    <setting id="hide_skip_icon"
-             type="bool"
-             label="32015"
-             default="false"
-             tooltip="Full mode: hide both the skip and close icons." />
-
-    <setting type="lsep" label="32022" />
-
-    <setting id="minimal_button_style"
-             type="labelenum"
-             label="32023"
-             default="minimal_rounded_gray_640.png"
-             values="minimal_rounded_gray_640.png|minimal_rectangular_aquamarine-blue_640.png|minimal_rectangular_blue_640.png|minimal_rectangular_yellow_640.png|minimal_rounded_baby-purple_640.png|minimal_rounded_blue-red-gradient_640.png|minimal_rounded_bright-aqua_640.png|minimal_rounded_bright-blue-sky_640.png|minimal_rounded_bright-cyan_640.png|minimal_rounded_burnt-pink_640.png|minimal_rounded_cranberry_640.png|minimal_rounded_deep-pink_640.png|minimal_rounded_greyish-blue_640.png|minimal_rounded_languid-lavender_640.png|minimal_rounded_light-green-7284348_640.png|minimal_rounded_light-grey_640.png|minimal_rounded_light-yellow_640.png|minimal_rounded_minty-green_640.png|minimal_rounded_mustard-yellow_640.png|minimal_rounded_pale-gold_640.png|minimal_rounded_pale-sky-blue_640.png|minimal_rounded_pastel-green_640.png|minimal_rounded_pattens-blue_640.png|minimal_rounded_peach-orange_640.png|minimal_rounded_pink-daisy_640.png|minimal_rounded_pink-lemonade_640.png|minimal_rounded_pinkish-orange_640.png|minimal_rounded_sunset_640.png|minimal_rounded_white_640.png"
-             optionvalues="Rounded Gray|Rectangular Aquamarine Blue|Rectangular Blue|Rectangular Yellow|Rounded Baby Purple|Rounded Blue Red Gradient|Rounded Bright Aqua|Rounded Bright Blue Sky|Rounded Bright Cyan|Rounded Burnt Pink|Rounded Cranberry|Rounded Deep Pink|Rounded Greyish Blue|Rounded Languid Lavender|Rounded Light Green 7284348|Rounded Light Grey|Rounded Light Yellow|Rounded Minty Green|Rounded Mustard Yellow|Rounded Pale Gold|Rounded Pale Sky Blue|Rounded Pastel Green|Rounded Pattens Blue|Rounded Peach Orange|Rounded Pink Daisy|Rounded Pink Lemonade|Rounded Pinkish Orange|Rounded Sunset|Rounded White"
-             tooltip="Minimal mode: background art for the skip plate (PNG filenames; same storage pattern as Full mode button focus textures)." />
-
-    <setting id="minimal_skip_button_format"
-             type="labelenum"
-             label="32025"
-             default="Skip + Type"
-             values="Skip|Skip + Type|Skip + Type + Duration"
-             optionvalues="Skip|Skip + Type|Skip + Type + Duration"
-             tooltip="Minimal mode: primary text shown on the skip plate." />
-
-    <setting id="minimal_skip_dialog_position"
-             type="labelenum"
-             label="32024"
-             default="Bottom Right"
-             values="Bottom Right|Top Right|Top Left|Bottom Left"
-             optionvalues="BottomRight|TopRight|TopLeft|BottomLeft"
-             tooltip="Minimal mode: which corner the skip plate appears in during playback." />
-
-  </category>
-
-  <category label="30004">
-    <setting type="lsep" label="32036" />
-
-    <setting id="tv_tmdb_resolve_missing_ids"
-             type="bool"
-             label="32031"
-             default="true"
-             tooltip="32035" />
-
-    <setting id="tv_tmdb_api_key"
-             type="text"
-             label="32032"
-             default=""
-             option="hidden"
-             tooltip="32033" />
-
-    <setting id="tv_tmdb_use_helper_api_key"
-             type="bool"
-             label="32034"
-             default="true"
-             tooltip="32037" />
-
-    <setting id="remote_api_failure_cooldown_seconds"
-             type="number"
-             label="32073"
-             default="120"
-             min="0"
-             max="3600"
-             tooltip="32074" />
-
-    <setting type="lsep" label="32059" />
-
-    <setting id="tv_use_local_chapter_edl"
-             type="bool"
-             label="32028"
-             default="true"
-             tooltip="32061" />
-
-    <setting id="tv_use_online_segment_lookup"
-             type="bool"
-             label="32029"
-             default="false"
-             tooltip="32062" />
-
-    <setting id="tv_online_merge_priority"
-             type="labelenum"
-             label="32065"
-             default="TheIntroDBFirst"
-             values="TheIntroDB first|IntroDB.app first"
-             optionvalues="TheIntroDBFirst|IntroDBFirst"
-             tooltip="32066" />
-
-    <setting id="tv_segment_source_priority"
-             type="labelenum"
-             label="32030"
-             default="LocalFirst"
-             values="Local first|Online first"
-             optionvalues="LocalFirst|OnlineFirst"
-             tooltip="32063" />
-
-    <setting id="tv_prefetch_next_episode"
-             type="bool"
-             label="32075"
-             default="true"
-             tooltip="32076" />
-
-    <setting type="lsep" label="32060" />
-
-    <setting id="movie_use_local_chapter_edl"
-             type="bool"
-             label="32028"
-             default="true"
-             tooltip="32052" />
-
-    <setting id="movie_use_online_segment_lookup"
-             type="bool"
-             label="32029"
-             default="false"
-             tooltip="32064" />
-
-    <setting id="movie_online_merge_priority"
-             type="labelenum"
-             label="32067"
-             default="TheIntroDBFirst"
-             values="TheIntroDB first|IntroDB.app first"
-             optionvalues="TheIntroDBFirst|IntroDBFirst"
-             tooltip="32068" />
-
-    <setting id="movie_segment_source_priority"
-             type="labelenum"
-             label="32030"
-             default="LocalFirst"
-             values="Local first|Online first"
-             optionvalues="LocalFirst|OnlineFirst"
-             tooltip="32054" />
-  </category>
-
-
-  <category label="30002">
-
-    <setting id="show_not_found_toast_for_tv_episodes" 
-             type="bool" 
-             label="33000" 
-             default="true"
-             tooltip="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode." />
-
-    <setting id="show_not_found_toast_for_movies" 
-             type="bool" 
-             label="33001" 
-             default="false"
-             tooltip="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie." />
-
-    <setting id="show_toast_for_overlapping_nested_segments" 
-             type="bool" 
-             label="33002" 
-             default="false"
-             tooltip="Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments." />			 
-			 
-    <setting id="show_toast_for_skipped_segment" 
-             type="bool" 
-             label="33003" 
-             default="true"
-             tooltip="Show a toast notification if a segment is skipped." />					 
-  </category>
-
-  <category label="30005">
-    <setting id="segment_marker_enabled"
-             type="bool"
-             label="36000"
-             default="false"
-             tooltip="36001" />
-
-    <setting id="segment_marker_auto_save"
-             type="bool"
-             label="36002"
-             default="false"
-             visible="eq(-1,true)"
-             tooltip="36003" />
-
-    <setting id="segment_marker_show_indicator"
-             type="bool"
-             label="36004"
-             default="true"
-             visible="eq(-2,true)"
-             tooltip="36005" />
-
-    <setting id="segment_marker_save_format"
-             type="labelenum"
-             label="36017"
-             default="Both"
-             values="Both|EDL only|Chapters XML only"
-             optionvalues="Both|EDL|XML"
-             visible="eq(-3,true)"
-             tooltip="36018" />
-
-    <setting id="segment_marker_file_permissions"
-             type="labelenum"
-             label="36006"
-             default="Default"
-             values="Default|World-readable (644)|World-writable (666)"
-             optionvalues="Default|644|666"
-             visible="eq(-4,true)"
-             tooltip="36007" />
-
-    <setting id="segment_marker_existing_policy"
-             type="labelenum"
-             label="36031"
-             default="MergeNonOverlapping"
-             values="Merge non-overlapping|Keep both (old starts after new)|Overwrite overlapping|Append always|Replace file|Ask each time"
-             optionvalues="MergeNonOverlapping|KeepBothOldAfterNew|OverwriteOverlapping|AppendAlways|ReplaceFile|AskEachTime"
-             visible="eq(-5,true)"
-             tooltip="36032" />
-
-    <setting id="segment_marker_backup_before_write"
-             type="bool"
-             label="36033"
-             default="true"
-             visible="eq(-6,true)"
-             tooltip="36034" />
-
-    <setting id="segment_marker_keyboard_shortcut"
-             type="text"
-             label="36019"
-             default="ctrl+e"
-             visible="eq(-7,true)"
-             tooltip="36020" />
-
-    <setting id="segment_marker_keyboard_press_type"
-             type="labelenum"
-             label="36029"
-             default="normal"
-             values="Normal press|Long press"
-             optionvalues="normal|longpress"
-             visible="eq(-8,true)"
-             tooltip="36030" />
-
-    <setting id="segment_marker_remote_button"
-             type="text"
-             label="36021"
-             default=""
-             visible="eq(-9,true)"
-             tooltip="36022" />
-
-    <setting id="segment_marker_remote_press_type"
-             type="labelenum"
-             label="36027"
-             default="normal"
-             values="Normal press|Long press"
-             optionvalues="normal|longpress"
-             visible="eq(-10,true)"
-             tooltip="36028" />
-
-    <setting type="action"
-             label="36023"
-             action="RunScript(service.skippy,discover_button)"
-             visible="eq(-11,true)"
-             tooltip="36024" />
-
-    <setting type="action"
-             label="36025"
-             action="RunScript(service.skippy,install_keymap)"
-             visible="eq(-12,true)"
-             tooltip="36026" />
-  </category>
-
-  <category label="30006">
-    <setting id="segment_editor_enabled"
-             type="bool"
-             label="37000"
-             default="false"
-             tooltip="37001" />
-
-    <setting id="segment_editor_save_format"
-             type="labelenum"
-             label="36017"
-             default="Both"
-             values="Both|EDL only|Chapters XML only"
-             optionvalues="Both|EDL|XML"
-             visible="eq(-1,true)"
-             tooltip="37002" />
-
-    <setting id="segment_editor_file_permissions"
-             type="labelenum"
-             label="36006"
-             default="Default"
-             values="Default|World-readable (644)|World-writable (666)"
-             optionvalues="Default|644|666"
-             visible="eq(-2,true)"
-             tooltip="36007" />
-
-    <setting id="segment_editor_backup_before_write"
-             type="bool"
-             label="36033"
-             default="true"
-             visible="eq(-3,true)"
-             tooltip="36034" />
-
-    <setting id="segment_editor_fullscreen_overlay"
-             type="bool"
-             label="37010"
-             default="false"
-             visible="eq(-4,true)"
-             tooltip="37011" />
-
-    <setting id="segment_editor_keyboard_shortcut"
-             type="text"
-             label="37004"
-             default="ctrl+shift+e"
-             visible="eq(-5,true)"
-             tooltip="37005" />
-
-    <setting id="segment_editor_keyboard_press_type"
-             type="labelenum"
-             label="36029"
-             default="normal"
-             values="Normal press|Long press"
-             optionvalues="normal|longpress"
-             visible="eq(-6,true)"
-             tooltip="36030" />
-
-    <setting id="segment_editor_remote_button"
-             type="text"
-             label="37006"
-             default=""
-             visible="eq(-7,true)"
-             tooltip="37007" />
-
-    <setting id="segment_editor_remote_press_type"
-             type="labelenum"
-             label="37008"
-             default="normal"
-             values="Normal press|Long press"
-             optionvalues="normal|longpress"
-             visible="eq(-8,true)"
-             tooltip="37009" />
-
-    <setting type="action"
-             label="37014"
-             action="RunScript(service.skippy,discover_editor_button)"
-             visible="eq(-9,true)"
-             tooltip="37015" />
-
-    <setting type="action"
-             label="37016"
-             action="RunScript(service.skippy,install_editor_keymap)"
-             visible="eq(-10,true)"
-             tooltip="37017" />
-  </category>
-
-  <category label="30003">
-    <setting id="enable_verbose_logging"
-             type="bool"
-             label="34000"
-             default="false"
-             tooltip="34001" />
-    <setting id="skippy_log_detail_level"
-             type="labelenum"
-             label="34002"
-             default="Normal"
-             values="Errors only|Normal|All detail"
-             optionvalues="ErrorOnly|Normal|All"
-             visible="eq(-1,true)"
-             tooltip="34003" />
-  </category>
+<settings version="1">
+    <section id="service.skippy">
+        <category id="segments" label="30000">
+            <group id="g_seg_keywords" label="31010">
+                <setting id="custom_segment_keywords" type="string" label="31000" help="Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor.">
+                    <level>0</level>
+                    <default>intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>31000</heading>
+                    </control>
+                </setting>
+            </group>
+            <group id="g_seg1" label="31001">
+                <setting id="segment_always_skip" type="string" label="31002" help="Subset of your segment keywords that should skip automatically.">
+                    <level>0</level>
+                    <default>commercial,commercials,sponsor,sponsors,ad,ads</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>31002</heading>
+                    </control>
+                </setting>
+                <setting id="segment_ask_skip" type="string" label="31003" help="Subset that should prompt you before skipping.">
+                    <level>0</level>
+                    <default>intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>31003</heading>
+                    </control>
+                </setting>
+                <setting id="segment_never_skip" type="string" label="31004" help="Subset to always play, never skip.">
+                    <level>0</level>
+                    <default>prologue,epilogue,main,credits,outro,closing,ending</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>31004</heading>
+                    </control>
+                </setting>
+                <setting id="ignore_internal_edl_actions" type="boolean" label="31005" help="Skippy will ignore any EDL segment whose action type is not explicitly mapped in edl_action_mapping. This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'.">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="edl_action_mapping" type="string" label="31006" help="Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits">
+                    <level>1</level>
+                    <default>4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>31006</heading>
+                    </control>
+                </setting>
+                <setting id="skip_overlapping_segments" type="boolean" label="31007" help="Configurable overlap detection to help avoid redundant or conflicting skips">
+                    <level>2</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="use_embedded_chapters_fallback" type="boolean" label="31008" help="31009">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+            </group>
+            <group id="g_online" label="32045">
+                <setting id="save_online_segments_format" type="string" label="32077" help="32078">
+                    <level>2</level>
+                    <default>Both</default>
+                    <constraints>
+                        <options>
+                            <option label="Both">Both</option>
+                            <option label="EDL only">EDL</option>
+                            <option label="Chapters XML only">XML</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="save_online_segments_to_chapters_xml" type="boolean" label="32046" help="32047">
+                    <level>2</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="save_online_chapters_existing_policy" type="string" label="32069" help="32070">
+                    <level>2</level>
+                    <default>SkipIfExists</default>
+                    <constraints>
+                        <options>
+                            <option label="Skip if exists">SkipIfExists</option>
+                            <option label="Overwrite (no prompt)">OverwriteSilent</option>
+                            <option label="Overwrite (ask first)">OverwriteAsk</option>
+                            <option label="Merge with existing">Merge</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="save_online_chapters_backup_before_overwrite" type="boolean" label="32071" help="32072">
+                    <level>2</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+            </group>
+        </category>
+        <category id="playback" label="30001">
+            <group id="g_pb" label="32019">
+                <setting id="rewind_threshold_seconds" type="integer" label="32008" help="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons.">
+                    <level>3</level>
+                    <default>8</default>
+                    <constraints>
+                        <minimum>2</minimum>
+                        <maximum>30</maximum>
+                    </constraints>
+                    <control type="edit" format="integer">
+                        <heading>32008</heading>
+                    </control>
+                </setting>
+                <setting id="enable_skip_movies" type="boolean" label="32010" help="32010">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="enable_skip_episodes" type="boolean" label="32011" help="32011">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32017">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_skip_dialog_episodes" type="boolean" label="32018" help="32018">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="hide_ending_text" type="boolean" label="32016" help="32016">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="skip_dialog_mode" type="string" label="32020" help="32020">
+                    <level>0</level>
+                    <default>Full</default>
+                    <constraints>
+                        <options>
+                            <option label="Full">Full</option>
+                            <option label="Minimal">Minimal</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="skip_dialog_font_color" type="string" label="32026" help="32026">
+                    <level>1</level>
+                    <default>FFFFFFFF</default>
+                    <constraints>
+                        <options>
+                            <option label="White">FFFFFFFF</option>
+                            <option label="Light grey">FF8E8E8E</option>
+                            <option label="Grey">FF6E6E6E</option>
+                            <option label="Dark grey">FF3D3D3D</option>
+                            <option label="Black">FF000000</option>
+                            <option label="Blue">FF1976D2</option>
+                            <option label="Red">FFE5392F</option>
+                            <option label="Green">FF43A047</option>
+                            <option label="Aquamarine">FF00ACC1</option>
+                            <option label="Pink">FFE91E63</option>
+                            <option label="Purple">FF8E24AA</option>
+                            <option label="Peach">FFFF8A65</option>
+                            <option label="Orange">FFEF6C00</option>
+                            <option label="Yellow">FFF9A825</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+            </group>
+            <group id="g_prog" label="32021">
+                <setting id="show_progress_bar" type="boolean" label="32007" help="32007">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="progress_bar_countdown" type="boolean" label="32027" help="32027">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="enable" setting="show_progress_bar">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="progress_bar_style" type="string" label="32079" help="32079">
+                    <level>2</level>
+                    <default>progress_mid.png</default>
+                    <constraints>
+                        <options>
+                            <option label="Green (Default)">progress_mid.png</option>
+                            <option label="Blue/purple gradient">progress_mid_blue_purple.png</option>
+                            <option label="Dark yellow">progress_mid_darkyellow.png</option>
+                            <option label="Green/blue gradient">progress_mid_green_blue.png</option>
+                            <option label="Light blue">progress_mid_lightblue.png</option>
+                            <option label="Light green">progress_mid_lightgreen.png</option>
+                            <option label="Light yellow">progress_mid_lightyellow.png</option>
+                            <option label="Pink">progress_mid_pink.png</option>
+                            <option label="Pink/light blue gradient">progress_mid_pink_lightblue.png</option>
+                            <option label="Purple">progress_mid_purple.png</option>
+                            <option label="Yellow/red gradient">progress_mid_yellow_red.png</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="enable" setting="show_progress_bar">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="progress_bar_height" type="integer" label="32080" help="32080">
+                    <level>2</level>
+                    <default>16</default>
+                    <constraints>
+                        <minimum>5</minimum>
+                        <maximum>32</maximum>
+                        <step>1</step>
+                    </constraints>
+                    <control type="slider" format="integer">
+                        <popup>false</popup>
+                    </control>
+                    <dependencies>
+                        <dependency type="enable" setting="show_progress_bar">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="skip_dialog_position" type="string" label="32009" help="32009">
+                    <level>0</level>
+                    <default>BottomRight</default>
+                    <constraints>
+                        <options>
+                            <option label="Bottom Right">BottomRight</option>
+                            <option label="Top Right">TopRight</option>
+                            <option label="Top Left">TopLeft</option>
+                            <option label="Bottom Left">BottomLeft</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="button_focus_style" type="string" label="32000" help="32000">
+                    <level>1</level>
+                    <default>button_focus.png</default>
+                    <constraints>
+                        <options>
+                            <option label="Default">button_focus.png</option>
+                            <option label="Aqua">button_focus_aqua.png</option>
+                            <option label="Aqua Bevel">button_focus_aqua_bevel.png</option>
+                            <option label="Aqua Dark">button_focus_aqua_dark.png</option>
+                            <option label="Aqua Vignette">button_focus_aqua_vignette.png</option>
+                            <option label="Aqua Rounded">button_focus_aqua_rounded.png</option>
+                            <option label="Blue">button_focus_blue.png</option>
+                            <option label="Blue Rectangular 3D">button_focus_blue_rectangular_3d.png</option>
+                            <option label="Blue Rounded 3D">button_focus_blue_rounded_3d.png</option>
+                            <option label="Gold Rectangular 3D">button_focus_gold_rectangular_3d.png</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="skip_button_format" type="string" label="32013" help="32013">
+                    <level>1</level>
+                    <default>Skip + Type + Duration</default>
+                    <constraints>
+                        <options>
+                            <option label="Skip">Skip</option>
+                            <option label="Skip + Type">Skip + Type</option>
+                            <option label="Skip + Type + Duration">Skip + Type + Duration</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="hide_close_button" type="boolean" label="32014" help="32014">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_skip_button_focus_texture" type="boolean" label="32081" help="32082">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="enable" setting="hide_close_button">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="hide_skip_icon" type="boolean" label="32015" help="32015">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+            </group>
+            <group id="g_min" label="32022">
+                <setting id="minimal_button_style" type="string" label="32023" help="32023">
+                    <level>1</level>
+                    <default>minimal_rounded_gray_640.png</default>
+                    <constraints>
+                        <options>
+                            <option label="Rounded Gray">minimal_rounded_gray_640.png</option>
+                            <option label="Rectangular Aquamarine Blue">minimal_rectangular_aquamarine-blue_640.png</option>
+                            <option label="Rectangular Blue">minimal_rectangular_blue_640.png</option>
+                            <option label="Rectangular Yellow">minimal_rectangular_yellow_640.png</option>
+                            <option label="Rounded Baby Purple">minimal_rounded_baby-purple_640.png</option>
+                            <option label="Rounded Blue Red Gradient">minimal_rounded_blue-red-gradient_640.png</option>
+                            <option label="Rounded Bright Aqua">minimal_rounded_bright-aqua_640.png</option>
+                            <option label="Rounded Bright Blue Sky">minimal_rounded_bright-blue-sky_640.png</option>
+                            <option label="Rounded Bright Cyan">minimal_rounded_bright-cyan_640.png</option>
+                            <option label="Rounded Burnt Pink">minimal_rounded_burnt-pink_640.png</option>
+                            <option label="Rounded Cranberry">minimal_rounded_cranberry_640.png</option>
+                            <option label="Rounded Deep Pink">minimal_rounded_deep-pink_640.png</option>
+                            <option label="Rounded Greyish Blue">minimal_rounded_greyish-blue_640.png</option>
+                            <option label="Rounded Languid Lavender">minimal_rounded_languid-lavender_640.png</option>
+                            <option label="Rounded Light Green 7284348">minimal_rounded_light-green-7284348_640.png</option>
+                            <option label="Rounded Light Grey">minimal_rounded_light-grey_640.png</option>
+                            <option label="Rounded Light Yellow">minimal_rounded_light-yellow_640.png</option>
+                            <option label="Rounded Minty Green">minimal_rounded_minty-green_640.png</option>
+                            <option label="Rounded Mustard Yellow">minimal_rounded_mustard-yellow_640.png</option>
+                            <option label="Rounded Pale Gold">minimal_rounded_pale-gold_640.png</option>
+                            <option label="Rounded Pale Sky Blue">minimal_rounded_pale-sky-blue_640.png</option>
+                            <option label="Rounded Pastel Green">minimal_rounded_pastel-green_640.png</option>
+                            <option label="Rounded Pattens Blue">minimal_rounded_pattens-blue_640.png</option>
+                            <option label="Rounded Peach Orange">minimal_rounded_peach-orange_640.png</option>
+                            <option label="Rounded Pink Daisy">minimal_rounded_pink-daisy_640.png</option>
+                            <option label="Rounded Pink Lemonade">minimal_rounded_pink-lemonade_640.png</option>
+                            <option label="Rounded Pinkish Orange">minimal_rounded_pinkish-orange_640.png</option>
+                            <option label="Rounded Sunset">minimal_rounded_sunset_640.png</option>
+                            <option label="Rounded White">minimal_rounded_white_640.png</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="minimal_skip_button_format" type="string" label="32025" help="32025">
+                    <level>1</level>
+                    <default>Skip + Type</default>
+                    <constraints>
+                        <options>
+                            <option label="Skip">Skip</option>
+                            <option label="Skip + Type">Skip + Type</option>
+                            <option label="Skip + Type + Duration">Skip + Type + Duration</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="minimal_skip_dialog_position" type="string" label="32024" help="32024">
+                    <level>0</level>
+                    <default>BottomRight</default>
+                    <constraints>
+                        <options>
+                            <option label="Bottom Right">BottomRight</option>
+                            <option label="Top Right">TopRight</option>
+                            <option label="Top Left">TopLeft</option>
+                            <option label="Bottom Left">BottomLeft</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+            </group>
+        </category>
+        <category id="sources" label="30004">
+            <group id="g_tv0" label="32036">
+                <setting id="tv_tmdb_resolve_missing_ids" type="boolean" label="32031" help="32035">
+                    <level>3</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="tv_tmdb_api_key" type="string" label="32032" help="32033">
+                    <level>3</level>
+                    <default />
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>32032</heading>
+                        <hidden>true</hidden>
+                    </control>
+                </setting>
+                <setting id="tv_tmdb_use_helper_api_key" type="boolean" label="32034" help="32037">
+                    <level>3</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="remote_api_failure_cooldown_seconds" type="integer" label="32073" help="32074">
+                    <level>3</level>
+                    <default>120</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <maximum>3600</maximum>
+                    </constraints>
+                    <control type="edit" format="integer">
+                        <heading>32073</heading>
+                    </control>
+                </setting>
+            </group>
+            <group id="g_tv1" label="32059">
+                <setting id="tv_use_local_chapter_edl" type="boolean" label="32028" help="32061">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="tv_use_online_segment_lookup" type="boolean" label="32029" help="32062">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="tv_online_merge_priority" type="string" label="32065" help="32066">
+                    <level>0</level>
+                    <default>TheIntroDBFirst</default>
+                    <constraints>
+                        <options>
+                            <option label="TheIntroDB first">TheIntroDBFirst</option>
+                            <option label="IntroDB.app first">IntroDBFirst</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="tv_segment_source_priority" type="string" label="32030" help="32063">
+                    <level>0</level>
+                    <default>LocalFirst</default>
+                    <constraints>
+                        <options>
+                            <option label="Local first">LocalFirst</option>
+                            <option label="Online first">OnlineFirst</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="tv_prefetch_next_episode" type="boolean" label="32075" help="32076">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+            </group>
+            <group id="g_mov" label="32060">
+                <setting id="movie_use_local_chapter_edl" type="boolean" label="32028" help="32052">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="movie_use_online_segment_lookup" type="boolean" label="32029" help="32064">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="movie_online_merge_priority" type="string" label="32067" help="32068">
+                    <level>0</level>
+                    <default>TheIntroDBFirst</default>
+                    <constraints>
+                        <options>
+                            <option label="TheIntroDB first">TheIntroDBFirst</option>
+                            <option label="IntroDB.app first">IntroDBFirst</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="movie_segment_source_priority" type="string" label="32030" help="32054">
+                    <level>0</level>
+                    <default>LocalFirst</default>
+                    <constraints>
+                        <options>
+                            <option label="Local first">LocalFirst</option>
+                            <option label="Online first">OnlineFirst</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+            </group>
+        </category>
+        <category id="toasts" label="30002">
+            <group id="g_toast" label="">
+                <setting id="show_not_found_toast_for_tv_episodes" type="boolean" label="33000" help="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode.">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_not_found_toast_for_movies" type="boolean" label="33001" help="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie.">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_toast_for_overlapping_nested_segments" type="boolean" label="33002" help="Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments.">
+                    <level>2</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="show_toast_for_skipped_segment" type="boolean" label="33003" help="Show a toast notification if a segment is skipped.">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                </setting>
+            </group>
+        </category>
+        <category id="marker" label="30005">
+            <group id="g_marker" label="">
+                <setting id="segment_marker_enabled" type="boolean" label="36000" help="36001">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="segment_marker_auto_save" type="boolean" label="36002" help="36003">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_show_indicator" type="boolean" label="36004" help="36005">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_save_format" type="string" label="36017" help="36018">
+                    <level>2</level>
+                    <default>Both</default>
+                    <constraints>
+                        <options>
+                            <option label="Both">Both</option>
+                            <option label="EDL only">EDL</option>
+                            <option label="Chapters XML only">XML</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_file_permissions" type="string" label="36006" help="36007">
+                    <level>2</level>
+                    <default>Default</default>
+                    <constraints>
+                        <options>
+                            <option label="Leave unchanged (no chmod)">Default</option>
+                            <option label="World-readable (644)">644</option>
+                            <option label="World-writable (666)">666</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_existing_policy" type="string" label="36031" help="36032">
+                    <level>2</level>
+                    <default>MergeNonOverlapping</default>
+                    <constraints>
+                        <options>
+                            <option label="Merge non-overlapping">MergeNonOverlapping</option>
+                            <option label="Keep both (old starts after new)">KeepBothOldAfterNew</option>
+                            <option label="Overwrite overlapping">OverwriteOverlapping</option>
+                            <option label="Append always">AppendAlways</option>
+                            <option label="Replace file">ReplaceFile</option>
+                            <option label="Ask each time">AskEachTime</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_backup_before_write" type="boolean" label="36033" help="36034">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_keyboard_shortcut" type="string" label="36019" help="36020">
+                    <level>2</level>
+                    <default>ctrl+e</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>36019</heading>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_keyboard_press_type" type="string" label="36029" help="36030">
+                    <level>2</level>
+                    <default>normal</default>
+                    <constraints>
+                        <options>
+                            <option label="Normal press">normal</option>
+                            <option label="Long press">longpress</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_remote_button" type="string" label="36021" help="36022">
+                    <level>2</level>
+                    <default />
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>36021</heading>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_remote_press_type" type="string" label="36027" help="36028">
+                    <level>2</level>
+                    <default>normal</default>
+                    <constraints>
+                        <options>
+                            <option label="Normal press">normal</option>
+                            <option label="Long press">longpress</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_action_discover" type="action" label="36023" help="36024">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,discover_button)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_marker_action_keymap" type="action" label="36025" help="36026">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,install_keymap)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+            </group>
+        </category>
+        <category id="editor" label="30006">
+            <group id="g_edit" label="">
+                <setting id="segment_editor_enabled" type="boolean" label="37000" help="37001">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="segment_editor_save_format" type="string" label="36017" help="37002">
+                    <level>2</level>
+                    <default>Both</default>
+                    <constraints>
+                        <options>
+                            <option label="Both">Both</option>
+                            <option label="EDL only">EDL</option>
+                            <option label="Chapters XML only">XML</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_file_permissions" type="string" label="36006" help="36007">
+                    <level>2</level>
+                    <default>Default</default>
+                    <constraints>
+                        <options>
+                            <option label="Leave unchanged (no chmod)">Default</option>
+                            <option label="World-readable (644)">644</option>
+                            <option label="World-writable (666)">666</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_backup_before_write" type="boolean" label="36033" help="36034">
+                    <level>2</level>
+                    <default>true</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_fullscreen_overlay" type="boolean" label="37010" help="37011">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_keyboard_shortcut" type="string" label="37004" help="37005">
+                    <level>2</level>
+                    <default>ctrl+shift+e</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>37004</heading>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_keyboard_press_type" type="string" label="36029" help="36030">
+                    <level>2</level>
+                    <default>normal</default>
+                    <constraints>
+                        <options>
+                            <option label="Normal press">normal</option>
+                            <option label="Long press">longpress</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_remote_button" type="string" label="37006" help="37007">
+                    <level>2</level>
+                    <default />
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>37006</heading>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_remote_press_type" type="string" label="37008" help="37009">
+                    <level>2</level>
+                    <default>normal</default>
+                    <constraints>
+                        <options>
+                            <option label="Normal press">normal</option>
+                            <option label="Long press">longpress</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_action_discover" type="action" label="37014" help="37015">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,discover_editor_button)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_action_keymap" type="action" label="37016" help="37017">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,install_editor_keymap)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+            </group>
+        </category>
+        <category id="debug" label="30003">
+            <group id="g_dbg" label="">
+                <setting id="enable_verbose_logging" type="boolean" label="34000" help="34001">
+                    <level>3</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="skippy_log_detail_level" type="string" label="34002" help="34003">
+                    <level>3</level>
+                    <default>Normal</default>
+                    <constraints>
+                        <options>
+                            <option label="Errors only">ErrorOnly</option>
+                            <option label="Normal">Normal</option>
+                            <option label="All detail">All</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                    <dependencies>
+                        <dependency type="enable" setting="enable_verbose_logging">true</dependency>
+                    </dependencies>
+                </setting>
+            </group>
+        </category>
+    </section>
 </settings>

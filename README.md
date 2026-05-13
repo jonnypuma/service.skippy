@@ -52,7 +52,8 @@ service.skippy/
 │               ├── progress_left.png           # Progress bar left segment
 │               ├── progress_right.png          # Progress bar right segment
 │               ├── progress_background.png     # Progress bar background texture
-│               ├── progress_mid.png            # Progress bar middle segment
+│               ├── progress_mid.png            # Default progress fill (full-width if using reveal)
+│               ├── progress_mid_blue_purple.png # Optional progress fill variants (`progress_bar_style`)
 │               ├── button_nofocus.png          # Skip dialog button background texture when not highlighted
 │               ├── button_focus.png            # Skip dialog button background texture when highlighted (default)
 │               ├── button_focus_aqua.png       # Aqua style button focus texture
@@ -209,6 +210,8 @@ Found under:
 ### Default Settings Overview
 Default settings file loaded at first start located in: .../addons/service.skippy/resources/settings.xml
 
+Skippy assigns each option a **visibility level** (Basic through Expert) for Kodi’s add-on settings UI. The definitions live in `resources/settings.xml` using Kodi’s **version 1** settings format (Kodi 19 Matrix and later). Raise the **settings level** in the dialog (gear / mode control, depending on skin) to see **Standard**, **Advanced**, and **Expert** options. To add or edit settings in that file, update and run `tools/gen_settings_v1.py`.
+
 | Setting | Description |
 | --------- | ------------- |
 
@@ -226,10 +229,13 @@ Default settings file loaded at first start located in: .../addons/service.skipp
 | ----------------------------- | ------------------------------------------------------------------------------- |
 | show_progress_bar | Enables visual progress bar during skip dialog |
 | progress_bar_countdown | Full mode: bar starts full and shrinks (remaining time) instead of filling with elapsed time (default: false) |
+| progress_bar_style | Full mode: `progress_mid*.png` fill texture (filename storage; same pattern as button focus). |
+| progress_bar_height | Full mode: progress bar height (**slider** **5–32** px, default **16**). |
 | skip_dialog_position | Chooses layout position for the skip confirmation dialog |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
+| show_skip_button_focus_texture | Full mode: when Close is hidden, show the selected focus texture on Skip (default: true); turn off for no focus frame |
 | hide_skip_icon | Hide both the skip icon and close icon, leaving only the Skip and Close buttons visible (default: false) |
 | hide_ending_text | Hide the 'Segment ending in:' countdown text line (default: false) |
 | enable_skip_movies | Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies (default: true) |
@@ -310,7 +316,8 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 4. Changes apply immediately for new skip dialogs
 
 **Technical Details:**
-- Progress bar dimensions: 370x5 pixels
+- Progress bar dimensions: width **370**; height **5–32** via settings (default **16**), applied at dialog layout
+- Skin uses Kodi **`reveal` true**: **`midtexture`** should match **`texturebg`** dimensions (full-width fill image clips to the current percent instead of stretching horizontally)
 - Located at the bottom of the skip dialog
 - Uses custom textures: `progress_left.png`, `progress_mid.png`, `progress_right.png`, `progress_background.png`
 - Setting is read dynamically - no caching issues

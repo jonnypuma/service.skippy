@@ -150,7 +150,8 @@
 
       <control type="progress" id="3014">
         <left>5</left><top>90</top>
-        <width>370</width><height>5</height>
+        <width>370</width><height>16</height>
+        <reveal>true</reveal>
         <texturebg>progress_background.png</texturebg>
         <textureleft>progress_left.png</textureleft>
         <midtexture>progress_mid.png</midtexture>
