@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.1.2] - 2026-05-17
+
+### Changed
+- **TheIntroDB GET `/v2/media`**: Parse each segment type (**intro**, **recap**, **credits**, **preview**, etc.) as an **array** of `{start_ms,end_ms}` objects (v2). Missing types are omitted in v2 (treated as empty). Single-object v1-shaped responses are still accepted client-side. (`remote_segments.py`: `_theintrodb_normalize_segment_field`, `_theintrodb_segment_entries`.)
+
 ## [3.1.1] - 2026-05-17
 
 ### Added

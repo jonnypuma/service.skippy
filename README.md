@@ -112,6 +112,8 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 
 Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi’s internal database IDs. Skippy reads those from Kodi’s **`uniqueid`** (and can lift **show-level** TMDB when the episode row only has TVDB/Sonarr-style IDs). If metadata is incomplete, Skippy can call **api.themoviedb.org** to resolve missing IDs, **but only when a TMDB v3 API key is available**.
 
+TheIntroDB’s **GET** `https://api.theintrodb.org/v2/media` returns each segment type (**intro**, **recap**, **credits**, **preview**, …) as a **JSON array** of windows (`start_ms` / `end_ms`); multiple segments per type are supported, and empty types are **left out** of the response.
+
 **For reliable online lookup**, plan on one of these (you do **not** need both):
 
 1. **TMDB API key in Skippy** — In **Add-on settings -> Segment sources -> Online APIs (TMDB)**, paste a key from [themoviedb.org API settings](https://www.themoviedb.org/settings/api) (free tier is enough), **or**

@@ -2,7 +2,9 @@
 """Remote intro/recap lookup: **TV** — TheIntroDB + IntroDB.app; **movies** — TheIntroDB only.
 
 TheIntroDB and IntroDB require **TMDB** and/or **IMDb** ids (see https://theintrodb.org/docs and
-https://introdb.app/docs/api). **Primary** source is Kodi’s library (`uniqueid`). When those ids are
+https://introdb.app/docs/api). **GET** TheIntroDB uses ``/v2/media``: each segment key
+(``intro``, ``recap``, ``credits``, ``preview``, …) is an **array** of time windows; types with no
+data are omitted from the JSON. **Primary** id source is Kodi’s library (`uniqueid`). When those ids are
 missing, Skippy can call **api.themoviedb.org/3** (optional API key in settings, or the key from
 **plugin.video.themoviedb.helper** if enabled). **Playback path** uses JSON-RPC: `Files.GetFileDetails`,
 `GetEpisodeDetails` / `GetMovieDetails`, optional `GetEpisodes` path filter, and **SxxExx** for TV gaps.
@@ -1317,10 +1319,27 @@ def normalize_remote_segment_window(segment, total_time):
     )
 
 
+def _theintrodb_normalize_segment_field(raw):
+    """
+    TheIntroDB GET ``/v2/media`` returns each segment type as an **array** of
+    objects (multiple windows per type possible). Legacy v1 used a single
+    object per type; empty types were ``null`` in v1 and are **omitted** in v2.
+    """
+    if raw is None:
+        return []
+    if isinstance(raw, list):
+        return [x for x in raw if isinstance(x, dict)]
+    if isinstance(raw, dict):
+        return [raw]
+    return []
+
+
 def _theintrodb_segment_entries(payload, total_time):
     out = []
+    if not isinstance(payload, dict):
+        return out
     for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
-        entries = payload.get(segment_name) or []
+        entries = _theintrodb_normalize_segment_field(payload.get(segment_name))
         for entry in entries:
             if not isinstance(entry, dict):
                 continue
