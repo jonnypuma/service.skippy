@@ -243,9 +243,25 @@ def main():
         maximum=30,
     )
     bool_setting(g, "enable_skip_movies", 0, "32010", "32010", True)
+    bool_setting(
+        g,
+        "show_skip_dialog_movies",
+        0,
+        "32017",
+        "32017",
+        True,
+        vis=[("enable_skip_movies", "true")],
+    )
     bool_setting(g, "enable_skip_episodes", 0, "32011", "32011", True)
-    bool_setting(g, "show_skip_dialog_movies", 0, "32017", "32017", True)
-    bool_setting(g, "show_skip_dialog_episodes", 0, "32018", "32018", True)
+    bool_setting(
+        g,
+        "show_skip_dialog_episodes",
+        0,
+        "32018",
+        "32018",
+        True,
+        vis=[("enable_skip_episodes", "true")],
+    )
     bool_setting(g, "hide_ending_text", 1, "32016", "32016", False)
     labelenum_setting(
         g,
@@ -305,6 +321,31 @@ def main():
         step=1,
         slider=True,
         en=[("show_progress_bar", "true")],
+    )
+    bool_setting(
+        g,
+        "smooth_progress_bar",
+        2,
+        "32083",
+        "32084",
+        False,
+        en=[("show_progress_bar", "true")],
+    )
+    int_setting(
+        g,
+        "progress_bar_updates_per_second",
+        2,
+        "32085",
+        "32086",
+        4,
+        minimum=2,
+        maximum=60,
+        step=1,
+        slider=True,
+        en=[
+            ("show_progress_bar", "true"),
+            ("smooth_progress_bar", "true"),
+        ],
     )
     labelenum_setting(
         g,

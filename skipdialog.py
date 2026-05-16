@@ -23,6 +23,12 @@ FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 _FULL_SKIP_PANEL_GROUP_ID = 3080
 _FULL_SKIP_PANEL_BACKDROP_ID = 3081
 
+FULL_SKIP_PROGRESS_BAR_WIDTH = 370
+_SMOOTH_PROGRESS_BG_ID = 3030
+_SMOOTH_PROGRESS_FILL_ID = 3031
+# Skin <visible> on 3030/3031 reads this; Python setVisible on images is unreliable vs XML.
+_SMOOTH_BAR_WINDOW_PROP = "skippy_smooth_bar"
+
 
 def _ascii_log_text(msg):
     return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
@@ -226,11 +232,23 @@ def _label_set_colors(control, label, font, text_argb, shadow_argb=None):
     _control_set_label_colors(control, label, font, text_argb)
 
 
+def _elapsed_progress_percent_float(current_time, segment_start, total_duration):
+    if not total_duration or total_duration <= 0:
+        return 0.0
+    elapsed = max(current_time - segment_start, 0)
+    p = (elapsed / float(total_duration)) * 100.0
+    return min(max(p, 0.0), 100.0)
+
+
+def _progress_display_percent_float(elapsed_pct_f, countdown):
+    return 100.0 - elapsed_pct_f if countdown else elapsed_pct_f
+
+
 def _elapsed_progress_percent(current_time, segment_start, total_duration):
     if not total_duration or total_duration <= 0:
         return 0
     elapsed = max(current_time - segment_start, 0)
-    p = int((elapsed / total_duration) * 100)
+    p = int((elapsed / float(total_duration)) * 100)
     return min(max(p, 0), 100)
 
 
@@ -243,6 +261,9 @@ def _progress_initial_percent(countdown):
 
 
 class SkipDialog(xbmcgui.WindowXMLDialog):
+    def _set_smooth_bar_window_visible(self, visible):
+        self.setProperty(_SMOOTH_BAR_WINDOW_PROP, "true" if visible else "false")
+
     def __init__(self, *args, **kwargs):
         try:
             try:
@@ -357,6 +378,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log("➡️ Dialog configured for normal skip to end of segment")
 
         if not self._minimal_mode:
+            self._set_smooth_bar_window_visible(False)
             self._apply_full_skip_layout(addon)
 
         self._apply_dialog_text_colors()
@@ -419,6 +441,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             if ad
             else 16
         )
+        smooth_ui = addon_get_bool(ad, "smooth_progress_bar", False) if ad else False
 
         bottom = CONTENT_TOP
 
@@ -438,18 +461,48 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     bottom += GAP_BEFORE_PROGRESS
 
             progress = self.getControl(3014)
-            progress.setVisible(show_progress)
+            progress.setVisible(show_progress and not smooth_ui)
             if show_progress:
-                progress.setPosition(LEFT_MARGIN, bottom)
+                py = bottom
+                progress.setPosition(LEFT_MARGIN, py)
                 progress.setHeight(progress_h)
                 bottom += progress_h
                 init_pct = _progress_initial_percent(countdown)
                 progress.setPercent(init_pct)
+                init_w = 0
+                try:
+                    bg = self.getControl(_SMOOTH_PROGRESS_BG_ID)
+                    fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
+                    bg.setPosition(LEFT_MARGIN, py)
+                    bg.setWidth(FULL_SKIP_PROGRESS_BAR_WIDTH)
+                    bg.setHeight(progress_h)
+                    fill.setPosition(LEFT_MARGIN, py)
+                    fill.setHeight(progress_h)
+                    cur = self.player.getTime()
+                    init_pct_f = _progress_display_percent_float(
+                        _elapsed_progress_percent_float(
+                            cur, self.segment.start_seconds, self._total_duration
+                        ),
+                        countdown,
+                    )
+                    init_w = int(
+                        round((init_pct_f / 100.0) * FULL_SKIP_PROGRESS_BAR_WIDTH)
+                    )
+                    init_w = max(0, min(FULL_SKIP_PROGRESS_BAR_WIDTH, init_w))
+                    fill.setWidth(init_w)
+                except Exception as e:
+                    log(f"⚠️ Smooth progress controls (3030/3031): {e}")
+                    self._set_smooth_bar_window_visible(False)
+                else:
+                    self._set_smooth_bar_window_visible(smooth_ui)
                 log(
-                    f"📊 Progress bar stacked (raw '{raw_prog}', countdown={countdown}) "
-                    f"→ {init_pct}% at y≈{bottom - progress_h} height={progress_h}"
+                    f"📊 Progress bar stacked (raw '{raw_prog}', countdown={countdown}, smooth={smooth_ui}) "
+                    f"→ classic {init_pct}%"
+                    + (f", smooth {init_w}px" if smooth_ui else "")
+                    + f" at y≈{py} height={progress_h}"
                 )
             else:
+                self._set_smooth_bar_window_visible(False)
                 log(f"📊 Progress hidden (raw '{raw_prog}')")
 
             has_meta = show_jump or (not hide_end) or show_progress
@@ -473,13 +526,20 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log(f"⚠️ Full skip vertical layout failed: {e}")
 
     def _monitor_segment_end(self):
-        delay = 0.25
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
+        self._last_smooth_fill_w = None
+        self._last_smooth_log_ts = 0.0
 
         while not self._closing:
             if not self.player.isPlaying():
                 log("⏹️ Playback stopped during dialog")
                 break
+
+            addon = get_addon()
+            smooth = addon_get_bool(addon, "smooth_progress_bar", False) if addon else False
+            ups = addon_get_int(addon, "progress_bar_updates_per_second", 4) if addon else 4
+            ups = min(60, max(2, ups))
+            delay = (1.0 / ups) if smooth else 0.25
 
             current = self.player.getTime()
             remaining = int(self.segment.end_seconds - current)
@@ -489,23 +549,49 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
             if not self._minimal_mode:
                 try:
-                    addon = get_addon()
                     raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
                     show_progress = addon_get_bool(addon, "show_progress_bar", False)
                     countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
                     progress = self.getControl(3014)
-                    progress.setVisible(show_progress)
+                    fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
+
                     if show_progress:
-                        elapsed_pct = _elapsed_progress_percent(
-                            current, self.segment.start_seconds, self._total_duration
-                        )
-                        disp = _progress_display_percent(elapsed_pct, countdown)
-                        progress.setPercent(disp)
-                        log(
-                            f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
-                        )
+                        if smooth:
+                            progress.setVisible(False)
+                            self._set_smooth_bar_window_visible(True)
+                            elapsed_f = _elapsed_progress_percent_float(
+                                current, self.segment.start_seconds, self._total_duration
+                            )
+                            pct_f = _progress_display_percent_float(elapsed_f, countdown)
+                            w = int(
+                                round((pct_f / 100.0) * FULL_SKIP_PROGRESS_BAR_WIDTH)
+                            )
+                            w = max(0, min(FULL_SKIP_PROGRESS_BAR_WIDTH, w))
+                            if w != self._last_smooth_fill_w:
+                                self._last_smooth_fill_w = w
+                                fill.setWidth(w)
+                            now_wall = time.time()
+                            if (now_wall - self._last_smooth_log_ts) >= 1.5:
+                                self._last_smooth_log_ts = now_wall
+                                log(
+                                    f"📊 Smooth bar {w}px (≈{pct_f:.2f}%, countdown={countdown}, ups={ups}, raw: '{raw_setting}')"
+                                )
+                        else:
+                            self._last_smooth_fill_w = None
+                            self._set_smooth_bar_window_visible(False)
+                            progress.setVisible(True)
+                            elapsed_pct = _elapsed_progress_percent(
+                                current, self.segment.start_seconds, self._total_duration
+                            )
+                            disp = _progress_display_percent(elapsed_pct, countdown)
+                            progress.setPercent(disp)
+                            log(
+                                f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
+                            )
                     else:
+                        self._last_smooth_fill_w = None
                         progress.setVisible(False)
+                        self._set_smooth_bar_window_visible(False)
                         log(f"📊 Progress bar hidden due to setting (raw: '{raw_setting}')")
                 except Exception as e:
                     log(f"⚠️ Progress bar update error: {e}")
@@ -599,10 +685,15 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         try:
             if getattr(self, "_minimal_mode", False):
                 return
+            self._set_smooth_bar_window_visible(False)
             _ad = get_addon()
             show_progress = addon_get_bool(_ad, "show_progress_bar", False) if _ad else False
             if show_progress:
                 self.getControl(3014).setPercent(0)
+                try:
+                    self.getControl(_SMOOTH_PROGRESS_FILL_ID).setWidth(0)
+                except Exception:
+                    pass
                 log("🔄 Progress bar reset on close")
         except Exception as e:
             log(f"⚠️ Error resetting progress bar on close: {e}")

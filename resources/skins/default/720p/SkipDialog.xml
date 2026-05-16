@@ -159,6 +159,19 @@
         <aspectratio>stretch</aspectratio>
         <orientation>horizontal</orientation>
       </control>
+      <control type="image" id="3030">
+        <left>5</left><top>90</top>
+        <width>370</width><height>16</height>
+        <texture>progress_background.png</texture>
+        <visible>String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+      </control>
+      <control type="image" id="3031">
+        <left>5</left><top>90</top>
+        <width>370</width><height>16</height>
+        <texture>progress_mid.png</texture>
+        <aspectratio>stretch</aspectratio>
+        <visible>String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+      </control>
     </control>
   </controls>
 </window>

@@ -129,12 +129,15 @@
                     <default>true</default>
                     <control type="toggle" />
                 </setting>
-                <setting id="enable_skip_episodes" type="boolean" label="32011" help="32011">
+                <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32017">
                     <level>0</level>
                     <default>true</default>
+                    <dependencies>
+                        <dependency type="visible" setting="enable_skip_movies">true</dependency>
+                    </dependencies>
                     <control type="toggle" />
                 </setting>
-                <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32017">
+                <setting id="enable_skip_episodes" type="boolean" label="32011" help="32011">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle" />
@@ -142,6 +145,9 @@
                 <setting id="show_skip_dialog_episodes" type="boolean" label="32018" help="32018">
                     <level>0</level>
                     <default>true</default>
+                    <dependencies>
+                        <dependency type="visible" setting="enable_skip_episodes">true</dependency>
+                    </dependencies>
                     <control type="toggle" />
                 </setting>
                 <setting id="hide_ending_text" type="boolean" label="32016" help="32016">
@@ -237,6 +243,30 @@
                     </control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="smooth_progress_bar" type="boolean" label="32083" help="32084">
+                    <level>2</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="enable" setting="show_progress_bar">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="progress_bar_updates_per_second" type="integer" label="32085" help="32086">
+                    <level>2</level>
+                    <default>4</default>
+                    <constraints>
+                        <minimum>2</minimum>
+                        <maximum>60</maximum>
+                        <step>1</step>
+                    </constraints>
+                    <control type="slider" format="integer">
+                        <popup>false</popup>
+                    </control>
+                    <dependencies>
+                        <dependency type="enable" setting="show_progress_bar">true</dependency>
+                        <dependency type="enable" setting="smooth_progress_bar">true</dependency>
                     </dependencies>
                 </setting>
                 <setting id="skip_dialog_position" type="string" label="32009" help="32009">

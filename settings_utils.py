@@ -276,6 +276,8 @@ def log_playback_settings_snapshot(addon=None):
             "progress_bar_countdown=%s" % bo("progress_bar_countdown", False),
             "progress_bar_style=%s" % tx("progress_bar_style", "progress_mid.png"),
             "progress_bar_height=%s" % ni("progress_bar_height", 16),
+            "smooth_progress_bar=%s" % bo("smooth_progress_bar", False),
+            "progress_bar_updates_per_second=%s" % ni("progress_bar_updates_per_second", 4),
             "hide_ending_text=%s" % bo("hide_ending_text", False),
             "show_skip_button_focus_texture=%s" % bo("show_skip_button_focus_texture", True),
         ]

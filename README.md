@@ -231,6 +231,8 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | progress_bar_countdown | Full mode: bar starts full and shrinks (remaining time) instead of filling with elapsed time (default: false) |
 | progress_bar_style | Full mode: `progress_mid*.png` fill texture (filename storage; same pattern as button focus). |
 | progress_bar_height | Full mode: progress bar height (**slider** **5–32** px, default **16**). |
+| smooth_progress_bar | Full mode (Advanced): smoother bar motion via higher refresh + easing; default off — disable if stutter on slow devices |
+| progress_bar_updates_per_second | Full mode (Advanced): when smooth progress is on, updates per second (**2–60**, default **4**, same as legacy 0.25 s interval) |
 | skip_dialog_position | Chooses layout position for the skip confirmation dialog |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |

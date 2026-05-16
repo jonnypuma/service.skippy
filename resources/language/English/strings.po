@@ -200,6 +200,22 @@ msgctxt "#32082"
 msgid "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
 msgstr "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
 
+msgctxt "#32083"
+msgid "Smooth progress bar updates"
+msgstr "Smooth progress bar updates"
+
+msgctxt "#32084"
+msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
+msgstr "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
+
+msgctxt "#32085"
+msgid "Progress bar updates per second"
+msgstr "Progress bar updates per second"
+
+msgctxt "#32086"
+msgid "When smooth progress is enabled, how many times per second to update the bar (2–60). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter."
+msgstr "When smooth progress is enabled, how many times per second to update the bar (2–60). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter."
+
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
 msgstr "Use local chapter / EDL files"

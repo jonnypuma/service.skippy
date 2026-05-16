@@ -139,6 +139,7 @@ _SKIP_DIALOG_FULL_FILES = (
     'SkipDialog.xml',
 )
 _FULL_MODE_PROGRESS_ID = '3014'
+_FULL_MODE_SMOOTH_FILL_ID = '3031'
 _SKIP_DIALOG_MINIMAL_FILES = (
     'Minimal_Skip_Dialog_BottomRight.xml',
     'Minimal_Skip_Dialog_BottomLeft.xml',
@@ -220,6 +221,12 @@ def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None)
                     and cid == _FULL_MODE_PROGRESS_ID
                 ):
                     _set_progress_midtexture(control, mid_texture_path)
+                if (
+                    mid_texture_path
+                    and ctype == 'image'
+                    and cid == _FULL_MODE_SMOOTH_FILL_ID
+                ):
+                    _set_image_texture(control, mid_texture_path)
             _write_skin_xml(tree, xml_path)
             updated.append(xml_file)
         if updated:
@@ -2121,13 +2128,31 @@ while not monitor.abortRequested():
         pass
 
     try:
-        marker_open = (
-            xbmcgui.Window(10000).getProperty("skippy_marker_modal_open") == "true"
-        )
-        editor_open = (
-            xbmcgui.Window(10000).getProperty("skippy_editor_modal_open") == "true"
-        )
-        if marker_open or editor_open:
+        win = xbmcgui.Window(10000)
+        marker_open = win.getProperty("skippy_marker_modal_open") == "true"
+        editor_open = win.getProperty("skippy_editor_modal_open") == "true"
+        # Pending first-press marker (skippy_marker_start) does not set marker_open; suppress skip dialog until complete or cleared.
+        marker_pending_blocks = False
+        if win.getProperty("skippy_marker_start") and not marker_open:
+            playing_path = get_video_file()
+            if playing_path:
+                pending_path = (win.getProperty("skippy_marker_path") or "").strip()
+                if not pending_path:
+                    marker_pending_blocks = True
+                else:
+                    try:
+                        marker_pending_blocks = (
+                            xbmcvfs.translatePath(pending_path)
+                            == xbmcvfs.translatePath(playing_path)
+                        )
+                    except Exception:
+                        marker_pending_blocks = pending_path == playing_path
+        if marker_open or editor_open or marker_pending_blocks:
+            if marker_pending_blocks:
+                log_if_changed(
+                    "skip_dlg_marker_pending",
+                    "⏸️ Skip dialog suppressed — segment marker start is pending for this file",
+                )
             if monitor.waitForAbort(CHECK_INTERVAL):
                 log("🛑 Abort requested — exiting monitor loop")
                 break
