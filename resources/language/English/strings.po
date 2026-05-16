@@ -59,6 +59,14 @@ msgctxt "#31007"
 msgid "Ignore overlapping segments"
 msgstr "Ignore overlapping segments"
 
+msgctxt "#31011"
+msgid "Open Segment Editor when overlaps are detected"
+msgstr "Open Segment Editor when overlaps are detected"
+
+msgctxt "#31012"
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgstr "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+
 msgctxt "#31008"
 msgid "Use embedded chapters as fallback"
 msgstr "Use embedded chapters as fallback"
@@ -213,8 +221,24 @@ msgid "Progress bar updates per second"
 msgstr "Progress bar updates per second"
 
 msgctxt "#32086"
-msgid "When smooth progress is enabled, how many times per second to update the bar (2–120). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter; up to 120 can help on high refresh displays."
-msgstr "When smooth progress is enabled, how many times per second to update the bar (2–120). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter; up to 120 can help on high refresh displays."
+msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
+msgstr "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
+
+msgctxt "#32087"
+msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
+msgstr "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
+
+msgctxt "#32088"
+msgid "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
+msgstr "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
+
+msgctxt "#32089"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
+msgstr "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
+
+msgctxt "#32090"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
+msgstr "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -423,6 +447,10 @@ msgctxt "#30006"
 msgid "Segment Editor"
 msgstr "Segment Editor"
 
+msgctxt "#30007"
+msgid "Backup & Restore"
+msgstr "Backup & Restore"
+
 msgctxt "#37000"
 msgid "Enable Segment Editor"
 msgstr "Enable Segment Editor"
@@ -482,6 +510,42 @@ msgstr "Update editor keymap now"
 msgctxt "#37017"
 msgid "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
 msgstr "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+
+msgctxt "#38000"
+msgid "Back up settings to JSON…"
+msgstr "Back up settings to JSON…"
+
+msgctxt "#38001"
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+
+msgctxt "#38002"
+msgid "Restore settings from JSON…"
+msgstr "Restore settings from JSON…"
+
+msgctxt "#38003"
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
+msgstr "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
+
+msgctxt "#38004"
+msgid "The operation could not be completed."
+msgstr "The operation could not be completed."
+
+msgctxt "#38005"
+msgid "Saved %s"
+msgstr "Saved %s"
+
+msgctxt "#38006"
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
+msgstr "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
+
+msgctxt "#38007"
+msgid "This file is not a valid Skippy backup."
+msgstr "This file is not a valid Skippy backup."
+
+msgctxt "#38008"
+msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
+msgstr "Applied %s settings; %s entries were skipped (unknown key or error)."
 
 msgctxt "#36000"
 msgid "Enable Segment Marker"

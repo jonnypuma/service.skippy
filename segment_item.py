@@ -21,6 +21,52 @@ def normalize_label(text):
     # Normalize and lowercase labels for consistent matching
     return unicodedata.normalize("NFKC", text or "").strip().lower()
 
+
+# Polling / floating-point slack at boundaries so we do not miss a segment when
+# getTime() falls just outside [start, end]. Strict match is preferred; lenient
+# match picks a single nearest segment when none are strictly active.
+SEGMENT_PLAYBACK_TOLERANCE = 0.25
+
+
+def segment_is_active_lenient(segment, current_time, tol=None):
+    """True if current_time is inside [start, end] expanded by tol on both sides."""
+    if tol is None:
+        tol = SEGMENT_PLAYBACK_TOLERANCE
+    t = float(current_time)
+    return (segment.start_seconds - tol) <= t <= (segment.end_seconds + tol)
+
+
+def segments_active_for_playback(segments, current_time, tol=None):
+    """
+    Segments to treat as active for skip/dialog logic. Uses strict [start, end] first;
+    if none match, includes at most one lenient match (nearest nominal interval, then
+    latest start) so adjacent chapters do not both prompt after a boundary cross.
+    """
+    if tol is None:
+        tol = SEGMENT_PLAYBACK_TOLERANCE
+    t = float(current_time)
+    if not segments:
+        return []
+    strict = [s for s in segments if s.start_seconds <= t <= s.end_seconds]
+    if strict:
+        return strict
+    loose = [
+        s for s in segments if (s.start_seconds - tol) <= t <= (s.end_seconds + tol)
+    ]
+    if not loose:
+        return []
+
+    def dist_outside(s):
+        if s.start_seconds <= t <= s.end_seconds:
+            return 0.0
+        if t < s.start_seconds:
+            return s.start_seconds - t
+        return t - s.end_seconds
+
+    loose.sort(key=lambda s: (dist_outside(s), -s.start_seconds))
+    return [loose[0]]
+
+
 class SegmentItem:
     def __init__(self, start_seconds, end_seconds, label="segment", source="edl", action_type=None, timeout=5.0, allow_input=True, next_segment_start=None, next_segment_info=None):
         if end_seconds < start_seconds:
@@ -77,7 +123,7 @@ class SegmentItem:
 # 🔍 Dialog trigger logic — stateless, no caching
 def should_show_skip_dialog(current_time, segments, last_shown_times, debounce_seconds=5):
     for segment in segments:
-        if segment.start_seconds <= current_time <= segment.end_seconds:
+        if segment_is_active_lenient(segment, current_time):
             segment_id = f"{segment.start_seconds}-{segment.end_seconds}"
             last_shown = last_shown_times.get(segment_id, 0)
             time_since_last = abs(current_time - last_shown)
@@ -145,5 +191,30 @@ if __name__ == "__main__":
                 "next_segment_info": "nested segment 'recap'"
             }
             self.assertEqual(seg.to_dict(), expected)
+
+        def test_segments_active_for_playback_strict(self):
+            a = SegmentItem(0, 10, "a")
+            b = SegmentItem(10, 20, "b")
+            segs = [a, b]
+            self.assertEqual(segments_active_for_playback(segs, 5), [a])
+            self.assertEqual(len(segments_active_for_playback(segs, 10)), 2)
+
+        def test_segments_active_for_playback_lenient_gap(self):
+            a = SegmentItem(0, 10, "a")
+            b = SegmentItem(15, 25, "b")
+            segs = [a, b]
+            # Gap (10, 15): strict none at 10.08; only 'a' overlaps via lenient tail
+            act = segments_active_for_playback(segs, 10.08, tol=0.25)
+            self.assertEqual(len(act), 1)
+            self.assertEqual(act[0].segment_type_label, "a")
+
+        def test_segments_active_for_playback_lenient_before_next(self):
+            a = SegmentItem(0, 10, "a")
+            b = SegmentItem(15, 25, "b")
+            segs = [a, b]
+            # Approaching 'b' before strict start
+            act = segments_active_for_playback(segs, 14.88, tol=0.25)
+            self.assertEqual(len(act), 1)
+            self.assertEqual(act[0].segment_type_label, "b")
 
     unittest.main()

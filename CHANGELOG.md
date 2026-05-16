@@ -1,9 +1,60 @@
 # Changelog
 
+## [3.0.0] - 2026-05-13
+
+### Changed
+- **Service architecture**: Playback monitor loop, segment parsing/linking, and related logic are split into **`service_main_loop.py`** and **`service_*.py`** helpers (e.g. segment sources, sidecar paths, segment processing); **`service.py`** remains the Kodi service entry. Major version reflects this structural refactor.
+
+## [2.2.7] - 2026-05-13
+
+### Added
+- **Open Segment Editor when overlaps are detected** (`open_segment_editor_on_overlap`, Advanced): Shown only when **Ignore overlapping segments** is **off**. Uses the same pass-2 overlap/nested detection as the toast. Runs **once per playback file** (flag cleared on new video or genuine replay). Launches **`RunScript(service.skippy,open_segment_editor)`** so the service loop is not blocked. Requires **Segment Editor** enabled. (`service.py`, `gen_settings_v1.py`, strings **31011–31012**.)
+
+## [2.2.6] - 2026-05-13
+
+### Added
+- **Backup & Restore** (Advanced settings category): **Back up settings to JSON** picks a writable folder and writes `skippy-settings-backup-<timestamp>.json` with every persisted add-on setting (same keys as `resources/settings.xml`, excluding action buttons). **Restore settings from JSON** picks a backup file, confirms, then applies overlapping keys; unknown keys are ignored; keys not in the file stay unchanged. Implemented in **`settings_backup.py`**, triggered via **`RunScript(service.skippy,backup_settings|restore_settings)`** from settings actions (`segment_marker.py` dispatch). English strings **30007**, **38000–38008**.
+
+## [2.2.5] - 2026-05-13
+
+### Changed
+- **README**: Clarified the **playback loop** (auto / ask / never), **decline vs session** behavior for ask dialogs (what clears **recently dismissed**: new file, major rewind, genuine replay—not pause/resume). New **Ask dialog debounce** section: fixed **300 ms** delay, why it exists, tradeoffs of lowering/raising it (requires source edit today). Cross-linked from **Ask to skip** usage.
+
+## [2.2.4] - 2026-05-13
+
+### Changed
+- **Settings help (English)**: Separate help strings for **Enable skip** and **Show skip dialog** (movies/episodes): explains master vs child toggles and when Kodi hides the dialog row. **Progress bar updates per second** help now focuses on **smooth mode** and **high-refresh** tuning (default 4 for most TVs). New string IDs **32087–32090**; **`tools/gen_settings_v1.py`** + **`resources/settings.xml`** updated.
+
+## [2.2.3] - 2026-05-13
+
+### Changed
+- **Skip UI suppression**: Marker modal, editor modal, and pending first-press marker handling live in **`skippy_skip_ui_suppression_state()`** (`SkipUiSuppression`); the service loop only opens the home window and checks **`skip_ui.suppress`**. Behavior unchanged; easier to reuse and review. (`service.py`.)
+
+## [2.2.2] - 2026-05-16
+
+### Changed
+- **Service loop — marker/editor pending guard**: Replaced silent **`except Exception`** with **`RuntimeError`** ignored (typical when the home window or properties are unavailable) and **`log_service_detail`** + traceback for anything else (**All** / verbose detail level only). Inner **`clearProperty`** and path-compare fallbacks use the same split. (`service.py`.)
+
+## [2.2.1] - 2026-05-16
+
+### Changed
+- **`is_skip_enabled` / `is_skip_dialog_enabled`**: Movie/episode skip and skip-dialog settings are logged only when the value **changes**, not on every service poll. Unknown playback types warn **once per distinct** type per session. Removed the redundant “skipping disabled — dialog will not be shown” line (the skip toggle log already covers that). (`settings_utils.py`.)
+
+## [2.2.0] - 2026-05-16
+
+### Changed
+- **Full skip dialog — classic progress logs**: Progress-bar telemetry in **`_monitor_segment_end`** is throttled to at most once per **~1.5 s** (same cadence as smooth mode), reducing log spam while the bar still updates every poll tick. (`skipdialog.py`.)
+
+## [2.1.9] - 2026-05-16
+
+### Changed
+- **Segment marker pending start**: Skip dialog is only suppressed for a pending first-press mark when **Segment Marker** is **enabled** in settings. If the feature is off, orphaned `Window` properties are cleared. New **`skippy_marker_pending_ts`** tracks when the mark was set; pending state older than **24 hours** is cleared automatically. (`segment_marker.py` + `service.py`.)
+
 ## [2.1.8] - 2026-05-15
 
 ### Changed
 - **Smooth progress — updates per second**: Slider range widened from **2–60** to **2–120** (runtime clamp and `settings.xml`) for high-refresh displays (e.g. 120 Hz).
+- **Segment activation near boundaries**: Playback uses **0.25 s** tolerance when strict `[start, end]` misses due to polling / float time (`segments_active_for_playback`). If no strict match, at most **one** lenient segment is chosen (nearest interval, then latest start) so adjacent chapters do not both prompt. `SegmentItem.is_active` remains strict for nested-exit semantics; dialog loop and overlap-suppression use the new resolver.
 
 ### Fixed
 - **Skip dialog countdown / progress**: The poll loop no longer uses a second **`xbmc.Monitor.waitForAbort`** (the add-on already has a service **`Monitor`**; an extra instance / worker-thread **`waitForAbort`** could stop the loop immediately or prevent timed wakeups). Restored **`time.sleep(delay)`** between ticks while keeping fractional percent, easing, and redundant-update skips.

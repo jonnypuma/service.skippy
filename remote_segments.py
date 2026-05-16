@@ -23,7 +23,7 @@ from urllib.request import Request, urlopen
 import xbmc
 
 from segment_item import SegmentItem
-from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log_remote
+from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log_remote, parse_kodi_jsonrpc_raw
 
 ADDON_ID = "service.skippy"
 
@@ -111,13 +111,16 @@ def jsonrpc(method, params=None, log_errors=True):
         payload["params"] = params
     try:
         raw = xbmc.executeJSONRPC(json.dumps(payload))
-        result = json.loads(raw)
-    except Exception as exc:
-        _rlog(f"JSON-RPC failure for {method}: {exc}")
+    except (TypeError, ValueError, AttributeError) as exc:
+        _rlog("JSON-RPC execute failed for %s: %s" % (method, exc))
         return {}
-    if result.get("error") and log_errors:
-        _rlog(f"JSON-RPC error for {method}: {result.get('error')}")
-    return result
+    data, err = parse_kodi_jsonrpc_raw(raw)
+    if err:
+        _rlog("JSON-RPC parse failed for %s: %s" % (method, err))
+        return {}
+    if data.get("error") and log_errors:
+        _rlog("JSON-RPC error for %s: %s" % (method, data.get("error")))
+    return data
 
 
 def _addon_version():
@@ -464,7 +467,7 @@ def fetch_remote_json(url, source_name):
 
     try:
         data = json.loads(body)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
         _rlog(f"{source_name} lookup returned invalid JSON: {exc}")
         _remote_fetch_begin_failure_cooldown(bucket, source_name, None)
         return None

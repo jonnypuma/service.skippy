@@ -150,6 +150,8 @@ def open_segment_editor(video_path=None):
             )
         except Exception:
             pass
+        # Undo optimistic skippy_editor_modal_open from overlap auto-launch (service thread).
+        set_editor_modal_open(False)
         return
 
     if _editor_active:
@@ -162,6 +164,7 @@ def open_segment_editor(video_path=None):
     if not video_path:
         log_always("No video file available for editing")
         xbmcgui.Dialog().ok("Segment Editor", "No video is currently playing.")
+        set_editor_modal_open(False)
         return
 
     log_always(f"Opening segment editor for: {os.path.basename(video_path)}")

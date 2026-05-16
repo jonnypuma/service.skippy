@@ -1,11 +1,10 @@
 import os
 import time
 import platform
-import unicodedata
-import xml.etree.ElementTree as ET
 import json
 import re
-import copy
+import traceback
+from collections import namedtuple
 import xbmc
 import xbmcgui
 import xbmcvfs
@@ -13,267 +12,44 @@ import xbmcaddon
 
 from settings_utils import is_skip_dialog_enabled, is_skip_enabled
 from skipdialog import SkipDialog, _minimal_plate_filename
-from segment_item import SegmentItem
-from remote_segments import (
-    fetch_remote_tv_segments,
-    fetch_remote_movie_segments,
-    prefetch_next_episode_segments,
-)
+from segment_item import SegmentItem, segments_active_for_playback, segment_is_active_lenient
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
     get_user_skip_mode,
-    get_edl_label_to_action_map,
-    get_edl_type_map,
     get_addon,
     log,
     log_always,
     log_playback_settings_snapshot,
     log_service_detail,
     normalize_label,
+    parse_kodi_jsonrpc_raw,
     show_overlapping_toast,
     skippy_notification_icon,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
-from marker_indicator import sync_marker_pending_indicator
 from playback_segment_cache import publish_parse_cache
-from segment_editor_parser import (
-    safe_file_write,
-    save_edl,
-    CHAPTER_XML_SIDECAR_SUFFIXES,
-    dedupe_overlapping_same_label_segments,
+from segment_editor_utils import set_editor_modal_open
+from service_online_sidecar_save import (
+    maybe_save_online_segments_to_chapters_xml as _maybe_save_online_segments_to_chapters_xml_impl,
+    maybe_save_online_segments_to_sidecars as _maybe_save_online_segments_to_sidecars_impl,
 )
-
-# save_online_chapters_existing_policy (labelenum optionvalues)
-_SAVE_CHAPTERS_SKIP_IF_EXISTS = "SkipIfExists"
-_SAVE_CHAPTERS_OVERWRITE_SILENT = "OverwriteSilent"
-_SAVE_CHAPTERS_OVERWRITE_ASK = "OverwriteAsk"
-_SAVE_CHAPTERS_MERGE = "Merge"
-
-_SAVE_ONLINE_FORMAT_BOTH = "Both"
-_SAVE_ONLINE_FORMAT_EDL = "EDL"
-_SAVE_ONLINE_FORMAT_XML = "XML"
-
-_POLICY_STORAGE_VALUES = frozenset(
-    {
-        _SAVE_CHAPTERS_SKIP_IF_EXISTS,
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-        _SAVE_CHAPTERS_MERGE,
-    }
+from service_sidecar_paths import local_chapter_or_edl_file_exists
+from service_segment_sources import (
+    get_cached_source_segments as _get_cached_source_segments_impl,
 )
-
-_POLICY_LABEL_NORMALIZED = {
-    normalize_label("Skip if exists"): _SAVE_CHAPTERS_SKIP_IF_EXISTS,
-    normalize_label("Overwrite (no prompt)"): _SAVE_CHAPTERS_OVERWRITE_SILENT,
-    normalize_label("Overwrite (ask first)"): _SAVE_CHAPTERS_OVERWRITE_ASK,
-    normalize_label("Merge with existing"): _SAVE_CHAPTERS_MERGE,
-}
-
-
-def _normalize_online_sidecar_policy(raw):
-    """Map labelenum storage value or display label to canonical policy ids."""
-    s = (raw or "").strip()
-    if s in _POLICY_STORAGE_VALUES:
-        return s
-    mapped = _POLICY_LABEL_NORMALIZED.get(normalize_label(s))
-    if mapped:
-        log_service_detail(
-            "save_online_chapters_existing_policy value %r normalized to %s"
-            % (s, mapped)
-        )
-        return mapped
-    log(
-        "Unknown save_online_chapters_existing_policy %r — using SkipIfExists"
-        % (s,)
-    )
-    return _SAVE_CHAPTERS_SKIP_IF_EXISTS
-
-
-def _normalize_save_online_format(raw):
-    s = (raw or "").strip()
-    if s in (_SAVE_ONLINE_FORMAT_BOTH, _SAVE_ONLINE_FORMAT_EDL, _SAVE_ONLINE_FORMAT_XML):
-        return s
-    key = normalize_label(s).replace(" ", "")
-    aliases = {
-        "both": _SAVE_ONLINE_FORMAT_BOTH,
-        "edlonly": _SAVE_ONLINE_FORMAT_EDL,
-        "edl": _SAVE_ONLINE_FORMAT_EDL,
-        "xml": _SAVE_ONLINE_FORMAT_XML,
-        "chaptersxmlonly": _SAVE_ONLINE_FORMAT_XML,
-        "chapterxmlonly": _SAVE_ONLINE_FORMAT_XML,
-    }
-    hit = aliases.get(key)
-    if hit:
-        return hit
-    return _SAVE_ONLINE_FORMAT_BOTH
-
-_SEGMENT_PRIORITY_STORAGE = frozenset({"LocalFirst", "OnlineFirst"})
-_SEGMENT_PRIORITY_BY_LABEL = {
-    normalize_label("Local first"): "LocalFirst",
-    normalize_label("Online first"): "OnlineFirst",
-}
-
-
-def _normalize_segment_source_priority(raw):
-    """Map labelenum storage value or human-readable label to LocalFirst / OnlineFirst."""
-    s = (raw or "").strip()
-    if s in _SEGMENT_PRIORITY_STORAGE:
-        return s
-    mapped = _SEGMENT_PRIORITY_BY_LABEL.get(normalize_label(s))
-    if mapped:
-        log_service_detail(
-            "segment_source_priority value %r normalized to %s" % (s, mapped)
-        )
-        return mapped
-    log("Unknown segment_source_priority %r — using LocalFirst" % (s,))
-    return "LocalFirst"
-
-
-_SKIP_DIALOG_FULL_FILES = (
-    'SkipDialog_BottomRight.xml',
-    'SkipDialog_BottomLeft.xml',
-    'SkipDialog_TopLeft.xml',
-    'SkipDialog_TopRight.xml',
-    'SkipDialog.xml',
+from service_segment_processing import (
+    is_nested_segment,
+    parse_and_process_segments as _parse_and_process_segments_impl,
+    re_evaluate_segment_jump_points,
+    should_suppress_segment_dialog,
 )
-_FULL_MODE_PROGRESS_ID = '3014'
-_FULL_MODE_SMOOTH_FILL_ID = '3031'
-_SKIP_DIALOG_MINIMAL_FILES = (
-    'Minimal_Skip_Dialog_BottomRight.xml',
-    'Minimal_Skip_Dialog_BottomLeft.xml',
-    'Minimal_Skip_Dialog_TopLeft.xml',
-    'Minimal_Skip_Dialog_TopRight.xml',
+from service_skip_dialog_skin import (
+    _skip_dialog_layout_suffix,
+    _update_full_skip_dialog_textures,
+    _update_minimal_skip_dialog_textures,
 )
-_FULL_MODE_BUTTON_IDS = frozenset({'3012', '3013', '3015', '3016'})
-_MINIMAL_PLATE_IMAGE_ID = '3021'
-_DEFAULT_SKIP_DIALOG_CORNER = 'Bottom Right'
-
-
-def _skip_dialog_layout_suffix(addon, setting_id):
-    """Stored value matches Full mode: e.g. 'Bottom Right' from values list."""
-    raw = (addon_get_setting_text(addon, setting_id, _DEFAULT_SKIP_DIALOG_CORNER) or "").strip() or _DEFAULT_SKIP_DIALOG_CORNER
-    return raw.replace(' ', '')
-
-
-def _get_skins_720p_dir():
-    addon = get_addon()
-    if not addon:
-        return None
-    return os.path.join(addon.getAddonInfo('path'), 'resources', 'skins', 'default', '720p')
-
-
-def _set_button_texturefocus(control, texture_path):
-    for child in control:
-        if child.tag == 'texturefocus':
-            child.text = texture_path
-            return
-    el = ET.SubElement(control, 'texturefocus')
-    el.text = texture_path
-
-
-def _set_progress_midtexture(control, texture_path):
-    for child in control:
-        if child.tag == 'midtexture':
-            child.text = texture_path
-            return
-    el = ET.SubElement(control, 'midtexture')
-    el.text = texture_path
-
-
-def _write_skin_xml(tree, xml_path):
-    try:
-        ET.indent(tree, space='  ')
-    except AttributeError:
-        pass
-    kwargs = {"encoding": "utf-8", "xml_declaration": True}
-    try:
-        tree.write(xml_path, short_empty_elements=False, **kwargs)
-    except TypeError:
-        tree.write(xml_path, **kwargs)
-
-
-def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None):
-    """Set texturefocus on Full mode skip/close buttons; optional progress midtexture."""
-    try:
-        xml_dir = _get_skins_720p_dir()
-        if not xml_dir:
-            return
-        if not focus_texture_path and not (mid_texture_path or "").strip():
-            return
-        mid_texture_path = (mid_texture_path or "").strip() or None
-        updated = []
-        for xml_file in _SKIP_DIALOG_FULL_FILES:
-            xml_path = os.path.join(xml_dir, xml_file)
-            if not os.path.isfile(xml_path):
-                continue
-            tree = ET.parse(xml_path)
-            root = tree.getroot()
-            for control in root.iter('control'):
-                ctype = control.get('type')
-                cid = control.get('id')
-                if ctype == 'button' and cid in _FULL_MODE_BUTTON_IDS and focus_texture_path:
-                    _set_button_texturefocus(control, focus_texture_path)
-                if (
-                    mid_texture_path
-                    and ctype == 'progress'
-                    and cid == _FULL_MODE_PROGRESS_ID
-                ):
-                    _set_progress_midtexture(control, mid_texture_path)
-                if (
-                    mid_texture_path
-                    and ctype == 'image'
-                    and cid == _FULL_MODE_SMOOTH_FILL_ID
-                ):
-                    _set_image_texture(control, mid_texture_path)
-            _write_skin_xml(tree, xml_path)
-            updated.append(xml_file)
-        if updated:
-            log(
-                "📝 Full skip dialog skin XML (%s): button focus=%s, progress mid=%s"
-                % (
-                    ", ".join(updated),
-                    focus_texture_path or "-",
-                    mid_texture_path or "-",
-                )
-            )
-    except Exception as e:
-        log(f"⚠️ Failed to update Full skip dialog XML: {e}")
-
-
-def _set_image_texture(control, texture_path):
-    for child in control:
-        if child.tag == 'texture':
-            child.text = texture_path
-            return
-    el = ET.SubElement(control, 'texture')
-    el.text = texture_path
-
-
-def _update_minimal_skip_dialog_textures(texture_filename):
-    """Minimal chip: plate image 3021 + single skip button 3012 texturefocus."""
-    try:
-        xml_dir = _get_skins_720p_dir()
-        if not xml_dir or not texture_filename:
-            return
-        for xml_file in _SKIP_DIALOG_MINIMAL_FILES:
-            xml_path = os.path.join(xml_dir, xml_file)
-            if not os.path.isfile(xml_path):
-                continue
-            tree = ET.parse(xml_path)
-            root = tree.getroot()
-            for control in root.iter('control'):
-                ctype = control.get('type')
-                cid = control.get('id')
-                if ctype == 'image' and cid == _MINIMAL_PLATE_IMAGE_ID:
-                    _set_image_texture(control, texture_filename)
-                if ctype == 'button' and cid == '3012':
-                    _set_button_texturefocus(control, texture_filename)
-            _write_skin_xml(tree, xml_path)
-            log(f"📝 Updated Minimal dialog {xml_file}: plate + button focus → {texture_filename}")
-    except Exception as e:
-        log(f"⚠️ Failed to update Minimal skip dialog XML: {e}")
 
 
 def log_if_changed(key, msg):
@@ -284,6 +60,9 @@ def log_if_changed(key, msg):
 
 CHECK_INTERVAL = 1
 SIDECAR_MTIME_CHECK_INTERVAL = 5
+# Drop orphaned first-press marker state after this many seconds (wall clock).
+MARKER_PENDING_STALE_SECONDS = 86400
+_MARKER_PENDING_TS_PROP = "skippy_marker_pending_ts"
 ICON_PATH = skippy_notification_icon(get_addon()) or ""
 
 class PlayerMonitor(xbmc.Monitor):
@@ -310,6 +89,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.remote_segment_cache = {}  # Online lookup cache (TV: TheIntroDB+IntroDB; movies: TheIntroDB)
         self.segment_parse_cache = None  # Parsed source segments for current playback; refreshed when sidecars change
         self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
+        # Once per file: auto-open editor when overlaps present (open_segment_editor_on_overlap).
+        self.overlap_editor_opened_for_path = None
 
     def onNotification(self, sender, method, data):
         """Open segment editor when triggered via JSON-RPC NotifyAll (legacy: service.segmenteditor)."""
@@ -368,37 +149,6 @@ class PlayerMonitor(xbmc.Monitor):
 monitor = PlayerMonitor()
 player = xbmc.Player()
 
-def hms_to_seconds(hms):
-    h, m, s = hms.strip().split(":")
-    return int(h)*3600 + int(m)*60 + float(s)
-
-def safe_file_read(*paths):
-    for path in paths:
-        if path:
-            log_service_detail(f"📂 Attempting to read: {path}")
-            exists_result = False
-            try:
-                exists_result = xbmcvfs.exists(path)
-                log_service_detail(f"📂 xbmcvfs.exists('{path}') = {exists_result}")
-            except Exception as ex:
-                log_service_detail(f"📂 xbmcvfs.exists('{path}') raised: {ex}")
-            try:
-                f = xbmcvfs.File(path)
-                content = f.read()
-                f.close()
-                if isinstance(content, bytes):
-                    content = content.decode('utf-8', errors='replace')
-                if content:
-                    log_service_detail(f"✅ Successfully read file: {path}")
-                    return content
-                else:
-                    if exists_result:
-                        log(f"⚠ File exists but read returned empty: {path}")
-                    else:
-                        log_service_detail(f"⚠ File was empty (exists={exists_result}): {path}")
-            except Exception as e:
-                log(f"❌ Failed to read {path}: {e}")
-    return None
 
 def get_video_file():
     """Resolve the playing file path. Matches the main loop: use Player.HasVideo as well as isPlayingVideo,
@@ -414,13 +164,15 @@ def get_video_file():
     if not path:
         return None
 
-    log_service_detail(f"🎯 Kodi playback path: {path}")
+    log_service_detail(f"🎯 Kodi playback path: {path}", tag="playback")
     _ga = get_addon()
     log_service_detail(
-        f"🔧 show_not_found_toast_for_movies: {addon_get_bool(_ga, 'show_not_found_toast_for_movies', False) if _ga else False}"
+        f"🔧 show_not_found_toast_for_movies: {addon_get_bool(_ga, 'show_not_found_toast_for_movies', False) if _ga else False}",
+        tag="playback",
     )
     log_service_detail(
-        f"🔧 show_not_found_toast_for_tv_episodes: {addon_get_bool(_ga, 'show_not_found_toast_for_tv_episodes', False) if _ga else False}"
+        f"🔧 show_not_found_toast_for_tv_episodes: {addon_get_bool(_ga, 'show_not_found_toast_for_tv_episodes', False) if _ga else False}",
+        tag="playback",
     )
 
     if xbmcvfs.exists(path):
@@ -429,26 +181,143 @@ def get_video_file():
     log(f"❓ Unrecognized or inaccessible path: {path}")
     return None
 
+
+SkipUiSuppression = namedtuple(
+    "SkipUiSuppression",
+    ("suppress", "marker_modal_open", "editor_modal_open", "pending_marker_blocks"),
+)
+
+
+def skippy_skip_ui_suppression_state(win):
+    """Defer skip-dialog work while marker/editor modals are open or a first-press mark is pending.
+
+    Clears **skippy_marker_start** / path / timestamp when the marker feature is off or the pending
+    start is stale. Caller should **continue** the service loop when **suppress** is true.
+    """
+    marker_modal_open = win.getProperty("skippy_marker_modal_open") == "true"
+    editor_modal_open = win.getProperty("skippy_editor_modal_open") == "true"
+    pending_marker_blocks = False
+    if win.getProperty("skippy_marker_start") and not marker_modal_open:
+        addon_guard = get_addon()
+        marker_feature_on = (
+            addon_get_bool(addon_guard, "segment_marker_enabled", False)
+            if addon_guard
+            else False
+        )
+        if not marker_feature_on:
+            try:
+                win.clearProperty("skippy_marker_start")
+                win.clearProperty("skippy_marker_path")
+                win.clearProperty(_MARKER_PENDING_TS_PROP)
+            except RuntimeError:
+                pass
+            except Exception as e:
+                log_service_detail(
+                    "clear marker pending (feature off): %s: %s"
+                    % (type(e).__name__, e),
+                    tag="skipui",
+                )
+            log_if_changed(
+                "marker_pending_cleared_disabled",
+                "🧹 Cleared segment marker pending state (segment marker disabled in settings)",
+            )
+        else:
+            ts_raw = win.getProperty(_MARKER_PENDING_TS_PROP)
+            stale = False
+            if ts_raw:
+                try:
+                    age = time.time() - float(ts_raw)
+                    if age > MARKER_PENDING_STALE_SECONDS:
+                        stale = True
+                except (TypeError, ValueError):
+                    stale = True
+            if stale:
+                try:
+                    win.clearProperty("skippy_marker_start")
+                    win.clearProperty("skippy_marker_path")
+                    win.clearProperty(_MARKER_PENDING_TS_PROP)
+                except RuntimeError:
+                    pass
+                except Exception as e:
+                    log_service_detail(
+                        "clear marker pending (stale): %s: %s"
+                        % (type(e).__name__, e),
+                        tag="skipui",
+                    )
+                log_if_changed(
+                    "marker_pending_cleared_stale",
+                    "🧹 Cleared segment marker pending start (stale: older than %ss)"
+                    % int(MARKER_PENDING_STALE_SECONDS),
+                )
+            elif win.getProperty("skippy_marker_start"):
+                playing_path = get_video_file()
+                if playing_path:
+                    pending_path = (win.getProperty("skippy_marker_path") or "").strip()
+                    if not pending_path:
+                        pending_marker_blocks = True
+                    else:
+                        try:
+                            pending_marker_blocks = (
+                                xbmcvfs.translatePath(pending_path)
+                                == xbmcvfs.translatePath(playing_path)
+                            )
+                        except (TypeError, ValueError, OSError, RuntimeError, AttributeError):
+                            pending_marker_blocks = pending_path == playing_path
+                        except Exception as e:
+                            log_service_detail(
+                                "marker pending path compare: %s: %s\n%s"
+                                % (
+                                    type(e).__name__,
+                                    e,
+                                    traceback.format_exc(),
+                                ),
+                                tag="skipui",
+                            )
+                            pending_marker_blocks = pending_path == playing_path
+    suppress = (
+        marker_modal_open or editor_modal_open or pending_marker_blocks
+    )
+    return SkipUiSuppression(
+        suppress,
+        marker_modal_open,
+        editor_modal_open,
+        pending_marker_blocks,
+    )
+
+
 def infer_playback_type(item):
     showtitle = item.get("showtitle", "")
     episode = item.get("episode", -1)
     file_path = item.get("file", "")
 
-    log_service_detail(f"📺 showtitle: {showtitle}, episode: {episode}")
+    log_service_detail(f"📺 showtitle: {showtitle}, episode: {episode}", tag="playback")
     normalized_path = file_path.lower()
 
     if showtitle:
         return "episode"
     if isinstance(episode, int) and episode > 0:
         return "episode"
-    if re.search(r"s\d{2}e\d{2}", normalized_path):
-        log_service_detail("🧠 Fallback heuristic matched SxxExx pattern — inferring episode")
+    # SxxExy in path (1-2 digits each); Kodi "unknown" file playback often lacks library fields
+    if re.search(r"s\d{1,2}e\d{1,2}", normalized_path):
+        log_service_detail(
+            "🧠 Fallback heuristic matched SxxExx pattern — inferring episode",
+            tag="playback",
+        )
+        return "episode"
+    # Standalone E## (e.g. "... Insiderbericht E01 Inferno ...") common when season is omitted
+    if re.search(
+        r"(?:^|[\s.\-_/\\])e\d{1,2}(?:[\s.\-_/\\]|$)", normalized_path, re.I
+    ):
+        log_service_detail(
+            "🧠 Fallback heuristic matched standalone E## pattern — inferring episode",
+            tag="playback",
+        )
         return "episode"
 
     return "movie"
 
 def should_show_missing_file_toast():
-    log_service_detail("🚦 Entered should_show_missing_file_toast()")
+    log_service_detail("🚦 Entered should_show_missing_file_toast()", tag="jsonrpc")
 
     addon = get_addon()
     show_not_found_toast_for_movies = (
@@ -463,29 +332,49 @@ def should_show_missing_file_toast():
         "id": "getPlayers",
         "method": "Player.GetActivePlayers"
     }
-    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_active)}")
-    response_active = xbmc.executeJSONRPC(json.dumps(query_active))
-    log_service_detail(f"📬 JSON-RPC response: {response_active}")
-    active_result = json.loads(response_active)
+    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_active)}", tag="jsonrpc")
+    try:
+        response_active = xbmc.executeJSONRPC(json.dumps(query_active))
+    except (TypeError, ValueError, AttributeError) as exc:
+        log_service_detail(
+            "executeJSONRPC(Player.GetActivePlayers) failed: %s" % exc,
+            tag="jsonrpc",
+        )
+        return False, {}
+    log_service_detail(f"📬 JSON-RPC response: {response_active}", tag="jsonrpc")
+    active_result, err_a = parse_kodi_jsonrpc_raw(response_active)
+    if err_a:
+        log_service_detail("Player.GetActivePlayers parse: %s" % err_a, tag="jsonrpc")
+        return False, {}
     active_players = active_result.get("result", [])
 
     if not active_players:
         log("⏳ No active players — retrying after 250ms")
         xbmc.sleep(250)
-        retry_response = xbmc.executeJSONRPC(json.dumps(query_active))
+        try:
+            retry_response = xbmc.executeJSONRPC(json.dumps(query_active))
+        except (TypeError, ValueError, AttributeError) as exc:
+            log_service_detail(
+                "executeJSONRPC(Player.GetActivePlayers retry) failed: %s" % exc,
+                tag="jsonrpc",
+            )
+            return False, {}
         log(f"📬 JSON-RPC retry response: {retry_response}")
-        retry_result = json.loads(retry_response)
+        retry_result, err_r = parse_kodi_jsonrpc_raw(retry_response)
+        if err_r:
+            log_service_detail("Player.GetActivePlayers retry parse: %s" % err_r, tag="jsonrpc")
+            return False, {}
         active_players = retry_result.get("result", [])
 
     if not active_players:
-        log_service_detail("🚫 No active video player found — suppressing toast")
+        log_service_detail("🚫 No active video player found — suppressing toast", tag="jsonrpc")
         return False, {}
 
     video_player = next((p for p in active_players if p.get("type") == "video"), None)
     player_id = video_player.get("playerid") if video_player else None
 
     if player_id is None:
-        log_service_detail("🚫 No video player ID found — suppressing toast")
+        log_service_detail("🚫 No video player ID found — suppressing toast", tag="jsonrpc")
         return False, {}
 
     query_item = {
@@ -497,9 +386,20 @@ def should_show_missing_file_toast():
             "properties": ["file", "title", "showtitle", "episode"]
         }
     }
-    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_item)}")
-    response_item = xbmc.executeJSONRPC(json.dumps(query_item))
-    item_result = json.loads(response_item)
+    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_item)}", tag="jsonrpc")
+    try:
+        response_item = xbmc.executeJSONRPC(json.dumps(query_item))
+    except (TypeError, ValueError, AttributeError) as exc:
+        log_service_detail(
+            "executeJSONRPC(Player.GetItem) failed: %s" % exc,
+            tag="jsonrpc",
+        )
+        return False, {}
+    log_service_detail(f"📬 JSON-RPC response: {response_item}", tag="jsonrpc")
+    item_result, err_i = parse_kodi_jsonrpc_raw(response_item)
+    if err_i:
+        log_service_detail("Player.GetItem parse: %s" % err_i, tag="jsonrpc")
+        return False, {}
     item = item_result.get("result", {}).get("item", {})
 
     if not item:
@@ -527,68 +427,6 @@ def should_show_missing_file_toast():
         return False, item
 
     return True, item
-
-def _chapter_xml_paths_to_try(video_path):
-    base = os.path.splitext(video_path)[0]
-    ext = os.path.splitext(video_path)[1].lower()
-    log_service_detail(f"🎬 Video container extension: {ext}")
-    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
-    fallback_base = None
-    try:
-        if player.isPlayingVideo():
-            fallback_base = player.getPlayingFile().rsplit('.', 1)[0]
-            log_service_detail(f"🔄 Fallback base path from player: {fallback_base}")
-    except RuntimeError:
-        log("⚠️ getPlayingFile() failed inside chapter path resolution")
-    paths_to_try = [f"{base}{s}" for s in suffixes]
-    if fallback_base:
-        paths_to_try += [f"{fallback_base}{s}" for s in suffixes]
-    # MP4 diagnostic: list parent directory contents if All detail is on
-    _log_parent_dir_contents(video_path, ext)
-    return paths_to_try
-
-
-def _log_parent_dir_contents(video_path, ext):
-    """Log parent directory contents for MP4 files to help diagnose sidecar issues (All detail only)."""
-    addon = get_addon()
-    if not addon:
-        return
-    from settings_utils import skippy_log_effective_detail_level, SKIPPY_LOG_ALL
-    if skippy_log_effective_detail_level(addon) != SKIPPY_LOG_ALL:
-        return
-    if ext not in (".mp4", ".m4v"):
-        return
-    try:
-        parent = video_path.rsplit("/", 1)[0] if "/" in video_path else video_path.rsplit("\\", 1)[0]
-        dirs, files = xbmcvfs.listdir(parent)
-        log_service_detail(f"📁 MP4 parent directory listing ({parent}): dirs={dirs[:10]}, files={files[:20]}")
-    except Exception as e:
-        log_service_detail(f"📁 MP4 parent directory listing failed: {e}")
-
-def _edl_paths_to_try(video_path):
-    base = video_path.rsplit('.', 1)[0]
-    ext = ("." + video_path.rsplit('.', 1)[1]).lower() if '.' in video_path else ""
-    log_service_detail(f"🎬 Video container extension (EDL path): {ext}")
-    fallback_base = None
-    try:
-        if player.isPlayingVideo():
-            fallback_base = player.getPlayingFile().rsplit('.', 1)[0]
-            log_service_detail(f"🔄 Fallback base path from player: {fallback_base}")
-    except RuntimeError:
-        log("⚠️ getPlayingFile() failed inside EDL path resolution")
-    paths_to_try = [f"{base}.edl"]
-    if fallback_base:
-        paths_to_try.append(f"{fallback_base}.edl")
-    return paths_to_try
-
-def local_chapter_or_edl_file_exists(video_path):
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return True
-    for p in _edl_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return True
-    return False
 
 
 def _both_segment_sources_disabled_for_playback(playback_type):
@@ -646,907 +484,29 @@ def _missing_segments_toast_message(playback_type, video_path):
     return "No skip segments found for this %s." % type_word
 
 
-def _dedupe_paths(paths):
-    seen = set()
-    result = []
-    for path in paths:
-        if not path or path in seen:
-            continue
-        seen.add(path)
-        result.append(path)
-    return result
-
-
-def _sidecar_paths_to_watch(video_path):
-    return _dedupe_paths(_chapter_xml_paths_to_try(video_path) + _edl_paths_to_try(video_path))
-
-
-def _safe_stat_value(stat_obj, name):
-    try:
-        value = getattr(stat_obj, name)
-        return value() if callable(value) else value
-    except Exception:
-        return None
-
-
-def _sidecar_signature(video_path):
-    """Return existing sidecar paths with mtime/size so edits during playback can refresh parsing."""
-    signature = []
-    for path in _sidecar_paths_to_watch(video_path):
-        try:
-            if not xbmcvfs.exists(path):
-                continue
-            stat_obj = xbmcvfs.Stat(path)
-            signature.append(
-                (
-                    path,
-                    _safe_stat_value(stat_obj, "st_mtime"),
-                    _safe_stat_value(stat_obj, "st_size"),
-                )
-            )
-        except Exception as e:
-            log_service_detail(f"⚠ Could not stat sidecar path {path}: {e}")
-            signature.append((path, None, None))
-    return tuple(signature)
-
-
-def _source_settings_signature(addon, playback_type):
-    if not addon:
-        return ()
-    if playback_type == "episode":
-        keys = (
-            "tv_use_local_chapter_edl",
-            "tv_use_online_segment_lookup",
-            "tv_segment_source_priority",
-            "tv_online_merge_priority",
-            "tv_prefetch_next_episode",
-        )
-    elif playback_type == "movie":
-        keys = (
-            "movie_use_local_chapter_edl",
-            "movie_use_online_segment_lookup",
-            "movie_segment_source_priority",
-            "movie_online_merge_priority",
-        )
-    else:
-        keys = ()
-    shared = (
-        "use_embedded_chapters_fallback",
-        "custom_segment_keywords",
-        "ignore_internal_edl_actions",
-        "edl_action_mapping",
-        "save_online_segments_to_chapters_xml",
-        "save_online_segments_format",
-        "save_online_chapters_existing_policy",
-    )
-    return tuple((key, addon_get_setting_text(addon, key, "")) for key in keys + shared)
-
-
-def _clone_segments(segments):
-    cloned = []
-    for seg in segments or []:
-        item = copy.copy(seg)
-        item.next_segment_start = None
-        item.next_segment_info = None
-        cloned.append(item)
-    return cloned
-
-
-def _sidecar_chapter_xml_exists(video_path):
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return True
-    return False
-
-
-def _seconds_to_chapter_hms(sec):
-    sec = max(0.0, float(sec))
-    h = int(sec // 3600)
-    m = int((sec % 3600) // 60)
-    s = sec - h * 3600 - m * 60
-    return "%02d:%02d:%06.3f" % (h, m, s)
-
-
-def playback_path_supports_sidecar_chapters_xml(video_path):
-    """
-    chapters.xml sidecars are written next to the resolved playback path. Skip plugin URLs,
-    .strm stubs, and common non-local schemes where a sibling file is meaningless or unsafe.
-    """
-    if not video_path or not isinstance(video_path, str):
-        return False
-    p = video_path.strip()
-    low = p.lower()
-    if low.startswith("plugin://"):
-        return False
-    if low.endswith(".strm"):
-        return False
-    for prefix in ("http://", "https://", "rtp://", "rtmp://", "rtsp://", "mmsh://", "mms://"):
-        if low.startswith(prefix):
-            return False
-    return True
-
-
-def _find_existing_sidecar_chapter_xml_path(video_path):
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return p
-    return None
-
-
-def _default_new_sidecar_chapter_xml_path(video_path):
-    return os.path.splitext(video_path)[0] + "-chapters.xml"
-
-
-def _chapter_window_overlap(s1, e1, s2, e2, tol=1.5):
-    return not (e1 + tol <= s2 or e2 + tol <= s1)
-
-
-def _parse_chapter_xml_string(xml_data):
-    """Return SegmentItems from chapter XML text (Matroska-style); empty list on failure."""
-    if not xml_data:
-        return []
-    try:
-        root = ET.fromstring(xml_data)
-    except Exception as e:
-        log("⚠️ chapter XML parse (sidecar save): %s" % e)
-        return []
-    out = []
-    for atom in root.findall(".//ChapterAtom"):
-        raw_label = atom.findtext(".//ChapterDisplay/ChapterString", default="")
-        label = normalize_label(raw_label)
-        start = atom.findtext("ChapterTimeStart")
-        end = atom.findtext("ChapterTimeEnd")
-        if start and end:
-            try:
-                out.append(
-                    SegmentItem(
-                        hms_to_seconds(start),
-                        hms_to_seconds(end),
-                        label,
-                        source="xml",
-                    )
-                )
-            except Exception:
-                continue
-    return dedupe_overlapping_same_label_segments(out)
-
-
-def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
-    """Keep all existing; add online segments that do not overlap any kept window (by time)."""
-    merged = list(existing_items)
-    for o in online_items:
-        if any(
-            _chapter_window_overlap(
-                o.start_seconds, o.end_seconds, x.start_seconds, x.end_seconds, tol
-            )
-            for x in merged
-        ):
-            continue
-        merged.append(
-            SegmentItem(
-                o.start_seconds,
-                o.end_seconds,
-                o.segment_type_label or "segment",
-                source=o.source or "online",
-            )
-        )
-    merged.sort(key=lambda s: s.start_seconds)
-    return dedupe_overlapping_same_label_segments(merged, tol)
-
-
-def _segments_signature_for_save_compare(segments, time_decimals=3):
-    """Stable sorted tuples for comparing segment lists (times + normalized label)."""
-    if not segments:
-        return ()
-    rows = []
-    for s in segments:
-        lab = getattr(s, "segment_type_label", None) or "segment"
-        lab_s = (
-            normalize_label(lab) if isinstance(lab, str) else normalize_label(str(lab))
-        )
-        rows.append(
-            (
-                round(float(s.start_seconds), time_decimals),
-                round(float(s.end_seconds), time_decimals),
-                lab_s,
-            )
-        )
-    return tuple(sorted(rows))
-
-
-def _sidecar_list_matches_online(existing_items, online_items):
-    """True when both lists represent the same segment windows and labels."""
-    return _segments_signature_for_save_compare(
-        existing_items
-    ) == _segments_signature_for_save_compare(online_items)
-
-
-def _edl_action_triples_from_raw(edl_data, ignore_internal, type_map):
-    """Sorted (start, end, action) tuples; rules aligned with parse_edl."""
-    if not edl_data:
-        return ()
-    rows = []
-    for line in edl_data.splitlines():
-        parts = line.strip().split()
-        if len(parts) != 3:
-            continue
-        try:
-            s, e, action = float(parts[0]), float(parts[1]), int(parts[2])
-        except ValueError:
-            continue
-        if ignore_internal and type_map.get(action) is None:
-            continue
-        rows.append((round(s, 3), round(e, 3), action))
-    return tuple(sorted(rows))
-
-
-def _edl_action_triples_from_segments(segments, time_decimals=3):
-    """Same EDL triples we would write for segments (label -> action like save_edl)."""
-    label_to_action = get_edl_label_to_action_map()
-    rows = []
-    for seg in segments:
-        seg_label = getattr(seg, "segment_type_label", None) or "segment"
-        if seg_label in label_to_action:
-            action = label_to_action[seg_label]
-        elif getattr(seg, "action_type", None) is not None:
-            action = seg.action_type
-        else:
-            action = 4
-        try:
-            action = int(action)
-        except (TypeError, ValueError):
-            action = 4
-        rows.append(
-            (
-                round(float(seg.start_seconds), time_decimals),
-                round(float(seg.end_seconds), time_decimals),
-                action,
-            )
-        )
-    return tuple(sorted(rows))
-
-
-def _edl_file_triples_match_segments(existing_path, segments):
-    raw = safe_file_read(existing_path)
-    _ig = get_addon()
-    ignore_internal = (
-        addon_get_bool(_ig, "ignore_internal_edl_actions", False) if _ig else False
-    )
-    disk = _edl_action_triples_from_raw(
-        raw or "", ignore_internal, get_edl_type_map()
-    )
-    want = _edl_action_triples_from_segments(segments)
-    return disk == want
-
-
-def _chapter_xml_save_content_unchanged(video_path, segments, policy):
-    """
-    True if an existing chapter XML already matches what we would write
-    (overwrite: same as online; merge: merge adds nothing).
-    """
-    if policy not in (
-        _SAVE_CHAPTERS_MERGE,
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        return False
-    if not segments:
-        return True
-    existing_path = _find_existing_sidecar_chapter_xml_path(video_path)
-    if not existing_path:
-        return False
-    raw = safe_file_read(existing_path)
-    existing_items = _parse_chapter_xml_string(raw) if raw else []
-    if policy == _SAVE_CHAPTERS_MERGE:
-        if not existing_items and raw:
-            return False
-        merged = _merge_sidecar_segments(list(existing_items), segments)
-        return _segments_signature_for_save_compare(
-            merged
-        ) == _segments_signature_for_save_compare(existing_items)
-    return _sidecar_list_matches_online(existing_items, segments)
-
-
-def _edl_save_content_unchanged(video_path, segments, policy):
-    if policy not in (
-        _SAVE_CHAPTERS_MERGE,
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        return False
-    if not segments:
-        return True
-    existing_path = None
-    for p in _edl_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            existing_path = p
-            break
-    if not existing_path:
-        return False
-    existing_items = parse_edl(video_path, update_monitor=False)
-    if policy == _SAVE_CHAPTERS_MERGE:
-        if not existing_items:
-            raw = safe_file_read(existing_path)
-            if raw and str(raw).strip():
-                return False
-            merged = _merge_sidecar_segments([], segments)
-            return _segments_signature_for_save_compare(
-                merged
-            ) == _segments_signature_for_save_compare(existing_items)
-        merged = _merge_sidecar_segments(list(existing_items), segments)
-        return _segments_signature_for_save_compare(
-            merged
-        ) == _segments_signature_for_save_compare(existing_items)
-    return _edl_file_triples_match_segments(existing_path, segments)
-
-
-def _build_chapters_xml_tree(segment_items):
-    root = ET.Element("Chapters")
-    edition = ET.SubElement(root, "EditionEntry")
-    for seg in segment_items:
-        atom = ET.SubElement(edition, "ChapterAtom")
-        ET.SubElement(atom, "ChapterTimeStart").text = _seconds_to_chapter_hms(
-            seg.start_seconds
-        )
-        ET.SubElement(atom, "ChapterTimeEnd").text = _seconds_to_chapter_hms(
-            seg.end_seconds
-        )
-        disp = ET.SubElement(atom, "ChapterDisplay")
-        lab = seg.segment_type_label or "segment"
-        ET.SubElement(disp, "ChapterString").text = (
-            lab if isinstance(lab, str) else str(lab)
-        )
-    try:
-        ET.indent(root, space="  ")
-    except AttributeError:
-        pass
-    return root
-
-
-def _write_chapters_xml_to_path(out_path, segment_items):
-    segment_items = dedupe_overlapping_same_label_segments(list(segment_items))
-    root = _build_chapters_xml_tree(segment_items)
-    try:
-        xml_body = ET.tostring(root, encoding="unicode")
-    except TypeError:
-        xml_body = ET.tostring(root, encoding="utf-8").decode(
-            "utf-8", errors="replace"
-        )
-    data = '<?xml version="1.0" encoding="UTF-8"?>\n' + xml_body
-    ok, _nbytes = safe_file_write(out_path, data, is_bytes=False)
-    if not ok:
-        raise OSError("Chapter XML safe_file_write failed for %s" % out_path)
-
-
-def _backup_sidecar_file(addon, src_path):
-    if not addon or not addon_get_bool(
-        addon, "save_online_chapters_backup_before_overwrite", True
-    ):
-        return
-    bak = src_path + ".bck"
-    try:
-        if xbmcvfs.exists(bak):
-            xbmcvfs.delete(bak)
-        ok = False
-        try:
-            ok = xbmcvfs.copy(src_path, bak)
-        except Exception:
-            ok = False
-        if not ok:
-            inf = xbmcvfs.File(src_path)
-            data = inf.read()
-            inf.close()
-            out = xbmcvfs.File(bak, "w")
-            out.write(data)
-            out.close()
-        log("📋 Backed up existing sidecar to %s" % bak)
-    except Exception as e:
-        log("⚠️ Could not back up sidecar (%s): %s" % (bak, e))
-
-
 def maybe_save_online_segments_to_sidecars(video_path, segments):
-    """
-    When enabled, write online SegmentItems to `.edl` and/or chapters.xml beside the video.
-
-    Formats are controlled by ``save_online_segments_format`` (Both / EDL / XML).
-    Existing-file behavior uses ``save_online_chapters_existing_policy`` (normalized),
-    separately per sidecar type that is being written.
-    """
-    addon = get_addon()
-    if not addon or not addon_get_bool(
-        addon, "save_online_segments_to_chapters_xml", False
-    ):
-        return
-    if not video_path or not segments:
-        return
-    if not playback_path_supports_sidecar_chapters_xml(video_path):
-        log(
-            "Skipping save online sidecars: path is not suitable (plugin/STRM/stream URL)"
-        )
-        return
-
-    fmt = _normalize_save_online_format(
-        addon_get_setting_text(
-            addon,
-            "save_online_segments_format",
-            _SAVE_ONLINE_FORMAT_BOTH,
-        )
+    _maybe_save_online_segments_to_sidecars_impl(
+        video_path, segments, monitor
     )
-    policy = _normalize_online_sidecar_policy(
-        addon_get_setting_text(
-            addon,
-            "save_online_chapters_existing_policy",
-            _SAVE_CHAPTERS_SKIP_IF_EXISTS,
-        )
-    )
-    log_service_detail(
-        "Online sidecar save: format=%s policy=%s" % (fmt, policy)
-    )
-
-    write_xml = fmt in (_SAVE_ONLINE_FORMAT_XML, _SAVE_ONLINE_FORMAT_BOTH)
-    write_edl = fmt in (_SAVE_ONLINE_FORMAT_EDL, _SAVE_ONLINE_FORMAT_BOTH)
-    do_xml = write_xml
-    do_edl = write_edl
-    if do_xml and _chapter_xml_save_content_unchanged(video_path, segments, policy):
-        log(
-            "Skipping chapter XML save: sidecar already matches online segment data"
-        )
-        do_xml = False
-    if do_edl and _edl_save_content_unchanged(video_path, segments, policy):
-        log("Skipping EDL save: sidecar already matches online segment data")
-        do_edl = False
-
-    if not do_xml and not do_edl:
-        return
-
-    skip_xml_prompt = False
-    skip_edl_prompt = False
-
-    if policy == _SAVE_CHAPTERS_OVERWRITE_ASK:
-        xml_existing = (
-            _find_existing_sidecar_chapter_xml_path(video_path) if write_xml else None
-        )
-        edl_existing = None
-        if write_edl:
-            for p in _edl_paths_to_try(video_path):
-                if p and xbmcvfs.exists(p):
-                    edl_existing = p
-                    break
-        need_xml_ask = bool(xml_existing and do_xml)
-        need_edl_ask = bool(edl_existing and do_edl)
-        if need_xml_ask and need_edl_ask:
-            if not xbmcgui.Dialog().yesno(
-                addon.getLocalizedString(35002),
-                addon.getLocalizedString(35003),
-            ):
-                log(
-                    "User declined overwrite of existing chapter XML and EDL — "
-                    "not saving online sidecars"
-                )
-                return
-            skip_xml_prompt = True
-            skip_edl_prompt = True
-        elif need_xml_ask:
-            if not xbmcgui.Dialog().yesno(
-                addon.getLocalizedString(35000),
-                addon.getLocalizedString(35004),
-            ):
-                log(
-                    "User declined overwrite of existing chapter XML — "
-                    "not saving chapter XML from online"
-                )
-                do_xml = False
-            else:
-                skip_xml_prompt = True
-        elif need_edl_ask:
-            if not xbmcgui.Dialog().yesno(
-                addon.getLocalizedString(35000),
-                addon.getLocalizedString(35005),
-            ):
-                log(
-                    "User declined overwrite of existing EDL — "
-                    "not saving EDL from online"
-                )
-                do_edl = False
-            else:
-                skip_edl_prompt = True
-
-    if do_xml:
-        _maybe_save_online_segments_chapters_xml(
-            video_path,
-            segments,
-            policy,
-            addon,
-            skip_overwrite_prompt=skip_xml_prompt,
-        )
-    if do_edl:
-        _maybe_save_online_segments_edl(
-            video_path,
-            segments,
-            policy,
-            addon,
-            skip_overwrite_prompt=skip_edl_prompt,
-        )
-    if do_xml or do_edl:
-        _invalidate_segment_parse_cache_if_path(video_path)
-
-
-def _invalidate_segment_parse_cache_if_path(video_path):
-    """After online sidecar writes, drop cache so the next parse sees new mtimes/content."""
-    if not video_path:
-        return
-    cache = monitor.segment_parse_cache
-    if cache and cache.get("path") == video_path:
-        log_service_detail(
-            "Clearing segment parse cache after online sidecar save for this file"
-        )
-        monitor.segment_parse_cache = None
-        publish_parse_cache(None)
-
-
-def _maybe_save_online_segments_chapters_xml(
-    video_path, segments, policy, addon, skip_overwrite_prompt=False
-):
-    existing_path = _find_existing_sidecar_chapter_xml_path(video_path)
-    out_path = existing_path or _default_new_sidecar_chapter_xml_path(video_path)
-
-    if not existing_path:
-        if not segments:
-            return
-        try:
-            _write_chapters_xml_to_path(out_path, list(segments))
-            log(
-                "💾 Saved chapter XML (%d segments) → %s"
-                % (len(segments), out_path)
-            )
-        except Exception as e:
-            log("⚠️ Could not save chapters.xml: %s" % e)
-        return
-
-    if policy == _SAVE_CHAPTERS_SKIP_IF_EXISTS:
-        log(
-            "Skipping save chapters.xml: file exists and policy is skip (%s)"
-            % existing_path
-        )
-        return
-
-    raw = safe_file_read(existing_path)
-    existing_items = _parse_chapter_xml_string(raw) if raw else []
-    items_to_write = list(segments)
-
-    if policy == _SAVE_CHAPTERS_MERGE:
-        if not existing_items and raw:
-            log("⚠️ Merge skipped: could not parse existing chapter XML; not writing")
-            return
-        items_to_write = _merge_sidecar_segments(existing_items, segments)
-        if _segments_signature_for_save_compare(
-            items_to_write
-        ) == _segments_signature_for_save_compare(existing_items):
-            log_service_detail(
-                "Skipping save chapters.xml: merged online data matches existing file"
-            )
-            return
-        log(
-            "Merging online segments into existing chapter XML → %d chapter atom(s)"
-            % len(items_to_write)
-        )
-    elif policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        items_to_write = list(segments)
-        if _sidecar_list_matches_online(existing_items, items_to_write):
-            log_service_detail(
-                "Skipping save chapters.xml: online segments match existing file"
-            )
-            return
-        log(
-            "Overwriting existing chapter XML with %d online segment(s)"
-            % len(items_to_write)
-        )
-
-    if (
-        policy == _SAVE_CHAPTERS_OVERWRITE_ASK
-        and not skip_overwrite_prompt
-    ):
-        yes = xbmcgui.Dialog().yesno(
-            addon.getLocalizedString(35000),
-            addon.getLocalizedString(35004),
-        )
-        if not yes:
-            log("User declined overwrite/merge of existing chapter XML — not saving")
-            return
-
-    if existing_path and policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-        _SAVE_CHAPTERS_MERGE,
-    ):
-        _backup_sidecar_file(addon, existing_path)
-
-    try:
-        _write_chapters_xml_to_path(out_path, items_to_write)
-        log("💾 Saved chapter XML (%d segments) → %s" % (len(items_to_write), out_path))
-    except Exception as e:
-        log("⚠️ Could not save chapters.xml: %s" % e)
-
-
-def _maybe_save_online_segments_edl(
-    video_path, segments, policy, addon, skip_overwrite_prompt=False
-):
-    existing_path = None
-    for p in _edl_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            existing_path = p
-            break
-    base = video_path.rsplit(".", 1)[0]
-    out_path = existing_path or (base + ".edl")
-
-    if not existing_path:
-        if not segments:
-            return
-        try:
-            if not save_edl(video_path, list(segments)):
-                raise OSError("save_edl returned False for %s" % out_path)
-            log("💾 Saved EDL (%d segments) → %s" % (len(segments), out_path))
-        except Exception as e:
-            log("⚠️ Could not save EDL: %s" % e)
-        return
-
-    if policy == _SAVE_CHAPTERS_SKIP_IF_EXISTS:
-        log(
-            "Skipping save EDL: file exists and policy is skip (%s)"
-            % existing_path
-        )
-        return
-
-    existing_items = parse_edl(video_path, update_monitor=False)
-    items_to_video = list(segments)
-
-    if policy == _SAVE_CHAPTERS_MERGE:
-        if not existing_items:
-            raw = safe_file_read(existing_path)
-            if raw and str(raw).strip():
-                log("⚠️ Merge skipped: could not read/parse existing EDL; not writing")
-                return
-            items_to_video = _merge_sidecar_segments([], segments)
-        else:
-            items_to_video = _merge_sidecar_segments(existing_items, segments)
-        if _segments_signature_for_save_compare(
-            items_to_video
-        ) == _segments_signature_for_save_compare(existing_items):
-            log_service_detail(
-                "Skipping save EDL: merged online data matches existing file"
-            )
-            return
-        log(
-            "Merging online segments into existing EDL → %d entr(y/ies)"
-            % len(items_to_video)
-        )
-    elif policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        items_to_video = list(segments)
-        if _edl_file_triples_match_segments(existing_path, items_to_video):
-            log_service_detail(
-                "Skipping save EDL: on-disk EDL actions/times match online segments"
-            )
-            return
-        log(
-            "Overwriting existing EDL with %d online segment(s)"
-            % len(items_to_video)
-        )
-
-    if (
-        policy == _SAVE_CHAPTERS_OVERWRITE_ASK
-        and not skip_overwrite_prompt
-    ):
-        yes = xbmcgui.Dialog().yesno(
-            addon.getLocalizedString(35000),
-            addon.getLocalizedString(35005),
-        )
-        if not yes:
-            log("User declined overwrite/merge of existing EDL — not saving")
-            return
-
-    if existing_path and policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-        _SAVE_CHAPTERS_MERGE,
-    ):
-        _backup_sidecar_file(addon, existing_path)
-
-    try:
-        if not save_edl(video_path, items_to_video):
-            raise OSError("save_edl returned False for %s" % out_path)
-        log("💾 Saved EDL (%d segments) → %s" % (len(items_to_video), out_path))
-    except Exception as e:
-        log("⚠️ Could not save EDL: %s" % e)
 
 
 def maybe_save_online_segments_to_chapters_xml(video_path, segments):
     """Backward-compatible name; writes according to save format + policy."""
-    maybe_save_online_segments_to_sidecars(video_path, segments)
+    _maybe_save_online_segments_to_chapters_xml_impl(
+        video_path, segments, monitor
+    )
 
 
-def parse_chapters(video_path, update_monitor=True):
-    paths_to_try = _chapter_xml_paths_to_try(video_path)
+def get_cached_source_segments(path, playback_type):
+    return _get_cached_source_segments_impl(
+        path,
+        playback_type,
+        segment_monitor=monitor,
+        segment_player=player,
+        on_remote_segments_saved=maybe_save_online_segments_to_sidecars,
+        sidecar_mtime_check_interval=SIDECAR_MTIME_CHECK_INTERVAL,
+    )
 
-    log_service_detail(f"🔍 Attempting chapter XML paths: {paths_to_try}")
-    xml_data = safe_file_read(*paths_to_try)
-    if not xml_data:
-        if update_monitor:
-            monitor.segment_file_found = False
-            log("🚫 No chapter XML file found — segment_file_found set to False")
-        return None
-
-    if update_monitor:
-        monitor.segment_file_found = True
-        log_service_detail("✅ Chapter XML file found — segment_file_found set to True")
-
-    try:
-        root = ET.fromstring(xml_data)
-        result = []
-        for atom in root.findall(".//ChapterAtom"):
-            raw_label = atom.findtext(".//ChapterDisplay/ChapterString", default="")
-            label = normalize_label(raw_label)
-            start = atom.findtext("ChapterTimeStart")
-            end = atom.findtext("ChapterTimeEnd")
-            if start and end:
-                result.append(SegmentItem(
-                    hms_to_seconds(start),
-                    hms_to_seconds(end),
-                    label,
-                    source="xml"
-                ))
-                log_service_detail(f"📘 Parsed XML segment: {start} → {end} | label='{label}'")
-        if result:
-            n0 = len(result)
-            result = dedupe_overlapping_same_label_segments(result)
-            if len(result) != n0:
-                log(
-                    "✅ Deduped chapter XML segments: %d → %d"
-                    % (n0, len(result))
-                )
-            log(f"✅ Total segments parsed from XML: {len(result)}")
-        else:
-            log("⚠ Chapter XML parsed but no valid segments found")
-        return result if result else None
-    except Exception as e:
-        log(f"❌ XML parse failed: {e}")
-    return None
-
-def parse_edl(video_path, update_monitor=True):
-    paths_to_try = _edl_paths_to_try(video_path)
-
-    log_service_detail(f"🔍 Attempting EDL paths: {paths_to_try}")
-    edl_data = safe_file_read(*paths_to_try)
-    if not edl_data:
-        if update_monitor:
-            monitor.segment_file_found = False
-            log("🚫 No EDL file found — segment_file_found set to False")
-        return []
-
-    if update_monitor:
-        monitor.segment_file_found = True
-        log("✅ EDL file found — segment_file_found set to True")
-    log_service_detail(f"🧾 Raw EDL content:\n{edl_data}")
-
-    segments = []
-    mapping = get_edl_type_map()
-    _ig = get_addon()
-    ignore_internal = addon_get_bool(_ig, "ignore_internal_edl_actions", False) if _ig else False
-    log(f"🔧 ignore_internal_edl_actions setting: {ignore_internal}")
-
-    try:
-        for line in edl_data.splitlines():
-            parts = line.strip().split()
-            if len(parts) == 3:
-                s, e, action = float(parts[0]), float(parts[1]), int(parts[2])
-                label = mapping.get(action)
-
-                if ignore_internal and label is None:
-                    log_service_detail(f"⚠ Unrecognized EDL action type: {action} — not in mapping")
-                    log_service_detail(f"🚫 Ignoring unmapped EDL action {action} due to setting")
-                    continue
-
-                label = label or "segment"
-                segments.append(SegmentItem(s, e, label, source="edl"))
-                log_service_detail(f"📗 Parsed EDL line: {s} → {e} | action={action} | label='{label}'")
-    except Exception as e:
-        log(f"❌ EDL parse failed: {e}")
-
-    log(f"✅ Total segments parsed from EDL: {len(segments)}")
-    return segments
-
-
-def parse_embedded_chapters():
-    """
-    Parse chapters embedded in the video file via Kodi's JSON-RPC Player.GetItem chapters property.
-    Only returns segments whose label matches custom_segment_keywords.
-    """
-    addon = get_addon()
-    if not addon:
-        return []
-
-    keywords_raw = addon_get_setting_text(addon, "custom_segment_keywords", "")
-    keywords = set(normalize_label(k) for k in keywords_raw.split(",") if k.strip())
-    if not keywords:
-        log_service_detail("📖 Embedded chapters: no custom_segment_keywords configured")
-        return []
-
-    try:
-        query = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChapters",
-            "method": "Player.GetActivePlayers",
-        }
-        resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
-        players = resp.get("result", [])
-        video_player = next((p for p in players if p.get("type") == "video"), None)
-        if not video_player:
-            log_service_detail("📖 Embedded chapters: no active video player")
-            return []
-        player_id = video_player.get("playerid")
-
-        query_item = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChaptersItem",
-            "method": "Player.GetItem",
-            "params": {"playerid": player_id, "properties": ["file"]},
-        }
-        resp_item = json.loads(xbmc.executeJSONRPC(json.dumps(query_item)))
-        log_service_detail(f"📖 Embedded chapters: Player.GetItem response = {resp_item}")
-
-        query_props = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChaptersProps",
-            "method": "Player.GetProperties",
-            "params": {"playerid": player_id, "properties": ["chapters"]},
-        }
-        resp_props = json.loads(xbmc.executeJSONRPC(json.dumps(query_props)))
-        log_service_detail(f"📖 Embedded chapters: Player.GetProperties response = {resp_props}")
-
-        chapters = resp_props.get("result", {}).get("chapters", [])
-        if not chapters:
-            log_service_detail("📖 Embedded chapters: no chapters array in response")
-            return []
-
-        log(f"📖 Embedded chapters: found {len(chapters)} chapter(s) in video")
-        segments = []
-        for i, ch in enumerate(chapters):
-            name = ch.get("name", "") or ch.get("label", "") or ""
-            start_sec = ch.get("time", 0)
-            label = normalize_label(name)
-
-            if label not in keywords:
-                log_service_detail(f"📖 Embedded chapter '{name}' (label='{label}') not in keywords — skipping")
-                continue
-
-            if i + 1 < len(chapters):
-                end_sec = chapters[i + 1].get("time", start_sec)
-            else:
-                try:
-                    end_sec = player.getTotalTime()
-                except RuntimeError:
-                    end_sec = start_sec + 300
-
-            if end_sec > start_sec:
-                segments.append(
-                    SegmentItem(start_sec, end_sec, label, source="embedded")
-                )
-                log(f"📖 Embedded chapter matched: '{name}' [{start_sec}-{end_sec}]")
-
-        if segments:
-            log(f"✅ Total embedded chapters matched keywords: {len(segments)}")
-        else:
-            log_service_detail("📖 Embedded chapters: none matched custom_segment_keywords")
-        return segments
-
-    except Exception as e:
-        log(f"❌ Embedded chapters parse failed: {e}")
-        return []
 
 def is_nested_segment(segment_a, segment_b):
     """
@@ -1583,8 +543,8 @@ def should_suppress_segment_dialog(current_segment, all_segments, current_time, 
         recently_dismissed: Set of dismissed segment IDs. If a parent segment is dismissed,
                           nested segments should still be allowed to show.
     """
-    # Find all segments that are currently active (contain current_time)
-    active_segments = [seg for seg in all_segments if seg.is_active(current_time)]
+    # Find all segments that are currently active (strict first, else single lenient match)
+    active_segments = segments_active_for_playback(all_segments, current_time)
     
     if len(active_segments) <= 1:
         return False  # No conflicts
@@ -1693,8 +653,8 @@ def re_evaluate_segment_jump_points(segments, current_time):
     for i in range(len(segments)):
         current_seg = segments[i]
         
-        # Check if current_time is within this segment
-        if current_seg.start_seconds <= current_time <= current_seg.end_seconds:
+        # Check if current_time is within this segment (lenient near boundaries after rewind)
+        if segment_is_active_lenient(current_seg, current_time):
             # Find if this segment is nested within any parent segment
             for j in range(i):
                 parent_seg = segments[j]
@@ -1705,235 +665,6 @@ def re_evaluate_segment_jump_points(segments, current_time):
                         current_seg.next_segment_start = current_seg.end_seconds
                         current_seg.next_segment_info = f"remaining {parent_seg.segment_type_label}"
                     break
-
-
-def _parse_source_segments_uncached(path, playback_type):
-    """Read/select segment sources. Per-time filtering/linking remains in parse_and_process_segments.
-
-    Returns (segments, segment_origin) where segment_origin is one of:
-    ``remote``, ``local``, ``embedded``, ``none`` — which family of sources won
-    priority for the returned list (used by the segment editor when online data
-    is active before sidecar save).
-    """
-    addon = get_addon()
-    if not addon:
-        return [], "none"
-
-    parsed = []
-    segment_origin = "none"
-
-    if playback_type == "episode":
-        tv_local = addon_get_bool(addon, "tv_use_local_chapter_edl", True)
-        tv_online = addon_get_bool(addon, "tv_use_online_segment_lookup", False)
-        priority_raw = addon_get_setting_text(
-            addon, "tv_segment_source_priority", "LocalFirst"
-        ) or "LocalFirst"
-        priority = _normalize_segment_source_priority(priority_raw)
-
-        if not tv_local and not tv_online:
-            log("📺 TV episode: local and online segment sources disabled — no segments")
-            monitor.segment_file_found = False
-            return [], "none"
-
-        local_list = []
-        if tv_local:
-            pxml = parse_chapters(path, update_monitor=False)
-            if pxml:
-                local_list = pxml
-            else:
-                local_list = parse_edl(path, update_monitor=False)
-        local_file_found = local_chapter_or_edl_file_exists(path) if tv_local else False
-
-        remote_list = []
-        if tv_online:
-            try:
-                total_time = player.getTotalTime()
-            except RuntimeError:
-                total_time = 0
-            remote_list = fetch_remote_tv_segments(
-                total_time, monitor.remote_segment_cache
-            )
-            if remote_list:
-                maybe_save_online_segments_to_sidecars(path, remote_list)
-                if tv_local:
-                    pxml = parse_chapters(path, update_monitor=False)
-                    if pxml:
-                        local_list = pxml
-                    else:
-                        local_list = parse_edl(path, update_monitor=False)
-
-        if priority == "OnlineFirst":
-            parsed = remote_list if remote_list else local_list
-        else:
-            parsed = local_list if local_list else remote_list
-
-        embedded_list = []
-        if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            embedded_list = parse_embedded_chapters()
-            if embedded_list:
-                parsed = embedded_list
-
-        monitor.segment_file_found = local_file_found or bool(remote_list) or bool(embedded_list)
-        if priority == "OnlineFirst":
-            segment_origin = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list else "none")
-        else:
-            segment_origin = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list else "none")
-        _src_tags = sorted({getattr(s, "source", "?") for s in (parsed or [])})
-        log(
-            "📺 Episode segment summary: local=%d remote=%d embedded=%d priority=%s → using %s (%d segs, sources %s)"
-            % (
-                len(local_list),
-                len(remote_list),
-                len(embedded_list),
-                priority,
-                segment_origin,
-                len(parsed or []),
-                _src_tags,
-            )
-        )
-
-        if tv_online:
-            try:
-                prefetch_next_episode_segments(monitor.remote_segment_cache)
-            except Exception as e:
-                log(f"⚠ Prefetch next episode failed (non-critical): {e}")
-
-    elif playback_type == "movie":
-        movie_local = addon_get_bool(addon, "movie_use_local_chapter_edl", True)
-        movie_online = addon_get_bool(addon, "movie_use_online_segment_lookup", False)
-        priority_raw = addon_get_setting_text(
-            addon, "movie_segment_source_priority", "LocalFirst"
-        ) or "LocalFirst"
-        priority = _normalize_segment_source_priority(priority_raw)
-        log(f"🎬 Movie source settings: local={movie_local}, online={movie_online}, priority={priority}")
-
-        if not movie_local and not movie_online:
-            log("🎬 Movie: local and online segment sources disabled — no segments")
-            monitor.segment_file_found = False
-            return [], "none"
-
-        local_list = []
-        if movie_local:
-            log(f"🎬 Movie: attempting local chapter/EDL parsing for {path}")
-            pxml = parse_chapters(path, update_monitor=False)
-            if pxml:
-                local_list = pxml
-                log(f"🎬 Movie: found {len(pxml)} segments from chapters.xml")
-            else:
-                local_list = parse_edl(path, update_monitor=False)
-                log(f"🎬 Movie: found {len(local_list)} segments from EDL")
-        local_file_found = local_chapter_or_edl_file_exists(path) if movie_local else False
-
-        remote_list = []
-        if movie_online:
-            try:
-                total_time = player.getTotalTime()
-            except RuntimeError:
-                total_time = 0
-            remote_list = fetch_remote_movie_segments(
-                total_time, monitor.remote_segment_cache
-            )
-            if remote_list:
-                maybe_save_online_segments_to_sidecars(path, remote_list)
-                if movie_local:
-                    pxml = parse_chapters(path, update_monitor=False)
-                    if pxml:
-                        local_list = pxml
-                    else:
-                        local_list = parse_edl(path, update_monitor=False)
-
-        if priority == "OnlineFirst":
-            parsed = remote_list if remote_list else local_list
-        else:
-            parsed = local_list if local_list else remote_list
-
-        embedded_list_m = []
-        if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            embedded_list_m = parse_embedded_chapters()
-            if embedded_list_m:
-                parsed = embedded_list_m
-
-        monitor.segment_file_found = local_file_found or bool(remote_list) or bool(embedded_list_m)
-        if priority == "OnlineFirst":
-            segment_origin = "remote" if remote_list else "local" if local_list else ("embedded" if embedded_list_m else "none")
-        else:
-            segment_origin = "local" if local_list else "remote" if remote_list else ("embedded" if embedded_list_m else "none")
-        _src_tags_m = sorted({getattr(s, "source", "?") for s in (parsed or [])})
-        log(
-            "🎬 Movie segment summary: local=%d remote=%d embedded=%d priority=%s → using %s (%d segs, sources %s)"
-            % (
-                len(local_list),
-                len(remote_list),
-                len(embedded_list_m),
-                priority,
-                segment_origin,
-                len(parsed or []),
-                _src_tags_m,
-            )
-        )
-    else:
-        pxml = parse_chapters(path)
-        if pxml:
-            parsed = pxml
-            segment_origin = "local"
-        else:
-            pedl = parse_edl(path)
-            if pedl:
-                parsed = pedl
-                segment_origin = "local"
-        if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            parsed = parse_embedded_chapters()
-            if parsed:
-                segment_origin = "embedded"
-
-    return parsed or [], segment_origin
-
-
-def get_cached_source_segments(path, playback_type):
-    addon = get_addon()
-    if not addon:
-        return []
-
-    now = time.time()
-    settings_sig = _source_settings_signature(addon, playback_type)
-    cache = monitor.segment_parse_cache
-
-    if (
-        cache
-        and cache.get("path") == path
-        and cache.get("playback_type") == playback_type
-        and cache.get("settings_signature") == settings_sig
-    ):
-        last_check = cache.get("last_sidecar_check", 0)
-        if now - last_check < SIDECAR_MTIME_CHECK_INTERVAL:
-            monitor.segment_file_found = cache.get("segment_file_found", False)
-            log_service_detail("♻ Using cached source segments (sidecar check interval not reached)")
-            return _clone_segments(cache.get("segments", []))
-
-        sidecar_sig = _sidecar_signature(path)
-        cache["last_sidecar_check"] = now
-        if sidecar_sig == cache.get("sidecar_signature"):
-            monitor.segment_file_found = cache.get("segment_file_found", False)
-            log_service_detail("♻ Using cached source segments (sidecars unchanged)")
-            return _clone_segments(cache.get("segments", []))
-
-        log("🔄 Sidecar file change detected — reparsing segments")
-
-    sidecar_sig_before = _sidecar_signature(path)
-    parsed, segment_origin = _parse_source_segments_uncached(path, playback_type)
-    sidecar_sig_after = _sidecar_signature(path)
-    monitor.segment_parse_cache = {
-        "path": path,
-        "playback_type": playback_type,
-        "settings_signature": settings_sig,
-        "sidecar_signature": sidecar_sig_after or sidecar_sig_before,
-        "last_sidecar_check": now,
-        "segment_file_found": monitor.segment_file_found,
-        "segments": _clone_segments(parsed),
-        "segment_origin": segment_origin,
-    }
-    publish_parse_cache(monitor.segment_parse_cache)
-    return _clone_segments(parsed)
 
 
 def parse_and_process_segments(path, current_time=None, playback_type=None):
@@ -2049,6 +780,35 @@ def parse_and_process_segments(path, current_time=None, playback_type=None):
                 # No more segments within current segment, break
                 break
     
+    # Optional: open Segment Editor once per file when overlaps/nesting remain (skip_overlapping off).
+    if (
+        has_overlap_or_nested
+        and not skip_overlaps
+        and addon_get_bool(addon, "open_segment_editor_on_overlap", False)
+        and addon.getSetting("segment_editor_enabled") == "true"
+        and monitor.overlap_editor_opened_for_path != path
+    ):
+        try:
+            _oe_play = player.isPlayingVideo()
+            _oe_pause = xbmc.getCondVisibility("Player.Paused")
+            if not _oe_pause and _oe_play:
+                monitor.overlap_editor_opened_for_path = path
+                log(
+                    "📂 Overlapping/nested segments detected — launching Segment Editor "
+                    "(open_segment_editor_on_overlap)"
+                )
+                # RunScript is async; set skippy_editor_modal_open now so skip dialog is
+                # suppressed in this loop iteration (segment_editor_session clears on early exit).
+                set_editor_modal_open(True)
+                xbmc.executebuiltin("RunScript(service.skippy,open_segment_editor)")
+            else:
+                log_if_changed(
+                    "overlap_editor_paused",
+                    "🔕 Overlap auto-editor suppressed — playback paused or not playing",
+                )
+        except RuntimeError:
+            pass
+
     # Show toast notification if overlaps were found and setting is enabled
     # Don't show toast if any segment has been dismissed by the user, or if playback is paused
     # CRITICAL: Check toast_overlap_shown FIRST to prevent re-evaluation
@@ -2129,26 +889,9 @@ while not monitor.abortRequested():
 
     try:
         win = xbmcgui.Window(10000)
-        marker_open = win.getProperty("skippy_marker_modal_open") == "true"
-        editor_open = win.getProperty("skippy_editor_modal_open") == "true"
-        # Pending first-press marker (skippy_marker_start) does not set marker_open; suppress skip dialog until complete or cleared.
-        marker_pending_blocks = False
-        if win.getProperty("skippy_marker_start") and not marker_open:
-            playing_path = get_video_file()
-            if playing_path:
-                pending_path = (win.getProperty("skippy_marker_path") or "").strip()
-                if not pending_path:
-                    marker_pending_blocks = True
-                else:
-                    try:
-                        marker_pending_blocks = (
-                            xbmcvfs.translatePath(pending_path)
-                            == xbmcvfs.translatePath(playing_path)
-                        )
-                    except Exception:
-                        marker_pending_blocks = pending_path == playing_path
-        if marker_open or editor_open or marker_pending_blocks:
-            if marker_pending_blocks:
+        skip_ui = skippy_skip_ui_suppression_state(win)
+        if skip_ui.suppress:
+            if skip_ui.pending_marker_blocks:
                 log_if_changed(
                     "skip_dlg_marker_pending",
                     "⏸️ Skip dialog suppressed — segment marker start is pending for this file",
@@ -2157,8 +900,14 @@ while not monitor.abortRequested():
                 log("🛑 Abort requested — exiting monitor loop")
                 break
             continue
-    except Exception:
+    except RuntimeError:
         pass
+    except Exception as e:
+        log_service_detail(
+            "marker/editor pending guard: unexpected %s: %s\n%s"
+            % (type(e).__name__, e, traceback.format_exc()),
+            tag="skipui",
+        )
 
     if player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo"):
         video = get_video_file()
@@ -2205,7 +954,9 @@ while not monitor.abortRequested():
                                     is_in_active_segment = False
                                     if monitor.current_segments:
                                         for seg in monitor.current_segments:
-                                            if seg.is_active(current_playback_time):
+                                            if segment_is_active_lenient(
+                                                seg, current_playback_time
+                                            ):
                                                 is_in_active_segment = True
                                                 break
                                     
@@ -2241,6 +992,7 @@ while not monitor.abortRequested():
                                     monitor.skipped_to_nested_segment.clear()
                                     # Clear log cache on replay to allow re-logging
                                     monitor._last_log_state.clear()
+                                    monitor.overlap_editor_opened_for_path = None
                                     log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
                         except RuntimeError:
                             log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -2285,6 +1037,7 @@ while not monitor.abortRequested():
                                 monitor.last_toast_time = 0
                                 monitor.toast_overlap_shown = False
                                 monitor.skipped_to_nested_segment.clear()
+                                monitor.overlap_editor_opened_for_path = None
                                 # Clear log cache on new video to allow re-logging
                                 monitor._last_log_state.clear()
                                 log(f"✅ New video state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
@@ -2648,7 +1401,15 @@ while not monitor.abortRequested():
         
         # Debug: Show current state of tracking sets (only log when counts change)
         log_if_changed("state_summary", f"📊 Current state: prompted={len(monitor.prompted)} items, recently_dismissed={len(monitor.recently_dismissed)} items, skipped_to_nested={len(monitor.skipped_to_nested_segment)} items")
-        
+
+        active_for_playback = segments_active_for_playback(
+            monitor.current_segments, current_time
+        )
+        active_playback_ids = {
+            (int(round(s.start_seconds)), int(round(s.end_seconds)))
+            for s in active_for_playback
+        }
+
         for segment in segments_to_process:
             # Generate segment ID consistently - use round() then int() to handle floating point precision
             # This ensures consistent matching even if segment times have slight floating point differences
@@ -2673,7 +1434,7 @@ while not monitor.abortRequested():
                 # Only log once per segment when it's first marked as prompted
                 continue
 
-            if not segment.is_active(current_time):
+            if seg_id not in active_playback_ids:
                 # Don't log inactive segments - they're checked every second
                 continue
             
@@ -2773,12 +1534,18 @@ while not monitor.abortRequested():
                             else:
                                 log(f"🔍 Parent segment {seg_id} dismissal already cleared for nested segment {nested_seg_id}")
                 
-                log_service_detail(f"🎯 Auto-skip: Issuing seekTime({jump_to}) now...")
+                log_service_detail(
+                    f"🎯 Auto-skip: Issuing seekTime({jump_to}) now...",
+                    tag="playback",
+                )
                 player.seekTime(jump_to)
                 # Give Kodi time to process the seek before continuing
                 xbmc.sleep(500)
                 actual_time = player.getTime() if player.isPlaying() else -1
-                log_service_detail(f"🎯 Auto-skip: After seek: requested={jump_to}, actual={actual_time}")
+                log_service_detail(
+                    f"🎯 Auto-skip: After seek: requested={jump_to}, actual={actual_time}",
+                    tag="playback",
+                )
                 monitor.last_time = jump_to
                 # Only add to prompted if we're NOT skipping to a nested segment
                 # (If we are, it was already added above)
@@ -2821,6 +1588,20 @@ while not monitor.abortRequested():
                 if dialog_is_paused or not dialog_is_playing:
                     log(f"⏸️ Video paused/stopped right before dialog — skipping dialog for segment {seg_id}")
                     # Don't add to prompted, allow retry when resumed
+                    continue
+
+                try:
+                    editor_modal_open = (
+                        xbmcgui.Window(10000).getProperty("skippy_editor_modal_open")
+                        == "true"
+                    )
+                except RuntimeError:
+                    editor_modal_open = False
+                if editor_modal_open:
+                    log_if_changed(
+                        "skip_dlg_segment_editor_open",
+                        "⏸️ Skip dialog suppressed — Segment Editor is open",
+                    )
                     continue
 
                 if monitor.skip_dialog_modal_active:
@@ -2937,12 +1718,18 @@ while not monitor.abortRequested():
                         # (If we are, it was already added above)
                         if seg_id not in monitor.prompted:
                             monitor.prompted.add(seg_id)
-                        log_service_detail(f"🎯 Issuing seekTime({jump_to}) now...")
+                        log_service_detail(
+                            f"🎯 Issuing seekTime({jump_to}) now...",
+                            tag="playback",
+                        )
                         player.seekTime(jump_to)
                         # Give Kodi time to process the seek before continuing
                         xbmc.sleep(500)
                         actual_time = player.getTime() if player.isPlaying() else -1
-                        log_service_detail(f"🎯 After seek: requested={jump_to}, actual={actual_time}")
+                        log_service_detail(
+                            f"🎯 After seek: requested={jump_to}, actual={actual_time}",
+                            tag="playback",
+                        )
                         monitor.last_time = jump_to
 
                         if addon_get_bool(addon, "show_toast_for_skipped_segment", False):

@@ -174,16 +174,24 @@ Start playback of MyMovie.mkv in Kodi. Skippy will:
 
 5. Show a toast if no segments are found (if enabled)
 
-Each second:
-- Checks current time against segment list
-- If within an active segment: Applies skip behavior
-- Flags as prompted to avoid repeats
-- Checks current playback time
-- If a matching segment is active and unskipped:
-    - Skips automatically
-    - Prompts the user
-    - Does nothing — based on label behavior
-- Remembers if a segment is dismissed to avoid repeat prompts (unless user seeks back), i.e. at stop, end, or rewind: clears segment cache and skip history
+While a video is playing, the service polls about **once per second** and compares playback time to the loaded segment list:
+
+- **Auto** behavior: seeks past the segment (or nested jump target) without a prompt.
+- **Ask** behavior: opens the skip dialog when eligible; see **Ask dialog debounce** below.
+- **Never** behavior: plays through with no skip and no dialog.
+
+Segments are marked **prompted** as they are handled so the same interval is not processed repeatedly in the same pass.
+
+**Decline (Close) vs this file:** If you **dismiss** the ask dialog without skipping, that segment is stored in memory as **recently dismissed** for the **current playback of this file**, so the same prompt does not reappear after an ordinary **pause/resume**. That memory is cleared when you start a **different file**, after a **large backward seek** (see **Major Rewind Threshold** / `rewind_threshold_seconds`), or when the service detects a **genuine replay** from near the start (a full rewatch can show asks again). It is **not** cleared on simple pause/resume.
+
+---
+
+## Ask dialog debounce
+
+Before creating the ask dialog, the service sleeps **300 ms** once (`service.py`; not exposed in settings). That **debounce** soaks up rapid re-entries from the ~1 s loop and overlapping edge cases, and gives Kodi a moment to settle **focus and input**, which reduces stacked or duplicate modals on some skins and devices.
+
+- **Lowering** the delay (source change): prompt appears sooner, but duplicate-dialog or focus glitches become more likely.
+- **Raising** it: fewer races, but the user waits slightly longer every time an ask fires.
 
 ---
 
@@ -661,6 +669,7 @@ If your .edl file contains:
 0.0 90.0 9
 And action code 9 maps to "Recap", and "Recap" is mapped to the "Ask to skip" setting, you'll be prompted to skip it.
 
+Just before the dialog opens, Skippy waits **300 ms** (internal debounce; see **Ask dialog debounce** above) so the prompt is not double-fired from rapid loop ticks.
 
 ### Never skip example
 If your segment label is "Credits" and you've mapped "Credits" to the "Never skip" setting, playback continues uninterrupted with no skip popup.

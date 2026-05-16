@@ -148,8 +148,10 @@ def set_pending_start(seconds):
     if seconds is None:
         xbmcgui.Window(10000).clearProperty("skippy_marker_start")
         xbmcgui.Window(10000).clearProperty("skippy_marker_path")
+        xbmcgui.Window(10000).clearProperty("skippy_marker_pending_ts")
     else:
         xbmcgui.Window(10000).setProperty("skippy_marker_start", str(seconds))
+        xbmcgui.Window(10000).setProperty("skippy_marker_pending_ts", str(time.time()))
         path = get_video_path()
         if path:
             xbmcgui.Window(10000).setProperty("skippy_marker_path", path)
@@ -905,6 +907,18 @@ def main():
             from keymap_utils import install_editor_keymap
 
             install_editor_keymap(addon, notify=True)
+            return
+        if command == "backup_settings":
+            from settings_backup import run_backup_ui
+            from settings_utils import skippy_notification_icon
+
+            run_backup_ui(addon, skippy_notification_icon(addon) or "", log)
+            return
+        if command == "restore_settings":
+            from settings_backup import run_restore_ui
+            from settings_utils import skippy_notification_icon
+
+            run_restore_ui(addon, skippy_notification_icon(addon) or "", log)
             return
 
     enabled = addon.getSetting("segment_marker_enabled") == "true"

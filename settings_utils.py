@@ -1,4 +1,6 @@
+import json
 import os
+import re
 import unicodedata
 import xbmcaddon
 import xbmc
@@ -10,8 +12,45 @@ SKIPPY_LOG_NORMAL = "Normal"
 SKIPPY_LOG_ALL = "All"
 
 
+def _redact_secrets_for_log(msg):
+    """Strip common secret patterns before logging (URLs, JSON-ish key values)."""
+    s = str(msg)
+    s = re.sub(r"(?i)(api_key)(=)([^&\s\"]+)", r"\1\2***", s)
+    s = re.sub(r'(?i)("api_key"\s*:\s*")([^"]*)(")', r"\1***\3", s)
+    s = re.sub(r"(?i)(bearer\s+)([\w\-\.]+)", r"\1***", s)
+    return s
+
+
 def _ascii_log_text(msg):
-    return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
+    return (
+        unicodedata.normalize("NFKD", _redact_secrets_for_log(msg))
+        .encode("ascii", "ignore")
+        .decode("ascii")
+    )
+
+
+def parse_kodi_jsonrpc_raw(raw):
+    """
+    Decode Kodi xbmc.executeJSONRPC string result.
+
+    Returns (dict, None) on success. On failure returns (None, short error reason)
+    suitable for detail logs — never raises.
+    """
+    if raw is None:
+        return None, "response is None"
+    if not isinstance(raw, str):
+        return None, "response is not str (got %s)" % type(raw).__name__
+    text = raw.strip()
+    if not text:
+        return None, "empty response string"
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        head = raw[:220].replace("\r", " ").replace("\n", " ")
+        return None, "JSONDecodeError: %s; head=%r" % (exc, head)
+    if not isinstance(data, dict):
+        return None, "top-level JSON is %s, expected object" % type(data).__name__
+    return data, None
 
 
 def get_addon():
@@ -195,14 +234,17 @@ def log_segment_detail(msg):
     xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
-def log_service_detail(msg):
-    """Per-loop JSON-RPC, path probes, per-atom parse lines; All detail only (quieter Normal)."""
+def log_service_detail(msg, *, tag="SettingsUtils"):
+    """Per-loop JSON-RPC, path probes, per-atom parse lines; All detail only (quiets Normal).
+
+    tag: short sub-source for kodi.log filters, e.g. jsonrpc, segments, sidecar, playback.
+    """
     addon = get_addon()
     if not addon:
         return
     if skippy_log_effective_detail_level(addon) != SKIPPY_LOG_ALL:
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGINFO)
+    xbmc.log(f"[service.skippy - {tag}] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
 def log_segment(msg):
@@ -268,6 +310,7 @@ def log_playback_settings_snapshot(addon=None):
             "show_skip_dialog_movies=%s" % bo("show_skip_dialog_movies", True),
             "show_skip_dialog_episodes=%s" % bo("show_skip_dialog_episodes", True),
             "skip_overlapping_segments=%s" % bo("skip_overlapping_segments", True),
+            "open_segment_editor_on_overlap=%s" % bo("open_segment_editor_on_overlap", False),
             "ignore_internal_edl_actions=%s" % bo("ignore_internal_edl_actions", True),
             "rewind_threshold_seconds=%s" % ni("rewind_threshold_seconds", 8),
             "skip_dialog_mode=%s" % tx("skip_dialog_mode", "Full"),
@@ -390,6 +433,12 @@ def get_custom_segment_keyword_labels(addon=None):
     return unique
 
 
+# Last values logged for skip / skip-dialog settings (service polls these frequently).
+_skip_enabled_last_logged = {}
+_dialog_enabled_last_logged = {}
+_invalid_playback_type_warned = set()
+
+
 def is_skip_enabled(playback_type):
     """Check if skipping is enabled at all for the given playback type."""
     addon = get_addon()
@@ -397,33 +446,46 @@ def is_skip_enabled(playback_type):
         return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
         enabled = addon_get_bool(addon, "enable_skip_movies")
-        log(f"🎬 Skip enabled for movies: {enabled}")
+        prev = _skip_enabled_last_logged.get("movie")
+        if prev != enabled:
+            _skip_enabled_last_logged["movie"] = enabled
+            log(f"🎬 Skip enabled for movies: {enabled}")
         return enabled
-    elif playback_type == "episode":
+    if playback_type == "episode":
         enabled = addon_get_bool(addon, "enable_skip_episodes")
-        log(f"📺 Skip enabled for episodes: {enabled}")
+        prev = _skip_enabled_last_logged.get("episode")
+        if prev != enabled:
+            _skip_enabled_last_logged["episode"] = enabled
+            log(f"📺 Skip enabled for episodes: {enabled}")
         return enabled
-    log(f"⚠ Unknown playback type '{playback_type}' — skip disabled")
+    if playback_type not in _invalid_playback_type_warned:
+        _invalid_playback_type_warned.add(playback_type)
+        log(f"⚠ Unknown playback type '{playback_type}' — skip disabled")
     return False
+
 
 def is_skip_dialog_enabled(playback_type):
     """Check if skip dialog should be shown. Requires both skip and dialog to be enabled."""
     if not is_skip_enabled(playback_type):
-        log(f"🚫 Skipping disabled for {playback_type} — dialog will not be shown")
         return False
-    
+
     addon = get_addon()
     if not addon:
         return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
         enabled = addon_get_bool(addon, "show_skip_dialog_movies")
-        log(f"🎬 Skip dialog enabled for movies: {enabled}")
+        prev = _dialog_enabled_last_logged.get("movie")
+        if prev != enabled:
+            _dialog_enabled_last_logged["movie"] = enabled
+            log(f"🎬 Skip dialog enabled for movies: {enabled}")
         return enabled
-    elif playback_type == "episode":
+    if playback_type == "episode":
         enabled = addon_get_bool(addon, "show_skip_dialog_episodes")
-        log(f"📺 Skip dialog enabled for episodes: {enabled}")
+        prev = _dialog_enabled_last_logged.get("episode")
+        if prev != enabled:
+            _dialog_enabled_last_logged["episode"] = enabled
+            log(f"📺 Skip dialog enabled for episodes: {enabled}")
         return enabled
-    log(f"⚠ Unknown playback type '{playback_type}' — skip dialog disabled")
     return False
 
 def get_user_skip_mode(label):

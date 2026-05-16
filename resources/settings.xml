@@ -65,6 +65,14 @@
                     <default>true</default>
                     <control type="toggle" />
                 </setting>
+                <setting id="open_segment_editor_on_overlap" type="boolean" label="31011" help="31012">
+                    <level>2</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                    <dependencies>
+                        <dependency type="visible" setting="skip_overlapping_segments">false</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="use_embedded_chapters_fallback" type="boolean" label="31008" help="31009">
                     <level>1</level>
                     <default>true</default>
@@ -124,31 +132,31 @@
                         <heading>32008</heading>
                     </control>
                 </setting>
-                <setting id="enable_skip_movies" type="boolean" label="32010" help="32010">
+                <setting id="enable_skip_movies" type="boolean" label="32010" help="32087">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle" />
                 </setting>
-                <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32017">
+                <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32089">
                     <level>0</level>
                     <default>true</default>
+                    <control type="toggle" />
                     <dependencies>
                         <dependency type="visible" setting="enable_skip_movies">true</dependency>
                     </dependencies>
-                    <control type="toggle" />
                 </setting>
-                <setting id="enable_skip_episodes" type="boolean" label="32011" help="32011">
+                <setting id="enable_skip_episodes" type="boolean" label="32011" help="32088">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle" />
                 </setting>
-                <setting id="show_skip_dialog_episodes" type="boolean" label="32018" help="32018">
+                <setting id="show_skip_dialog_episodes" type="boolean" label="32018" help="32090">
                     <level>0</level>
                     <default>true</default>
+                    <control type="toggle" />
                     <dependencies>
                         <dependency type="visible" setting="enable_skip_episodes">true</dependency>
                     </dependencies>
-                    <control type="toggle" />
                 </setting>
                 <setting id="hide_ending_text" type="boolean" label="32016" help="32016">
                     <level>1</level>
@@ -827,6 +835,22 @@
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
+                </setting>
+            </group>
+        </category>
+        <category id="backup" label="30007">
+            <group id="g_backup" label="">
+                <setting id="settings_action_backup" type="action" label="38000" help="38001">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,backup_settings)</data>
+                    </control>
+                </setting>
+                <setting id="settings_action_restore" type="action" label="38002" help="38003">
+                    <level>2</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,restore_settings)</data>
+                    </control>
                 </setting>
             </group>
         </category>

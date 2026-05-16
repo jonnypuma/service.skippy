@@ -200,6 +200,15 @@ def main():
         "Configurable overlap detection to help avoid redundant or conflicting skips",
         True,
     )
+    bool_setting(
+        g,
+        "open_segment_editor_on_overlap",
+        2,
+        "31011",
+        "31012",
+        False,
+        vis=[("skip_overlapping_segments", "false")],
+    )
     bool_setting(g, "use_embedded_chapters_fallback", 1, "31008", "31009", True)
 
     g = ET.SubElement(cat, "group", id="g_online", label="32045")
@@ -242,23 +251,23 @@ def main():
         minimum=2,
         maximum=30,
     )
-    bool_setting(g, "enable_skip_movies", 0, "32010", "32010", True)
+    bool_setting(g, "enable_skip_movies", 0, "32010", "32087", True)
     bool_setting(
         g,
         "show_skip_dialog_movies",
         0,
         "32017",
-        "32017",
+        "32089",
         True,
         vis=[("enable_skip_movies", "true")],
     )
-    bool_setting(g, "enable_skip_episodes", 0, "32011", "32011", True)
+    bool_setting(g, "enable_skip_episodes", 0, "32011", "32088", True)
     bool_setting(
         g,
         "show_skip_dialog_episodes",
         0,
         "32018",
-        "32018",
+        "32090",
         True,
         vis=[("enable_skip_episodes", "true")],
     )
@@ -778,6 +787,26 @@ def main():
         "37017",
         "RunScript(service.skippy,install_editor_keymap)",
         vis=v_ed,
+    )
+
+    # ---- 30007 backup / restore ----
+    cat = ET.SubElement(section, "category", id="backup", label="30007")
+    g = ET.SubElement(cat, "group", id="g_backup", label="")
+    action_setting(
+        g,
+        "settings_action_backup",
+        2,
+        "38000",
+        "38001",
+        "RunScript(service.skippy,backup_settings)",
+    )
+    action_setting(
+        g,
+        "settings_action_restore",
+        2,
+        "38002",
+        "38003",
+        "RunScript(service.skippy,restore_settings)",
     )
 
     # ---- 30003 debug ----

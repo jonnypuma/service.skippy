@@ -529,6 +529,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
         self._last_smooth_fill_w = None
         self._last_smooth_log_ts = 0.0
+        self._last_classic_log_ts = 0.0
 
         while not self._closing:
             if not self.player.isPlaying():
@@ -585,9 +586,12 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                             )
                             disp = _progress_display_percent(elapsed_pct, countdown)
                             progress.setPercent(disp)
-                            log(
-                                f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
-                            )
+                            now_wall = time.time()
+                            if (now_wall - self._last_classic_log_ts) >= 1.5:
+                                self._last_classic_log_ts = now_wall
+                                log(
+                                    f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
+                                )
                     else:
                         self._last_smooth_fill_w = None
                         progress.setVisible(False)
