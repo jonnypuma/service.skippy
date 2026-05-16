@@ -1,15 +1,25 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-Skippy is an all-in-one Kodi add-on for working with timed **video segments** (intros, recaps, credits, ads, and anything you define). It can **skip or ask** during playback using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same configurable **segment keywords** and **EDL action mapping**.
+Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
-You can rely on **local files only**, blend in **online segment lookup**, tune skip dialogs and toasts, and — in v2.0+ — use **separate hotkeys** for marker (`userdata/keymaps/skippy_marker.xml`, default **CTRL+E**) and editor (`skippy_editor.xml`, default **CTRL+SHIFT+E**).
+During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment keywords** and **EDL action mapping**.
 
-**Permissions (editor vs older standalone editor):** Skippy uses explicit **Default / 644 / 666** modes for saved sidecars (same as Segment Marker). The legacy Segment Editor add-on used a single **"add rw for group/other"** toggle (bitwise OR), which is different from forcing **666** on every save.
+**Local workflows** stay on disk: Skippy reads and writes those sidecars next to your video files, so you can work entirely offline. 
+
+**Online** adds optional **lookup** from **TheIntroDB.org** and **IntroDB.app** (together on **TV** episodes; **movies** use TheIntroDB only today — see **Online segment lookup** below). 
+
+When you choose, Skippy can **materialize** fetched windows into local **chapters XML** and/or **EDL**. Separately, **Expert** settings can enable **upload** from the **Segment Editor**, so you can **push** your segment times to one or both services (**API keys** required; submissions are de-duplicated on this device).
+
+You can tune skip dialogs and toasts and use **separate hotkeys** and **remote button mapping** for Segment Marker (`userdata/keymaps/skippy_marker.xml`, default **CTRL+E**) and the editor (`skippy_editor.xml`, default **CTRL+SHIFT+E**).
+
+**Permissions** Skippy uses explicit **Default / 644 / 666** modes for saved sidecars (same as Segment Marker).
 
 Supported containers include **MKV**, **MP4**, **AVI**, and other common formats Kodi plays.
 
-When **Save online segments** is enabled, Skippy can write fetched ranges next to the video as **`-chapters.xml` / `_chapters.xml` / `.chapters.xml`**, **`.edl`**, or **both** (see **Save format** under *Online segments sidecar* in Segment Settings). It does not write sidecars next to **`plugin://` playback**, **`.strm`** files, or common **stream URLs** (only a real on-disk video path). If a matching sidecar already exists, you can **skip**, **overwrite** (with optional confirmation), **merge** (add non-overlapping online windows), and optionally **back up** the previous file as `*.bck`.
+When **Save online segments** is enabled, fetched lookup ranges can be written next to the video as **`-chapters.xml` / `_chapters.xml` / `.chapters.xml`**, **`.edl`**, or **both** (see **Save format** under *Online segments sidecar* in Segment Settings). Skippy does not write sidecars next to **`plugin://` playback**, **`.strm`** files, or common **stream URLs** (only a real on-disk video path). If a matching sidecar already exists, you can **skip**, **overwrite** (with optional confirmation), **merge** (add non-overlapping online windows), **update** (adjust start/end only on segments matched to online intro/recap/credits/preview; IntroDB *outro* maps to credits), and optionally **back up** the previous file as `*.bck`.
+
+**Update policy caveat:** Matched rows get new times from online lookup; **other** local rows (e.g. prologue, main, epilogue, ads) are **not** moved. If online shifts or lengthens an intro/recap/credits block, those updated windows can **overlap** unchanged neighbors in your sidecar. Use **Merge**, full **Overwrite**, or the **Segment Editor** if you need a clean, non-overlapping timeline.
 
 ---
 

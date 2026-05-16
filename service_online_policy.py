@@ -7,6 +7,8 @@ _SAVE_CHAPTERS_SKIP_IF_EXISTS = "SkipIfExists"
 _SAVE_CHAPTERS_OVERWRITE_SILENT = "OverwriteSilent"
 _SAVE_CHAPTERS_OVERWRITE_ASK = "OverwriteAsk"
 _SAVE_CHAPTERS_MERGE = "Merge"
+_SAVE_CHAPTERS_UPDATE_SILENT = "UpdateSilent"
+_SAVE_CHAPTERS_UPDATE_ASK = "UpdateAsk"
 
 _SAVE_ONLINE_FORMAT_BOTH = "Both"
 _SAVE_ONLINE_FORMAT_EDL = "EDL"
@@ -18,6 +20,8 @@ _POLICY_STORAGE_VALUES = frozenset(
         _SAVE_CHAPTERS_OVERWRITE_SILENT,
         _SAVE_CHAPTERS_OVERWRITE_ASK,
         _SAVE_CHAPTERS_MERGE,
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
     }
 )
 
@@ -26,6 +30,8 @@ _POLICY_LABEL_NORMALIZED = {
     normalize_label("Overwrite (no prompt)"): _SAVE_CHAPTERS_OVERWRITE_SILENT,
     normalize_label("Overwrite (ask first)"): _SAVE_CHAPTERS_OVERWRITE_ASK,
     normalize_label("Merge with existing"): _SAVE_CHAPTERS_MERGE,
+    normalize_label("Update (no prompt)"): _SAVE_CHAPTERS_UPDATE_SILENT,
+    normalize_label("Update (ask first)"): _SAVE_CHAPTERS_UPDATE_ASK,
 }
 
 

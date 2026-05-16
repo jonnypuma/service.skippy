@@ -1,5 +1,30 @@
 # Changelog
 
+## [3.1.1] - 2026-05-17
+
+### Added
+- **Online segments sidecar — Update policy**: **Update (no prompt)** and **Update (ask first)** (settings: *If matching sidecar already exists*). Adjusts **start/end only** for local segments matched to online intro/recap/credits/preview (IntroDB.app `outro` maps to the same bucket as credits for matching); local labels and structural rows you did not match (e.g. prologue, main, epilogue) stay put and are never removed. **Overwrite (ask)** / **Update (ask)** confirmations append a detail block: online data by **TheIntroDB.org** vs **IntroDB.app**, planned time changes (update), or local vs online comparison (overwrite). Strings **35012–35017**; **`service_online_sidecar_save.py`**, **`service_online_policy.py`**, **`online_segment_upload.py`** (`local_label_to_online_bucket`, `remote_payload_label_to_online_bucket`); **`tools/gen_settings_v1.py`** + **`resources/settings.xml`**; English help updates for **32047**, **32070–32072**.
+
+### Changed
+- **README**: Documents **update** alongside other sidecar policies and adds an **Update policy caveat** (updated online windows can overlap unchanged neighbors — use merge, overwrite, or the editor for a clean timeline).
+
+### Fixed
+- **service.py**: Missing import for **`sync_marker_pending_indicator`** (`marker_indicator`).
+
+## [3.1.0] - 2026-05-13
+
+### Added
+- **Expert → Upload to online sources**: default target (Both / TheIntroDB.org / IntroDB.app), and hidden fields for **TheIntroDB.org** and **IntroDB.app** API keys. Category is placed above **Backup & Restore**.
+- **Enable upload to online sources** master toggle: when off, the Segment Editor **Upload** control is hidden. (Default **off** until you opt in.)
+- **Segment Editor**: **Upload** button (row with Delete All / Save) opens a dialog to submit segments to one or both databases. Labels are normalized to each API’s segment types (e.g. Opening→intro, Credits→TheIntroDB `credits` / IntroDB `outro`). Submissions are fingerprinted in **`addon_data` → `online_upload_submissions.json`** to avoid repeat POSTs for the same range from this device. Upload errors (missing keys, HTTP 401/403, rate limits, network) use localized explanations where possible.
+- **`online_segment_upload.py`**, **`remote_segments.py`** helpers **`get_enriched_item_for_path`** / **`build_upload_context`** (with forced TMDB enrichment for uploads when an API key is available).
+
+### Changed
+- **TheIntroDB TV**: submit and remote lookup use the **TV series** TMDB id (Kodi episode `uniqueid.tmdb` is often an **episode** id; Skippy prefers the show’s library row or TMDB `/find` from the episode IMDb id when a TMDB API key is configured).
+- **IntroDB.app** requests use **HTTPS** (avoids **HTTP 308** redirect issues on POST).
+- **Upload** button label comes from add-on strings via Python (`$LOCALIZE[...]` in add-on XML resolves to **core** Kodi strings, which led to labels like “Optional”).
+- **Online upload**: failures are logged as **`[service.skippy - online upload]`** at ERROR (and a short INFO summary when the run finishes), not only in the modal.
+
 ## [3.0.1] - 2026-05-13
 
 ### Added

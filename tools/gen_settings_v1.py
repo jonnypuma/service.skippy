@@ -230,8 +230,8 @@ def main():
         "32070",
         "SkipIfExists",
         enum_a(
-            "Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing",
-            "SkipIfExists|OverwriteSilent|OverwriteAsk|Merge",
+            "Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing|Update (no prompt)|Update (ask first)",
+            "SkipIfExists|OverwriteSilent|OverwriteAsk|Merge|UpdateSilent|UpdateAsk",
         ),
     )
     bool_setting(
@@ -787,6 +787,48 @@ def main():
         "37017",
         "RunScript(service.skippy,install_editor_keymap)",
         vis=v_ed,
+    )
+
+    # ---- 39000 online segment upload (Expert) ----
+    cat = ET.SubElement(section, "category", id="online_upload", label="39000")
+    g = ET.SubElement(cat, "group", id="g_online_upload", label="")
+    bool_setting(
+        g,
+        "online_upload_enabled",
+        3,
+        "39025",
+        "39026",
+        False,
+    )
+    labelenum_setting(
+        g,
+        "online_upload_default_target",
+        3,
+        "39001",
+        "39002",
+        "Both",
+        enum_a(
+            "Both|TheIntroDB.org|IntroDB.app",
+            "Both|TheIntroDB|IntroDBApp",
+        ),
+    )
+    string_setting(
+        g,
+        "online_upload_theintrodb_api_key",
+        3,
+        "39003",
+        "39004",
+        default="",
+        hidden=True,
+    )
+    string_setting(
+        g,
+        "online_upload_introdb_api_key",
+        3,
+        "39005",
+        "39006",
+        default="",
+        hidden=True,
     )
 
     # ---- 30007 backup / restore ----

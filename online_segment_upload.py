@@ -1,0 +1,639 @@
+# -*- coding: utf-8 -*-
+"""Submit segment timestamps to TheIntroDB.org and IntroDB.app from the Segment Editor."""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import re
+import unicodedata
+from contextlib import closing
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+import xbmc
+import xbmcaddon
+import xbmcgui
+import xbmcvfs
+
+from remote_segments import (
+    ADDON_ID,
+    build_upload_context,
+    get_enriched_item_for_path,
+    normalize_imdb_id,
+)
+
+THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v2/submit"
+INTRODB_SUBMIT_URL = "https://api.introdb.app/submit"
+
+TARGET_BOTH = "Both"
+TARGET_THEINTRODB = "TheIntroDB"
+TARGET_INTRODB_APP = "IntroDBApp"
+
+_HISTORY_VERSION = 1
+_MAX_HISTORY_ENTRIES_PER_API = 4000
+_POST_TIMEOUT = 20
+
+
+def _up_log_err(msg: str) -> None:
+    try:
+        safe = (
+            unicodedata.normalize("NFKD", str(msg))
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
+    except Exception:
+        safe = str(msg)
+    xbmc.log("[service.skippy - online upload] %s" % safe, xbmc.LOGERROR)
+
+
+def _up_log_info(msg: str) -> None:
+    try:
+        safe = (
+            unicodedata.normalize("NFKD", str(msg))
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
+    except Exception:
+        safe = str(msg)
+    xbmc.log("[service.skippy - online upload] %s" % safe, xbmc.LOGINFO)
+
+
+# Longer phrases first (substring safety). Value is TheIntroDB segment name.
+_PHRASE_MAP = (
+    ("previously on", "recap"),
+    ("last time on", "recap"),
+    ("next time on", "preview"),
+    ("sneak peek", "preview"),
+    ("cold open", "intro"),
+    ("last on", "recap"),
+    ("next on", "preview"),
+)
+
+_TOKEN_TIDB = {
+    "intro": "intro",
+    "opening": "intro",
+    "title": "intro",
+    "titles": "intro",
+    "beginning": "intro",
+    "teaser": "preview",
+    "recap": "recap",
+    "previously": "recap",
+    "credits": "credits",
+    "outro": "credits",
+    "closing": "credits",
+    "ending": "credits",
+    "preview": "preview",
+}
+
+_TOKEN_SKIP = frozenset(
+    {
+        "commercial",
+        "commercials",
+        "ad",
+        "ads",
+        "sponsor",
+        "sponsors",
+        "segment",
+        "unknown",
+        "interruption",
+        # Library-style labels that must not be mapped to intro/credits/outro online:
+        "prologue",
+        "epilogue",
+        "main",
+    }
+)
+
+
+def _addon_version():
+    try:
+        return xbmcaddon.Addon(ADDON_ID).getAddonInfo("version") or "0"
+    except Exception:
+        return "0"
+
+
+def _http_post_json(url: str, headers: dict, payload: dict) -> tuple[int, dict | None, str | None]:
+    """POST JSON; returns (http_code, parsed_json_or_none, error_text)."""
+    data = json.dumps(payload).encode("utf-8")
+    req = Request(url, data=data)
+    req.add_header("Content-Type", "application/json")
+    req.add_header("User-Agent", "%s/%s" % (ADDON_ID, _addon_version()))
+    req.add_header("Accept", "application/json")
+    for k, v in headers.items():
+        if v is not None and str(v).strip():
+            req.add_header(k, str(v).strip())
+    try:
+        with closing(urlopen(req, timeout=_POST_TIMEOUT)) as response:
+            body = response.read().decode("utf-8", errors="replace")
+            code = getattr(response, "status", None) or getattr(response, "code", 200)
+            try:
+                parsed = json.loads(body) if body.strip() else None
+            except (TypeError, ValueError, json.JSONDecodeError):
+                parsed = None
+            return int(code), parsed, None if parsed is not None else (body[:500] or None)
+    except HTTPError as exc:
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+        parsed = None
+        if body.strip():
+            try:
+                parsed = json.loads(body)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                pass
+        return exc.code, parsed, body[:800] if body else str(exc)
+    except URLError as exc:
+        return 0, None, str(exc.reason)
+    except Exception as exc:
+        return 0, None, str(exc)
+
+
+def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None] | None:
+    """
+    Map a normalized label to (TheIntroDB segment, IntroDB segment).
+    TheIntroDB allows intro / recap / credits / preview; IntroDB.app only
+    intro / recap / outro (credits and preview are sent as outro).
+    Returns None if this segment should not be uploaded (ads, unknown, etc.).
+    """
+    if not norm:
+        return None
+    n = norm.strip()
+    for phrase, tidb in _PHRASE_MAP:
+        if phrase in n:
+            return tidb, _introdb_for_tidb(tidb)
+    toks = [t.strip().lower() for t in re.split(r"[^\w]+", n) if t.strip()]
+    if any(t in _TOKEN_SKIP for t in toks):
+        return None
+    for tok in toks:
+        if tok in _TOKEN_TIDB:
+            tidb = _TOKEN_TIDB[tok]
+            return tidb, _introdb_for_tidb(tidb)
+    return None
+
+
+def _introdb_for_tidb(tidb: str) -> str:
+    """Map TheIntroDB segment name to IntroDB.app ``segment_type`` (three values only)."""
+    if tidb == "intro":
+        return "intro"
+    if tidb == "recap":
+        return "recap"
+    return "outro"
+
+
+def remote_payload_label_to_online_bucket(label: str) -> str | None:
+    """
+    Map an API payload key / remote ``SegmentItem`` label to the same canonical
+    four-bucket model as :func:`classify_segment_label_normalized` (intro / recap
+    / credits / preview). IntroDB.app uses ``outro`` for end-of-show windows;
+    that maps to **credits** for matching local ``credits`` / ``outro`` / etc.
+    """
+    lab = (label or "").strip().lower()
+    if lab in ("intro", "recap", "credits", "preview"):
+        return lab
+    if lab == "outro":
+        return "credits"
+    return None
+
+
+def local_label_to_online_bucket(norm: str) -> str | None:
+    """Normalized local label -> canonical bucket, or None (e.g. main, ads)."""
+    m = classify_segment_label_normalized(norm or "")
+    return m[0] if m else None
+
+
+def _media_key(ctx: dict) -> str:
+    if ctx.get("type") == "movie":
+        return "m|tmdb=%s|imdb=%s" % (ctx.get("tmdb_id"), ctx.get("imdb_id") or "")
+    return "tv|tmdb=%s|showimdb=%s|s=%s|e=%s" % (
+        ctx.get("tmdb_id"),
+        ctx.get("show_imdb_id") or "",
+        ctx.get("season"),
+        ctx.get("episode"),
+    )
+
+
+def _fingerprint(api: str, media_key: str, tidb_seg: str, start: float, end: float) -> str:
+    s = "%s|%s|%s|%.3f|%.3f" % (api, media_key, tidb_seg, start, end)
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+
+def _fp_short(fp: str) -> str:
+    """First 12 hex chars of fingerprint for logs (full fp stays in history file)."""
+    return (fp or "")[:12]
+
+
+def _history_path():
+    try:
+        prof = xbmcaddon.Addon(ADDON_ID).getAddonInfo("profile")
+        return os.path.join(xbmcvfs.translatePath(prof), "online_upload_submissions.json")
+    except Exception:
+        return None
+
+
+def _load_history() -> dict:
+    path = _history_path()
+    if not path or not os.path.isfile(path):
+        return {"v": _HISTORY_VERSION, "theintrodb": [], "introdb": []}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            return {"v": _HISTORY_VERSION, "theintrodb": [], "introdb": []}
+        data.setdefault("v", _HISTORY_VERSION)
+        data.setdefault("theintrodb", [])
+        data.setdefault("introdb", [])
+        if not isinstance(data["theintrodb"], list):
+            data["theintrodb"] = []
+        if not isinstance(data["introdb"], list):
+            data["introdb"] = []
+        return data
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return {"v": _HISTORY_VERSION, "theintrodb": [], "introdb": []}
+
+
+def _save_history(data: dict) -> None:
+    path = _history_path()
+    if not path:
+        return
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    except OSError:
+        pass
+    for key in ("theintrodb", "introdb"):
+        lst = data.get(key) or []
+        if len(lst) > _MAX_HISTORY_ENTRIES_PER_API:
+            data[key] = lst[-_MAX_HISTORY_ENTRIES_PER_API :]
+    try:
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+    except OSError as exc:
+        _up_log_err("online upload: could not save history: %s" % exc)
+
+
+def _history_contains(api_bucket: str, fp: str) -> bool:
+    data = _load_history()
+    lst = data.get(api_bucket) or []
+    return fp in lst
+
+
+def _history_record(api_bucket: str, fp: str) -> None:
+    data = _load_history()
+    lst = data.setdefault(api_bucket, [])
+    if fp in lst:
+        return
+    lst.append(fp)
+    _save_history(data)
+
+
+def _validate_theintrodb_times(segment: str, start: float, end: float) -> str | None:
+    if start < 0 or end < 0 or start > 21600 or end > 21600:
+        return "times must be within 0-21600 s"
+    dur = end - start
+    if segment in ("intro", "recap"):
+        if not (5 <= dur <= (200 if segment == "intro" else 1200)):
+            return "%s duration must be within API limits (see TheIntroDB docs)" % segment
+    elif segment in ("credits", "preview"):
+        if not (5 <= dur <= 1800):
+            return segment + " duration must be 5-1800 s when an end time is set"
+    return None
+
+
+def _submit_theintrodb(
+    ctx: dict,
+    tidb_segment: str,
+    start_sec: float,
+    end_sec: float,
+    api_key: str,
+) -> tuple[bool, str]:
+    """
+    POST /v2/submit (flat JSON: tmdb_id, type, segment, times — **not** the nested
+    ``intro``/``recap``/… arrays from GET /v2/media). TheIntroDB accepts times as
+    either start_sec/end_sec **or** start_ms/end_ms (never both); we send **ms** as
+    integers to match their media payload style and avoid float rounding issues.
+    """
+    key = (api_key or "").strip()
+    if not key:
+        _up_log_err("TheIntroDB submit: API key not set")
+        return False, _translate(39028)
+
+    if tidb_segment not in ("intro", "recap", "credits", "preview"):
+        _up_log_err("TheIntroDB submit: bad segment %r" % tidb_segment)
+        return False, _translate(39047)
+
+    tmdb_id = ctx.get("tmdb_id")
+    try:
+        tmdb_int = int(tmdb_id) if tmdb_id is not None else None
+    except (TypeError, ValueError):
+        tmdb_int = None
+    if tmdb_int is None or not (1 <= tmdb_int <= 10_000_000):
+        _up_log_err(
+            "TheIntroDB submit: invalid tmdb_id %r (ctx type=%s)"
+            % (tmdb_id, ctx.get("type"))
+        )
+        return False, _translate(39044)
+
+    api_type = "movie" if ctx.get("type") == "movie" else "tv"
+    start_ms = int(round(float(start_sec) * 1000.0))
+    end_ms = int(round(float(end_sec) * 1000.0))
+    body: dict = {
+        "tmdb_id": tmdb_int,
+        "type": api_type,
+        "segment": tidb_segment,
+        "start_ms": start_ms,
+        "end_ms": end_ms,
+    }
+    if ctx.get("type") == "tv":
+        body["season"] = str(ctx.get("season"))
+        body["episode"] = str(ctx.get("episode"))
+
+    imdb_opt = None
+    if ctx.get("type") == "movie":
+        imdb_opt = ctx.get("imdb_id")
+    else:
+        imdb_opt = ctx.get("imdb_id") or ctx.get("show_imdb_id")
+    imdb_opt = normalize_imdb_id(imdb_opt)
+    if imdb_opt:
+        body["imdb_id"] = imdb_opt
+
+    err = _validate_theintrodb_times(tidb_segment, float(start_sec), float(end_sec))
+    if err:
+        _up_log_err(
+            "TheIntroDB submit: local validation failed segment=%s %s-%s: %s"
+            % (tidb_segment, start_sec, end_sec, err)
+        )
+        return False, _translate(39043) + "\n\n" + err
+
+    code, parsed, raw_err = _http_post_json(
+        THEINTRODB_SUBMIT_URL,
+        {"Authorization": "Bearer %s" % key},
+        body,
+    )
+    if code == 200 and isinstance(parsed, dict) and parsed.get("ok") is True:
+        return True, "ok"
+    if code == 200:
+        detail = _detail_from_parsed(parsed, raw_err)
+        base = _translate(39041)
+        msg = base + ("\n\n" + detail if detail else "")
+        _up_log_err(
+            "TheIntroDB submit: HTTP 200 but not ok (segment=%s tmdb=%s): %s"
+            % (tidb_segment, tmdb_int, detail or raw_err or "")
+        )
+        return False, msg
+    msg = _submit_http_user_message("theintrodb", code, parsed, raw_err)
+    _up_log_err(
+        "TheIntroDB submit failed HTTP %s segment=%s tmdb=%s: %s"
+        % (code, tidb_segment, tmdb_int, msg.replace("\n", " | "))
+    )
+    return False, msg
+
+
+def _submit_introdb_app(
+    ctx: dict,
+    idb_segment: str,
+    start_sec: float,
+    end_sec: float,
+    api_key: str,
+) -> tuple[bool, str]:
+    """
+    IntroDB.app POST /submit with X-API-Key: numeric ``start_sec`` / ``end_sec`` (integers).
+    ``segment_type`` is only intro, recap, or outro (credits/preview from classification
+    are mapped to outro before calling this).
+    """
+    key = (api_key or "").strip()
+    if not key:
+        _up_log_err("IntroDB.app submit: API key not set")
+        return False, _translate(39029)
+
+    if idb_segment not in ("intro", "recap", "outro"):
+        _up_log_err("IntroDB.app submit: bad segment %r" % idb_segment)
+        return False, _translate(39046)
+
+    imdb = None
+    if ctx.get("type") == "movie":
+        imdb = normalize_imdb_id(ctx.get("imdb_id"))
+    else:
+        imdb = normalize_imdb_id(ctx.get("show_imdb_id") or ctx.get("imdb_id"))
+    if not imdb:
+        _up_log_err(
+            "IntroDB.app submit: no imdb in ctx (type=%s)" % ctx.get("type")
+        )
+        return False, _translate(39045)
+
+    body: dict = {
+        "imdb_id": imdb,
+        "segment_type": idb_segment,
+        "start_sec": int(round(float(start_sec))),
+        "end_sec": int(round(float(end_sec))),
+    }
+    if ctx.get("type") == "tv":
+        body["season"] = int(ctx.get("season"))
+        body["episode"] = int(ctx.get("episode"))
+
+    code, parsed, raw_err = _http_post_json(
+        INTRODB_SUBMIT_URL,
+        {"X-API-Key": key},
+        body,
+    )
+    if 200 <= code < 300:
+        return True, "ok"
+    msg = _submit_http_user_message("introdb", code, parsed, raw_err)
+    _up_log_err(
+        "IntroDB.app submit failed HTTP %s imdb=%s segment=%s: %s"
+        % (code, imdb, idb_segment, msg.replace("\n", " | "))
+    )
+    return False, msg
+
+
+def _translate(id_: int) -> str:
+    try:
+        return xbmcaddon.Addon(ADDON_ID).getLocalizedString(id_)
+    except Exception:
+        return ""
+
+
+def _detail_from_parsed(parsed: dict | None, raw_err: str | None) -> str:
+    if isinstance(parsed, dict):
+        for k in ("error", "message", "detail", "errors"):
+            v = parsed.get(k)
+            if v is None:
+                continue
+            if isinstance(v, (list, dict)):
+                try:
+                    v = json.dumps(v, ensure_ascii=False)
+                except (TypeError, ValueError):
+                    v = str(v)
+            s = str(v).strip()
+            if s:
+                return s[:400]
+    if raw_err and str(raw_err).strip():
+        return str(raw_err).strip()[:400]
+    return ""
+
+
+def _submit_http_user_message(
+    api: str, code: int, parsed: dict | None, raw_err: str | None
+) -> str:
+    """User-facing explanation for a failed HTTP response."""
+    detail = _detail_from_parsed(parsed, raw_err)
+    if code in (401, 403):
+        head = _translate(39030) if api == "theintrodb" else _translate(39031)
+    elif code == 429:
+        head = _translate(39032)
+    elif code == 0:
+        head = _translate(39033)
+    elif code in (301, 302, 303, 307, 308):
+        head = _translate(39033)
+    elif 400 <= code < 500:
+        head = _translate(39041) if api == "theintrodb" else _translate(39042)
+    else:
+        head = _translate(39034) % (code if code else "?")
+    if detail and detail.lower() not in head.lower():
+        return head + "\n\n" + detail
+    return head
+
+
+def upload_all_segments(video_path, segments, target: str) -> None:
+    """
+    Upload ``segments`` (SegmentItem list) for ``video_path``.
+    ``target`` is TARGET_* constant matching settings stored values.
+    """
+    addon = xbmcaddon.Addon(ADDON_ID)
+    if not segments:
+        xbmcgui.Dialog().ok(
+            _translate(39013),
+            _translate(39014),
+        )
+        _up_log_info("Upload dismissed: no segments in editor")
+        return
+
+    item = get_enriched_item_for_path(video_path)
+    ctx = build_upload_context(item)
+    if not ctx:
+        xbmcgui.Dialog().ok(
+            _translate(39013),
+            _translate(39016),
+        )
+        _up_log_err("Upload aborted: could not build library/TMDB context for path")
+        return
+
+    media_key = _media_key(ctx)
+    t_db_key = (addon.getSetting("online_upload_theintrodb_api_key") or "").strip()
+    idb_key = (addon.getSetting("online_upload_introdb_api_key") or "").strip()
+
+    do_tidb = target in (TARGET_BOTH, TARGET_THEINTRODB)
+    do_idb = target in (TARGET_BOTH, TARGET_INTRODB_APP)
+    need_tidb = do_tidb
+    need_idb = do_idb
+    if do_tidb and not t_db_key:
+        do_tidb = False
+    if do_idb and not idb_key:
+        do_idb = False
+    if not do_tidb and not do_idb:
+        body_parts = []
+        if need_tidb and not t_db_key:
+            body_parts.append(_translate(39028))
+        if need_idb and not idb_key:
+            body_parts.append(_translate(39029))
+        body = "\n\n".join(body_parts) if body_parts else _translate(39015)
+        xbmcgui.Dialog().ok(
+            _translate(39037),
+            body,
+        )
+        _up_log_err("Upload aborted (missing API keys): %s" % body.replace("\n", " | "))
+        return
+
+    lines_ok = []
+    lines_skip = []
+    lines_err = []
+
+    for seg in segments:
+        label_norm = getattr(seg, "segment_type_label", "") or ""
+        mapped = classify_segment_label_normalized(label_norm)
+        if mapped is None:
+            raw = getattr(seg, "raw_label", label_norm)
+            lines_skip.append("%s — %s" % (raw, _translate(39020)))
+            _up_log_info(
+                "skip (not uploaded: label not mapped to online types): raw=%r norm=%r %s"
+                % (raw, label_norm, media_key)
+            )
+            continue
+        tidb_seg, idb_seg = mapped
+        start = float(seg.start_seconds)
+        end = float(seg.end_seconds)
+        raw = getattr(seg, "raw_label", label_norm)
+
+        if do_tidb:
+            fp = _fingerprint("theintrodb", media_key, tidb_seg, start, end)
+            if _history_contains("theintrodb", fp):
+                lines_skip.append(
+                    "TheIntroDB: %s — %s" % (raw, _translate(39021))
+                )
+                _up_log_info(
+                    "skip TheIntroDB (already in local submit history): %r segment=%s %.3f-%.3f fp=%s %s"
+                    % (raw, tidb_seg, start, end, _fp_short(fp), media_key)
+                )
+            else:
+                ok, err = _submit_theintrodb(ctx, tidb_seg, start, end, t_db_key)
+                if ok:
+                    _history_record("theintrodb", fp)
+                    lines_ok.append("TheIntroDB: %s (%s)" % (raw, tidb_seg))
+                    _up_log_info(
+                        "ok TheIntroDB: %r segment=%s %.3f-%.3f fp=%s %s"
+                        % (raw, tidb_seg, start, end, _fp_short(fp), media_key)
+                    )
+                else:
+                    lines_err.append("TheIntroDB %s: %s" % (raw, err))
+            xbmc.sleep(200)
+
+        if do_idb:
+            fp_i = _fingerprint("introdb", media_key, idb_seg, start, end)
+            if _history_contains("introdb", fp_i):
+                lines_skip.append(
+                    "IntroDB.app: %s — %s" % (raw, _translate(39021))
+                )
+                _up_log_info(
+                    "skip IntroDB.app (already in local submit history): %r segment_type=%s %.3f-%.3f fp=%s %s"
+                    % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
+                )
+            else:
+                ok, err = _submit_introdb_app(ctx, idb_seg, start, end, idb_key)
+                if ok:
+                    _history_record("introdb", fp_i)
+                    lines_ok.append("IntroDB.app: %s (%s)" % (raw, idb_seg))
+                    _up_log_info(
+                        "ok IntroDB.app: %r segment_type=%s %.3f-%.3f fp=%s %s"
+                        % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
+                    )
+                else:
+                    lines_err.append("IntroDB.app %s: %s" % (raw, err))
+            xbmc.sleep(200)
+
+    summary_parts = [
+        "%s: %d" % (_translate(39022), len(lines_ok)),
+        "%s: %d" % (_translate(39023), len(lines_skip)),
+        "%s: %d" % (_translate(39024), len(lines_err)),
+    ]
+    detail = "\n".join(summary_parts)
+    if lines_err:
+        detail += "\n\n" + "\n".join(lines_err[:12])
+        if len(lines_err) > 12:
+            detail += "\n..."
+    xbmcgui.Dialog().ok(_translate(39013), detail)
+    _up_log_info(
+        "Upload finished: ok=%d skip=%d err=%d — %s"
+        % (len(lines_ok), len(lines_skip), len(lines_err), media_key)
+    )
+    if lines_ok:
+        _up_log_info("ok lines: %s" % " | ".join(lines_ok[:20]))
+        if len(lines_ok) > 20:
+            _up_log_info("ok lines: ... +%d more" % (len(lines_ok) - 20))
+    if lines_skip:
+        _up_log_info("skip lines: %s" % " | ".join(lines_skip[:20]))
+        if len(lines_skip) > 20:
+            _up_log_info("skip lines: ... +%d more" % (len(lines_skip) - 20))
+    if lines_err:
+        _up_log_info("err lines: %s" % " | ".join(lines_err[:12]))
+        if len(lines_err) > 12:
+            _up_log_info("err lines: ... +%d more" % (len(lines_err) - 12))

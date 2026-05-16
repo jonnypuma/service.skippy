@@ -29,6 +29,7 @@ from settings_utils import (
     skippy_notification_icon,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
+from marker_indicator import sync_marker_pending_indicator
 from playback_segment_cache import publish_parse_cache
 from segment_editor_utils import set_editor_modal_open
 from service_online_sidecar_save import (

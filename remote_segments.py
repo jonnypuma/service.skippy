@@ -21,6 +21,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import xbmc
+import xbmcvfs
 
 from segment_item import SegmentItem
 from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log_remote, parse_kodi_jsonrpc_raw
@@ -50,7 +51,7 @@ def _rlog(msg):
 
 
 THEINTRODB_BASE_URL = "https://api.theintrodb.org/v2/media"
-INTRODB_SEGMENTS_URL = "http://api.introdb.app/segments"
+INTRODB_SEGMENTS_URL = "https://api.introdb.app/segments"
 TMDB_API3_BASE = "https://api.themoviedb.org/3"
 TMDB_HELPER_ADDON_ID = "plugin.video.themoviedb.helper"
 REMOTE_LOOKUP_TIMEOUT = 5
@@ -762,6 +763,41 @@ def get_enriched_playing_item():
     return item
 
 
+def paths_refer_to_same_video(path_a, path_b):
+    if not path_a or not path_b:
+        return False
+    try:
+        ta = xbmcvfs.translatePath(str(path_a).strip())
+        tb = xbmcvfs.translatePath(str(path_b).strip())
+        return os.path.normcase(os.path.normpath(ta)) == os.path.normcase(
+            os.path.normpath(tb)
+        )
+    except (OSError, TypeError, ValueError, AttributeError):
+        sa = str(path_a).strip().replace("\\", "/").rstrip("/")
+        sb = str(path_b).strip().replace("\\", "/").rstrip("/")
+        return sa.lower() == sb.lower()
+
+
+def get_enriched_item_for_path(video_path):
+    """
+    Library-backed metadata dict (same shape as :func:`get_enriched_playing_item`) for
+    ``video_path``, whether or not it is the currently playing file.
+    """
+    if not video_path or not str(video_path).strip():
+        return get_enriched_playing_item()
+    vp = str(video_path).strip()
+    playing = _get_playing_file_path()
+    if playing and paths_refer_to_same_video(vp, playing):
+        return get_enriched_playing_item()
+    item = _item_from_files_get_file_details(vp)
+    if not item:
+        _rlog(
+            "get_enriched_item_for_path: no library episode/movie row for file=%r"
+            % (os.path.basename(vp),)
+        )
+    return item
+
+
 def _use_filename_season_episode_fallback(item):
     """
     Season/episode from Kodi library metadata take priority. Parse SxxExx from the path only
@@ -847,7 +883,7 @@ def _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id):
     return tmdb_id, imdb_id
 
 
-def build_movie_context(item):
+def build_movie_context(item, force_tmdb_enrichment=False):
     """Context for TheIntroDB movie lookup (tmdb_id and/or imdb_id)."""
     if not item:
         return None
@@ -861,13 +897,16 @@ def build_movie_context(item):
     tmdb_id, imdb_id = _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id)
 
     addon = get_addon()
-    if addon and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True):
-        key = _get_tmdb_api_key()
-        if key and (tmdb_id is None or not imdb_id):
-            tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, key)
-            _rlog(
-                "After TMDB API enrichment (movie): tmdb=%s imdb=%s" % (tmdb_id, imdb_id)
-            )
+    key = _get_tmdb_api_key()
+    allow_enrich = addon and key and (
+        force_tmdb_enrichment
+        or addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
+    )
+    if allow_enrich and (tmdb_id is None or not imdb_id):
+        tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, key)
+        _rlog(
+            "After TMDB API enrichment (movie): tmdb=%s imdb=%s" % (tmdb_id, imdb_id)
+        )
 
     if tmdb_id is None and not imdb_id:
         _rlog("Remote movie segments skipped: no TMDB/IMDb after Kodi and TMDB API")
@@ -966,6 +1005,93 @@ def _show_imdb_from_infolabels():
     return normalize_imdb_id(v) if v else None
 
 
+def _tmdb_show_id_from_episode_imdb(episode_imdb, api_key):
+    """Resolve TV **series** TMDB id from an **episode** IMDb id via TMDB v3 /find."""
+    if not episode_imdb or not api_key:
+        return None
+    imdb = normalize_imdb_id(episode_imdb)
+    if not imdb:
+        return None
+    data = _tmdb_api3_json("/find/%s" % imdb, api_key, {"external_source": "imdb_id"})
+    if not isinstance(data, dict):
+        return None
+    for ep in data.get("tv_episode_results") or []:
+        try:
+            sid = int(ep.get("show_id"))
+            if sid > 0:
+                return sid
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def _normalize_tv_context_to_show_tmdb_id(item, tmdb_id, imdb_id, api_key):
+    """
+    TheIntroDB (and ``/tv/{id}/season/...`` enrichment) expect the **series** TMDB id.
+    Kodi often stores the **episode** TMDB id on the episode row.
+    """
+    tvshow_id = _resolve_tvshow_id(item)
+    if tvshow_id:
+        show_tmdb = _tmdb_from_tvshow_row(tvshow_id)
+        if show_tmdb is not None:
+            try:
+                cur = int(tmdb_id) if tmdb_id is not None else None
+            except (TypeError, ValueError):
+                cur = None
+            try:
+                st = int(show_tmdb)
+            except (TypeError, ValueError):
+                st = None
+            if st is not None and cur is not None and cur != st:
+                _rlog(
+                    "TV TMDB: using series id %s for API (episode row had %s; TheIntroDB needs the show id)"
+                    % (st, cur)
+                )
+            return show_tmdb
+    if api_key and imdb_id:
+        found = _tmdb_show_id_from_episode_imdb(imdb_id, api_key)
+        if found is not None:
+            _rlog(
+                "TV TMDB: series id %s from TMDB /find (episode imdb=%s)"
+                % (found, imdb_id)
+            )
+            return found
+    return tmdb_id
+
+
+def _correct_show_imdb_from_series_external_ids(
+    show_imdb_id, episode_imdb_id, series_tmdb_id, api_key
+):
+    """
+    IntroDB.app GET/POST expect the **series** IMDb. Kodi sometimes stores only the
+    **episode** IMDb on the episode row and duplicates it as show_imdb. When both match,
+    resolve the real series id from TMDB external_ids.
+    """
+    if not api_key or series_tmdb_id is None or not episode_imdb_id:
+        return show_imdb_id
+    epi = normalize_imdb_id(episode_imdb_id)
+    show = normalize_imdb_id(show_imdb_id)
+    if not epi:
+        return show_imdb_id
+    if show and show != epi:
+        return show_imdb_id
+    try:
+        tid = int(series_tmdb_id)
+    except (TypeError, ValueError):
+        return show_imdb_id
+    ex = _tmdb_api3_json("/tv/%s/external_ids" % tid, api_key)
+    if not isinstance(ex, dict):
+        return show_imdb_id
+    series_imdb = normalize_imdb_id(ex.get("imdb_id"))
+    if series_imdb and series_imdb != epi:
+        _rlog(
+            "TV context: series IMDb from TMDB external_ids=%s (Kodi show_imdb matched episode %s)"
+            % (series_imdb, epi)
+        )
+        return series_imdb
+    return show_imdb_id
+
+
 def _apply_kodi_library_id_layers(item, tmdb_id, imdb_id, show_imdb_id):
     """
     Fill TMDB/IMDb from Kodi DB + infolabels (same strategy as service.nextonlibrary):
@@ -1014,7 +1140,7 @@ def _apply_kodi_library_id_layers(item, tmdb_id, imdb_id, show_imdb_id):
     return tmdb_id, imdb_id, show_imdb_id
 
 
-def build_tv_episode_context(item):
+def build_tv_episode_context(item, force_tmdb_enrichment=False):
     if not item:
         return None
 
@@ -1058,6 +1184,9 @@ def build_tv_episode_context(item):
     if not show_imdb_id:
         show_imdb_id = get_show_imdb_id(item) or imdb_id
 
+    key = _get_tmdb_api_key()
+    tmdb_id = _normalize_tv_context_to_show_tmdb_id(item, tmdb_id, imdb_id, key)
+
     _rlog(
         "Kodi library uniqueid keys for S%02dE%02d: %s (tmdb=%s imdb=%s show_imdb=%s)"
         % (
@@ -1071,20 +1200,26 @@ def build_tv_episode_context(item):
     )
 
     addon = get_addon()
-    if (
-        addon
-        and addon_get_bool(addon, "tv_use_online_segment_lookup", False)
-        and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
-    ):
-        key = _get_tmdb_api_key()
-        if key and (tmdb_id is None or not imdb_id or show_imdb_id is None):
-            tmdb_id, imdb_id, show_imdb_id = _tmdb_enrich_missing_ids(
-                item, season, episode, tmdb_id, imdb_id, show_imdb_id, key
-            )
-            _rlog(
-                "After TMDB API enrichment: tmdb=%s episode_imdb=%s show_imdb=%s"
-                % (tmdb_id, imdb_id, show_imdb_id)
-            )
+    allow_enrich = addon and key and (
+        force_tmdb_enrichment
+        or (
+            addon_get_bool(addon, "tv_use_online_segment_lookup", False)
+            and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
+        )
+    )
+    if allow_enrich and (tmdb_id is None or not imdb_id or show_imdb_id is None):
+        tmdb_id, imdb_id, show_imdb_id = _tmdb_enrich_missing_ids(
+            item, season, episode, tmdb_id, imdb_id, show_imdb_id, key
+        )
+        _rlog(
+            "After TMDB API enrichment: tmdb=%s episode_imdb=%s show_imdb=%s"
+            % (tmdb_id, imdb_id, show_imdb_id)
+        )
+
+    if key and tmdb_id is not None and imdb_id:
+        show_imdb_id = _correct_show_imdb_from_series_external_ids(
+            show_imdb_id, imdb_id, tmdb_id, key
+        )
 
     if tmdb_id is None and not imdb_id and not show_imdb_id:
         tvdb_raw = uid.get("tvdb")
@@ -1116,6 +1251,18 @@ def build_tv_episode_context(item):
         % (season, episode, tmdb_id, imdb_id, show_imdb_id)
     )
     return ctx
+
+
+def build_upload_context(item):
+    """TheIntroDB / IntroDB movie or TV context with optional TMDB resolution forced on."""
+    if not item:
+        return None
+    itype = (item.get("type") or "").lower()
+    if itype == "movie":
+        return build_movie_context(item, force_tmdb_enrichment=True)
+    if itype == "episode":
+        return build_tv_episode_context(item, force_tmdb_enrichment=True)
+    return None
 
 
 def build_tv_cache_key(context):

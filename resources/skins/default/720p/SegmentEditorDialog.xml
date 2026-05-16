@@ -731,9 +731,9 @@
       </control>
 
       <control type="button" id="5004">
-        <left>796</left>
+        <left>755</left>
         <top>500</top>
-        <width>120</width>
+        <width>115</width>
         <height>40</height>
         <label>Delete All</label>
         <font>font10</font>
@@ -748,14 +748,36 @@
         <align>center</align>
         <onup>5009</onup>
         <onleft>5002</onleft>
+        <onright>5026</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5026">
+        <left>878</left>
+        <top>500</top>
+        <width>100</width>
+        <height>40</height>
+        <label>Upload</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onup>5009</onup>
+        <onleft>5004</onleft>
         <onright>5006</onright>
         <ondown>5000</ondown>
       </control>
 
       <control type="button" id="5006">
-        <left>953</left>
+        <left>986</left>
         <top>500</top>
-        <width>80</width>
+        <width>75</width>
         <height>40</height>
         <label>Save</label>
         <font>font10</font>
@@ -769,13 +791,13 @@
         <aligny>center</aligny>
         <align>center</align>
         <onup>5009</onup>
-        <onleft>5004</onleft>
+        <onleft>5026</onleft>
         <onright>5007</onright>
         <ondown>5000</ondown>
       </control>
 
       <control type="button" id="5007">
-        <left>1070</left>
+        <left>1071</left>
         <top>500</top>
         <width>80</width>
         <height>40</height>

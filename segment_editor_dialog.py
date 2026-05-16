@@ -10,9 +10,11 @@ Architectural notes:
   callbacks into the dialog; we no longer poll ``getTime()`` to infer pause.
 - The time-label updater runs on a single lightweight thread.
 - Edit/Delete sit to the right of the list; their vertical position tracks the
-  highlighted row. ``onFocus`` only runs when focus moves onto the list, not
-  when moving between list items, so we re-sync after list navigation actions
-  (debounced timer so ``getSelectedPosition()`` matches Kodi's selection).
+  highlighted row in the **visible viewport** (not ``selected_index * row_height``,
+  which breaks once the list scrolls). ``onFocus`` only runs when focus moves
+  onto the list, not when moving between list items, so we re-sync after list
+  navigation actions (debounced timer so ``getSelectedPosition()`` matches Kodi's
+  selection).
 """
 import os
 import threading
@@ -145,9 +147,20 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 enable_overlay = addon.getSetting("segment_editor_fullscreen_overlay") == "true"
                 self.setProperty("EnableFullscreenOverlay", "true" if enable_overlay else "false")
                 log(f"Full-screen overlay setting: {enable_overlay}")
+                enable_upl = addon.getSetting("online_upload_enabled") == "true"
+                self.setProperty("EnableOnlineUpload", "true" if enable_upl else "false")
+                uc = self.getControl(5026)
+                if uc:
+                    uc.setVisible(enable_upl)
+                    try:
+                        uc.setLabel(addon.getLocalizedString(39018))
+                    except Exception:
+                        uc.setLabel("Upload")
+                log(f"Online upload button visible: {enable_upl}")
             except Exception as e:
-                log(f"Error reading overlay setting: {e}")
+                log(f"Error reading editor display / upload settings: {e}")
                 self.setProperty("EnableFullscreenOverlay", "false")
+                self.setProperty("EnableOnlineUpload", "false")
 
             self.list_control = self.getControl(5000)
             if not self.list_control:
@@ -464,6 +477,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             5005: self.add_at_current_time,
             5006: self.save_current_segments,
             5007: self._on_exit_clicked,
+            5026: self.upload_segments_online,
             5009: lambda: self.seek_relative(-5),
             5010: lambda: self.seek_relative(-10),
             5011: lambda: self.seek_relative(-30),
@@ -571,6 +585,28 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._selection_sync_timer.daemon = True
         self._selection_sync_timer.start()
 
+    def _visible_list_rows(self) -> int:
+        """How many full list rows fit in control 5000 (XML height / itemlayout height)."""
+        return max(1, self._list_height // self._list_item_height)
+
+    def _first_visible_list_index(self, selected: int, n_items: int) -> int:
+        """
+        First list index visible at the top of the scrolled viewport.
+
+        Kodi scrolls so the focused row stays in view; for the default list
+        behavior (cursor moves down until it hits the bottom visible row, then
+        the window scrolls), this matches ``max(0, selected - rows + 1)`` capped
+        so the last page aligns when near the end of the list.
+        """
+        if n_items <= 0:
+            return 0
+        rows = self._visible_list_rows()
+        if n_items <= rows:
+            return 0
+        ideal_first = max(0, selected - rows + 1)
+        max_first = n_items - rows
+        return min(ideal_first, max_first)
+
     def _update_edit_delete_positions(self):
         """Align Edit/Delete with the highlighted list row (matches skin layout)."""
         try:
@@ -583,12 +619,15 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             selected = self.list_control.getSelectedPosition()
             if selected < 0:
                 selected = 0
-            if selected >= len(self.segments):
-                selected = max(0, len(self.segments) - 1)
+            n = len(self.segments)
+            if selected >= n:
+                selected = max(0, n - 1)
 
+            first_visible = self._first_visible_list_index(selected, n)
+            row_in_view = selected - first_visible
             row_top = (
                 self._list_top
-                + selected * self._list_item_height
+                + row_in_view * self._list_item_height
                 + (self._list_item_height - self._edit_delete_btn_height) // 2
             )
             max_top = self._list_top + self._list_height - self._edit_delete_btn_height
@@ -1165,3 +1204,47 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 "Segment Editor",
                 "Failed to save segments. Check file permissions.",
             )
+
+    def upload_segments_online(self):
+        """POST segments to TheIntroDB.org / IntroDB.app (optional APIs)."""
+        try:
+            from online_segment_upload import (
+                TARGET_BOTH,
+                TARGET_INTRODB_APP,
+                TARGET_THEINTRODB,
+                upload_all_segments,
+            )
+        except Exception as exc:
+            log_error("online_segment_upload import failed: %s" % exc)
+            return
+        addon = get_addon()
+        if not addon:
+            return
+        if addon.getSetting("online_upload_enabled") != "true":
+            try:
+                xbmcgui.Dialog().ok(
+                    addon.getLocalizedString(39013),
+                    addon.getLocalizedString(39040),
+                )
+            except Exception:
+                pass
+            return
+        order = [TARGET_BOTH, TARGET_THEINTRODB, TARGET_INTRODB_APP]
+        raw = addon.getSetting("online_upload_default_target") or TARGET_BOTH
+        try:
+            pre = order.index(raw)
+        except ValueError:
+            pre = 0
+        labels = [
+            addon.getLocalizedString(39010),
+            addon.getLocalizedString(39011),
+            addon.getLocalizedString(39012),
+        ]
+        heading = addon.getLocalizedString(39009)
+        try:
+            idx = xbmcgui.Dialog().select(heading, labels, preselect=pre)
+        except TypeError:
+            idx = xbmcgui.Dialog().select(heading, labels)
+        if idx < 0:
+            return
+        upload_all_segments(self.video_path, self.segments, order[idx])

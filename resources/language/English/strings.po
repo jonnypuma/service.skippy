@@ -353,24 +353,24 @@ msgid "Save online segments"
 msgstr "Save online segments"
 
 msgctxt "#32047"
-msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
-msgstr "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / update / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgstr "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / update / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
 
 msgctxt "#32069"
 msgid "If matching sidecar already exists"
 msgstr "If matching sidecar already exists"
 
 msgctxt "#32070"
-msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range."
-msgstr "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range."
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range. Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); never remove locals; optional prompt."
+msgstr "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range. Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); never remove locals; optional prompt."
 
 msgctxt "#32071"
-msgid "Back up sidecar files before overwrite or merge"
-msgstr "Back up sidecar files before overwrite or merge"
+msgid "Back up sidecar files before overwrite, merge, or update"
+msgstr "Back up sidecar files before overwrite, merge, or update"
 
 msgctxt "#32072"
-msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced or merged."
-msgstr "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced or merged."
+msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced, merged, or updated."
+msgstr "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced, merged, or updated."
 
 msgctxt "#35000"
 msgid "Replace local files with online segment data?"
@@ -395,6 +395,30 @@ msgstr "Existing chapter XML will be replaced by segments from online lookup. Co
 msgctxt "#35005"
 msgid "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
 msgstr "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+
+msgctxt "#35012"
+msgid "Update chapter XML from online?"
+msgstr "Update chapter XML from online?"
+
+msgctxt "#35013"
+msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
+
+msgctxt "#35014"
+msgid "Update EDL from online?"
+msgstr "Update EDL from online?"
+
+msgctxt "#35015"
+msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. Continue? (Copies to `.bck` first if backup is enabled.)"
+
+msgctxt "#35016"
+msgid "Update chapter XML and EDL from online?"
+msgstr "Update chapter XML and EDL from online?"
+
+msgctxt "#35017"
+msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
@@ -546,6 +570,162 @@ msgstr "This file is not a valid Skippy backup."
 msgctxt "#38008"
 msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
 msgstr "Applied %s settings; %s entries were skipped (unknown key or error)."
+
+msgctxt "#39000"
+msgid "Upload to online sources"
+msgstr "Upload to online sources"
+
+msgctxt "#39001"
+msgid "Default upload target"
+msgstr "Default upload target"
+
+msgctxt "#39002"
+msgid "Pre-selects the destination in the Segment Editor upload dialog. You can still pick another option each time."
+msgstr "Pre-selects the destination in the Segment Editor upload dialog. You can still pick another option each time."
+
+msgctxt "#39003"
+msgid "TheIntroDB.org API key"
+msgstr "TheIntroDB.org API key"
+
+msgctxt "#39004"
+msgid "Bearer token from your TheIntroDB account. Required to POST segment timestamps to api.theintrodb.org."
+msgstr "Bearer token from your TheIntroDB account. Required to POST segment timestamps to api.theintrodb.org."
+
+msgctxt "#39005"
+msgid "IntroDB.app API key"
+msgstr "IntroDB.app API key"
+
+msgctxt "#39006"
+msgid "API key from IntroDB.app (typically idb_…). Required for API-key submits."
+msgstr "API key from IntroDB.app (typically idb_…). Required for API-key submits."
+
+msgctxt "#39009"
+msgid "Upload segments to"
+msgstr "Upload segments to"
+
+msgctxt "#39010"
+msgid "Both"
+msgstr "Both"
+
+msgctxt "#39011"
+msgid "TheIntroDB.org only"
+msgstr "TheIntroDB.org only"
+
+msgctxt "#39012"
+msgid "IntroDB.app only"
+msgstr "IntroDB.app only"
+
+msgctxt "#39013"
+msgid "Segment upload"
+msgstr "Segment upload"
+
+msgctxt "#39014"
+msgid "No segments are defined for this video."
+msgstr "No segments are defined for this video."
+
+msgctxt "#39015"
+msgid "No API key for the chosen destination. Turn on Enable upload to online sources and paste the required key(s) under Expert → Upload to online sources."
+msgstr "No API key for the chosen destination. Turn on Enable upload to online sources and paste the required key(s) under Expert → Upload to online sources."
+
+msgctxt "#39016"
+msgid "Could not resolve TMDB/IMDb for this file. Is it in the Kodi library with proper unique IDs?"
+msgstr "Could not resolve TMDB/IMDb for this file. Is it in the Kodi library with proper unique IDs?"
+
+msgctxt "#39018"
+msgid "Upload"
+msgstr "Upload"
+
+msgctxt "#39020"
+msgid "not uploaded (excluded types: ads, prologue, epilogue, main body, unknown keywords, etc.)"
+msgstr "not uploaded (excluded types: ads, prologue, epilogue, main body, unknown keywords, etc.)"
+
+msgctxt "#39021"
+msgid "already submitted from this device (stored fingerprint)"
+msgstr "already submitted from this device (stored fingerprint)"
+
+msgctxt "#39022"
+msgid "Successful submissions"
+msgstr "Successful submissions"
+
+msgctxt "#39023"
+msgid "Skipped"
+msgstr "Skipped"
+
+msgctxt "#39024"
+msgid "Errors"
+msgstr "Errors"
+
+msgctxt "#39025"
+msgid "Enable upload to online sources"
+msgstr "Enable upload to online sources"
+
+msgctxt "#39026"
+msgid "When enabled, the Segment Editor shows Upload so you can submit segments to TheIntroDB.org and/or IntroDB.app. You still need valid API keys below."
+msgstr "When enabled, the Segment Editor shows Upload so you can submit segments to TheIntroDB.org and/or IntroDB.app. You still need valid API keys below."
+
+msgctxt "#39028"
+msgid "Paste your TheIntroDB.org API key under Settings → Expert → Upload to online sources (Bearer token from your account)."
+msgstr "Paste your TheIntroDB.org API key under Settings → Expert → Upload to online sources (Bearer token from your account)."
+
+msgctxt "#39029"
+msgid "Paste your IntroDB.app API key under Settings → Expert → Upload to online sources (typically idb_…)."
+msgstr "Paste your IntroDB.app API key under Settings → Expert → Upload to online sources (typically idb_…)."
+
+msgctxt "#39030"
+msgid "TheIntroDB.org denied access (unauthorized or forbidden). Your API key may be wrong, expired, or not allowed to submit. Copy a fresh key from your TheIntroDB account."
+msgstr "TheIntroDB.org denied access (unauthorized or forbidden). Your API key may be wrong, expired, or not allowed to submit. Copy a fresh key from your TheIntroDB account."
+
+msgctxt "#39031"
+msgid "IntroDB.app denied access (unauthorized or forbidden). Check that your API key is correct and still active in IntroDB.app."
+msgstr "IntroDB.app denied access (unauthorized or forbidden). Check that your API key is correct and still active in IntroDB.app."
+
+msgctxt "#39032"
+msgid "The service is rate-limiting this device. Wait several minutes before trying again."
+msgstr "The service is rate-limiting this device. Wait several minutes before trying again."
+
+msgctxt "#39033"
+msgid "Could not reach the server. Check your internet connection, DNS, and whether the API is reachable from this network."
+msgstr "Could not reach the server. Check your internet connection, DNS, and whether the API is reachable from this network."
+
+msgctxt "#39034"
+msgid "Unexpected server response (HTTP %s). If it persists, try again later or check the service status."
+msgstr "Unexpected server response (HTTP %s). If it persists, try again later or check the service status."
+
+msgctxt "#39037"
+msgid "Cannot upload"
+msgstr "Cannot upload"
+
+msgctxt "#39040"
+msgid "Turn on Enable upload to online sources under Settings → Expert, then open the editor again."
+msgstr "Turn on Enable upload to online sources under Settings → Expert, then open the editor again."
+
+msgctxt "#39041"
+msgid "TheIntroDB.org rejected this submission (validation or business rules). Check segment durations and their documentation."
+msgstr "TheIntroDB.org rejected this submission (validation or business rules). Check segment durations and their documentation."
+
+msgctxt "#39042"
+msgid "IntroDB.app rejected this submission. Check segment times and their API rules."
+msgstr "IntroDB.app rejected this submission. Check segment times and their API rules."
+
+msgctxt "#39043"
+msgid "These times may not meet TheIntroDB.org limits (duration and 0–6 hour window). Technical detail:"
+msgstr "These times may not meet TheIntroDB.org limits (duration and 0–6 hour window). Technical detail:"
+
+msgctxt "#39044"
+msgid "TheIntroDB.org requires a valid TMDB id for this title. Ensure library metadata includes TMDB (or enable TMDB resolution with an API key under Segment sources)."
+msgstr "TheIntroDB.org requires a valid TMDB id for this title. Ensure library metadata includes TMDB (or enable TMDB resolution with an API key under Segment sources)."
+
+msgctxt "#39045"
+msgid "IntroDB.app needs an IMDb id (show-level IMDb for TV). Fix Kodi library metadata or rescrape with IMDb."
+msgstr "IntroDB.app needs an IMDb id (show-level IMDb for TV). Fix Kodi library metadata or rescrape with IMDb."
+
+msgctxt "#39046"
+msgid "Internal error: unsupported segment type for IntroDB.app."
+msgstr "Internal error: unsupported segment type for IntroDB.app."
+
+msgctxt "#39047"
+msgid "Internal error: unsupported segment type for TheIntroDB.org."
+msgstr "Internal error: unsupported segment type for TheIntroDB.org."
 
 msgctxt "#36000"
 msgid "Enable Segment Marker"

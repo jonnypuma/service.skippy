@@ -107,6 +107,8 @@
                             <option label="Overwrite (no prompt)">OverwriteSilent</option>
                             <option label="Overwrite (ask first)">OverwriteAsk</option>
                             <option label="Merge with existing">Merge</option>
+                            <option label="Update (no prompt)">UpdateSilent</option>
+                            <option label="Update (ask first)">UpdateAsk</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -835,6 +837,50 @@
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
+                </setting>
+            </group>
+        </category>
+        <category id="online_upload" label="39000">
+            <group id="g_online_upload" label="">
+                <setting id="online_upload_enabled" type="boolean" label="39025" help="39026">
+                    <level>3</level>
+                    <default>false</default>
+                    <control type="toggle" />
+                </setting>
+                <setting id="online_upload_default_target" type="string" label="39001" help="39002">
+                    <level>3</level>
+                    <default>Both</default>
+                    <constraints>
+                        <options>
+                            <option label="Both">Both</option>
+                            <option label="TheIntroDB.org">TheIntroDB</option>
+                            <option label="IntroDB.app">IntroDBApp</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string" />
+                </setting>
+                <setting id="online_upload_theintrodb_api_key" type="string" label="39003" help="39004">
+                    <level>3</level>
+                    <default />
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>39003</heading>
+                        <hidden>true</hidden>
+                    </control>
+                </setting>
+                <setting id="online_upload_introdb_api_key" type="string" label="39005" help="39006">
+                    <level>3</level>
+                    <default />
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>39005</heading>
+                        <hidden>true</hidden>
+                    </control>
                 </setting>
             </group>
         </category>
