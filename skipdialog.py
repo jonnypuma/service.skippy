@@ -538,7 +538,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             addon = get_addon()
             smooth = addon_get_bool(addon, "smooth_progress_bar", False) if addon else False
             ups = addon_get_int(addon, "progress_bar_updates_per_second", 4) if addon else 4
-            ups = min(60, max(2, ups))
+            ups = min(120, max(2, ups))
             delay = (1.0 / ups) if smooth else 0.25
 
             current = self.player.getTime()

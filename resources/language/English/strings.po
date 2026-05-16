@@ -213,8 +213,8 @@ msgid "Progress bar updates per second"
 msgstr "Progress bar updates per second"
 
 msgctxt "#32086"
-msgid "When smooth progress is enabled, how many times per second to update the bar (2–60). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter."
-msgstr "When smooth progress is enabled, how many times per second to update the bar (2–60). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter."
+msgid "When smooth progress is enabled, how many times per second to update the bar (2–120). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter; up to 120 can help on high refresh displays."
+msgstr "When smooth progress is enabled, how many times per second to update the bar (2–120). Default 4 matches the non-smooth rate; increase for smoother motion or lower if you still see stutter; up to 120 can help on high refresh displays."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"

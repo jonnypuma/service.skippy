@@ -339,7 +339,7 @@ def main():
         "32086",
         4,
         minimum=2,
-        maximum=60,
+        maximum=120,
         step=1,
         slider=True,
         en=[
