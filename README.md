@@ -105,7 +105,7 @@ Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi
 **For reliable online lookup**, plan on one of these (you do **not** need both):
 
 1. **TMDB API key in Skippy** — In **Add-on settings -> Segment sources -> Online APIs (TMDB)**, paste a key from [themoviedb.org API settings](https://www.themoviedb.org/settings/api) (free tier is enough), **or**
-2. **[TheMovieDB Helper](https://kodi.wiki/view/Add-on:The_Movie_Database_Helper)** (`plugin.video.themoviedb.helper`) — Install and configure that add-on’s TMDB key, then enable **Use TheMovieDB Helper addon API key when empty** in Skippy’s same **Online APIs (TMDB)** section.
+2. **[TheMovieDB Helper](https://kodi.wiki/view/Add-on:The_Movie_Database_Helper)** (`plugin.video.themoviedb.helper`) — Install and configure that add-on’s TMDB key, then enable **Use TheMovieDB Helper addon API key when empty** in Skippy’s same **Online APIs (TMDB)** section. The helper depends on **`script.module.jurialmunkey`**: if your repository does not offer it, install the module from **[GitHub releases](https://github.com/jurialmunkey/script.module.jurialmunkey/releases)** (or add [jurialmunkey’s repo](https://github.com/jurialmunkey/script.module.jurialmunkey)) *before* installing the helper. Skippy lists both as **optional** dependencies in `addon.xml` so Kodi can resolve them when you opt into optional installs—**Skippy itself does not require** TMDB Helper or jurialmunkey.
 
 If neither a Skippy key nor the helper path is available, online lookup only works when Kodi’s library already exposes the IDs TheIntroDB/IntroDB need—**which is often not true** for partial or non-TMDB scrapes.
 

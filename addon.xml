@@ -1,10 +1,14 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="3.0.0"
+       version="3.0.1"
        provider-name="Skippy-McSkipface">
        
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
+        <!-- Optional: TMDB Helper requires script.module.jurialmunkey; listing it here helps Kodi
+             resolve the chain when optional dependencies are installed (repo must ship the module,
+             or install the module ZIP from jurialmunkey GitHub releases first). Skippy does not import it. -->
+        <import addon="script.module.jurialmunkey" version="0.0.0" optional="true" />
         <import addon="plugin.video.themoviedb.helper" version="0.0.0" optional="true" />
     </requires>
 

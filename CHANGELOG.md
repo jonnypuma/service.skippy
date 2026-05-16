@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.1] - 2026-05-13
+
+### Added
+- **Optional dependency** **`script.module.jurialmunkey`** in **`addon.xml`**: TheMovieDB Helper requires this module; declaring it as **`optional="true"`** on Skippy helps Kodi resolve installs when optional add-ons are enabled and the repository provides the module. Skippy does not import it directly. If installs still fail, add [jurialmunkey’s repo](https://github.com/jurialmunkey/script.module.jurialmunkey) or install **[releases](https://github.com/jurialmunkey/script.module.jurialmunkey/releases)** as ZIP before the helper.
+
 ## [3.0.0] - 2026-05-13
 
 ### Changed
