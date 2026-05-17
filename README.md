@@ -102,6 +102,7 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 - **Full** vs **Minimal** skip UI: Full = classic panel (icons, optional Close, progress bar). Minimal = small plate + Skip only; font color and plate style are configurable.
 - **Skip dialog font color**: Global preset colors (including black) applied reliably on Full and Minimal dialogs via the Python API.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
+- **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.

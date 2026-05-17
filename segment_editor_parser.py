@@ -23,6 +23,39 @@ CHAPTER_XML_SIDECAR_SUFFIXES = (
 DEFAULT_NEW_CHAPTER_XML_SUFFIX = "-chapters.xml"
 
 
+def normalize_matroska_chapter_xml_text(xml_data):
+    """
+    Fix common chapter XML issues so ElementTree can parse:
+    UTF-8 BOM, whitespace/newlines before the XML declaration, and a duplicate
+    ``<?xml ...?>`` immediately after the first (invalid but seen in the wild).
+    """
+    if xml_data is None:
+        return ""
+    if isinstance(xml_data, bytes):
+        s = xml_data.decode("utf-8", errors="replace")
+    else:
+        s = str(xml_data)
+    s = s.replace("\ufeff", "")
+    s = s.lstrip(" \t\r\n")
+    if not s:
+        return s
+    low = s.lower()
+    if low.startswith("<?xml"):
+        close1 = s.find("?>")
+        if close1 != -1:
+            tail_rest = s[close1 + 2 :]
+            tail_stripped = tail_rest.lstrip(" \t\r\n")
+            if tail_stripped.lower().startswith("<?xml"):
+                close2 = tail_stripped.find("?>")
+                if close2 != -1:
+                    s = (
+                        s[: close1 + 2]
+                        + "\n"
+                        + tail_stripped[close2 + 2 :].lstrip(" \t\r\n")
+                    )
+    return s
+
+
 def _apply_skippy_file_permissions(path):
     """Apply Default / 644 / 666 from Skippy settings (same as segment marker)."""
     try:
@@ -300,8 +333,9 @@ def safe_file_read(*paths):
 
 def _segments_from_chapter_xml(xml_data, source_label):
     """Parse Matroska-style chapter XML into SegmentItems; empty list if none."""
+    normalized = normalize_matroska_chapter_xml_text(xml_data)
     try:
-        root = ET.fromstring(xml_data)
+        root = ET.fromstring(normalized)
     except Exception as e:
         log(f"XML parse failed ({source_label}): {e}")
         return []

@@ -148,7 +148,7 @@ def main():
         0,
         "31000",
         "Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor.",
-        default="intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending",
+        default="intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending,behind the scenes,behind-the-scenes,bts,featurette",
     )
 
     g = ET.SubElement(cat, "group", id="g_seg1", label="31001")
@@ -166,7 +166,7 @@ def main():
         0,
         "31003",
         "Subset that should prompt you before skipping.",
-        default="intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on",
+        default="intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on,behind the scenes,behind-the-scenes,bts,featurette",
     )
     string_setting(
         g,
@@ -190,7 +190,7 @@ def main():
         1,
         "31006",
         "Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits",
-        default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open",
+        default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open,18:Behind the scenes,19:Featurette",
     )
     bool_setting(
         g,
@@ -230,16 +230,44 @@ def main():
         "32070",
         "SkipIfExists",
         enum_a(
-            "Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing|Update (no prompt)|Update (ask first)",
-            "SkipIfExists|OverwriteSilent|OverwriteAsk|Merge|UpdateSilent|UpdateAsk",
+            "Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing|Update (no prompt)|Update (ask first)|Update All (no prompt)|Update All (ask first)",
+            "SkipIfExists|OverwriteSilent|OverwriteAsk|Merge|UpdateSilent|UpdateAsk|UpdateAllSilent|UpdateAllAsk",
         ),
     )
     bool_setting(
         g, "save_online_chapters_backup_before_overwrite", 2, "32071", "32072", True
     )
+    bool_setting(
+        g,
+        "online_sidecar_snap_neighbor_start",
+        3,
+        "32093",
+        "32094",
+        False,
+        vis=[("save_online_segments_to_chapters_xml", "true")],
+    )
+    bool_setting(
+        g,
+        "online_sidecar_snap_neighbor_end",
+        3,
+        "32095",
+        "32096",
+        False,
+        vis=[("save_online_segments_to_chapters_xml", "true")],
+    )
+    bool_setting(
+        g,
+        "tv_prefetch_next_episode",
+        3,
+        "31013",
+        "31014",
+        True,
+        en=[("tv_use_online_segment_lookup", "true")],
+    )
 
     # ---- 30001 playback ----
     cat = ET.SubElement(section, "category", id="playback", label="30001")
+    # 32019 = Global options
     g = ET.SubElement(cat, "group", id="g_pb", label="32019")
     int_setting(
         g,
@@ -250,6 +278,18 @@ def main():
         8,
         minimum=2,
         maximum=30,
+    )
+    int_setting(
+        g,
+        "skip_jump_offset_seconds",
+        2,
+        "32091",
+        "32092",
+        0,
+        minimum=-5,
+        maximum=5,
+        step=1,
+        slider=True,
     )
     bool_setting(g, "enable_skip_movies", 0, "32010", "32087", True)
     bool_setting(
@@ -506,7 +546,6 @@ def main():
         "LocalFirst",
         enum_a("Local first|Online first", "LocalFirst|OnlineFirst"),
     )
-    bool_setting(g, "tv_prefetch_next_episode", 1, "32075", "32076", True)
     g = ET.SubElement(cat, "group", id="g_mov", label="32060")
     bool_setting(g, "movie_use_local_chapter_edl", 0, "32028", "32052", True)
     bool_setting(g, "movie_use_online_segment_lookup", 0, "32029", "32064", False)

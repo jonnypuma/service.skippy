@@ -9,6 +9,8 @@ _SAVE_CHAPTERS_OVERWRITE_ASK = "OverwriteAsk"
 _SAVE_CHAPTERS_MERGE = "Merge"
 _SAVE_CHAPTERS_UPDATE_SILENT = "UpdateSilent"
 _SAVE_CHAPTERS_UPDATE_ASK = "UpdateAsk"
+_SAVE_CHAPTERS_UPDATE_ALL_SILENT = "UpdateAllSilent"
+_SAVE_CHAPTERS_UPDATE_ALL_ASK = "UpdateAllAsk"
 
 _SAVE_ONLINE_FORMAT_BOTH = "Both"
 _SAVE_ONLINE_FORMAT_EDL = "EDL"
@@ -22,6 +24,17 @@ _POLICY_STORAGE_VALUES = frozenset(
         _SAVE_CHAPTERS_MERGE,
         _SAVE_CHAPTERS_UPDATE_SILENT,
         _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    }
+)
+
+_UPDATE_POLICIES_WITH_NEIGHBOR_SNAP = frozenset(
+    {
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     }
 )
 
@@ -32,7 +45,14 @@ _POLICY_LABEL_NORMALIZED = {
     normalize_label("Merge with existing"): _SAVE_CHAPTERS_MERGE,
     normalize_label("Update (no prompt)"): _SAVE_CHAPTERS_UPDATE_SILENT,
     normalize_label("Update (ask first)"): _SAVE_CHAPTERS_UPDATE_ASK,
+    normalize_label("Update All (no prompt)"): _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+    normalize_label("Update All (ask first)"): _SAVE_CHAPTERS_UPDATE_ALL_ASK,
 }
+
+
+def policy_allows_neighbor_snap(policy):
+    """Neighbor snap toggles apply only to Update / Update All policies (not Merge/Overwrite)."""
+    return policy in _UPDATE_POLICIES_WITH_NEIGHBOR_SNAP
 
 
 def _normalize_online_sidecar_policy(raw):

@@ -12,11 +12,11 @@ from playback_segment_cache import publish_parse_cache
 from remote_segments import (
     fetch_remote_movie_segments,
     fetch_remote_tv_segments,
-    prefetch_next_episode_segments,
 )
-from segment_editor_parser import dedupe_overlapping_same_label_segments
+from segment_editor_parser import dedupe_overlapping_same_label_segments, normalize_matroska_chapter_xml_text
 from segment_item import SegmentItem
 from service_online_policy import _normalize_segment_source_priority
+from service_segment_prefetch import schedule_tv_successor_prefetch
 from service_sidecar_paths import (
     _chapter_xml_paths_to_try,
     _edl_paths_to_try,
@@ -83,7 +83,6 @@ def _source_settings_signature(addon, playback_type):
             "tv_use_online_segment_lookup",
             "tv_segment_source_priority",
             "tv_online_merge_priority",
-            "tv_prefetch_next_episode",
         )
     elif playback_type == "movie":
         keys = (
@@ -124,6 +123,7 @@ def _parse_chapter_xml_string(xml_data):
     """Return SegmentItems from chapter XML text (Matroska-style); empty list on failure."""
     if not xml_data:
         return []
+    xml_data = normalize_matroska_chapter_xml_text(xml_data)
     try:
         root = ET.fromstring(xml_data)
     except Exception as e:
@@ -154,27 +154,64 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
     paths_to_try = _chapter_xml_paths_to_try(video_path)
 
     _log_seg_detail(f"🔍 Attempting chapter XML paths: {paths_to_try}")
-    xml_data = safe_file_read(*paths_to_try)
-    if not xml_data:
-        if update_monitor:
-            if segment_monitor is None:
-                raise TypeError(
-                    "parse_chapters(..., update_monitor=True) requires segment_monitor="
-                )
-            segment_monitor.segment_file_found = False
-            log("🚫 No chapter XML file found — segment_file_found set to False")
-        return None
 
     if update_monitor:
         if segment_monitor is None:
             raise TypeError(
                 "parse_chapters(..., update_monitor=True) requires segment_monitor="
             )
-        segment_monitor.segment_file_found = True
-        _log_seg_detail("✅ Chapter XML file found — segment_file_found set to True")
+        any_xml = False
+        seen_exist = set()
+        for path in paths_to_try:
+            if not path or path in seen_exist:
+                continue
+            seen_exist.add(path)
+            try:
+                if xbmcvfs.exists(path):
+                    any_xml = True
+                    break
+            except Exception:
+                continue
+        segment_monitor.segment_file_found = any_xml
+        if not any_xml:
+            log("🚫 No chapter XML file found — segment_file_found set to False")
+            return None
+        _log_seg_detail(
+            "✅ Chapter XML sidecar present — segment_file_found set to True"
+        )
 
-    try:
-        root = ET.fromstring(xml_data)
+    seen_paths = set()
+    for path in paths_to_try:
+        if not path or path in seen_paths:
+            continue
+        seen_paths.add(path)
+        try:
+            exists_result = False
+            try:
+                exists_result = xbmcvfs.exists(path)
+            except Exception:
+                pass
+            if not exists_result:
+                continue
+            f = xbmcvfs.File(path)
+            xml_data = f.read()
+            f.close()
+            if isinstance(xml_data, bytes):
+                xml_data = xml_data.decode("utf-8", errors="replace")
+            if not xml_data or not xml_data.strip():
+                continue
+            _log_seg_detail(f"✅ Successfully read file: {path}")
+        except Exception as e:
+            log(f"❌ Failed to read {path}: {e}")
+            continue
+
+        xml_norm = normalize_matroska_chapter_xml_text(xml_data)
+        try:
+            root = ET.fromstring(xml_norm)
+        except Exception as e:
+            _log_seg_detail(f"❌ XML parse failed for {path}: {e}")
+            continue
+
         result = []
         for atom in root.findall(".//ChapterAtom"):
             raw_label = atom.findtext(".//ChapterDisplay/ChapterString", default="")
@@ -202,11 +239,12 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
                     % (n0, len(result))
                 )
             log(f"✅ Total segments parsed from XML: {len(result)}")
-        else:
-            log("⚠ Chapter XML parsed but no valid segments found")
-        return result if result else None
-    except Exception as e:
-        log(f"❌ XML parse failed: {e}")
+            return result
+        _log_seg_detail(
+            f"⚠ Chapter XML parsed but no valid segments in {path} — trying next path"
+        )
+
+    log("⚠ No chapter XML file produced valid segments")
     return None
 
 
@@ -472,12 +510,6 @@ def _parse_source_segments_uncached(
             )
         )
 
-        if tv_online:
-            try:
-                prefetch_next_episode_segments(segment_monitor.remote_segment_cache)
-            except Exception as e:
-                log(f"⚠ Prefetch next episode failed (non-critical): {e}")
-
     elif playback_type == "movie":
         movie_local = addon_get_bool(addon, "movie_use_local_chapter_edl", True)
         movie_online = addon_get_bool(addon, "movie_use_online_segment_lookup", False)
@@ -647,4 +679,8 @@ def get_cached_source_segments(
         "segment_origin": segment_origin,
     }
     publish_parse_cache(segment_monitor.segment_parse_cache)
+    try:
+        schedule_tv_successor_prefetch(segment_monitor, path, playback_type)
+    except Exception as exc:
+        log("⚠ TV successor prefetch schedule failed: %s" % exc)
     return _clone_segments(parsed)

@@ -186,6 +186,25 @@ def addon_get_int(addon, key, default=0, minimum=None, maximum=None):
     return v
 
 
+def get_skip_jump_offset_seconds(addon):
+    """Seconds added to the computed skip destination (-5..+5). Default 0."""
+    return addon_get_int(addon, "skip_jump_offset_seconds", 0, minimum=-5, maximum=5)
+
+
+def compute_skip_seek_destination_seconds(segment, addon):
+    """
+    Seek target when skipping ``segment``: base jump (next segment start or
+    end_seconds+1) plus **Jump offset** from settings. Clamped >= 0.
+    """
+    base = (
+        segment.next_segment_start
+        if segment.next_segment_start is not None
+        else segment.end_seconds + 1.0
+    )
+    off = float(get_skip_jump_offset_seconds(addon))
+    return max(0.0, float(base) + off)
+
+
 def log(msg):
     """Standard INFO trace when verbose is on and log level is Normal or All detail."""
     addon = get_addon()
@@ -313,6 +332,7 @@ def log_playback_settings_snapshot(addon=None):
             "open_segment_editor_on_overlap=%s" % bo("open_segment_editor_on_overlap", False),
             "ignore_internal_edl_actions=%s" % bo("ignore_internal_edl_actions", True),
             "rewind_threshold_seconds=%s" % ni("rewind_threshold_seconds", 8),
+            "skip_jump_offset_seconds=%s" % ni("skip_jump_offset_seconds", 0),
             "skip_dialog_mode=%s" % tx("skip_dialog_mode", "Full"),
             "skip_dialog_positions_full_minimal=%s" % positions,
             "show_progress_bar=%s" % bo("show_progress_bar", True),
@@ -339,6 +359,9 @@ def log_playback_settings_snapshot(addon=None):
             "save_online_segments_format=%s" % tx("save_online_segments_format", "Both"),
             "save_online_chapters_existing_policy=%s" % tx("save_online_chapters_existing_policy", "SkipIfExists"),
             "save_online_chapters_backup_before_overwrite=%s" % bo("save_online_chapters_backup_before_overwrite", True),
+            "online_sidecar_snap_neighbor_start=%s" % bo("online_sidecar_snap_neighbor_start", False),
+            "online_sidecar_snap_neighbor_end=%s" % bo("online_sidecar_snap_neighbor_end", False),
+            "tv_prefetch_next_episode=%s" % bo("tv_prefetch_next_episode", True),
         ]
     )
     part_api = ", ".join(
@@ -387,7 +410,7 @@ def normalize_label(label):
 _DEFAULT_CUSTOM_SEGMENT_KEYWORDS = (
     "intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,"
     "commercial,commercials,preview,next time on,next on,sneak peek,last time on,"
-    "last on,previously on,closing,ending"
+    "last on,previously on,closing,ending,behind the scenes,behind-the-scenes,bts,featurette"
 )
 
 

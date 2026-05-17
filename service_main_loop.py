@@ -18,6 +18,7 @@ from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    compute_skip_seek_destination_seconds,
     get_addon,
     get_user_skip_mode,
     is_skip_dialog_enabled,
@@ -174,6 +175,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                         ctx.monitor._last_log_state.clear()
                                         ctx.monitor.overlap_editor_opened_for_path = None
                                         ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
+                                        ctx.monitor.prefetch_tv_scheduled_path = None
                                         log(f"✅ Replay state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
                             except RuntimeError:
                                 log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -220,6 +222,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                     ctx.monitor.skipped_to_nested_segment.clear()
                                     ctx.monitor.overlap_editor_opened_for_path = None
                                     ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
+                                    ctx.monitor.prefetch_tv_scheduled_path = None
                                     # Clear log cache on new video to allow re-logging
                                     ctx.monitor._last_log_state.clear()
                                     log(f"✅ New video state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
@@ -692,8 +695,8 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                     ctx.monitor.prompted.add(seg_id)
                     continue
     
-                # Correctly handle jump point from the new logic
-                jump_to = segment.next_segment_start if segment.next_segment_start is not None else segment.end_seconds + 1.0
+                # Correctly handle jump point from the new logic (+ optional Jump offset)
+                jump_to = compute_skip_seek_destination_seconds(segment, addon)
     
                 if behavior == "auto":
                     log(f"⚙ Auto-skip behavior triggered for segment ID {seg_id} ({segment.segment_type_label})")

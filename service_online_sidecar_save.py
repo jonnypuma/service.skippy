@@ -25,6 +25,8 @@ from service_online_policy import (
     _SAVE_CHAPTERS_OVERWRITE_ASK,
     _SAVE_CHAPTERS_OVERWRITE_SILENT,
     _SAVE_CHAPTERS_SKIP_IF_EXISTS,
+    _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
     _SAVE_CHAPTERS_UPDATE_ASK,
     _SAVE_CHAPTERS_UPDATE_SILENT,
     _SAVE_ONLINE_FORMAT_BOTH,
@@ -32,6 +34,7 @@ from service_online_policy import (
     _SAVE_ONLINE_FORMAT_XML,
     _normalize_online_sidecar_policy,
     _normalize_save_online_format,
+    policy_allows_neighbor_snap,
 )
 from service_segment_sources import (
     _chapter_window_overlap,
@@ -61,262 +64,17 @@ def _log_sidecar_detail(msg):
     log_service_detail(msg, tag="sidecar")
 
 
-_CANCEL_ACTION_IDS = (10, 92, 216)
-_MOVE_LEFT = getattr(xbmcgui, "ACTION_MOVE_LEFT", 1)
-_MOVE_RIGHT = getattr(xbmcgui, "ACTION_MOVE_RIGHT", 2)
-_SELECT_ACTIONS = (
-    getattr(xbmcgui, "ACTION_SELECT_ITEM", 7),
-    11,
-    13,
-    100,
-    101,
-)
+from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
 
 
-def _addon_skin_media(filename):
-    addon = get_addon()
-    if not addon:
-        return filename
-    full = os.path.join(
-        addon.getAddonInfo("path"),
-        "resources",
-        "skins",
-        "default",
-        "media",
-        filename,
-    )
-    return full if xbmcvfs.exists(full) else "-"
-
-
-def _segment_style_push_button(x, y, w, h, label, tex_focus):
-    """ControlButton matching list-row actions: font10, grey/white, - / button_focus, centered label."""
-    try:
-        al = xbmcgui.ALIGN_CENTER
-    except AttributeError:
-        al = 6
-    try:
-        return xbmcgui.ControlButton(
-            x,
-            y,
-            w,
-            h,
-            label,
-            tex_focus,
-            "-",
-            0,
-            0,
-            al,
-            font="font10",
-            textColor="0xFFC0C0C0",
-            focusedColor="0xFFFFFFFF",
-            shadowColor="0xFF000000",
-        )
-    except (TypeError, ValueError):
-        pass
-    try:
-        return xbmcgui.ControlButton(
-            x,
-            y,
-            w,
-            h,
-            label,
-            tex_focus,
-            "-",
-            0,
-            0,
-            al,
-            "font10",
-            "0xFFC0C0C0",
-            "0xFF808080",
-        )
-    except (TypeError, ValueError):
-        pass
-    b = xbmcgui.ControlButton(x, y, w, h, label, tex_focus, "-")
-    try:
-        b.setLabel(
-            label,
-            "font10",
-            "0xFFC0C0C0",
-            "0xFF808080",
-            "0xFF000000",
-            "0xFFFFFFFF",
-        )
-    except Exception:
-        try:
-            b.setLabel(label, "font10")
-        except Exception:
-            pass
-    return b
-
-
-# Sidecar confirm dialog uses the same base resolution as Segment Marker discovery
-# (WindowDialog is typically 1280×720); 1080p coords clip buttons off-screen.
-_SIDECAR_ASK_W = 1280
-_SIDECAR_ASK_H = 720
-
-
-class _SidecarOverwriteYesNoDialog(xbmcgui.WindowDialog):
-    """
-    Scrollable body taller than stock yesno. Layout is 1280×720, top-left aligned
-    panel; Yes / Cancel match Segment Editor list buttons (font10, textures).
-    """
-
-    def __init__(self, heading, message):
-        super().__init__()
-        self.result = False
-        tex = _addon_skin_media("white.png")
-        tex_focus = _addon_skin_media("button_focus.png")
-        # Full-screen dim
-        try:
-            bg = xbmcgui.ControlImage(0, 0, _SIDECAR_ASK_W, _SIDECAR_ASK_H, tex)
-            bg.setColorDiffuse("D0000000")
-            self.addControl(bg)
-        except Exception:
-            pass
-        # Panel anchored top-left with margins
-        p_x, p_y = 36, 28
-        p_w, p_h = _SIDECAR_ASK_W - 72, _SIDECAR_ASK_H - 56
-        panel = xbmcgui.ControlImage(p_x, p_y, p_w, p_h, tex)
-        panel.setColorDiffuse("F0222222")
-        self.addControl(panel)
-        inner_x = p_x + 20
-        inner_w = p_w - 40
-        self.addControl(
-            xbmcgui.ControlLabel(
-                inner_x,
-                p_y + 12,
-                inner_w,
-                40,
-                heading or "",
-                "font16",
-                "FFFFFFFF",
-            )
-        )
-        btn_w, btn_h = 118, 30
-        btn_y = p_y + p_h - btn_h - 16
-        tb_top = p_y + 58
-        tb_h = max(140, btn_y - 10 - tb_top)
-        self._body = xbmcgui.ControlTextBox(
-            inner_x, tb_top, inner_w, tb_h, "font13", "FFE8E8E8"
-        )
-        self.addControl(self._body)
-        self._body.setText(message or "")
-        addon = get_addon()
-        try:
-            if addon:
-                ylbl = addon.getLocalizedString(35018)
-                clbl = addon.getLocalizedString(35019)
-            else:
-                ylbl, clbl = "Yes", "Cancel"
-        except Exception:
-            ylbl, clbl = "Yes", "Cancel"
-        if not (ylbl or "").strip():
-            ylbl = "Yes"
-        if not (clbl or "").strip():
-            clbl = "Cancel"
-        btn_gap = 14
-        total_bw = btn_w * 2 + btn_gap
-        btn_x0 = inner_x + max(0, (inner_w - total_bw) // 2)
-        # Match SegmentEditor list buttons: font10, lightgrey / white focus, - / button_focus
-        self._btn_yes = _segment_style_push_button(
-            btn_x0, btn_y, btn_w, btn_h, ylbl, tex_focus
-        )
-        self._btn_cancel = _segment_style_push_button(
-            btn_x0 + btn_w + btn_gap, btn_y, btn_w, btn_h, clbl, tex_focus
-        )
-        self.addControl(self._btn_yes)
-        self.addControl(self._btn_cancel)
-        self._yes_id = self._btn_yes.getId()
-        self._cancel_id = self._btn_cancel.getId()
-        self._body_id = self._body.getId()
-        self._choice_yes = True
-        try:
-            self._btn_yes.setNavigation(
-                self._btn_yes, self._btn_yes, self._btn_cancel, self._btn_cancel
-            )
-            self._btn_cancel.setNavigation(
-                self._btn_cancel,
-                self._btn_cancel,
-                self._btn_yes,
-                self._btn_yes,
-            )
-        except Exception:
-            pass
-
-    def onInit(self):
-        try:
-            self.setFocus(self._btn_yes)
-            self._choice_yes = True
-        except Exception:
-            pass
-
-    def onClick(self, controlId):
-        try:
-            cid = (
-                controlId.getId()
-                if hasattr(controlId, "getId")
-                else int(controlId)
-            )
-            if cid == self._yes_id:
-                self.result = True
-                self.close()
-            elif cid == self._cancel_id:
-                self.result = False
-                self.close()
-        except Exception:
-            pass
-
-    def onControl(self, control):
-        try:
-            cid = control.getId()
-            if cid == self._yes_id:
-                self.result = True
-                self.close()
-            elif cid == self._cancel_id:
-                self.result = False
-                self.close()
-        except Exception:
-            pass
-
-    def onAction(self, action):
-        try:
-            aid = action.getId()
-        except Exception:
-            return
-        if aid in _CANCEL_ACTION_IDS:
-            self.result = False
-            self.close()
-            return
-        if aid == _MOVE_LEFT:
-            self._choice_yes = True
-            try:
-                self.setFocus(self._btn_yes)
-            except Exception:
-                pass
-            return
-        if aid == _MOVE_RIGHT:
-            self._choice_yes = False
-            try:
-                self.setFocus(self._btn_cancel)
-            except Exception:
-                pass
-            return
-        if aid in _SELECT_ACTIONS:
-            fid = None
-            try:
-                fid = self.getFocusId()
-            except Exception:
-                pass
-            if fid == self._yes_id:
-                self.result = True
-                self.close()
-            elif fid == self._cancel_id:
-                self.result = False
-                self.close()
-            else:
-                # Focus often sits on the TextBox or nowhere — use last L/R choice
-                self.result = bool(self._choice_yes)
-                self.close()
+def _sidecar_update_ask_heading_body(policy, scope):
+    """Localized (heading id, body id) for Update vs Update All confirmation."""
+    is_all = policy == _SAVE_CHAPTERS_UPDATE_ALL_ASK
+    if scope == "xml":
+        return (35020, 35021) if is_all else (35012, 35013)
+    if scope == "edl":
+        return (35022, 35023) if is_all else (35014, 35015)
+    return (35024, 35025) if is_all else (35016, 35017)
 
 
 def _suppress_online_sidecar_save_prompt(video_path, segment_monitor):
@@ -338,21 +96,24 @@ def _sidecar_overwrite_yesno(heading, message):
         _log_sidecar_detail("Sidecar prompt suppressed: player state unavailable")
         return False
 
+    addon = get_addon()
     try:
-        dlg = _SidecarOverwriteYesNoDialog(heading, message or "")
-        dlg.show()
-        xbmc.sleep(50)
-        try:
-            dlg.setFocus(dlg._btn_yes)
-        except Exception:
-            pass
-        dlg.doModal()
-        out = bool(dlg.result)
-        try:
-            del dlg
-        except Exception:
-            pass
-        return out
+        if addon:
+            ylbl = addon.getLocalizedString(35018)
+            clbl = addon.getLocalizedString(35019)
+        else:
+            ylbl, clbl = "Yes", "Cancel"
+    except Exception:
+        ylbl, clbl = "Yes", "Cancel"
+    if not (ylbl or "").strip():
+        ylbl = "Yes"
+    if not (clbl or "").strip():
+        clbl = "Cancel"
+
+    try:
+        return sidecar_overwrite_yesno_show(
+            heading, message or "", ylbl, clbl
+        )
     except Exception as e:
         log("⚠ Tall sidecar prompt failed (%s) — falling back to stock yesno" % e)
         try:
@@ -512,12 +273,13 @@ def _pick_best_local_index_for_online(result, used, canon_o, o):
 
 def _sidecar_update_plan(existing_items, online_items):
     """
-    Returns ``(change_rows, updated_list)`` where ``change_rows`` are dicts with
-    keys local_label, old_start, old_end, new_start, new_end, online_label,
-    online_source — only entries whose times actually change.
+    Returns ``(change_rows, updated_list, unmatched_online)`` where
+    ``unmatched_online`` lists online SegmentItems with a recognized bucket but
+    no local row of that type (candidates for Update All insert).
     """
     result = list(existing_items)
     changes = []
+    unmatched = []
     used = set()
     onlines = sorted(online_items, key=lambda o: float(o.start_seconds))
     for o in onlines:
@@ -526,6 +288,7 @@ def _sidecar_update_plan(existing_items, online_items):
             continue
         best_i = _pick_best_local_index_for_online(result, used, canon_o, o)
         if best_i is None:
+            unmatched.append(o)
             continue
         e = result[best_i]
         ns, ne = float(o.start_seconds), float(o.end_seconds)
@@ -545,11 +308,180 @@ def _sidecar_update_plan(existing_items, online_items):
         result[best_i] = _segment_item_with_times(e, ns, ne)
         used.add(best_i)
     result.sort(key=lambda s: float(s.start_seconds))
-    return changes, result
+    return changes, result, unmatched
 
 
 def _update_sidecar_segments(existing_items, online_items):
     return _sidecar_update_plan(existing_items, online_items)[1]
+
+
+_SNAP_TRIM_EPS = 1e-6
+
+
+def _neighbor_snap_flags_for_policy(policy, addon):
+    """Read snap toggles only for Update / Update All; always off for Merge/Overwrite."""
+    if not policy_allows_neighbor_snap(policy) or not addon:
+        return False, False
+    return (
+        addon_get_bool(addon, "online_sidecar_snap_neighbor_start", False),
+        addon_get_bool(addon, "online_sidecar_snap_neighbor_end", False),
+    )
+
+
+def _finalize_sidecar_after_update_policy(existing_items, online_segments, policy, addon):
+    """
+    Matched buckets are retimed from online. Optional neighbor snap trims overlaps
+    caused by those retimes (Update and Update All). Update All then appends
+    missing online buckets and runs the same snap rules per insert.
+    """
+    snap_s, snap_e = _neighbor_snap_flags_for_policy(policy, addon)
+    ch, base, unmatched = _sidecar_update_plan(
+        list(existing_items), online_segments
+    )
+    items = list(base)
+    if snap_s or snap_e:
+        _snap_after_retimed_segments(items, ch, snap_s, snap_e)
+        items[:] = _prune_zero_or_negative_length_segments(items)
+        items[:] = list(dedupe_overlapping_same_label_segments(items, 1.5))
+    if policy in (
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
+        if not unmatched:
+            return items
+        return _insert_unmatched_with_neighbor_snaps(
+            items, unmatched, snap_s, snap_e
+        )
+    return items
+
+
+def _snap_after_retimed_segments(items, change_rows, snap_start, snap_end):
+    """After bucket retimes, trim neighbors overlapping the new windows (mutates ``items``)."""
+    if not (snap_start or snap_end) or not change_rows:
+        return
+    anchors = []
+    for r in change_rows:
+        lab = normalize_label(r["local_label"] or "")
+        ns, ne = float(r["new_start"]), float(r["new_end"])
+        for s in items:
+            if normalize_label(s.segment_type_label or "") != lab:
+                continue
+            if (
+                abs(float(s.start_seconds) - ns) < 1e-3
+                and abs(float(s.end_seconds) - ne) < 1e-3
+            ):
+                if s not in anchors:
+                    anchors.append(s)
+                break
+    for a in sorted(anchors, key=lambda s: float(s.start_seconds)):
+        _apply_neighbor_snap_trims(items, a, snap_start, snap_end)
+        items.sort(key=lambda s: float(s.start_seconds))
+
+
+def _anchor_wrap_prefers_snap_end(anchor):
+    """
+    When one local row fully contains the anchor window, a single row can only
+    receive one trim. Credits/preview-style anchors trim the neighbor's **end**
+    to the anchor **start** (e.g. main ends where credits start). Intro/recap
+    anchors trim the neighbor's **start** to the anchor **end** (e.g. main
+    resumes after intro). Separate prologue/main rows each get their own case
+    (left overlap / wrap) without splitting.
+    """
+    b = remote_payload_label_to_online_bucket(anchor.segment_type_label or "")
+    return b in ("credits", "preview")
+
+
+def _apply_neighbor_snap_trims(items, anchor, snap_start, snap_end):
+    """
+    Trim **distinct** overlapping neighbors: left-side overlap → optional
+    **snap_end** (neighbor ends at anchor start); right-side overlap →
+    **snap start** (neighbor starts at anchor end). A single row that **fully
+    contains** the anchor is **never** split; one trim is applied from anchor
+    type (see ``_anchor_wrap_prefers_snap_end``). Iterate backwards for stable
+    indices.
+    """
+    ns = float(anchor.start_seconds)
+    ne = float(anchor.end_seconds)
+    eps = _SNAP_TRIM_EPS
+    idx = len(items) - 1
+    while idx >= 0:
+        other = items[idx]
+        if other is anchor:
+            idx -= 1
+            continue
+        os_ = float(other.start_seconds)
+        oe = float(other.end_seconds)
+        if _overlap_duration(ns, ne, os_, oe) <= eps:
+            idx -= 1
+            continue
+        if os_ <= ns + eps and oe >= ne - eps:
+            prefer_end = _anchor_wrap_prefers_snap_end(anchor)
+            if prefer_end:
+                if snap_end and ns > os_ + eps:
+                    items[idx] = _segment_item_with_times(other, os_, ns)
+            else:
+                if snap_start and oe > ne + eps:
+                    items[idx] = _segment_item_with_times(other, ne, oe)
+            idx -= 1
+            continue
+        if os_ + eps < ns < oe <= ne + eps:
+            if snap_end:
+                new_oe = ns
+                if new_oe > os_ + eps:
+                    items[idx] = _segment_item_with_times(other, os_, new_oe)
+            idx -= 1
+            continue
+        if ns - eps <= os_ < ne < oe - eps:
+            if snap_start:
+                new_os = ne
+                if new_os + eps < oe:
+                    items[idx] = _segment_item_with_times(other, new_os, oe)
+            idx -= 1
+            continue
+        idx -= 1
+
+
+def _prune_zero_or_negative_length_segments(items):
+    out = []
+    for s in items:
+        if float(s.end_seconds) > float(s.start_seconds) + _SNAP_TRIM_EPS:
+            out.append(s)
+    return out
+
+
+def _insert_unmatched_with_neighbor_snaps(base_list, unmatched, snap_start, snap_end):
+    items = list(base_list)
+    for u in sorted(unmatched, key=lambda x: float(x.start_seconds)):
+        n = SegmentItem(
+            float(u.start_seconds),
+            float(u.end_seconds),
+            u.segment_type_label or "segment",
+            source=getattr(u, "source", None) or "online",
+        )
+        items.append(n)
+        _apply_neighbor_snap_trims(items, n, snap_start, snap_end)
+        items.sort(key=lambda s: float(s.start_seconds))
+    items = _prune_zero_or_negative_length_segments(items)
+    return dedupe_overlapping_same_label_segments(items, 1.5)
+
+
+def _lines_for_sidecar_preview_items(final_items, max_rows=36):
+    lines = []
+    if not final_items:
+        lines.append("  (empty)")
+        return lines
+    for s in sorted(final_items, key=lambda x: float(x.start_seconds))[:max_rows]:
+        lines.append(
+            "  • %s  %s – %s"
+            % (
+                s.segment_type_label or "?",
+                seconds_to_hms(float(s.start_seconds)),
+                seconds_to_hms(float(s.end_seconds)),
+            )
+        )
+    if len(final_items) > max_rows:
+        lines.append("  … +%d more" % (len(final_items) - max_rows))
+    return lines
 
 
 def _lines_for_update_changes(change_rows, max_rows=14):
@@ -658,20 +590,76 @@ def _build_sidecar_ask_detail(
     """
     try:
         lines = _summarize_online_by_source(online_segments)
-        if policy == _SAVE_CHAPTERS_UPDATE_ASK:
+        if policy in (
+            _SAVE_CHAPTERS_UPDATE_ASK,
+            _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+        ):
+            addon = get_addon()
             if scope_xml and xml_path:
                 raw = safe_file_read(xml_path)
                 existing = _parse_chapter_xml_string(raw) if raw else []
-                ch, _ = _sidecar_update_plan(list(existing), online_segments)
+                ch = _sidecar_update_plan(list(existing), online_segments)[0]
                 lines.append("")
                 lines.append("[Chapters XML]")
                 lines.extend(_lines_for_update_changes(ch))
             if scope_edl and edl_path:
                 existing_e = parse_edl(video_path, update_monitor=False)
-                ch2, _ = _sidecar_update_plan(list(existing_e or []), online_segments)
+                ch2 = _sidecar_update_plan(
+                    list(existing_e or []), online_segments
+                )[0]
                 lines.append("")
                 lines.append("[EDL]")
                 lines.extend(_lines_for_update_changes(ch2))
+            snap_s, snap_e = _neighbor_snap_flags_for_policy(policy, addon)
+            if snap_s or snap_e:
+                lines.append("")
+                if addon:
+                    y_on = addon.getLocalizedString(35029)
+                    n_off = addon.getLocalizedString(35030)
+                    lines.append(addon.getLocalizedString(35026))
+                    lines.append(
+                        addon.getLocalizedString(35027)
+                        % (y_on if snap_s else n_off)
+                    )
+                    lines.append(
+                        addon.getLocalizedString(35028)
+                        % (y_on if snap_e else n_off)
+                    )
+                else:
+                    lines.append("[Neighbor snap]")
+                    lines.append(
+                        "Snap neighbor start: %s" % ("On" if snap_s else "Off")
+                    )
+                    lines.append(
+                        "Snap neighbor end: %s" % ("On" if snap_e else "Off")
+                    )
+            if scope_xml and xml_path:
+                raw = safe_file_read(xml_path)
+                existing = _parse_chapter_xml_string(raw) if raw else []
+                final = _finalize_sidecar_after_update_policy(
+                    list(existing), online_segments, policy, addon
+                )
+                lines.append("")
+                hdr = (
+                    addon.getLocalizedString(35031)
+                    if addon
+                    else "If you accept, this sidecar will contain:"
+                )
+                lines.append("[Chapters XML] %s" % hdr)
+                lines.extend(_lines_for_sidecar_preview_items(final))
+            if scope_edl and edl_path:
+                existing_e = parse_edl(video_path, update_monitor=False) or []
+                final_e = _finalize_sidecar_after_update_policy(
+                    list(existing_e), online_segments, policy, addon
+                )
+                lines.append("")
+                hdr = (
+                    addon.getLocalizedString(35031)
+                    if addon
+                    else "If you accept, this sidecar will contain:"
+                )
+                lines.append("[EDL] %s" % hdr)
+                lines.extend(_lines_for_sidecar_preview_items(final_e))
         elif policy == _SAVE_CHAPTERS_OVERWRITE_ASK:
             if scope_xml and xml_path:
                 raw = safe_file_read(xml_path)
@@ -796,6 +784,8 @@ def _chapter_xml_save_content_unchanged(video_path, segments, policy):
         _SAVE_CHAPTERS_OVERWRITE_ASK,
         _SAVE_CHAPTERS_UPDATE_SILENT,
         _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     ):
         return False
     if not segments:
@@ -812,10 +802,17 @@ def _chapter_xml_save_content_unchanged(video_path, segments, policy):
         return _segments_signature_for_save_compare(
             merged
         ) == _segments_signature_for_save_compare(existing_items)
-    if policy in (_SAVE_CHAPTERS_UPDATE_SILENT, _SAVE_CHAPTERS_UPDATE_ASK):
+    if policy in (
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
         if not existing_items and raw:
             return False
-        updated = _update_sidecar_segments(list(existing_items), segments)
+        updated = _finalize_sidecar_after_update_policy(
+            list(existing_items), segments, policy, get_addon()
+        )
         return _segments_signature_for_save_compare(
             updated
         ) == _segments_signature_for_save_compare(existing_items)
@@ -829,6 +826,8 @@ def _edl_save_content_unchanged(video_path, segments, policy):
         _SAVE_CHAPTERS_OVERWRITE_ASK,
         _SAVE_CHAPTERS_UPDATE_SILENT,
         _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     ):
         return False
     if not segments:
@@ -854,16 +853,25 @@ def _edl_save_content_unchanged(video_path, segments, policy):
         return _segments_signature_for_save_compare(
             merged
         ) == _segments_signature_for_save_compare(existing_items)
-    if policy in (_SAVE_CHAPTERS_UPDATE_SILENT, _SAVE_CHAPTERS_UPDATE_ASK):
+    if policy in (
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
         if not existing_items:
             raw = safe_file_read(existing_path)
             if raw and str(raw).strip():
                 return False
-            updated = _update_sidecar_segments([], segments)
+            updated = _finalize_sidecar_after_update_policy(
+                [], segments, policy, get_addon()
+            )
             return _segments_signature_for_save_compare(
                 updated
             ) == _segments_signature_for_save_compare(existing_items)
-        updated = _update_sidecar_segments(list(existing_items), segments)
+        updated = _finalize_sidecar_after_update_policy(
+            list(existing_items), segments, policy, get_addon()
+        )
         return _segments_signature_for_save_compare(
             updated
         ) == _segments_signature_for_save_compare(existing_items)
@@ -998,22 +1006,38 @@ def _maybe_save_online_segments_chapters_xml(
             "Merging online segments into existing chapter XML → %d chapter atom(s)"
             % len(items_to_write)
         )
-    elif policy in (_SAVE_CHAPTERS_UPDATE_SILENT, _SAVE_CHAPTERS_UPDATE_ASK):
+    elif policy in (
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
         if not existing_items and raw:
             log("⚠️ Update skipped: could not parse existing chapter XML; not writing")
             return
-        items_to_write = _update_sidecar_segments(list(existing_items), segments)
+        items_to_write = _finalize_sidecar_after_update_policy(
+            list(existing_items), segments, policy, addon
+        )
         if _segments_signature_for_save_compare(
             items_to_write
         ) == _segments_signature_for_save_compare(existing_items):
             _log_sidecar_detail(
-                "Skipping save chapters.xml: no matched segments to update from online"
+                "Skipping save chapters.xml: no changes from online update policy"
             )
             return
-        log(
-            "Updating matched segments in chapter XML from online → %d chapter atom(s)"
-            % len(items_to_write)
-        )
+        if policy in (
+            _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+        ):
+            log(
+                "Update All: chapter XML from online → %d chapter atom(s)"
+                % len(items_to_write)
+            )
+        else:
+            log(
+                "Updating matched segments in chapter XML from online → %d chapter atom(s)"
+                % len(items_to_write)
+            )
     elif policy in (
         _SAVE_CHAPTERS_OVERWRITE_SILENT,
         _SAVE_CHAPTERS_OVERWRITE_ASK,
@@ -1048,7 +1072,10 @@ def _maybe_save_online_segments_chapters_xml(
             _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
         _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
-    elif policy == _SAVE_CHAPTERS_UPDATE_ASK and not skip_overwrite_prompt:
+    elif policy in (
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ) and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
             video_path,
             segments,
@@ -1058,10 +1085,11 @@ def _maybe_save_online_segments_chapters_xml(
             xml_path=existing_path,
             edl_path=None,
         )
-        msg = addon.getLocalizedString(35013)
+        h, mb = _sidecar_update_ask_heading_body(policy, "xml")
+        msg = addon.getLocalizedString(mb)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35012), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(h), msg)
         if not yes:
             log("User declined update of existing chapter XML — not saving")
             _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
@@ -1074,6 +1102,8 @@ def _maybe_save_online_segments_chapters_xml(
         _SAVE_CHAPTERS_MERGE,
         _SAVE_CHAPTERS_UPDATE_SILENT,
         _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     ):
         _backup_sidecar_file(addon, existing_path)
 
@@ -1141,28 +1171,44 @@ def _maybe_save_online_segments_edl(
             "Merging online segments into existing EDL → %d entr(y/ies)"
             % len(items_to_video)
         )
-    elif policy in (_SAVE_CHAPTERS_UPDATE_SILENT, _SAVE_CHAPTERS_UPDATE_ASK):
+    elif policy in (
+        _SAVE_CHAPTERS_UPDATE_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
         if not existing_items:
             raw = safe_file_read(existing_path)
             if raw and str(raw).strip():
                 log("⚠️ Update skipped: could not read/parse existing EDL; not writing")
                 return
-            items_to_video = _update_sidecar_segments([], segments)
+            items_to_video = _finalize_sidecar_after_update_policy(
+                [], segments, policy, addon
+            )
         else:
-            items_to_video = _update_sidecar_segments(
-                list(existing_items), segments
+            items_to_video = _finalize_sidecar_after_update_policy(
+                list(existing_items), segments, policy, addon
             )
         if _segments_signature_for_save_compare(
             items_to_video
         ) == _segments_signature_for_save_compare(existing_items):
             _log_sidecar_detail(
-                "Skipping save EDL: no matched segments to update from online"
+                "Skipping save EDL: no changes from online update policy"
             )
             return
-        log(
-            "Updating matched segments in existing EDL from online → %d entr(y/ies)"
-            % len(items_to_video)
-        )
+        if policy in (
+            _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+        ):
+            log(
+                "Update All: EDL from online → %d entr(y/ies)"
+                % len(items_to_video)
+            )
+        else:
+            log(
+                "Updating matched segments in existing EDL from online → %d entr(y/ies)"
+                % len(items_to_video)
+            )
     elif policy in (
         _SAVE_CHAPTERS_OVERWRITE_SILENT,
         _SAVE_CHAPTERS_OVERWRITE_ASK,
@@ -1197,7 +1243,10 @@ def _maybe_save_online_segments_edl(
             _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
         _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
-    elif policy == _SAVE_CHAPTERS_UPDATE_ASK and not skip_overwrite_prompt:
+    elif policy in (
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ) and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
             video_path,
             segments,
@@ -1207,10 +1256,11 @@ def _maybe_save_online_segments_edl(
             xml_path=None,
             edl_path=existing_path,
         )
-        msg = addon.getLocalizedString(35015)
+        h, mb = _sidecar_update_ask_heading_body(policy, "edl")
+        msg = addon.getLocalizedString(mb)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35014), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(h), msg)
         if not yes:
             log("User declined update of existing EDL — not saving")
             _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
@@ -1223,6 +1273,8 @@ def _maybe_save_online_segments_edl(
         _SAVE_CHAPTERS_MERGE,
         _SAVE_CHAPTERS_UPDATE_SILENT,
         _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     ):
         _backup_sidecar_file(addon, existing_path)
 
@@ -1303,7 +1355,11 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
     skip_xml_prompt = False
     skip_edl_prompt = False
 
-    if policy in (_SAVE_CHAPTERS_OVERWRITE_ASK, _SAVE_CHAPTERS_UPDATE_ASK):
+    if policy in (
+        _SAVE_CHAPTERS_OVERWRITE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ASK,
+        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    ):
         xml_existing = (
             _find_existing_sidecar_chapter_xml_path(video_path) if write_xml else None
         )
@@ -1320,7 +1376,7 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             h, m = (
                 (35002, 35003)
                 if is_over
-                else (35016, 35017)
+                else _sidecar_update_ask_heading_body(policy, "both")
             )
             detail = _build_sidecar_ask_detail(
                 video_path,
@@ -1349,7 +1405,7 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             h, m = (
                 (35000, 35004)
                 if is_over
-                else (35012, 35013)
+                else _sidecar_update_ask_heading_body(policy, "xml")
             )
             detail = _build_sidecar_ask_detail(
                 video_path,
@@ -1381,7 +1437,7 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             h, m = (
                 (35000, 35005)
                 if is_over
-                else (35014, 35015)
+                else _sidecar_update_ask_heading_body(policy, "edl")
             )
             detail = _build_sidecar_ask_detail(
                 video_path,

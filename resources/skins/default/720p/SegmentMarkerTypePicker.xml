@@ -43,11 +43,21 @@
         <colordiffuse>F0202020</colordiffuse>
       </control>
 
+      <!-- Heading stripe (matches Segment Editor button-row darkening) -->
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>640</width>
+        <height>52</height>
+        <texture>white.png</texture>
+        <colordiffuse>E0000000</colordiffuse>
+      </control>
+
       <control type="label" id="9101">
         <left>30</left>
-        <top>25</top>
+        <top>10</top>
         <width>580</width>
-        <height>45</height>
+        <height>40</height>
         <label>Choose segment type</label>
         <font>font30</font>
         <textcolor>FFFFFFFF</textcolor>
@@ -58,7 +68,7 @@
 
       <control type="label" id="9102">
         <left>30</left>
-        <top>80</top>
+        <top>60</top>
         <width>580</width>
         <height>30</height>
         <label>Choose the label for the marked segment.</label>
@@ -71,9 +81,9 @@
 
       <control type="list" id="9100">
         <left>30</left>
-        <top>125</top>
+        <top>102</top>
         <width>580</width>
-        <height>300</height>
+        <height>312</height>
         <itemlayout width="580" height="44">
           <control type="label">
             <left>16</left>
@@ -113,11 +123,21 @@
         </focusedlayout>
       </control>
 
+      <!-- Footer stripe -->
+      <control type="image">
+        <left>0</left>
+        <top>424</top>
+        <width>640</width>
+        <height>76</height>
+        <texture>white.png</texture>
+        <colordiffuse>E0000000</colordiffuse>
+      </control>
+
       <control type="label" id="9103">
         <left>30</left>
-        <top>450</top>
+        <top>444</top>
         <width>580</width>
-        <height>30</height>
+        <height>36</height>
         <label>Enter/OK selects. Back/Esc cancels.</label>
         <font>font12</font>
         <textcolor>FFB0B0B0</textcolor>

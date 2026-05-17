@@ -13,7 +13,6 @@ from urllib.request import Request, urlopen
 
 import xbmc
 import xbmcaddon
-import xbmcgui
 import xbmcvfs
 
 from remote_segments import (
@@ -22,6 +21,8 @@ from remote_segments import (
     get_enriched_item_for_path,
     normalize_imdb_id,
 )
+from segment_editor_parser import seconds_to_hms
+from skippy_editor_modal_skin import show_editor_ok
 
 THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v2/submit"
 INTRODB_SUBMIT_URL = "https://api.introdb.app/submit"
@@ -472,6 +473,48 @@ def _detail_from_parsed(parsed: dict | None, raw_err: str | None) -> str:
     return ""
 
 
+def _upload_time_range(start: float, end: float) -> str:
+    return "%s – %s" % (seconds_to_hms(float(start)), seconds_to_hms(float(end)))
+
+
+def _upload_result_sections(
+    title_ok: str,
+    title_skip: str,
+    title_err: str,
+    lines_ok: list,
+    lines_skip: list,
+    lines_err: list,
+    more_ellipsis: str,
+    none_placeholder: str,
+    *,
+    max_lines: int = 22,
+) -> str:
+    """Build scrollable summary for the Segment Editor upload results modal."""
+
+    def _one_section(title: str, n: int, lines: list) -> str:
+        out = ["%s (%d)" % (title, n)]
+        if not lines:
+            out.append("• %s" % none_placeholder)
+        else:
+            head = lines[:max_lines]
+            out.extend("• %s" % x for x in head)
+            if len(lines) > max_lines:
+                try:
+                    tail = more_ellipsis % (len(lines) - max_lines,)
+                except (TypeError, ValueError):
+                    tail = "+%d more" % (len(lines) - max_lines)
+                out.append("• %s" % tail)
+        return "\n".join(out)
+
+    return "\n\n".join(
+        (
+            _one_section(title_ok, len(lines_ok), lines_ok),
+            _one_section(title_skip, len(lines_skip), lines_skip),
+            _one_section(title_err, len(lines_err), lines_err),
+        )
+    )
+
+
 def _submit_http_user_message(
     api: str, code: int, parsed: dict | None, raw_err: str | None
 ) -> str:
@@ -501,7 +544,7 @@ def upload_all_segments(video_path, segments, target: str) -> None:
     """
     addon = xbmcaddon.Addon(ADDON_ID)
     if not segments:
-        xbmcgui.Dialog().ok(
+        show_editor_ok(
             _translate(39013),
             _translate(39014),
         )
@@ -511,7 +554,7 @@ def upload_all_segments(video_path, segments, target: str) -> None:
     item = get_enriched_item_for_path(video_path)
     ctx = build_upload_context(item)
     if not ctx:
-        xbmcgui.Dialog().ok(
+        show_editor_ok(
             _translate(39013),
             _translate(39016),
         )
@@ -537,7 +580,7 @@ def upload_all_segments(video_path, segments, target: str) -> None:
         if need_idb and not idb_key:
             body_parts.append(_translate(39029))
         body = "\n\n".join(body_parts) if body_parts else _translate(39015)
-        xbmcgui.Dialog().ok(
+        show_editor_ok(
             _translate(39037),
             body,
         )
@@ -547,13 +590,23 @@ def upload_all_segments(video_path, segments, target: str) -> None:
     lines_ok = []
     lines_skip = []
     lines_err = []
+    lbl_tidb = _translate(39054)
+    lbl_idb = _translate(39055)
+    if not (lbl_tidb or "").strip():
+        lbl_tidb = "TheIntroDB.org"
+    if not (lbl_idb or "").strip():
+        lbl_idb = "IntroDB.app"
 
     for seg in segments:
         label_norm = getattr(seg, "segment_type_label", "") or ""
         mapped = classify_segment_label_normalized(label_norm)
+        tr = _upload_time_range(seg.start_seconds, seg.end_seconds)
         if mapped is None:
             raw = getattr(seg, "raw_label", label_norm)
-            lines_skip.append("%s — %s" % (raw, _translate(39020)))
+            lines_skip.append(
+                "%s — %s — %s"
+                % (raw, tr, _translate(39020))
+            )
             _up_log_info(
                 "skip (not uploaded: label not mapped to online types): raw=%r norm=%r %s"
                 % (raw, label_norm, media_key)
@@ -568,7 +621,8 @@ def upload_all_segments(video_path, segments, target: str) -> None:
             fp = _fingerprint("theintrodb", media_key, tidb_seg, start, end)
             if _history_contains("theintrodb", fp):
                 lines_skip.append(
-                    "TheIntroDB: %s — %s" % (raw, _translate(39021))
+                    "%s — %s (%s) — %s — %s"
+                    % (lbl_tidb, raw, tidb_seg, tr, _translate(39021))
                 )
                 _up_log_info(
                     "skip TheIntroDB (already in local submit history): %r segment=%s %.3f-%.3f fp=%s %s"
@@ -578,20 +632,27 @@ def upload_all_segments(video_path, segments, target: str) -> None:
                 ok, err = _submit_theintrodb(ctx, tidb_seg, start, end, t_db_key)
                 if ok:
                     _history_record("theintrodb", fp)
-                    lines_ok.append("TheIntroDB: %s (%s)" % (raw, tidb_seg))
+                    lines_ok.append(
+                        "%s — %s (%s) — %s"
+                        % (lbl_tidb, raw, tidb_seg, tr)
+                    )
                     _up_log_info(
                         "ok TheIntroDB: %r segment=%s %.3f-%.3f fp=%s %s"
                         % (raw, tidb_seg, start, end, _fp_short(fp), media_key)
                     )
                 else:
-                    lines_err.append("TheIntroDB %s: %s" % (raw, err))
+                    lines_err.append(
+                        "%s — %s (%s) — %s — %s"
+                        % (lbl_tidb, raw, tidb_seg, tr, err)
+                    )
             xbmc.sleep(200)
 
         if do_idb:
             fp_i = _fingerprint("introdb", media_key, idb_seg, start, end)
             if _history_contains("introdb", fp_i):
                 lines_skip.append(
-                    "IntroDB.app: %s — %s" % (raw, _translate(39021))
+                    "%s — %s (%s) — %s — %s"
+                    % (lbl_idb, raw, idb_seg, tr, _translate(39021))
                 )
                 _up_log_info(
                     "skip IntroDB.app (already in local submit history): %r segment_type=%s %.3f-%.3f fp=%s %s"
@@ -601,26 +662,38 @@ def upload_all_segments(video_path, segments, target: str) -> None:
                 ok, err = _submit_introdb_app(ctx, idb_seg, start, end, idb_key)
                 if ok:
                     _history_record("introdb", fp_i)
-                    lines_ok.append("IntroDB.app: %s (%s)" % (raw, idb_seg))
+                    lines_ok.append(
+                        "%s — %s (%s) — %s"
+                        % (lbl_idb, raw, idb_seg, tr)
+                    )
                     _up_log_info(
                         "ok IntroDB.app: %r segment_type=%s %.3f-%.3f fp=%s %s"
                         % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
                     )
                 else:
-                    lines_err.append("IntroDB.app %s: %s" % (raw, err))
+                    lines_err.append(
+                        "%s — %s (%s) — %s — %s"
+                        % (lbl_idb, raw, idb_seg, tr, err)
+                    )
             xbmc.sleep(200)
 
-    summary_parts = [
-        "%s: %d" % (_translate(39022), len(lines_ok)),
-        "%s: %d" % (_translate(39023), len(lines_skip)),
-        "%s: %d" % (_translate(39024), len(lines_err)),
-    ]
-    detail = "\n".join(summary_parts)
-    if lines_err:
-        detail += "\n\n" + "\n".join(lines_err[:12])
-        if len(lines_err) > 12:
-            detail += "\n..."
-    xbmcgui.Dialog().ok(_translate(39013), detail)
+    more_el = _translate(39048)
+    if not (more_el or "").strip():
+        more_el = "… and %d more (not shown)."
+    none_ph = _translate(39049)
+    if not (none_ph or "").strip():
+        none_ph = "(none)"
+    detail = _upload_result_sections(
+        _translate(39022),
+        _translate(39023),
+        _translate(39024),
+        lines_ok,
+        lines_skip,
+        lines_err,
+        more_el,
+        none_ph,
+    )
+    show_editor_ok(_translate(39013), detail)
     _up_log_info(
         "Upload finished: ok=%d skip=%d err=%d — %s"
         % (len(lines_ok), len(lines_skip), len(lines_err), media_key)

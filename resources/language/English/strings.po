@@ -79,6 +79,14 @@ msgctxt "#31010"
 msgid "Segment Keywords"
 msgstr "Segment Keywords"
 
+msgctxt "#31013"
+msgid "Prefetch next episode"
+msgstr "Prefetch next episode"
+
+msgctxt "#31014"
+msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
+msgstr "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
+
 # Dialog Settings
 msgctxt "#32000"
 msgid "Button Focus Style"
@@ -240,6 +248,14 @@ msgctxt "#32090"
 msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
 msgstr "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
 
+msgctxt "#32091"
+msgid "Jump offset"
+msgstr "Jump offset"
+
+msgctxt "#32092"
+msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
+msgstr "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
+
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
 msgstr "Use local chapter / EDL files"
@@ -328,14 +344,6 @@ msgctxt "#32074"
 msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
 msgstr "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
 
-msgctxt "#32075"
-msgid "Pre-fetch segments for next episode"
-msgstr "Pre-fetch segments for next episode"
-
-msgctxt "#32076"
-msgid "When TV online lookup is enabled and a playlist contains more episodes, Skippy pre-fetches segment data for the next episode in the background so it is ready when playback transitions."
-msgstr "When TV online lookup is enabled and a playlist contains more episodes, Skippy pre-fetches segment data for the next episode in the background so it is ready when playback transitions."
-
 msgctxt "#32045"
 msgid "Online segments sidecar"
 msgstr "Online segments sidecar"
@@ -361,8 +369,8 @@ msgid "If matching sidecar already exists"
 msgstr "If matching sidecar already exists"
 
 msgctxt "#32070"
-msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range. Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); never remove locals; optional prompt."
-msgstr "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range. Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); never remove locals; optional prompt."
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range (neighbor snap settings are ignored). Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); optional neighbor snap trims overlaps from those new times; optional prompt. Update All: same as Update, plus append online segments whose type had no local row, with snap again per insert if enabled. Neighbor snap only affects Update and Update All, not Merge or Overwrite."
+msgstr "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range (neighbor snap settings are ignored). Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); optional neighbor snap trims overlaps from those new times; optional prompt. Update All: same as Update, plus append online segments whose type had no local row, with snap again per insert if enabled. Neighbor snap only affects Update and Update All, not Merge or Overwrite."
 
 msgctxt "#32071"
 msgid "Back up sidecar files before overwrite, merge, or update"
@@ -401,24 +409,24 @@ msgid "Update chapter XML from online?"
 msgstr "Update chapter XML from online?"
 
 msgctxt "#35013"
-msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
-msgstr "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. A preview at the bottom lists all chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. A preview at the bottom lists all chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
 
 msgctxt "#35014"
 msgid "Update EDL from online?"
 msgstr "Update EDL from online?"
 
 msgctxt "#35015"
-msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. Continue? (Copies to `.bck` first if backup is enabled.)"
-msgstr "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. A preview at the bottom lists all rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. A preview at the bottom lists all rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
 
 msgctxt "#35016"
 msgid "Update chapter XML and EDL from online?"
 msgstr "Update chapter XML and EDL from online?"
 
 msgctxt "#35017"
-msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
-msgstr "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Previews at the bottom show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Previews at the bottom show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
 
 msgctxt "#35018"
 msgid "Yes"
@@ -427,6 +435,70 @@ msgstr "Yes"
 msgctxt "#35019"
 msgid "Cancel"
 msgstr "Cancel"
+
+msgctxt "#32093"
+msgid "Snap neighbor start"
+msgstr "Snap neighbor start"
+
+msgctxt "#32094"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+
+msgctxt "#32095"
+msgid "Snap neighbor end"
+msgstr "Snap neighbor end"
+
+msgctxt "#32096"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+
+msgctxt "#35020"
+msgid "Update chapter XML from online (merge missing)?"
+msgstr "Update chapter XML from online (merge missing)?"
+
+msgctxt "#35021"
+msgid "Matched local chapters get new times from online. Online segments with no same-type local chapter are added. If Expert snap options are on, overlapping neighbors may be trimmed. The preview below lists the chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local chapters get new times from online. Online segments with no same-type local chapter are added. If Expert snap options are on, overlapping neighbors may be trimmed. The preview below lists the chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+
+msgctxt "#35022"
+msgid "Update EDL from online (merge missing)?"
+msgstr "Update EDL from online (merge missing)?"
+
+msgctxt "#35023"
+msgid "Matched local EDL rows get new times from online. Missing online types are added as new rows; optional neighbor snap applies as for chapter XML. The preview lists rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matched local EDL rows get new times from online. Missing online types are added as new rows; optional neighbor snap applies as for chapter XML. The preview lists rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+
+msgctxt "#35024"
+msgid "Update chapter XML and EDL from online (merge missing)?"
+msgstr "Update chapter XML and EDL from online (merge missing)?"
+
+msgctxt "#35025"
+msgid "Both sidecars: Update All rules (matched times + append missing types; optional neighbor snap). Previews below show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Both sidecars: Update All rules (matched times + append missing types; optional neighbor snap). Previews below show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+
+msgctxt "#35026"
+msgid "[Neighbor snap]"
+msgstr "[Neighbor snap]"
+
+msgctxt "#35027"
+msgid "Snap neighbor start: %s"
+msgstr "Snap neighbor start: %s"
+
+msgctxt "#35028"
+msgid "Snap neighbor end: %s"
+msgstr "Snap neighbor end: %s"
+
+msgctxt "#35029"
+msgid "On"
+msgstr "On"
+
+msgctxt "#35030"
+msgid "Off"
+msgstr "Off"
+
+msgctxt "#35031"
+msgid "If you accept, this sidecar will contain:"
+msgstr "If you accept, this sidecar will contain:"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
@@ -734,6 +806,22 @@ msgstr "Internal error: unsupported segment type for IntroDB.app."
 msgctxt "#39047"
 msgid "Internal error: unsupported segment type for TheIntroDB.org."
 msgstr "Internal error: unsupported segment type for TheIntroDB.org."
+
+msgctxt "#39048"
+msgid "… and %d more (not shown)."
+msgstr "… and %d more (not shown)."
+
+msgctxt "#39049"
+msgid "(none)"
+msgstr "(none)"
+
+msgctxt "#39054"
+msgid "TheIntroDB.org"
+msgstr "TheIntroDB.org"
+
+msgctxt "#39055"
+msgid "IntroDB.app"
+msgstr "IntroDB.app"
 
 msgctxt "#36000"
 msgid "Enable Segment Marker"

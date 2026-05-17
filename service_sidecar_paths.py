@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Sidecar path discovery (.edl, chapter XML variants) and change signatures for cache invalidation."""
 import os
+import xml.etree.ElementTree as ET
 
 import xbmc
 import xbmcvfs
 
-from segment_editor_parser import CHAPTER_XML_SIDECAR_SUFFIXES
+from segment_editor_parser import CHAPTER_XML_SIDECAR_SUFFIXES, normalize_matroska_chapter_xml_text
 from settings_utils import get_addon, log, log_service_detail
 
 
@@ -174,10 +175,42 @@ def playback_path_supports_sidecar_chapters_xml(video_path):
 
 
 def _find_existing_sidecar_chapter_xml_path(video_path):
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return p
-    return None
+    """
+    Prefer the first sidecar path that exists and is valid XML after normalization
+    (see ``normalize_matroska_chapter_xml_text``). If every existing file is corrupt,
+    return the first existing path so callers can overwrite/repair it.
+    """
+    paths = _chapter_xml_paths_to_try(video_path)
+    seen = set()
+    first_existing = None
+    for p in paths:
+        if not p or p in seen:
+            continue
+        seen.add(p)
+        try:
+            exists = xbmcvfs.exists(p)
+        except Exception:
+            continue
+        if not exists:
+            continue
+        if first_existing is None:
+            first_existing = p
+        try:
+            f = xbmcvfs.File(p)
+            data = f.read()
+            f.close()
+        except Exception:
+            continue
+        if isinstance(data, bytes):
+            data = data.decode("utf-8", errors="replace")
+        if not data or not str(data).strip():
+            continue
+        try:
+            ET.fromstring(normalize_matroska_chapter_xml_text(data))
+        except Exception:
+            continue
+        return p
+    return first_existing
 
 
 def _default_new_sidecar_chapter_xml_path(video_path):

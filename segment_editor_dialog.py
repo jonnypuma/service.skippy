@@ -1308,6 +1308,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 TARGET_THEINTRODB,
                 upload_all_segments,
             )
+            from skippy_editor_modal_skin import show_editor_list_pick, show_editor_ok
         except Exception as exc:
             log_error("online_segment_upload import failed: %s" % exc)
             return
@@ -1316,7 +1317,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             return
         if addon.getSetting("online_upload_enabled") != "true":
             try:
-                xbmcgui.Dialog().ok(
+                show_editor_ok(
                     addon.getLocalizedString(39013),
                     addon.getLocalizedString(39040),
                 )
@@ -1336,9 +1337,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         ]
         heading = addon.getLocalizedString(39009)
         try:
-            idx = xbmcgui.Dialog().select(heading, labels, preselect=pre)
-        except TypeError:
-            idx = xbmcgui.Dialog().select(heading, labels)
+            idx = show_editor_list_pick(heading, labels, preselect=pre)
+        except Exception:
+            try:
+                idx = xbmcgui.Dialog().select(heading, labels, preselect=pre)
+            except TypeError:
+                idx = xbmcgui.Dialog().select(heading, labels)
         if idx < 0:
             return
         upload_all_segments(self.video_path, self.segments, order[idx])

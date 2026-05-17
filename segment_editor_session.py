@@ -6,9 +6,9 @@ import os
 
 import xbmc
 import xbmcgui
-import xbmcvfs
 
 from playback_segment_cache import get_parse_cache_snapshot
+from remote_segments import paths_refer_to_same_video
 from segment_editor_dialog import SegmentEditorDialog
 from segment_editor_parser import (
     SegmentItem as EditorSegmentItem,
@@ -83,9 +83,22 @@ def get_initial_segments_for_segment_editor(video_path):
     if not video_path:
         return None
     cache = get_parse_cache_snapshot()
-    if not cache or cache.get("path") != video_path:
+    cache_path = (cache or {}).get("path")
+    if not cache or not cache_path:
+        log_always("Segment editor: no playback parse cache snapshot")
+        return None
+    if not paths_refer_to_same_video(cache_path, video_path):
+        log_always(
+            "Segment editor: cache path differs from playing path "
+            "(not using online snapshot) cache=%r play=%r"
+            % (cache_path, video_path)
+        )
         return None
     if cache.get("segment_origin") != "remote":
+        log_always(
+            "Segment editor: snapshot segment_origin=%r (need remote) — loading from disk"
+            % (cache.get("segment_origin"),)
+        )
         return None
     raw_segs = cache.get("segments") or []
     if not raw_segs:
@@ -93,32 +106,27 @@ def get_initial_segments_for_segment_editor(video_path):
 
     item = _get_active_video_player_item()
     file_from_player = (item or {}).get("file")
-    if file_from_player and file_from_player != video_path:
-        try:
-            if xbmcvfs.translatePath(file_from_player) != xbmcvfs.translatePath(
-                video_path
-            ):
-                log_always(
-                    "Segment editor: playing file differs from editor path "
-                    "(not using online cache snapshot)"
-                )
-                return None
-        except Exception:
-            log_always(
-                "Segment editor: could not compare paths (not using online cache snapshot)"
-            )
-            return None
+    if file_from_player and not paths_refer_to_same_video(
+        file_from_player, video_path
+    ):
+        log_always(
+            "Segment editor: Player.GetItem file differs from editor path "
+            "(not using online cache snapshot) item=%r editor=%r"
+            % (file_from_player, video_path)
+        )
+        return None
 
     editor_segments = []
     for seg in _clone_playback_segments_for_editor(raw_segs):
         try:
             label_ui = format_segment_label_for_ui(seg.segment_type_label)
+            src = getattr(seg, "source", None) or "online"
             editor_segments.append(
                 EditorSegmentItem(
                     seg.start_seconds,
                     seg.end_seconds,
                     label_ui,
-                    source="online",
+                    source=src,
                     action_type=seg.action_type,
                 )
             )
@@ -127,7 +135,7 @@ def get_initial_segments_for_segment_editor(video_path):
     if editor_segments:
         log_always(
             f"Segment editor: loaded {len(editor_segments)} segment(s) "
-            "from playback online cache (source=online)"
+            "from playback online cache (per-row source preserved)"
         )
     return editor_segments or None
 

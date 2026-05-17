@@ -1,5 +1,43 @@
 # Changelog
 
+## [3.3.0] - 2026-05-13
+
+### Changed
+- **Segment Editor + online playback snapshot**: Loading the editor from the published parse cache (merged online-first timeline) now treats the service snapshot path and `Player.getPlayingFile()` / `Player.GetItem.file` as the **same video** when `paths_refer_to_same_video` matches, instead of requiring identical strings (fixes NFS / Kodi path forms where overlap auto-open still fell back to chapter XML). Logs a clear reason when the snapshot is skipped (`segment_editor_session.py`). **RunScript** (auto-open overlap) runs in a **separate** Python invoker, so the in-memory `playback_segment_cache` snapshot is **not** visible there — the service now **mirrors** the same parse payload to `Window(10000)` so `get_parse_cache_snapshot()` works from `segment_marker.py` (`playback_segment_cache.py`).
+- **Editor yes/no and OK + scroll modals** (`skippy_editor_modal_skin.py`): **Up** / **Down** and **Page Up** / **Page Down** move the message while **Yes**, **Cancel**, or **OK** is focused (`ControlTextBox.scroll`), because the text area often cannot receive focus in a Python `WindowDialog`. **▲** / **▼** buttons left of **Yes** / **OK** use the same page step for remote-friendly scrolling and show normal button focus.
+- **Chapter XML sidecars** (`segment_editor_parser.normalize_matroska_chapter_xml_text`, `service_segment_sources.parse_chapters`, `service_sidecar_paths._find_existing_sidecar_chapter_xml_path`): Tolerate BOM, leading whitespace before `<?xml`, and a duplicate XML declaration. The service **tries each chapter sidecar path** until one parses (no longer stops at the first file that merely exists). Existing sidecar discovery prefers the **first path that is valid XML** so a corrupt `-chapters.xml` does not block updates or force the editor onto a different file than the save logic.
+
+### Added
+- **Behind the scenes / featurette** (local sidecars only): Default **Segment keywords to watch for** includes `behind the scenes`, `behind-the-scenes`, `bts`, and `featurette`. Those four default to **ask to skip** (with intros, recaps, previews, etc.). **EDL action mapping** includes `18:Behind the scenes` and `19:Featurette`. Segment Marker and Segment Editor type pickers read the keyword list. New installs get these defaults; existing profiles keep saved values until edited.
+- **TV prefetch next episode** (Advanced): Under **Segment Settings → Online segments sidecar**, **Prefetch next episode** (default on, requires **Use online segment lookup** for TV). When **Segment source priority** is **Online first**, Skippy finds the **library** successor (in-season `E+1`, else next season’s smallest episode index), fetches **merged online-only** segments into a separate **`prefetch_segment_cache`** (not mixed with `remote_segment_cache` until handoff), and applies them on playback **only** when the started file matches that successor (path + `build_tv_cache_key`). Cleared when the service starts; discarded on priority/local-only paths and when scheduling fails. **Verbose → All detail** logs lines tagged **`[service.skippy - prefetch]`** (schedule, store, reject) plus normal **`[service.skippy - remote]`** handoff messages. Implementation: **`prefetch_segment_cache.py`**, **`service_segment_prefetch.py`**, **`remote_segments`** (`resolve_tv_library_successor_episode_item`, `fetch_remote_tv_segments_core`, handoff in `fetch_remote_tv_segments`), **`service_segment_sources`**, **`service` / `service_main_loop`** (`prefetch_tv_scheduled_path`). Strings **31013–31014**.
+- **Segment Editor** when opened from **online-first** playback snapshot: each row keeps its API **Source** (**theintrodb** / **introdb**) instead of a single **online** label (`segment_editor_session.py`).
+- **Neighbor snap** (Expert): applies to **Update** and **Update All** only. **Snap neighbor end** trims a neighbor that overlaps the **start** of the anchor (e.g. prologue **end** → intro **start**). **Snap neighbor start** trims a neighbor overlapping past the anchor **end** (e.g. main **start** → intro **end**; epilogue **start** → credits **end**). Separate rows each get at most one trim; **no** chapter/EDL row is duplicated into two. If a **single** local row fully **wraps** the anchor (one segment covering the whole intro/credits window), only **one** trim runs on that row: **intro/recap** anchors use **snap start** (resume after anchor); **credits/preview** anchors use **snap end** (truncate before anchor). Prefer prologue / main / epilogue as distinct rows for full control with both toggles on.
+- **Update / Update All confirmation**: **Neighbor snap** On/Off is shown when either snap is enabled. Previews reflect retime + snap + (for Update All) inserted segments.
+
+## [3.2.1] - 2026-05-13
+
+### Removed
+- **TV next-episode prefetch** (`tv_prefetch_next_episode`, playlist-based online warm-up): Little benefit for small payloads; removed setting **32075–32076**, `prefetch_next_episode_segments` / `_get_playlist_next_episode` from `remote_segments.py`, and the call from `service_segment_sources.py`.
+
+## [3.2.0] - 2026-05-13
+
+### Added
+- **Jump offset** (Advanced): Under **Playback and Skip Dialog → Global options**, a **−5…+5 s** slider (default 0) adds to the computed skip seek target for **Auto** and **Ask** (after confirm) paths. Negative lands earlier (e.g. still watch the tail of an intro); positive lands later; seek is clamped **≥ 0**. Setting id `skip_jump_offset_seconds`; strings **32091–32092**.
+
+### Changed
+- **Segment upload results** modal (`online_segment_upload.py`): Lists **Successful submissions**, **Skipped**, and **Errors** with bullet lines per segment—**API** (TheIntroDB.org / IntroDB.app), **label**, **online bucket**, **time range**, and for skips/errors the **reason** or message. New strings **39048–39049** (truncation / empty placeholder), **39054–39055** (API short names).
+
+## [3.1.7] - 2026-05-13
+
+### Changed
+- **Editor-styled modals** (`skippy_editor_modal_skin.py`): Shared **white.png** stripes (**E0000000**, same as the Segment Editor seek/action row overlay) on **heading** and **button/footer** rows for tall Yes/Cancel, **OK + scroll**, and **vertical list pick** dialogs.
+- **Online sidecar overwrite/update prompt**: Uses the shared **EditorTallYesNoDialog** (striped header/footer); implementation moved from `service_online_sidecar_save.py` into `skippy_editor_modal_skin.py`.
+- **Segment Editor → Upload**: “Upload chapter XML and EDL…” **target** picker uses **show_editor_list_pick** instead of Kodi `Dialog().select`; errors and **upload results** summary use **show_editor_ok** (`online_segment_upload.py`, `segment_editor_dialog.py`).
+- **Segment label / type picker** (`SegmentMarkerTypePicker.xml`): **Heading** and **footer** stripes for parity with the editor.
+
+### Notes
+- Other Segment Editor flows still use Kodi’s stock **ok**, **yesno**, **input**, and **select** (e.g. edit times, delete confirm, jump-to-segment list, embedded chapter import). Those can be migrated later to the same helpers if desired.
+
 ## [3.1.6] - 2026-05-13
 
 ### Changed

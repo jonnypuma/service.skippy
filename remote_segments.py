@@ -26,7 +26,14 @@ import xbmc
 import xbmcvfs
 
 from segment_item import SegmentItem
-from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log_remote, parse_kodi_jsonrpc_raw
+from settings_utils import (
+    addon_get_bool,
+    addon_get_setting_text,
+    get_addon,
+    log_remote,
+    log_service_detail,
+    parse_kodi_jsonrpc_raw,
+)
 
 ADDON_ID = "service.skippy"
 
@@ -800,6 +807,122 @@ def get_enriched_item_for_path(video_path):
     return item
 
 
+def episode_runtime_seconds_for_prefetch(episode_id):
+    """Episode duration in seconds for online API window clamp (prefetch path)."""
+    try:
+        eid = int(episode_id)
+    except (TypeError, ValueError):
+        return 0.0
+    if eid <= 0:
+        return 0.0
+    det = jsonrpc(
+        "VideoLibrary.GetEpisodeDetails",
+        {"episodeid": eid, "properties": ["runtime"]},
+        log_errors=False,
+    )
+    if det.get("error"):
+        return 0.0
+    ed = (det.get("result") or {}).get("episodedetails") or {}
+    rt = ed.get("runtime")
+    try:
+        return float(rt)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def resolve_tv_library_successor_episode_item(item):
+    """
+    Library-based successor: same show, episode + 1 in-season if present; else
+    first season with number ``season + 1`` and smallest episode number in that season.
+    """
+    if not item or (item.get("type") or "").lower() != "episode":
+        return None
+    ts = _resolve_tvshow_id(item)
+    cur_s = parse_int(item.get("season"))
+    cur_e = parse_int(item.get("episode"))
+    if ts is None or cur_s is None or cur_e is None:
+        return None
+    try:
+        ts_i = int(ts)
+        cur_si = int(cur_s)
+        cur_ei = int(cur_e)
+    except (TypeError, ValueError):
+        return None
+
+    r = jsonrpc(
+        "VideoLibrary.GetEpisodes",
+        {
+            "tvshowid": ts_i,
+            "season": cur_si,
+            "properties": _GET_EPISODES_PROPERTIES,
+        },
+        log_errors=False,
+    )
+    if r.get("error"):
+        return None
+    eps = (r.get("result") or {}).get("episodes") or []
+    target_row = None
+    for ep in eps:
+        if parse_int(ep.get("episode")) == cur_ei + 1:
+            target_row = ep
+            break
+
+    if not target_row:
+        r2 = jsonrpc(
+            "VideoLibrary.GetEpisodes",
+            {
+                "tvshowid": ts_i,
+                "season": cur_si + 1,
+                "properties": _GET_EPISODES_PROPERTIES,
+            },
+            log_errors=False,
+        )
+        if r2.get("error"):
+            return None
+        eps2 = (r2.get("result") or {}).get("episodes") or []
+        if not eps2:
+            return None
+        ep_nums = []
+        for e in eps2:
+            en = parse_int(e.get("episode"))
+            if en is not None:
+                ep_nums.append(en)
+        if not ep_nums:
+            return None
+        min_e = min(ep_nums)
+        for e in eps2:
+            if parse_int(e.get("episode")) == min_e:
+                target_row = e
+                break
+
+    if not target_row:
+        return None
+
+    eid = target_row.get("episodeid")
+    try:
+        eid = int(eid)
+    except (TypeError, ValueError):
+        return None
+    if eid <= 0:
+        return None
+    path_hint = target_row.get("file")
+    ed, _ = _fetch_episode_details(eid, path_hint)
+    if not ed:
+        return None
+    out = {
+        "type": "episode",
+        "id": eid,
+        "file": ed.get("file") or path_hint,
+    }
+    for k in ("season", "episode", "uniqueid", "imdbnumber", "tvshowid", "title"):
+        if ed.get(k) is not None:
+            out[k] = ed[k]
+    st = ed.get("showtitle") or ed.get("tvshowtitle")
+    if st:
+        out["showtitle"] = st
+    return out
+
+
 def _use_filename_season_episode_fallback(item):
     """
     Season/episode from Kodi library metadata take priority. Parse SxxExx from the path only
@@ -1568,13 +1691,13 @@ def fetch_remote_movie_segments(total_time, cache):
     return list(merged)
 
 
-def fetch_remote_tv_segments(total_time, cache):
+def fetch_remote_tv_segments_core(item, total_time, cache):
     """
-    Fetch intro/recap SegmentItems for the current TV episode. Uses cache dict keyed by episode ids.
+    Fetch intro/recap SegmentItems for TV ``item`` (library episode dict).
+    Uses ``cache`` (typically ``remote_segment_cache`` or a fresh ``{}`` for prefetch-only fetches).
     """
-    item = get_enriched_playing_item()
-    if not item:
-        _rlog("Remote TV segments: no enriched playing item")
+    if not item or (item.get("type") or "").lower() != "episode":
+        _rlog("Remote TV segments core: not an episode item")
         return []
 
     context = build_tv_episode_context(item)
@@ -1619,97 +1742,65 @@ def fetch_remote_tv_segments(total_time, cache):
     return list(merged)
 
 
-# ---------------------------------------------------------------------------
-# Playlist / Up-Next prefetch
-# ---------------------------------------------------------------------------
+def _try_tv_prefetch_handoff(item, cache):
+    """Apply successor prefetch when playing file and cache key match; discard prefetch otherwise."""
+    from prefetch_segment_cache import (
+        consume_tv_prefetch_entry,
+        peek_tv_prefetch_for_playing_path,
+    )
 
-
-def _get_playlist_next_episode():
-    """
-    Return the next item in Kodi's video playlist after the current position,
-    or None if there is no next item or the playlist is not applicable.
-    """
-    try:
-        query = {
-            "jsonrpc": "2.0",
-            "id": "PlaylistGetItems",
-            "method": "Playlist.GetItems",
-            "params": {
-                "playlistid": 1,
-                "properties": ["file", "showtitle", "season", "episode", "uniqueid", "tvshowid", "title"],
-            },
-        }
-        resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
-        items = resp.get("result", {}).get("items", [])
-        if not items or len(items) < 2:
-            return None
-
-        query_pos = {
-            "jsonrpc": "2.0",
-            "id": "PlayerGetProperties",
-            "method": "Player.GetProperties",
-            "params": {"playerid": 1, "properties": ["playlistposition"]},
-        }
-        resp_pos = json.loads(xbmc.executeJSONRPC(json.dumps(query_pos)))
-        pos = resp_pos.get("result", {}).get("playlistposition", -1)
-        if pos < 0 or pos + 1 >= len(items):
-            return None
-
-        next_item = items[pos + 1]
-        if (next_item.get("type") or "").lower() != "episode":
-            return None
-        return next_item
-    except Exception as e:
-        _rlog(f"Playlist next episode lookup failed: {e}")
+    playing_path = item.get("file") or _get_playing_file_path()
+    if not playing_path:
+        return None
+    entry = peek_tv_prefetch_for_playing_path(playing_path)
+    if not entry:
         return None
 
+    context = build_tv_episode_context(item)
+    key = build_tv_cache_key(context) if context else None
+    segs = entry.get("segments") or []
+    exp_key = entry.get("cache_key")
+    tags = sorted({getattr(s, "source", "?") for s in segs})
 
-def prefetch_next_episode_segments(cache):
-    """
-    If the setting is enabled and the playlist has a next episode,
-    build context and fetch segments so they're cached for instant use.
-    Call this in background (e.g. after current episode's segments are loaded).
-    """
-    addon = get_addon()
-    if not addon:
-        return
-    if not addon_get_bool(addon, "tv_use_online_segment_lookup", False):
-        return
-    if not addon_get_bool(addon, "tv_prefetch_next_episode", True):
-        return
-
-    next_item = _get_playlist_next_episode()
-    if not next_item:
-        _rlog("Prefetch: no next episode in playlist")
-        return
-
-    context = build_tv_episode_context(next_item)
-    if not context:
-        _rlog("Prefetch: could not build context for next episode")
-        return
-
-    key = build_tv_cache_key(context)
-    if key in cache:
-        _rlog(f"Prefetch: cache already has key={key}")
-        return
-
-    _rlog(
-        "Prefetch: fetching segments for next episode S%sE%s show='%s'"
-        % (
-            context.get("season"),
-            context.get("episode"),
-            (context.get("show_title") or "")[:40],
+    if key and exp_key == key and segs:
+        consume_tv_prefetch_entry()
+        cache[key] = list(segs)
+        _rlog(
+            "TV prefetch handoff: %d segment(s) for %s key=%s sources=%s"
+            % (len(segs), os.path.basename(str(playing_path)), key, tags)
         )
-    )
+        log_service_detail(
+            "prefetch handoff OK: segments=%d key=%s sources=%s path=%r"
+            % (len(segs), key, ",".join(tags), playing_path),
+            tag="prefetch",
+        )
+        return list(segs)
 
-    the_segs = fetch_theintrodb_segments(context, 0)
-    intro_segs = fetch_introdb_segments(context, 0)
-    if _online_merge_introdb_primary("tv"):
-        merged = merge_remote_segments(intro_segs, the_segs)
-    else:
-        merged = merge_remote_segments(the_segs, intro_segs)
-    cache[key] = merged
+    consume_tv_prefetch_entry()
     _rlog(
-        "Prefetch: cached %d segment(s) for key=%s (TheIntroDB=%d, IntroDB.app=%d)"
-        % (len(merged), key, len(the_segs), len(intro_segs))
+        "TV prefetch handoff rejected (mismatch or empty): expected_key=%s got_key=%s segs=%d"
+        % (exp_key, key, len(segs))
     )
+    log_service_detail(
+        "prefetch handoff REJECTED: expected_key=%s got_key=%s segcount=%d path=%r"
+        % (exp_key, key, len(segs), playing_path),
+        tag="prefetch",
+    )
+    return None
+
+
+def fetch_remote_tv_segments(total_time, cache):
+    """
+    Fetch intro/recap SegmentItems for the current TV episode. Uses cache dict keyed by episode ids.
+    Applies **prefetch** handoff when the playing file matches a stored successor fetch.
+    """
+    item = get_enriched_playing_item()
+    if not item:
+        _rlog("Remote TV segments: no enriched playing item")
+        return []
+
+    handoff = _try_tv_prefetch_handoff(item, cache)
+    if handoff is not None:
+        return handoff
+
+    return fetch_remote_tv_segments_core(item, total_time, cache)

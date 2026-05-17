@@ -17,6 +17,7 @@ from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    compute_skip_seek_destination_seconds,
     get_user_skip_mode,
     get_addon,
     log,
@@ -31,6 +32,7 @@ from settings_utils import (
 from keymap_utils import install_marker_keymap, install_editor_keymap
 from marker_indicator import sync_marker_pending_indicator
 from playback_segment_cache import publish_parse_cache
+from prefetch_segment_cache import clear_prefetch_segment_cache
 from segment_editor_utils import set_editor_modal_open
 from service_online_sidecar_save import (
     maybe_save_online_segments_to_chapters_xml as _maybe_save_online_segments_to_chapters_xml_impl,
@@ -94,6 +96,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.overlap_editor_opened_for_path = None
         # Overwrite/update ask was answered (Yes or No) for this file — no re-prompt until next title.
         self.online_sidecar_save_prompt_suppressed_path = None
+        clear_prefetch_segment_cache()
+        self.prefetch_tv_scheduled_path = None
 
     def onNotification(self, sender, method, data):
         """Open segment editor when triggered via JSON-RPC NotifyAll (legacy: service.segmenteditor)."""
@@ -782,7 +786,7 @@ def parse_and_process_segments(path, current_time=None, playback_type=None):
             else:
                 # No more segments within current segment, break
                 break
-    
+
     # Optional: open Segment Editor once per file when overlaps/nesting remain (skip_overlapping off).
     if (
         has_overlap_or_nested
@@ -997,6 +1001,7 @@ while not monitor.abortRequested():
                                     monitor._last_log_state.clear()
                                     monitor.overlap_editor_opened_for_path = None
                                     monitor.online_sidecar_save_prompt_suppressed_path = None
+                                    monitor.prefetch_tv_scheduled_path = None
                                     log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
                         except RuntimeError:
                             log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -1043,6 +1048,7 @@ while not monitor.abortRequested():
                                 monitor.skipped_to_nested_segment.clear()
                                 monitor.overlap_editor_opened_for_path = None
                                 monitor.online_sidecar_save_prompt_suppressed_path = None
+                                monitor.prefetch_tv_scheduled_path = None
                                 # Clear log cache on new video to allow re-logging
                                 monitor._last_log_state.clear()
                                 log(f"✅ New video state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
@@ -1502,8 +1508,8 @@ while not monitor.abortRequested():
                 monitor.prompted.add(seg_id)
                 continue
 
-            # Correctly handle jump point from the new logic
-            jump_to = segment.next_segment_start if segment.next_segment_start is not None else segment.end_seconds + 1.0
+            # Correctly handle jump point from the new logic (+ optional Jump offset)
+            jump_to = compute_skip_seek_destination_seconds(segment, addon)
 
             if behavior == "auto":
                 log(f"⚙ Auto-skip behavior triggered for segment ID {seg_id} ({segment.segment_type_label})")
