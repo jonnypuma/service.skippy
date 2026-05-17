@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.6] - 2026-05-13
+
+### Changed
+- **Online sidecar — Update / Overwrite confirmation**: The tall “update chapter XML and EDL…” prompt uses a **custom `WindowDialog`** instead of Kodi’s stock yesno, aligned with the **Segment Editor** look (top-left panel, `font16` heading, `font13` scrollable body, **Yes** / **Cancel** as list-style `font10` buttons with the same textures and colors as editor actions). Labels use add-on strings **35018** / **35019** (not core `$LOCALIZE` ids).
+
+### Fixed
+- **That dialog**: Remote **OK** on **Yes** / **Cancel** and focus on the scrollable body no longer leaves the modal inert — focus defaults to **Yes**, Left/Right track the intended button, and **Select** applies the current choice when focus is not on a button.
+
+## [3.1.5] - 2026-05-13
+
+### Added
+- **Segment Editor**: **Snap start** and **Snap end** beside **Edit** / **Delete** align the selected segment to the chronologically sorted timeline: first segment start snaps to `00:00:00.000`; other starts snap to the previous segment’s end; ends snap to the next segment’s start; the last segment’s end snaps to the current video duration (requires playback). Invalid snaps (would break `start < end`) show an error instead of applying.
+
 ## [3.1.2] - 2026-05-17
 
 ### Changed

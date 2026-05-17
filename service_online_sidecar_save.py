@@ -1,8 +1,10 @@
 """Merge or update online segments into local sidecars; write chapters.xml / EDL."""
 
+import os
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 
+import xbmc
 import xbmcgui
 import xbmcvfs
 
@@ -59,13 +61,307 @@ def _log_sidecar_detail(msg):
     log_service_detail(msg, tag="sidecar")
 
 
-def _safe_overwrite_yesno(heading, message):
-    """Overwrite/merge prompt; Kodi GUI errors → declined (False)."""
+_CANCEL_ACTION_IDS = (10, 92, 216)
+_MOVE_LEFT = getattr(xbmcgui, "ACTION_MOVE_LEFT", 1)
+_MOVE_RIGHT = getattr(xbmcgui, "ACTION_MOVE_RIGHT", 2)
+_SELECT_ACTIONS = (
+    getattr(xbmcgui, "ACTION_SELECT_ITEM", 7),
+    11,
+    13,
+    100,
+    101,
+)
+
+
+def _addon_skin_media(filename):
+    addon = get_addon()
+    if not addon:
+        return filename
+    full = os.path.join(
+        addon.getAddonInfo("path"),
+        "resources",
+        "skins",
+        "default",
+        "media",
+        filename,
+    )
+    return full if xbmcvfs.exists(full) else "-"
+
+
+def _segment_style_push_button(x, y, w, h, label, tex_focus):
+    """ControlButton matching list-row actions: font10, grey/white, - / button_focus, centered label."""
     try:
-        return bool(xbmcgui.Dialog().yesno(heading, message))
-    except RuntimeError as e:
-        log("⚠ Sidecar overwrite prompt failed (%s) — treating as declined" % e)
+        al = xbmcgui.ALIGN_CENTER
+    except AttributeError:
+        al = 6
+    try:
+        return xbmcgui.ControlButton(
+            x,
+            y,
+            w,
+            h,
+            label,
+            tex_focus,
+            "-",
+            0,
+            0,
+            al,
+            font="font10",
+            textColor="0xFFC0C0C0",
+            focusedColor="0xFFFFFFFF",
+            shadowColor="0xFF000000",
+        )
+    except (TypeError, ValueError):
+        pass
+    try:
+        return xbmcgui.ControlButton(
+            x,
+            y,
+            w,
+            h,
+            label,
+            tex_focus,
+            "-",
+            0,
+            0,
+            al,
+            "font10",
+            "0xFFC0C0C0",
+            "0xFF808080",
+        )
+    except (TypeError, ValueError):
+        pass
+    b = xbmcgui.ControlButton(x, y, w, h, label, tex_focus, "-")
+    try:
+        b.setLabel(
+            label,
+            "font10",
+            "0xFFC0C0C0",
+            "0xFF808080",
+            "0xFF000000",
+            "0xFFFFFFFF",
+        )
+    except Exception:
+        try:
+            b.setLabel(label, "font10")
+        except Exception:
+            pass
+    return b
+
+
+# Sidecar confirm dialog uses the same base resolution as Segment Marker discovery
+# (WindowDialog is typically 1280×720); 1080p coords clip buttons off-screen.
+_SIDECAR_ASK_W = 1280
+_SIDECAR_ASK_H = 720
+
+
+class _SidecarOverwriteYesNoDialog(xbmcgui.WindowDialog):
+    """
+    Scrollable body taller than stock yesno. Layout is 1280×720, top-left aligned
+    panel; Yes / Cancel match Segment Editor list buttons (font10, textures).
+    """
+
+    def __init__(self, heading, message):
+        super().__init__()
+        self.result = False
+        tex = _addon_skin_media("white.png")
+        tex_focus = _addon_skin_media("button_focus.png")
+        # Full-screen dim
+        try:
+            bg = xbmcgui.ControlImage(0, 0, _SIDECAR_ASK_W, _SIDECAR_ASK_H, tex)
+            bg.setColorDiffuse("D0000000")
+            self.addControl(bg)
+        except Exception:
+            pass
+        # Panel anchored top-left with margins
+        p_x, p_y = 36, 28
+        p_w, p_h = _SIDECAR_ASK_W - 72, _SIDECAR_ASK_H - 56
+        panel = xbmcgui.ControlImage(p_x, p_y, p_w, p_h, tex)
+        panel.setColorDiffuse("F0222222")
+        self.addControl(panel)
+        inner_x = p_x + 20
+        inner_w = p_w - 40
+        self.addControl(
+            xbmcgui.ControlLabel(
+                inner_x,
+                p_y + 12,
+                inner_w,
+                40,
+                heading or "",
+                "font16",
+                "FFFFFFFF",
+            )
+        )
+        btn_w, btn_h = 118, 30
+        btn_y = p_y + p_h - btn_h - 16
+        tb_top = p_y + 58
+        tb_h = max(140, btn_y - 10 - tb_top)
+        self._body = xbmcgui.ControlTextBox(
+            inner_x, tb_top, inner_w, tb_h, "font13", "FFE8E8E8"
+        )
+        self.addControl(self._body)
+        self._body.setText(message or "")
+        addon = get_addon()
+        try:
+            if addon:
+                ylbl = addon.getLocalizedString(35018)
+                clbl = addon.getLocalizedString(35019)
+            else:
+                ylbl, clbl = "Yes", "Cancel"
+        except Exception:
+            ylbl, clbl = "Yes", "Cancel"
+        if not (ylbl or "").strip():
+            ylbl = "Yes"
+        if not (clbl or "").strip():
+            clbl = "Cancel"
+        btn_gap = 14
+        total_bw = btn_w * 2 + btn_gap
+        btn_x0 = inner_x + max(0, (inner_w - total_bw) // 2)
+        # Match SegmentEditor list buttons: font10, lightgrey / white focus, - / button_focus
+        self._btn_yes = _segment_style_push_button(
+            btn_x0, btn_y, btn_w, btn_h, ylbl, tex_focus
+        )
+        self._btn_cancel = _segment_style_push_button(
+            btn_x0 + btn_w + btn_gap, btn_y, btn_w, btn_h, clbl, tex_focus
+        )
+        self.addControl(self._btn_yes)
+        self.addControl(self._btn_cancel)
+        self._yes_id = self._btn_yes.getId()
+        self._cancel_id = self._btn_cancel.getId()
+        self._body_id = self._body.getId()
+        self._choice_yes = True
+        try:
+            self._btn_yes.setNavigation(
+                self._btn_yes, self._btn_yes, self._btn_cancel, self._btn_cancel
+            )
+            self._btn_cancel.setNavigation(
+                self._btn_cancel,
+                self._btn_cancel,
+                self._btn_yes,
+                self._btn_yes,
+            )
+        except Exception:
+            pass
+
+    def onInit(self):
+        try:
+            self.setFocus(self._btn_yes)
+            self._choice_yes = True
+        except Exception:
+            pass
+
+    def onClick(self, controlId):
+        try:
+            cid = (
+                controlId.getId()
+                if hasattr(controlId, "getId")
+                else int(controlId)
+            )
+            if cid == self._yes_id:
+                self.result = True
+                self.close()
+            elif cid == self._cancel_id:
+                self.result = False
+                self.close()
+        except Exception:
+            pass
+
+    def onControl(self, control):
+        try:
+            cid = control.getId()
+            if cid == self._yes_id:
+                self.result = True
+                self.close()
+            elif cid == self._cancel_id:
+                self.result = False
+                self.close()
+        except Exception:
+            pass
+
+    def onAction(self, action):
+        try:
+            aid = action.getId()
+        except Exception:
+            return
+        if aid in _CANCEL_ACTION_IDS:
+            self.result = False
+            self.close()
+            return
+        if aid == _MOVE_LEFT:
+            self._choice_yes = True
+            try:
+                self.setFocus(self._btn_yes)
+            except Exception:
+                pass
+            return
+        if aid == _MOVE_RIGHT:
+            self._choice_yes = False
+            try:
+                self.setFocus(self._btn_cancel)
+            except Exception:
+                pass
+            return
+        if aid in _SELECT_ACTIONS:
+            fid = None
+            try:
+                fid = self.getFocusId()
+            except Exception:
+                pass
+            if fid == self._yes_id:
+                self.result = True
+                self.close()
+            elif fid == self._cancel_id:
+                self.result = False
+                self.close()
+            else:
+                # Focus often sits on the TextBox or nowhere — use last L/R choice
+                self.result = bool(self._choice_yes)
+                self.close()
+
+
+def _suppress_online_sidecar_save_prompt(video_path, segment_monitor):
+    """Remember overwrite/update was settled (Yes or No) — do not re-prompt after parse refresh."""
+    if segment_monitor is not None and video_path:
+        segment_monitor.online_sidecar_save_prompt_suppressed_path = video_path
+
+
+def _sidecar_overwrite_yesno(heading, message):
+    """
+    Overwrite/update confirmation with a tall scrollable body.
+    If playback is not active, does not show a dialog (returns False).
+    """
+    try:
+        if not xbmc.Player().isPlayingVideo():
+            _log_sidecar_detail("Sidecar prompt suppressed: video not playing")
+            return False
+    except Exception:
+        _log_sidecar_detail("Sidecar prompt suppressed: player state unavailable")
         return False
+
+    try:
+        dlg = _SidecarOverwriteYesNoDialog(heading, message or "")
+        dlg.show()
+        xbmc.sleep(50)
+        try:
+            dlg.setFocus(dlg._btn_yes)
+        except Exception:
+            pass
+        dlg.doModal()
+        out = bool(dlg.result)
+        try:
+            del dlg
+        except Exception:
+            pass
+        return out
+    except Exception as e:
+        log("⚠ Tall sidecar prompt failed (%s) — falling back to stock yesno" % e)
+        try:
+            if not xbmc.Player().isPlayingVideo():
+                return False
+            return bool(xbmcgui.Dialog().yesno(heading, message))
+        except RuntimeError as e2:
+            log("⚠ Stock sidecar yesno failed (%s) — treating as declined" % e2)
+            return False
 
 
 # Sidecar / xbmcvfs file ops: catch expected failures without masking MemoryError etc.
@@ -652,7 +948,12 @@ def invalidate_segment_parse_cache_if_path(video_path, segment_monitor):
 
 
 def _maybe_save_online_segments_chapters_xml(
-    video_path, segments, policy, addon, skip_overwrite_prompt=False
+    video_path,
+    segments,
+    policy,
+    addon,
+    skip_overwrite_prompt=False,
+    segment_monitor=None,
 ):
     existing_path = _find_existing_sidecar_chapter_xml_path(video_path)
     out_path = existing_path or _default_new_sidecar_chapter_xml_path(video_path)
@@ -741,10 +1042,12 @@ def _maybe_save_online_segments_chapters_xml(
         msg = addon.getLocalizedString(35004)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _safe_overwrite_yesno(addon.getLocalizedString(35000), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35000), msg)
         if not yes:
             log("User declined overwrite of existing chapter XML — not saving")
+            _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
+        _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
     elif policy == _SAVE_CHAPTERS_UPDATE_ASK and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
             video_path,
@@ -758,10 +1061,12 @@ def _maybe_save_online_segments_chapters_xml(
         msg = addon.getLocalizedString(35013)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _safe_overwrite_yesno(addon.getLocalizedString(35012), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35012), msg)
         if not yes:
             log("User declined update of existing chapter XML — not saving")
+            _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
+        _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
 
     if existing_path and policy in (
         _SAVE_CHAPTERS_OVERWRITE_SILENT,
@@ -780,7 +1085,12 @@ def _maybe_save_online_segments_chapters_xml(
 
 
 def _maybe_save_online_segments_edl(
-    video_path, segments, policy, addon, skip_overwrite_prompt=False
+    video_path,
+    segments,
+    policy,
+    addon,
+    skip_overwrite_prompt=False,
+    segment_monitor=None,
 ):
     existing_path = None
     for p in _edl_paths_to_try(video_path):
@@ -881,10 +1191,12 @@ def _maybe_save_online_segments_edl(
         msg = addon.getLocalizedString(35005)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _safe_overwrite_yesno(addon.getLocalizedString(35000), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35000), msg)
         if not yes:
             log("User declined overwrite of existing EDL — not saving")
+            _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
+        _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
     elif policy == _SAVE_CHAPTERS_UPDATE_ASK and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
             video_path,
@@ -898,10 +1210,12 @@ def _maybe_save_online_segments_edl(
         msg = addon.getLocalizedString(35015)
         if detail:
             msg = "%s\n\n%s" % (msg, detail)
-        yes = _safe_overwrite_yesno(addon.getLocalizedString(35014), msg)
+        yes = _sidecar_overwrite_yesno(addon.getLocalizedString(35014), msg)
         if not yes:
             log("User declined update of existing EDL — not saving")
+            _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
             return
+        _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
 
     if existing_path and policy in (
         _SAVE_CHAPTERS_OVERWRITE_SILENT,
@@ -930,6 +1244,26 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
     """
     addon = get_addon()
     if not _online_sidecar_save_allowed(addon, video_path, segments):
+        return
+
+    try:
+        if not xbmc.Player().isPlayingVideo():
+            _log_sidecar_detail("Skipping online sidecar save: video not playing")
+            return
+    except Exception:
+        _log_sidecar_detail("Skipping online sidecar save: player state unavailable")
+        return
+
+    if (
+        segment_monitor is not None
+        and video_path
+        and getattr(segment_monitor, "online_sidecar_save_prompt_suppressed_path", None)
+        == video_path
+    ):
+        _log_sidecar_detail(
+            "Skipping online sidecar save: overwrite/update already settled for "
+            "this file (no re-prompt until next title)"
+        )
         return
 
     fmt = _normalize_save_online_format(
@@ -1000,15 +1334,17 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             msg = addon.getLocalizedString(m)
             if detail:
                 msg = "%s\n\n%s" % (msg, detail)
-            if not _safe_overwrite_yesno(addon.getLocalizedString(h), msg):
+            if not _sidecar_overwrite_yesno(addon.getLocalizedString(h), msg):
                 log(
                     "User declined %s of existing chapter XML and EDL — "
                     "not saving online sidecars"
                     % ("overwrite" if is_over else "update",)
                 )
+                _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
                 return
             skip_xml_prompt = True
             skip_edl_prompt = True
+            _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
         elif need_xml_ask:
             h, m = (
                 (35000, 35004)
@@ -1027,15 +1363,20 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             msg = addon.getLocalizedString(m)
             if detail:
                 msg = "%s\n\n%s" % (msg, detail)
-            if not _safe_overwrite_yesno(addon.getLocalizedString(h), msg):
+            if not _sidecar_overwrite_yesno(addon.getLocalizedString(h), msg):
                 log(
                     "User declined %s of existing chapter XML — "
                     "not saving chapter XML from online"
                     % ("overwrite" if is_over else "update",)
                 )
                 do_xml = False
+                if not (write_edl and do_edl):
+                    _suppress_online_sidecar_save_prompt(
+                        video_path, segment_monitor
+                    )
             else:
                 skip_xml_prompt = True
+                _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
         elif need_edl_ask:
             h, m = (
                 (35000, 35005)
@@ -1054,15 +1395,20 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             msg = addon.getLocalizedString(m)
             if detail:
                 msg = "%s\n\n%s" % (msg, detail)
-            if not _safe_overwrite_yesno(addon.getLocalizedString(h), msg):
+            if not _sidecar_overwrite_yesno(addon.getLocalizedString(h), msg):
                 log(
                     "User declined %s of existing EDL — "
                     "not saving EDL from online"
                     % ("overwrite" if is_over else "update",)
                 )
                 do_edl = False
+                if not do_xml:
+                    _suppress_online_sidecar_save_prompt(
+                        video_path, segment_monitor
+                    )
             else:
                 skip_edl_prompt = True
+                _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
 
     if do_xml:
         _maybe_save_online_segments_chapters_xml(
@@ -1071,6 +1417,7 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             policy,
             addon,
             skip_overwrite_prompt=skip_xml_prompt,
+            segment_monitor=segment_monitor,
         )
     if do_edl:
         _maybe_save_online_segments_edl(
@@ -1079,6 +1426,7 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
             policy,
             addon,
             skip_overwrite_prompt=skip_edl_prompt,
+            segment_monitor=segment_monitor,
         )
     if do_xml or do_edl:
         invalidate_segment_parse_cache_if_path(video_path, segment_monitor)

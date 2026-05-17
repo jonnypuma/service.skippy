@@ -104,7 +104,7 @@
         <height>290</height>
         <ondown>5009</ondown>
         <onup>5009</onup>
-        <onright>5021</onright>
+        <onright>5027</onright>
         <itemlayout width="1140" height="50">
           <!-- Main segment text (without nested or overlapping indicator) -->
           <!-- Show when both is_nested and is_overlapping are "false" -->
@@ -300,11 +300,53 @@
         </focusedlayout>
       </control>
 
-      <!-- Edit and Delete buttons - positioned to the right of the list -->
-      <control type="button" id="5021">
-        <left>920</left>
+      <!-- Snap / Edit / Delete — positioned to the right of the list (row Y set in Python) -->
+      <control type="button" id="5027">
+        <left>775</left>
         <top>110</top>
-        <width>100</width>
+        <width>95</width>
+        <height>30</height>
+        <label>Snap start</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onright>5028</onright>
+        <onleft>5000</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5028">
+        <left>878</left>
+        <top>110</top>
+        <width>95</width>
+        <height>30</height>
+        <label>Snap end</label>
+        <font>font10</font>
+        <textcolor>lightgrey</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturenofocus>-</texturenofocus>
+        <texturefocus>button_focus.png</texturefocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <onright>5021</onright>
+        <onleft>5027</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5021">
+        <left>981</left>
+        <top>110</top>
+        <width>69</width>
         <height>30</height>
         <label>Edit</label>
         <font>font10</font>
@@ -318,14 +360,14 @@
         <aligny>center</aligny>
         <align>center</align>
         <onright>5022</onright>
-        <onleft>5000</onleft>
+        <onleft>5028</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5022">
-        <left>1030</left>
+        <left>1058</left>
         <top>110</top>
-        <width>100</width>
+        <width>92</width>
         <height>30</height>
         <label>Delete</label>
         <font>font10</font>

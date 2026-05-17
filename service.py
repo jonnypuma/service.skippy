@@ -92,6 +92,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
         # Once per file: auto-open editor when overlaps present (open_segment_editor_on_overlap).
         self.overlap_editor_opened_for_path = None
+        # Overwrite/update ask was answered (Yes or No) for this file — no re-prompt until next title.
+        self.online_sidecar_save_prompt_suppressed_path = None
 
     def onNotification(self, sender, method, data):
         """Open segment editor when triggered via JSON-RPC NotifyAll (legacy: service.segmenteditor)."""
@@ -994,6 +996,7 @@ while not monitor.abortRequested():
                                     # Clear log cache on replay to allow re-logging
                                     monitor._last_log_state.clear()
                                     monitor.overlap_editor_opened_for_path = None
+                                    monitor.online_sidecar_save_prompt_suppressed_path = None
                                     log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
                         except RuntimeError:
                             log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -1039,6 +1042,7 @@ while not monitor.abortRequested():
                                 monitor.toast_overlap_shown = False
                                 monitor.skipped_to_nested_segment.clear()
                                 monitor.overlap_editor_opened_for_path = None
+                                monitor.online_sidecar_save_prompt_suppressed_path = None
                                 # Clear log cache on new video to allow re-logging
                                 monitor._last_log_state.clear()
                                 log(f"✅ New video state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")

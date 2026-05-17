@@ -173,6 +173,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                         # Clear log cache on replay to allow re-logging
                                         ctx.monitor._last_log_state.clear()
                                         ctx.monitor.overlap_editor_opened_for_path = None
+                                        ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
                                         log(f"✅ Replay state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
                             except RuntimeError:
                                 log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -218,6 +219,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                     ctx.monitor.toast_overlap_shown = False
                                     ctx.monitor.skipped_to_nested_segment.clear()
                                     ctx.monitor.overlap_editor_opened_for_path = None
+                                    ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
                                     # Clear log cache on new video to allow re-logging
                                     ctx.monitor._last_log_state.clear()
                                     log(f"✅ New video state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
