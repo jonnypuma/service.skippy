@@ -33,7 +33,13 @@ from segment_editor_parser import (
     segments_chronological,
     SAVE_FORMAT_BOTH,
 )
-from segment_editor_utils import get_addon, log, log_always, log_error
+from segment_editor_utils import (
+    EDITOR_TOGGLE_CLOSE_REQUESTED,
+    get_addon,
+    log,
+    log_always,
+    log_error,
+)
 from settings_utils import get_custom_segment_keyword_labels, normalize_label
 
 
@@ -137,6 +143,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._delete_btn_left = 1058
         self._edit_delete_btn_height = 30
         self._selection_sync_timer = None
+        self._indicator_win_home = None
 
         try:
             addon = get_addon()
@@ -153,6 +160,11 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def onInit(self):
         try:
             log_always("onInit called")
+
+            try:
+                xbmcgui.Window(10000).clearProperty(EDITOR_TOGGLE_CLOSE_REQUESTED)
+            except Exception:
+                pass
 
             try:
                 addon = get_addon()
@@ -260,6 +272,33 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def _update_time_display(self):
         """Update the current-time label ~2 Hz. Pause state comes via callbacks."""
         while not self._closing:
+            try:
+                win = getattr(self, "_indicator_win_home", None)
+                if win is None:
+                    try:
+                        win = xbmcgui.Window(10000)
+                        self._indicator_win_home = win
+                    except Exception:
+                        win = None
+                if win is not None and (
+                    (win.getProperty(EDITOR_TOGGLE_CLOSE_REQUESTED) or "").strip()
+                ):
+                    try:
+                        win.clearProperty(EDITOR_TOGGLE_CLOSE_REQUESTED)
+                    except Exception:
+                        pass
+                    try:
+                        if self.check_unsaved_changes():
+                            self.close()
+                    except Exception as err:
+                        log_error("Segment editor toggle close: %s" % err)
+                        try:
+                            self.close()
+                        except Exception:
+                            pass
+                    continue
+            except Exception:
+                pass
             try:
                 if self.player.isPlayingVideo():
                     current = self.player.getTime()

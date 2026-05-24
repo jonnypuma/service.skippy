@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.4] - 2026-05-22
+
+### Changed
+- **Segment Editor hotkey**: A second press while an editor window is active **requests close** (`Window.Property` IPC) instead of stacking multiple `RunScript` instances; overlapping launches within ~**1.2** s are **debounced**. (`segment_editor_session.py`, `segment_editor_utils.py`, `segment_editor_dialog.py`)
+- **Segment Marker**: After marking **start**/**end**, the pending chip is always cleared via **`finally`**, cancelling the type/policy/save dialogs no longer strands the overlay. **`SegmentTypePickerDialog`** treats **cancelled** as abort, resets **selected_index** on back, clears **cancelled** on OK, and uses **extended back action ids** (`xbmcgui` aliases alongside 10 / 92 / 216).
+
 ## [3.3.3] - 2026-05-22
 
 ### Changed

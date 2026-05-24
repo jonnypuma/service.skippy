@@ -108,3 +108,11 @@ def set_editor_modal_open(is_open):
             window.clearProperty("skippy_editor_modal_open")
     except Exception:
         pass
+
+
+# Window(10000) IPC: RunScript cannot share Python globals; second editor hotkey sets this
+# and SegmentEditorDialog's time thread calls close() (same pattern as label updates).
+EDITOR_TOGGLE_CLOSE_REQUESTED = "skippy_editor_toggle_close_requested"
+# Suppress stacked RunScript opens when modal flag is not set yet (race window).
+EDITOR_LAUNCH_DEBOUNCE_TS = "skippy_editor_launch_debounce_ts"
+EDITOR_LAUNCH_DEBOUNCE_SECONDS = 1.2

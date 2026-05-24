@@ -4,6 +4,8 @@ import copy
 import json
 import os
 
+import time
+
 import xbmc
 import xbmcgui
 
@@ -18,6 +20,9 @@ from segment_editor_parser import (
     save_segments,
 )
 from segment_editor_utils import (
+    EDITOR_LAUNCH_DEBOUNCE_SECONDS,
+    EDITOR_LAUNCH_DEBOUNCE_TS,
+    EDITOR_TOGGLE_CLOSE_REQUESTED,
     get_addon,
     log,
     log_always,
@@ -162,8 +167,22 @@ def open_segment_editor(video_path=None):
         set_editor_modal_open(False)
         return
 
+    win_home = None
+    try:
+        win_home = xbmcgui.Window(10000)
+    except Exception:
+        win_home = None
+
+    # Second hotkey press while modal is flagged: close the existing editor instead of stacking.
+    if win_home is not None and (
+        (win_home.getProperty("skippy_editor_modal_open") or "").strip() == "true"
+    ):
+        win_home.setProperty(EDITOR_TOGGLE_CLOSE_REQUESTED, "1")
+        log_always("Segment editor toggle: close requested (modal already open)")
+        return
+
     if _editor_active:
-        log_always("Editor already open, ignoring request")
+        log_always("Editor already open in this interpreter, ignoring request")
         return
 
     if not video_path:
@@ -174,6 +193,24 @@ def open_segment_editor(video_path=None):
         xbmcgui.Dialog().ok("Segment Editor", "No video is currently playing.")
         set_editor_modal_open(False)
         return
+
+    now = time.time()
+    if win_home is not None:
+        try:
+            prev = float(win_home.getProperty(EDITOR_LAUNCH_DEBOUNCE_TS) or 0)
+        except ValueError:
+            prev = 0.0
+        if prev > 0 and (now - prev) < EDITOR_LAUNCH_DEBOUNCE_SECONDS:
+            log_always(
+                "Segment editor launch debounced (< %.1fs since last)"
+                % (EDITOR_LAUNCH_DEBOUNCE_SECONDS,)
+            )
+            return
+        win_home.setProperty(EDITOR_LAUNCH_DEBOUNCE_TS, str(now))
+        try:
+            win_home.clearProperty(EDITOR_TOGGLE_CLOSE_REQUESTED)
+        except Exception:
+            pass
 
     log_always(f"Opening segment editor for: {os.path.basename(video_path)}")
     _editor_active = True
@@ -242,6 +279,11 @@ def open_segment_editor(video_path=None):
     finally:
         _editor_active = False
         set_editor_modal_open(False)
+        if win_home is not None:
+            try:
+                win_home.clearProperty(EDITOR_LAUNCH_DEBOUNCE_TS)
+            except Exception:
+                pass
 
 
 def main():
