@@ -153,85 +153,6 @@ def _build_skip_button_label(segment, format_setting, duration_str):
     return f"Skip {segment.segment_type_label.title()} ({duration_str})"
 
 
-def _color_variants(argb):
-    u = (argb or "FFFFFFFF").strip().upper()
-    if u.startswith("0X"):
-        u = u[2:]
-    if len(u) == 8 and all(c in "0123456789ABCDEF" for c in u):
-        yield u
-        yield f"0x{u}"
-    else:
-        yield u
-
-
-def _shadow_color_for_text(text_argb):
-    """Contrast shadow: dark halo for light text, soft light halo for dark text."""
-    u = (text_argb or "FFFFFFFF").strip().upper()
-    if u.startswith("0X"):
-        u = u[2:]
-    if len(u) != 8 or not all(c in "0123456789ABCDEF" for c in u):
-        return "FF000000"
-    r = int(u[2:4], 16) / 255.0
-    g = int(u[4:6], 16) / 255.0
-    b = int(u[6:8], 16) / 255.0
-    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    if lum > 0.45:
-        return "FF000000"
-    return "99FFFFFF"
-
-
-def _control_set_label_colors(control, label, font, text_argb):
-    """Apply label/button text colors via Kodi API.
-
-    Official order (ControlLabel / ControlButton):
-    setLabel(label, font, textColor, disabledColor, shadowColor, focusedColor[, label2])
-    We previously used (textColor, shadowColor, focusedColor, …) which put the user text
-    color into the *shadow* slot, so shadow matched the caption.
-    """
-    dc = text_argb
-    fc = text_argb
-    sh = _shadow_color_for_text(text_argb)
-    for tc in _color_variants(text_argb):
-        for dc_v in _color_variants(dc):
-            for sh_v in _color_variants(sh):
-                for fc_v in _color_variants(fc):
-                    try:
-                        control.setLabel(
-                            label,
-                            font,
-                            textColor=tc,
-                            disabledColor=dc_v,
-                            shadowColor=sh_v,
-                            focusedColor=fc_v,
-                            label2="",
-                        )
-                        return
-                    except TypeError:
-                        pass
-                    try:
-                        control.setLabel(label, font, tc, dc_v, sh_v, fc_v, "")
-                        return
-                    except (TypeError, ValueError):
-                        pass
-                    try:
-                        control.setLabel(label, font, tc, dc_v, sh_v, fc_v)
-                        return
-                    except (TypeError, ValueError):
-                        pass
-    control.setLabel(label)
-
-
-def _button_set_label_colors(control, label, font, text_argb, shadow_argb=None):
-    """shadow_argb kept for API compatibility; actual shadow is contrast-based."""
-    del shadow_argb  # unused — Kodi slot order made a separate shadow param misleading
-    _control_set_label_colors(control, label, font, text_argb)
-
-
-def _label_set_colors(control, label, font, text_argb, shadow_argb=None):
-    del shadow_argb
-    _control_set_label_colors(control, label, font, text_argb)
-
-
 def _elapsed_progress_percent_float(current_time, segment_start, total_duration):
     if not total_duration or total_duration <= 0:
         return 0.0
@@ -277,6 +198,11 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log_always(f"❌ Failed to initialize SkipDialog (possible Kodi/device limitation): {e}")
             log_always(f"❌ Dialog initialization failed with args: {args}, kwargs: {kwargs}")
             raise
+        # Default until onInit resolves skip_dialog_font_color (XML uses $INFO[Window.Property(...)]).
+        try:
+            self.setProperty("skip_dialog_text_color", "FFFFFFFF")
+        except Exception:
+            pass
 
     def onInit(self):
         try:
@@ -619,35 +545,33 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             time.sleep(delay)
 
     def _apply_dialog_text_colors(self):
-        """Apply font color via Python; XML $INFO in textcolor is unreliable for WindowXML."""
-        col = getattr(self, "_skip_text_color_argb", "FF6E6E6E")
-        sh = "FF000000"
+        """Keep label text in sync; colours come from Window.Property(skip_dialog_text_color) in XML."""
         try:
             if self._minimal_mode:
                 c = self.getControl(3012)
                 lab = c.getLabel() or ""
-                _button_set_label_colors(c, lab, "font16", col, sh)
+                c.setLabel(lab)
                 return
             for cid in FULL_SKIP_BUTTON_IDS:
                 try:
                     c = self.getControl(cid)
                     lab = c.getLabel() or ""
-                    _button_set_label_colors(c, lab, "font16", col, sh)
+                    c.setLabel(lab)
                 except Exception:
                     pass
             try:
                 c = self.getControl(3013)
                 lab = c.getLabel() or ""
-                _button_set_label_colors(c, lab, "font16", col, sh)
+                c.setLabel(lab)
             except Exception:
                 pass
             try:
                 if self.getProperty("show_next_jump") == "true":
                     c = self.getControl(3011)
                     txt = self.getProperty("next_jump_label") or ""
-                    _label_set_colors(c, txt, "font11", col, sh)
+                    c.setLabel(txt)
             except Exception as e:
-                log(f"⚠️ next-jump label color: {e}")
+                log(f"⚠️ next-jump label: {e}")
             self._refresh_countdown_label()
         except Exception as e:
             log(f"⚠️ _apply_dialog_text_colors: {e}")
@@ -662,7 +586,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             et = self.getProperty("ending_text") or ""
             cd = self.getProperty("countdown") or ""
             line = f"{et} {cd}".strip()
-            _label_set_colors(c, line, "font10", self._skip_text_color_argb, "FF000000")
+            c.setLabel(line)
         except Exception:
             pass
 

@@ -2,7 +2,8 @@
 """Remote intro/recap lookup: **TV** — TheIntroDB + IntroDB.app; **movies** — TheIntroDB only.
 
 TheIntroDB and IntroDB require **TMDB** and/or **IMDb** ids (see https://theintrodb.org/docs and
-https://introdb.app/docs/api). **GET** TheIntroDB uses ``/v2/media``: each segment key
+https://introdb.app/docs/api). **GET** TheIntroDB uses ``/v3/media`` (optional ``duration_ms`` for
+release matching): each segment key
 (``intro``, ``recap``, ``credits``, ``preview``, …) is an **array** of time windows; types with no
 data are omitted from the JSON. **Primary** id source is Kodi’s library (`uniqueid`). When those ids are
 missing, Skippy can call **api.themoviedb.org/3** (optional API key in settings, or the key from
@@ -59,7 +60,7 @@ def _rlog(msg):
     log_remote(msg)
 
 
-THEINTRODB_BASE_URL = "https://api.theintrodb.org/v2/media"
+THEINTRODB_BASE_URL = "https://api.theintrodb.org/v3/media"
 INTRODB_SEGMENTS_URL = "https://api.introdb.app/segments"
 TMDB_API3_BASE = "https://api.themoviedb.org/3"
 TMDB_HELPER_ADDON_ID = "plugin.video.themoviedb.helper"
@@ -830,6 +831,69 @@ def episode_runtime_seconds_for_prefetch(episode_id):
         return 0.0
 
 
+def playback_duration_seconds_for_upload(item, video_path):
+    """
+    Best-effort video duration (seconds) for TheIntroDB v3 ``video_duration_ms`` on submit.
+
+    Omit from the POST when unknown; when set on the wire the API expects 300000–21600000 ms
+    (omit below 300 s). Playback ``getTotalTime()`` is preferred when the same file is playing.
+    """
+    vp = (video_path or "").strip()
+    try:
+        pl = xbmc.Player()
+        if vp and pl.isPlayingVideo():
+            pf = pl.getPlayingFile()
+            if pf and paths_refer_to_same_video(vp, pf):
+                tt = float(pl.getTotalTime())
+                if tt >= 60.0:
+                    return tt
+    except (OSError, TypeError, ValueError, AttributeError):
+        pass
+
+    if not item:
+        if vp:
+            r = jsonrpc(
+                "Files.GetFileDetails",
+                {"file": vp, "media": "video", "properties": ["runtime"]},
+                log_errors=False,
+            )
+            fd = (r.get("result") or {}).get("filedetails") or {}
+            rt = fd.get("runtime")
+            try:
+                rtv = float(rt)
+                return rtv if rtv >= 60.0 else None
+            except (TypeError, ValueError):
+                return None
+        return None
+
+    itype = (item.get("type") or "").lower()
+    try:
+        lib_id = int(item["id"])
+    except (KeyError, TypeError, ValueError):
+        lib_id = None
+
+    if lib_id is None:
+        return playback_duration_seconds_for_upload(None, vp or item.get("file") or "")
+
+    if itype == "episode":
+        rtv = episode_runtime_seconds_for_prefetch(lib_id)
+        return rtv if rtv >= 60.0 else None
+    if itype == "movie":
+        det = jsonrpc(
+            "VideoLibrary.GetMovieDetails",
+            {"movieid": lib_id, "properties": ["runtime"]},
+            log_errors=False,
+        )
+        md = (det.get("result") or {}).get("moviedetails") or {}
+        rt = md.get("runtime")
+        try:
+            rtv = float(rt)
+            return rtv if rtv >= 60.0 else None
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
 def resolve_tv_library_successor_episode_item(item):
     """
     Library-based successor: same show, episode + 1 in-season if present; else
@@ -1444,9 +1508,9 @@ def normalize_remote_segment_window(segment, total_time):
 
 def _theintrodb_normalize_segment_field(raw):
     """
-    TheIntroDB GET ``/v2/media`` returns each segment type as an **array** of
+    TheIntroDB GET ``/v3/media`` returns each segment type as an **array** of
     objects (multiple windows per type possible). Legacy v1 used a single
-    object per type; empty types were ``null`` in v1 and are **omitted** in v2.
+    object per type; empty types were ``null`` in v1 and are **omitted** in v2/v3.
     """
     if raw is None:
         return []
@@ -1461,25 +1525,43 @@ def _theintrodb_segment_entries(payload, total_time):
     out = []
     if not isinstance(payload, dict):
         return out
+    tt_hint = None
+    if total_time is not None:
+        try:
+            tt_hint = float(total_time)
+        except (TypeError, ValueError):
+            tt_hint = None
     for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
         entries = _theintrodb_normalize_segment_field(payload.get(segment_name))
         for entry in entries:
             if not isinstance(entry, dict):
                 continue
-            try:
-                end_ms = float(entry.get("end_ms"))
-            except (TypeError, ValueError):
-                continue
-            start_ms = entry.get("start_ms")
-            try:
-                start_ms = float(start_ms) if start_ms is not None else None
-            except (TypeError, ValueError):
-                start_ms = None
-            if start_ms is not None and end_ms <= start_ms:
+            end_ms_raw = entry.get("end_ms")
+            if end_ms_raw is None:
+                # v3: credits/preview may omit end (= through end of media)
+                if segment_name not in ("credits", "preview"):
+                    continue
+                if tt_hint is None or tt_hint <= 0:
+                    continue
+                end_seconds = tt_hint
+            else:
+                try:
+                    end_seconds = float(end_ms_raw) / 1000.0
+                except (TypeError, ValueError):
+                    continue
+            start_ms_raw = entry.get("start_ms")
+            if start_ms_raw is None:
+                start_seconds = None
+            else:
+                try:
+                    start_seconds = float(start_ms_raw) / 1000.0
+                except (TypeError, ValueError):
+                    continue
+            if start_seconds is not None and start_seconds >= end_seconds:
                 continue
             window = normalize_skip_window(
-                None if start_ms is None else (start_ms / 1000.0),
-                end_ms / 1000.0,
+                start_seconds,
+                end_seconds,
                 total_time,
             )
             if window:
@@ -1524,6 +1606,14 @@ def fetch_theintrodb_segments(context, total_time):
                 "(show_imdb alone is not enough for this API)"
             )
             return []
+
+    if total_time is not None:
+        try:
+            tt = float(total_time)
+            if tt > 0:
+                query["duration_ms"] = int(round(tt * 1000.0))
+        except (TypeError, ValueError):
+            pass
 
     payload = fetch_remote_json(
         "%s?%s" % (THEINTRODB_BASE_URL, urlencode(query)),

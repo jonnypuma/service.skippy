@@ -363,17 +363,21 @@ def _segments_from_chapter_xml(xml_data, source_label):
 def parse_chapters(video_path):
     """Parse chapter XML file and return list of SegmentItem objects.
 
-    Tries each known sidecar path in order. If the first file with content
-    yields no ChapterAtom segments (placeholder or different schema), later
-    paths are still tried so XML is preferred over falling back to EDL.
+    Tries each known sidecar path in order (sibling layouts, then ``.chapters/`` Jellyfin exporter).
+    If the first file with content yields no ChapterAtom segments (placeholder or different schema),
+    later paths are still tried so XML is preferred over falling back to EDL.
     """
-    base = os.path.splitext(video_path)[0]
-    video_dir = os.path.dirname(video_path)
-    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
+    try:
+        from service_sidecar_paths import _chapter_xml_paths_to_try
 
-    paths_to_try = [f"{base}{s}" for s in suffixes]
-    if video_dir:
-        paths_to_try.append(os.path.join(video_dir, "chapters.xml"))
+        paths_to_try = list(_chapter_xml_paths_to_try(video_path))
+    except ImportError:
+        base = os.path.splitext(video_path)[0]
+        video_dir = os.path.dirname(video_path)
+        suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
+        paths_to_try = [f"{base}{s}" for s in suffixes]
+        if video_dir:
+            paths_to_try.append(os.path.join(video_dir, "chapters.xml"))
 
     log(f"Attempting chapter XML paths: {paths_to_try}")
 
@@ -407,8 +411,13 @@ def parse_chapters(video_path):
 
 def parse_edl(video_path):
     """Parse .edl file and return list of SegmentItem objects."""
-    base = video_path.rsplit('.', 1)[0]
-    paths_to_try = [f"{base}.edl"]
+    try:
+        from service_sidecar_paths import _edl_paths_to_try
+
+        paths_to_try = list(_edl_paths_to_try(video_path))
+    except ImportError:
+        base = video_path.rsplit(".", 1)[0]
+        paths_to_try = [f"{base}.edl"]
 
     log(f"Attempting EDL paths: {paths_to_try}")
     edl_data = safe_file_read(*paths_to_try)
@@ -629,11 +638,19 @@ def save_chapters(video_path, segments):
         base = video_path
 
     output_path = None
-    for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
-        path = f"{base}{suffix}"
-        if xbmcvfs.exists(path):
-            output_path = path
-            break
+    try:
+        from service_sidecar_paths import _find_existing_sidecar_chapter_xml_path
+
+        output_path = _find_existing_sidecar_chapter_xml_path(video_path)
+    except ImportError:
+        pass
+
+    if not output_path:
+        for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
+            path = f"{base}{suffix}"
+            if xbmcvfs.exists(path):
+                output_path = path
+                break
     if not output_path:
         output_path = f"{base}{DEFAULT_NEW_CHAPTER_XML_SUFFIX}"
 
@@ -693,7 +710,15 @@ def save_edl(video_path, segments):
         base = video_path.rsplit('.', 1)[0]
     else:
         base = video_path
-    output_path = f"{base}.edl"
+
+    try:
+        from service_sidecar_paths import _find_existing_edl_path
+
+        output_path = _find_existing_edl_path(video_path)
+    except ImportError:
+        output_path = None
+    if not output_path:
+        output_path = f"{base}.edl"
 
     if xbmcvfs.exists(output_path):
         log(f"Existing EDL file found, using its path format: {output_path}")
@@ -801,12 +826,24 @@ def _backup_file(path, enabled):
 def _backup_editor_sidecars(video_path, save_format, enabled):
     if not enabled:
         return
-    base = os.path.splitext(video_path)[0]
+    xml_paths = []
+    edl_paths = []
+    try:
+        from service_sidecar_paths import _chapter_xml_paths_to_try, _edl_paths_to_try
+
+        xml_paths = list(_chapter_xml_paths_to_try(video_path))
+        edl_paths = list(_edl_paths_to_try(video_path))
+    except ImportError:
+        base = os.path.splitext(video_path)[0]
+        xml_paths = [f"{base}{s}" for s in CHAPTER_XML_SIDECAR_SUFFIXES]
+        edl_paths = [f"{base}.edl"]
+
     if save_format in (SAVE_FORMAT_BOTH, SAVE_FORMAT_EDL):
-        _backup_file(f"{base}.edl", True)
+        for path in edl_paths:
+            _backup_file(path, True)
     if save_format in (SAVE_FORMAT_BOTH, SAVE_FORMAT_XML):
-        for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
-            _backup_file(f"{base}{suffix}", True)
+        for path in xml_paths:
+            _backup_file(path, True)
 
 
 def save_segments(video_path, segments, save_format=None):
@@ -852,9 +889,18 @@ def delete_segment_files(video_path, save_format=None):
     else:
         save_format = normalize_save_format(save_format)
 
-    base = os.path.splitext(video_path)[0]
-    all_xml = [f"{base}{s}" for s in CHAPTER_XML_SIDECAR_SUFFIXES]
-    all_edl = [f"{base}.edl"]
+    try:
+        from service_sidecar_paths import (
+            _chapter_xml_paths_to_try,
+            _edl_paths_to_try,
+        )
+
+        all_xml = list(_chapter_xml_paths_to_try(video_path))
+        all_edl = list(_edl_paths_to_try(video_path))
+    except ImportError:
+        base = os.path.splitext(video_path)[0]
+        all_xml = [f"{base}{s}" for s in CHAPTER_XML_SIDECAR_SUFFIXES]
+        all_edl = [f"{base}.edl"]
 
     if save_format == SAVE_FORMAT_BOTH:
         candidates = all_xml + all_edl

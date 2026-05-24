@@ -1,12 +1,36 @@
 # Changelog
 
+## [3.3.3] - 2026-05-22
+
+### Changed
+- **Backup settings** (`settings_backup.py`): Folder picker uses **`files`** (all Kodi file sources) instead of **`local`**, matching **Restore**. Destination paths use vfs-safe joining; JSON read/write tries the raw Kodi path first then **`translatePath`**, so backups to **`smb://`**, **`nfs://`**, etc. are more reliable.
+
+## [3.3.2] - 2026-05-22
+
+### Changed
+- **TheIntroDB API v2 → v3** (sunset deadline **2027-01-18**): **GET** `https://api.theintrodb.org/v3/media` with optional **`duration_ms`** from Kodi playback duration; **POST** `…/v3/submit` with optional **`video_duration_ms`** when library or current playback yields a duration ≥300 s (per API constraints). Parses **`submissions`** array on success; still accepts legacy v2 **`submission`** object when present. **Credits/preview** entries with **`end_ms: null`** map to **end-of-media** using known runtime (`remote_segments.py`, `online_segment_upload.py`). See **`openapi_theintrodb_v3.yaml`** in-repo for the OpenAPI spec.
+
+### Fixed
+- **Addon settings GUI** (`resources/settings.xml`, `tools/gen_settings_v1.py`): Regenerated definitions use **`short_empty_elements=False`** so empty-string defaults serialize as ``<default></default>`` rather than self-closing tags (better compatibility with some Kodi XML parsers). If the addon settings pane is still blank or glitched after updating, quit Kodi and delete **`userdata/addon_data/service.skippy/settings.xml`**, then reopen settings.
+
+### Notes
+- V2 **`/v2/media`** and **`/v2/submit`** are unchanged in older releases only; upgrading **Skippy ≥3.3.2** is required before removal of v2 endpoints.
+
+## [3.3.1] - 2026-05-22
+
+### Changed
+- **`.chapters/` sidecar fallback** (`service_sidecar_paths.py`): After basename-matched files **beside** the video, discovery tries **`video_dir/.chapters/<basename>`** with the same Matroska-style chapter suffixes and **`.edl`** matches the Jellyfin Kodi chapters/edl exporter layout. Used by playback parse cache, online sidecar logic, **Segment Editor** (load/save/backup/delete), and **Segment Marker** target paths (`segment_editor_parser.py`, `segment_marker.py`).
+
+### Notes
+- **Skin vs skip/editor colours**: **Estuary** honours Skippy’s **`Window.Property(skip_dialog_text_color)`** / bundled **`colors/defaults.xml`** for bundled WindowXML. Some **third-party skins** (reports: **Arctic Fuse 3**) apply global label styling that can still tint dialog text — that is a skin limitation, not a Kodi **Piers–only** behaviour.
+
 ## [3.3.0] - 2026-05-13
 
 ### Changed
+- **Skip dialog font colour (bundled WindowXML)**: Full and minimal skip layouts bind button and auxiliary line text to **`$INFO[Window.Property(skip_dialog_text_color)]`**, set from **Skip dialogue font colour** (`skipdialog.py`). Python only updates label **text** (`setLabel` without colour slots) so it does not fight Kodi’s focus/skin rendering. **`SkipDialog.__init__`** seeds the property **`FFFFFFFF`** until **`onInit`** resolves the setting. **`resources/skins/default/colors/defaults.xml`** defines stable named colours (**`lightgrey`**, **`white`**, etc.) for **Segment Editor** and other skins.
 - **Segment Editor + online playback snapshot**: Loading the editor from the published parse cache (merged online-first timeline) now treats the service snapshot path and `Player.getPlayingFile()` / `Player.GetItem.file` as the **same video** when `paths_refer_to_same_video` matches, instead of requiring identical strings (fixes NFS / Kodi path forms where overlap auto-open still fell back to chapter XML). Logs a clear reason when the snapshot is skipped (`segment_editor_session.py`). **RunScript** (auto-open overlap) runs in a **separate** Python invoker, so the in-memory `playback_segment_cache` snapshot is **not** visible there — the service now **mirrors** the same parse payload to `Window(10000)` so `get_parse_cache_snapshot()` works from `segment_marker.py` (`playback_segment_cache.py`).
 - **Editor yes/no and OK + scroll modals** (`skippy_editor_modal_skin.py`): **Up** / **Down** and **Page Up** / **Page Down** move the message while **Yes**, **Cancel**, or **OK** is focused (`ControlTextBox.scroll`), because the text area often cannot receive focus in a Python `WindowDialog`. **▲** / **▼** buttons left of **Yes** / **OK** use the same page step for remote-friendly scrolling and show normal button focus.
 - **Chapter XML sidecars** (`segment_editor_parser.normalize_matroska_chapter_xml_text`, `service_segment_sources.parse_chapters`, `service_sidecar_paths._find_existing_sidecar_chapter_xml_path`): Tolerate BOM, leading whitespace before `<?xml`, and a duplicate XML declaration. The service **tries each chapter sidecar path** until one parses (no longer stops at the first file that merely exists). Existing sidecar discovery prefers the **first path that is valid XML** so a corrupt `-chapters.xml` does not block updates or force the editor onto a different file than the save logic.
-
 ### Added
 - **Behind the scenes / featurette** (local sidecars only): Default **Segment keywords to watch for** includes `behind the scenes`, `behind-the-scenes`, `bts`, and `featurette`. Those four default to **ask to skip** (with intros, recaps, previews, etc.). **EDL action mapping** includes `18:Behind the scenes` and `19:Featurette`. Segment Marker and Segment Editor type pickers read the keyword list. New installs get these defaults; existing profiles keep saved values until edited.
 - **TV prefetch next episode** (Advanced): Under **Segment Settings → Online segments sidecar**, **Prefetch next episode** (default on, requires **Use online segment lookup** for TV). When **Segment source priority** is **Online first**, Skippy finds the **library** successor (in-season `E+1`, else next season’s smallest episode index), fetches **merged online-only** segments into a separate **`prefetch_segment_cache`** (not mixed with `remote_segment_cache` until handoff), and applies them on playback **only** when the started file matches that successor (path + `build_tv_cache_key`). Cleared when the service starts; discarded on priority/local-only paths and when scheduling fails. **Verbose → All detail** logs lines tagged **`[service.skippy - prefetch]`** (schedule, store, reject) plus normal **`[service.skippy - remote]`** handoff messages. Implementation: **`prefetch_segment_cache.py`**, **`service_segment_prefetch.py`**, **`remote_segments`** (`resolve_tv_library_successor_episode_item`, `fetch_remote_tv_segments_core`, handoff in `fetch_remote_tv_segments`), **`service_segment_sources`**, **`service` / `service_main_loop`** (`prefetch_tv_scheduled_path`). Strings **31013–31014**.

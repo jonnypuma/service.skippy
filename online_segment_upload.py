@@ -20,11 +20,12 @@ from remote_segments import (
     build_upload_context,
     get_enriched_item_for_path,
     normalize_imdb_id,
+    playback_duration_seconds_for_upload,
 )
 from segment_editor_parser import seconds_to_hms
 from skippy_editor_modal_skin import show_editor_ok
 
-THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v2/submit"
+THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v3/submit"
 INTRODB_SUBMIT_URL = "https://api.introdb.app/submit"
 
 TARGET_BOTH = "Both"
@@ -309,10 +310,10 @@ def _submit_theintrodb(
     api_key: str,
 ) -> tuple[bool, str]:
     """
-    POST /v2/submit (flat JSON: tmdb_id, type, segment, times — **not** the nested
-    ``intro``/``recap``/… arrays from GET /v2/media). TheIntroDB accepts times as
-    either start_sec/end_sec **or** start_ms/end_ms (never both); we send **ms** as
-    integers to match their media payload style and avoid float rounding issues.
+    POST /v3/submit (flat JSON: ``tmdb_id``, ``type``, ``segment``, times — **not** the nested
+    ``intro``/``recap``/… arrays from GET /media). TheIntroDB accepts times as ``start_sec``/``end_sec``
+    **or** ``start_ms``/``end_ms`` (not both pairs); Skippy sends **ms** integers. Optional
+    ``video_duration_ms`` aligns submissions with release cuts when playback/library duration is known.
     """
     key = (api_key or "").strip()
     if not key:
@@ -345,9 +346,25 @@ def _submit_theintrodb(
         "start_ms": start_ms,
         "end_ms": end_ms,
     }
-    if ctx.get("type") == "tv":
-        body["season"] = str(ctx.get("season"))
-        body["episode"] = str(ctx.get("episode"))
+    if api_type == "tv":
+        try:
+            body["season"] = int(ctx.get("season"))
+            body["episode"] = int(ctx.get("episode"))
+        except (TypeError, ValueError):
+            _up_log_err(
+                "TheIntroDB submit: bad TV season/episode %r/%r"
+                % (ctx.get("season"), ctx.get("episode"))
+            )
+            return False, _translate(39043) + "\n\n" + "invalid season or episode"
+
+    vd_sec = ctx.get("playback_duration_seconds")
+    if vd_sec is not None:
+        try:
+            vd_ms = int(round(float(vd_sec) * 1000.0))
+            if 300_000 <= vd_ms <= 21_600_000:
+                body["video_duration_ms"] = vd_ms
+        except (TypeError, ValueError):
+            pass
 
     imdb_opt = None
     if ctx.get("type") == "movie":
@@ -366,13 +383,66 @@ def _submit_theintrodb(
         )
         return False, _translate(39043) + "\n\n" + err
 
+    vd_log = (
+        body.get("video_duration_ms")
+        if body.get("video_duration_ms") is not None
+        else "omit"
+    )
+    tv_log = ""
+    if api_type == "tv":
+        tv_log = " S=%s E=%s" % (body.get("season"), body.get("episode"))
+    _up_log_info(
+        "TheIntroDB v3 submit: POST segment=%s tmdb=%s type=%s%s start_ms=%s end_ms=%s video_duration_ms=%s imdb=%s"
+        % (
+            tidb_segment,
+            tmdb_int,
+            api_type,
+            tv_log,
+            body["start_ms"],
+            body["end_ms"],
+            vd_log,
+            "yes" if body.get("imdb_id") else "no",
+        )
+    )
+
     code, parsed, raw_err = _http_post_json(
         THEINTRODB_SUBMIT_URL,
         {"Authorization": "Bearer %s" % key},
         body,
     )
     if code == 200 and isinstance(parsed, dict) and parsed.get("ok") is True:
-        return True, "ok"
+        subs = parsed.get("submissions")
+        legacy = parsed.get("submission")
+        if isinstance(subs, list) and subs:
+            n = len(subs)
+            sid = subs[0].get("id") if isinstance(subs[0], dict) else None
+            if sid:
+                _up_log_info(
+                    "TheIntroDB v3 submit OK: submissions=%s first_id=%s"
+                    % (n, sid)
+                )
+            else:
+                _up_log_info(
+                    "TheIntroDB v3 submit OK: submissions=%s (no id in first row)"
+                    % n
+                )
+            return True, "ok"
+        # v2 single-object response (backward compat during transition)
+        if isinstance(legacy, dict):
+            sid = legacy.get("id")
+            _up_log_info(
+                "TheIntroDB submit OK (legacy v2-shape response): submission id=%s"
+                % (sid or "?")
+            )
+            return True, "ok"
+        detail = _detail_from_parsed(parsed, raw_err)
+        _up_log_err(
+            "TheIntroDB submit: HTTP 200 ok=true but missing submissions payload: %s"
+            % (detail or raw_err or "")
+        )
+        return False, _translate(39041) + (
+            ("\n\n" + detail) if detail else ""
+        )
     if code == 200:
         detail = _detail_from_parsed(parsed, raw_err)
         base = _translate(39041)
@@ -560,6 +630,10 @@ def upload_all_segments(video_path, segments, target: str) -> None:
         )
         _up_log_err("Upload aborted: could not build library/TMDB context for path")
         return
+
+    dur_sec = playback_duration_seconds_for_upload(item, video_path)
+    if dur_sec is not None and float(dur_sec) >= 300.0:
+        ctx["playback_duration_seconds"] = float(dur_sec)
 
     media_key = _media_key(ctx)
     t_db_key = (addon.getSetting("online_upload_theintrodb_api_key") or "").strip()

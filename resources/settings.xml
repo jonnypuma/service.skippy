@@ -48,7 +48,7 @@
                 <setting id="ignore_internal_edl_actions" type="boolean" label="31005" help="Skippy will ignore any EDL segment whose action type is not explicitly mapped in edl_action_mapping. This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'.">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="edl_action_mapping" type="string" label="31006" help="Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits">
                     <level>1</level>
@@ -63,12 +63,12 @@
                 <setting id="skip_overlapping_segments" type="boolean" label="31007" help="Configurable overlap detection to help avoid redundant or conflicting skips">
                     <level>2</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="open_segment_editor_on_overlap" type="boolean" label="31011" help="31012">
                     <level>2</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="skip_overlapping_segments">false</dependency>
                     </dependencies>
@@ -76,7 +76,7 @@
                 <setting id="use_embedded_chapters_fallback" type="boolean" label="31008" help="31009">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
             </group>
             <group id="g_online" label="32045">
@@ -91,12 +91,12 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="save_online_segments_to_chapters_xml" type="boolean" label="32046" help="32047">
                     <level>2</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="save_online_chapters_existing_policy" type="string" label="32069" help="32070">
                     <level>2</level>
@@ -114,17 +114,17 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="save_online_chapters_backup_before_overwrite" type="boolean" label="32071" help="32072">
                     <level>2</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="online_sidecar_snap_neighbor_start" type="boolean" label="32093" help="32094">
                     <level>3</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="save_online_segments_to_chapters_xml">true</dependency>
                     </dependencies>
@@ -132,7 +132,7 @@
                 <setting id="online_sidecar_snap_neighbor_end" type="boolean" label="32095" help="32096">
                     <level>3</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="save_online_segments_to_chapters_xml">true</dependency>
                     </dependencies>
@@ -140,7 +140,7 @@
                 <setting id="tv_prefetch_next_episode" type="boolean" label="31013" help="31014">
                     <level>3</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="tv_use_online_segment_lookup">true</dependency>
                     </dependencies>
@@ -175,12 +175,12 @@
                 <setting id="enable_skip_movies" type="boolean" label="32010" help="32087">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_skip_dialog_movies" type="boolean" label="32017" help="32089">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="enable_skip_movies">true</dependency>
                     </dependencies>
@@ -188,12 +188,12 @@
                 <setting id="enable_skip_episodes" type="boolean" label="32011" help="32088">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_skip_dialog_episodes" type="boolean" label="32018" help="32090">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="enable_skip_episodes">true</dependency>
                     </dependencies>
@@ -201,7 +201,7 @@
                 <setting id="hide_ending_text" type="boolean" label="32016" help="32016">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="skip_dialog_mode" type="string" label="32020" help="32020">
                     <level>0</level>
@@ -213,7 +213,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="skip_dialog_font_color" type="string" label="32026" help="32026">
                     <level>1</level>
@@ -237,19 +237,19 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
             </group>
             <group id="g_prog" label="32021">
                 <setting id="show_progress_bar" type="boolean" label="32007" help="32007">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="progress_bar_countdown" type="boolean" label="32027" help="32027">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                     </dependencies>
@@ -273,7 +273,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                     </dependencies>
@@ -296,7 +296,7 @@
                 <setting id="smooth_progress_bar" type="boolean" label="32083" help="32084">
                     <level>2</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                     </dependencies>
@@ -329,7 +329,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="button_focus_style" type="string" label="32000" help="32000">
                     <level>1</level>
@@ -349,7 +349,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="skip_button_format" type="string" label="32013" help="32013">
                     <level>1</level>
@@ -362,17 +362,17 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="hide_close_button" type="boolean" label="32014" help="32014">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_skip_button_focus_texture" type="boolean" label="32081" help="32082">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="hide_close_button">true</dependency>
                     </dependencies>
@@ -380,7 +380,7 @@
                 <setting id="hide_skip_icon" type="boolean" label="32015" help="32015">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
             </group>
             <group id="g_min" label="32022">
@@ -421,7 +421,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="minimal_skip_button_format" type="string" label="32025" help="32025">
                     <level>1</level>
@@ -434,7 +434,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="minimal_skip_dialog_position" type="string" label="32024" help="32024">
                     <level>0</level>
@@ -448,7 +448,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
             </group>
         </category>
@@ -457,11 +457,11 @@
                 <setting id="tv_tmdb_resolve_missing_ids" type="boolean" label="32031" help="32035">
                     <level>3</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="tv_tmdb_api_key" type="string" label="32032" help="32033">
                     <level>3</level>
-                    <default />
+                    <default></default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -473,7 +473,7 @@
                 <setting id="tv_tmdb_use_helper_api_key" type="boolean" label="32034" help="32037">
                     <level>3</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="remote_api_failure_cooldown_seconds" type="integer" label="32073" help="32074">
                     <level>3</level>
@@ -491,12 +491,12 @@
                 <setting id="tv_use_local_chapter_edl" type="boolean" label="32028" help="32061">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="tv_use_online_segment_lookup" type="boolean" label="32029" help="32062">
                     <level>0</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="tv_online_merge_priority" type="string" label="32065" help="32066">
                     <level>0</level>
@@ -508,7 +508,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="tv_segment_source_priority" type="string" label="32030" help="32063">
                     <level>0</level>
@@ -520,19 +520,19 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
             </group>
             <group id="g_mov" label="32060">
                 <setting id="movie_use_local_chapter_edl" type="boolean" label="32028" help="32052">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="movie_use_online_segment_lookup" type="boolean" label="32029" help="32064">
                     <level>0</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="movie_online_merge_priority" type="string" label="32067" help="32068">
                     <level>0</level>
@@ -544,7 +544,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="movie_segment_source_priority" type="string" label="32030" help="32054">
                     <level>0</level>
@@ -556,7 +556,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
             </group>
         </category>
@@ -565,22 +565,22 @@
                 <setting id="show_not_found_toast_for_tv_episodes" type="boolean" label="33000" help="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode.">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_not_found_toast_for_movies" type="boolean" label="33001" help="Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie.">
                     <level>0</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_toast_for_overlapping_nested_segments" type="boolean" label="33002" help="Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments.">
                     <level>2</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="show_toast_for_skipped_segment" type="boolean" label="33003" help="Show a toast notification if a segment is skipped.">
                     <level>0</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
             </group>
         </category>
@@ -589,12 +589,12 @@
                 <setting id="segment_marker_enabled" type="boolean" label="36000" help="36001">
                     <level>0</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="segment_marker_auto_save" type="boolean" label="36002" help="36003">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -602,7 +602,7 @@
                 <setting id="segment_marker_show_indicator" type="boolean" label="36004" help="36005">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -618,7 +618,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -634,7 +634,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -653,7 +653,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -661,7 +661,7 @@
                 <setting id="segment_marker_backup_before_write" type="boolean" label="36033" help="36034">
                     <level>1</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -689,14 +689,14 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
                 </setting>
                 <setting id="segment_marker_remote_button" type="string" label="36021" help="36022">
                     <level>2</level>
-                    <default />
+                    <default></default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -717,7 +717,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
@@ -747,7 +747,7 @@
                 <setting id="segment_editor_enabled" type="boolean" label="37000" help="37001">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="segment_editor_save_format" type="string" label="36017" help="37002">
                     <level>2</level>
@@ -760,7 +760,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
@@ -776,7 +776,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
@@ -784,7 +784,7 @@
                 <setting id="segment_editor_backup_before_write" type="boolean" label="36033" help="36034">
                     <level>2</level>
                     <default>true</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
@@ -792,7 +792,7 @@
                 <setting id="segment_editor_fullscreen_overlay" type="boolean" label="37010" help="37011">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
@@ -820,14 +820,14 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
                 </setting>
                 <setting id="segment_editor_remote_button" type="string" label="37006" help="37007">
                     <level>2</level>
-                    <default />
+                    <default></default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -848,7 +848,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>
@@ -878,7 +878,7 @@
                 <setting id="online_upload_enabled" type="boolean" label="39025" help="39026">
                     <level>3</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="online_upload_default_target" type="string" label="39001" help="39002">
                     <level>3</level>
@@ -891,11 +891,11 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                 </setting>
                 <setting id="online_upload_theintrodb_api_key" type="string" label="39003" help="39004">
                     <level>3</level>
-                    <default />
+                    <default></default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -906,7 +906,7 @@
                 </setting>
                 <setting id="online_upload_introdb_api_key" type="string" label="39005" help="39006">
                     <level>3</level>
-                    <default />
+                    <default></default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -938,7 +938,7 @@
                 <setting id="enable_verbose_logging" type="boolean" label="34000" help="34001">
                     <level>3</level>
                     <default>false</default>
-                    <control type="toggle" />
+                    <control type="toggle"></control>
                 </setting>
                 <setting id="skippy_log_detail_level" type="string" label="34002" help="34003">
                     <level>3</level>
@@ -951,7 +951,7 @@
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="spinner" format="string" />
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="enable" setting="enable_verbose_logging">true</dependency>
                     </dependencies>

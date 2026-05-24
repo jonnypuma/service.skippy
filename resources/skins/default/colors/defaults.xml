@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Skippy bundled skin: named colours for WindowXML (Segment Editor, etc.).
+     Avoids relying on Estuary/Piers global colour names for addon windows. -->
+<colors>
+    <color name="white">FFFFFFFF</color>
+    <!-- Unfocused action buttons on dark panel; focused uses white in XML -->
+    <color name="lightgrey">FFC8C8C8</color>
+    <color name="skippy_accent_cyan">FFB0D4E8</color>
+    <color name="skippy_muted_grey">FFB0B0B0</color>
+</colors>

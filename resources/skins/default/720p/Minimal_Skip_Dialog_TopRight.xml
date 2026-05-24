@@ -45,8 +45,8 @@
         <font>font16</font>
         <texturefocus>minimal_rounded_gray_640.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>

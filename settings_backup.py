@@ -44,35 +44,93 @@ def collect_settings(addon) -> dict[str, str]:
     return out
 
 
+def _path_try_variants(path: str) -> list[str]:
+    """Kodi vfs paths (e.g. smb://) vs translatePath; try raw first."""
+    raw = str(path).strip()
+    out = []
+    if raw:
+        out.append(raw)
+    try:
+        t = xbmcvfs.translatePath(raw)
+    except (TypeError, ValueError):
+        t = ""
+    if t and t not in out:
+        out.append(t.rstrip())
+
+    seen_keys: list[str] = []
+    uniq: list[str] = []
+    for p in out:
+        if not p:
+            continue
+        key = p.replace("\\", "/").lower()
+        if key in seen_keys:
+            continue
+        seen_keys.append(key)
+        uniq.append(p)
+    return uniq
+
+
 def _write_json_file(path: str, payload: dict) -> None:
     text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
-    path_t = xbmcvfs.translatePath(path)
-    try:
-        with open(path_t, "w", encoding="utf-8", newline="\n") as fp:
-            fp.write(text)
-    except OSError:
-        f = xbmcvfs.File(path_t, "w")
+    ba = bytearray(text.encode("utf-8"))
+    last_err: Exception | None = None
+
+    for pth in _path_try_variants(path):
         try:
-            f.write(bytearray(text.encode("utf-8")))
-        finally:
-            del f
+            with open(pth, "w", encoding="utf-8", newline="\n") as fp:
+                fp.write(text)
+            return
+        except OSError as e:
+            last_err = e
+        except (TypeError, UnicodeError):
+            continue
+        try:
+            vfs_f = xbmcvfs.File(pth, "w")
+            try:
+                vfs_f.write(ba)
+            finally:
+                del vfs_f
+            return
+        except Exception as e:
+            last_err = e
+
+    if last_err is not None:
+        raise last_err
+    raise OSError("failed to write settings backup")
 
 
 def _read_json_file(path: str) -> dict:
-    path_t = xbmcvfs.translatePath(path)
-    try:
-        with open(path_t, encoding="utf-8") as fp:
-            return json.load(fp)
-    except OSError:
-        pass
-    f = xbmcvfs.File(path_t)
-    try:
-        b = f.readBytes()
-    finally:
-        del f
-    if not b:
-        raise ValueError("Empty backup file")
-    return json.loads(bytes(b).decode("utf-8", errors="strict"))
+    last_err: Exception | None = None
+    for pth in _path_try_variants(path):
+        try:
+            with open(pth, encoding="utf-8") as fp:
+                return json.load(fp)
+        except json.JSONDecodeError:
+            raise
+        except UnicodeDecodeError:
+            raise
+        except OSError as e:
+            last_err = e
+        f = None
+        try:
+            f = xbmcvfs.File(pth)
+            b = f.readBytes()
+            if not b:
+                continue
+            return json.loads(bytes(b).decode("utf-8", errors="strict"))
+        except json.JSONDecodeError:
+            raise
+        except UnicodeDecodeError:
+            raise
+        except Exception as e:
+            last_err = e
+        finally:
+            if f is not None:
+                del f
+
+    if last_err is not None:
+        raise last_err
+    raise ValueError("Empty backup file")
 
 
 def export_to_path(addon, dest_json_path: str) -> int:
@@ -155,17 +213,26 @@ def _restore_browse_result_is_json_file(path) -> bool:
             del f
 
 
+def _join_writable_folder_file(folder: str, filename: str) -> str:
+    """
+    Build destination path inside a Kodi browse() folder. Use forward slashes —
+    ``os.path.join`` breaks vfs URLs (``smb://``, ``nfs://``, …).
+    """
+    root = str(folder).strip().replace("\\", "/").rstrip("/")
+    return root + "/" + filename
+
+
 def run_backup_ui(addon, icon_path: str, log_fn) -> None:
     heading = addon.getLocalizedString(38000) if addon else "Backup settings"
+    # Same share as Restore: **files** exposes all Kodi file sources (not just **local**).
     # Pass default="" so Cancel returns empty string. If default is a real path, Kodi returns
     # that same path on Cancel — indistinguishable from OK, so backup would run anyway.
-    folder = xbmcgui.Dialog().browse(3, heading, "local", "", False, False, "")
+    folder = xbmcgui.Dialog().browse(3, heading, "files", "", False, False, "")
     if not folder or not str(folder).strip():
         return
-    base = xbmcvfs.translatePath(folder).rstrip("/\\")
     stamp = time.strftime("%Y%m%d-%H%M%S")
     name = "skippy-settings-backup-%s.json" % stamp
-    dest = os.path.join(base, name)
+    dest = _join_writable_folder_file(folder, name)
     try:
         n = export_to_path(addon, dest)
     except Exception as e:

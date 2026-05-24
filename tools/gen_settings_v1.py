@@ -912,7 +912,13 @@ def main():
         "settings.xml",
     )
     tree = ET.ElementTree(root)
-    tree.write(out_path, encoding="utf-8", xml_declaration=True)
+    # Avoid `<tag />` for empty elements — some Kodi builds mishandle `<default />` for strings.
+    tree.write(
+        out_path,
+        encoding="utf-8",
+        xml_declaration=True,
+        short_empty_elements=False,
+    )
     with open(out_path, encoding="utf-8") as f:
         x = f.read()
     x = x.replace(

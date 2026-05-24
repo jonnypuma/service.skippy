@@ -509,16 +509,28 @@ def backup_existing_file(path, enabled):
 
 
 def marker_edl_path(video_path):
+    try:
+        from service_sidecar_paths import _find_existing_edl_path
+
+        found = _find_existing_edl_path(video_path)
+        if found:
+            return found
+    except ImportError:
+        pass
     base = video_path.rsplit(".", 1)[0]
     return f"{base}.edl"
 
 
 def marker_chapters_xml_path(video_path):
+    try:
+        from service_sidecar_paths import _find_existing_sidecar_chapter_xml_path
+
+        found = _find_existing_sidecar_chapter_xml_path(video_path)
+        if found:
+            return found
+    except ImportError:
+        pass
     base = video_path.rsplit(".", 1)[0]
-    for suffix in CHAPTER_XML_SIDECAR_SUFFIXES:
-        path = f"{base}{suffix}"
-        if xbmcvfs.exists(path):
-            return path
     return f"{base}{DEFAULT_NEW_CHAPTER_XML_SUFFIX}"
 
 

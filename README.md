@@ -46,6 +46,8 @@ service.skippy/
 │   │       └── strings.po                      # Localization strings for addon settings
 │   └── skins/
 │       └── default/
+│           ├── colors/
+│           │   └── defaults.xml                # Named colours for bundled skins (Segment Editor buttons, …)
 │           ├── 720p/
 │           │   ├── SkipDialog.xml              # Default fallback skip dialog (Full mode)
 │           │   ├── SkipDialog_TopRight.xml     # Full skip dialog — top right
@@ -87,6 +89,8 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 | Linux (CoreELEC) | Tested |
 | Windows 11 | Tested |
 
+Third-party skins—and sometimes **individual colour schemes** within those skins—vary in how they tint **add-on** dialogs. Skippy’s skip dialog and Segment Editor use bundled WindowXML tied to your **Skip dialogue font colour** setting and `resources/skins/default/colors/defaults.xml`. **Estuary** generally matches expectations. Heavily customised skins can still restyle label and button text globally. For example, **Arctic Fuse 3**: the **Bright White** colour scheme has been reported to alter skip dialog text tinting, while **Miami Vaporware** looked normal in testing. If colours look muted or wrong, try another **colour scheme** in the skin, switch to **Estuary** to confirm Skippy’s own styling, or stick with a scheme that leaves add-on dialogs readable.
+
 ---
 
 ## Key Features
@@ -100,7 +104,7 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 - Progress Bar Display toggle: Progress bar which fills up until end of segment. On/off toggle available under settings.
 - Skip Dialog Placement: Choose dialog layout position (Bottom Right, Top Right, Top Left, Bottom Left) — separate positions for **Full** and **Minimal** mode.
 - **Full** vs **Minimal** skip UI: Full = classic panel (icons, optional Close, progress bar). Minimal = small plate + Skip only; font color and plate style are configurable.
-- **Skip dialog font color**: Global preset colors (including black) applied reliably on Full and Minimal dialogs via the Python API.
+- **Skip dialog font color**: Stored preset (**Skip dialogue font colour** under Playback) is published as **`Window.Property(skip_dialog_text_color)`** and applied in WindowXML (**`$INFO[...]`** on Full / Minimal dialogs) so **focus** does not fight Python; label text is still updated from code.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
@@ -113,7 +117,7 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 
 Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi’s internal database IDs. Skippy reads those from Kodi’s **`uniqueid`** (and can lift **show-level** TMDB when the episode row only has TVDB/Sonarr-style IDs). If metadata is incomplete, Skippy can call **api.themoviedb.org** to resolve missing IDs, **but only when a TMDB v3 API key is available**.
 
-TheIntroDB’s **GET** `https://api.theintrodb.org/v2/media` returns each segment type (**intro**, **recap**, **credits**, **preview**, …) as a **JSON array** of windows (`start_ms` / `end_ms`); multiple segments per type are supported, and empty types are **left out** of the response.
+TheIntroDB’s **GET** `https://api.theintrodb.org/v3/media` returns each segment type (**intro**, **recap**, **credits**, **preview**, …) as a **JSON array** of windows (`start_ms` / `end_ms`; some segments may omit an end timestamp meaning “through end of the file”). Skippy passes **`duration_ms`** from playback/runtime when known to better match theatrical vs extended cuts. Multiple segments per type are supported, and empty types are **left out** of the response.
 
 **For reliable online lookup**, plan on one of these (you do **not** need both):
 
@@ -509,7 +513,7 @@ You can now completely disable skipping for movies or TV episodes:
 ---
 
 ## File Support
-Skippy supports the following segment definition files (same directory as the video, same **basename** as the file):
+Skippy supports the following segment definition files (same **basename** as the video). It looks **beside** the video first, then under a **`.chapters`** subfolder in the same directory (used by the Jellyfin chapters/edl exporter add-on):
 
 - **`basename.edl`**
 - **Chapter XML (Matroska-style)** — any of:
@@ -518,6 +522,7 @@ Skippy supports the following segment definition files (same directory as the vi
   - `basename.chapters.xml`
   - `basename-chapter.xml`, `basename_chapter.xml`, `basename.chapter.xml` (singular `chapter`, same patterns)
 - Optionally a directory-level **`chapters.xml`** next to the video (editor / parser fallback)
+- Jellyfin-style nesting: **`videodir/.chapters/basename-chapters.xml`** (and the other suffix variants), **`videodir/.chapters/basename.edl`**, tried after sibling paths
 
 EDL files follow Kodi’s native format with start, end, and action code lines. XML files use a chapter-based structure. If several XML sidecars exist, Skippy tries paths in a fixed order and uses the **first file that contains usable chapter entries**. See section below.
 

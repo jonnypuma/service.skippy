@@ -9,27 +9,84 @@ import xbmcvfs
 from segment_editor_parser import CHAPTER_XML_SIDECAR_SUFFIXES, normalize_matroska_chapter_xml_text
 from settings_utils import get_addon, log, log_service_detail
 
+# Jellyfin Kodi plugin (chapters/edl exporter) may place exports under this folder beside the video.
+_JF_CHAPTERS_SUBDIR = ".chapters"
+
 
 def _log_paths_detail(msg):
     log_service_detail(msg, tag="paths")
 
 
-def _chapter_xml_paths_to_try(video_path):
-    base = os.path.splitext(video_path)[0]
-    ext = os.path.splitext(video_path)[1].lower()
-    _log_paths_detail(f"🎬 Video container extension: {ext}")
-    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
-    fallback_base = None
+def _dedupe_paths(paths):
+    seen = set()
+    result = []
+    for path in paths:
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        result.append(path)
+    return result
+
+
+def _unique_trimmed_basenames(video_path):
+    """Full path prefixes without extension: playback path plus optional player's file."""
+    bases = []
+    seen = set()
+
+    def push(b):
+        if b and b not in seen:
+            seen.add(b)
+            bases.append(b)
+
+    push(os.path.splitext(video_path)[0])
     try:
         player = xbmc.Player()
         if player.isPlayingVideo():
-            fallback_base = player.getPlayingFile().rsplit(".", 1)[0]
-            _log_paths_detail(f"🔄 Fallback base path from player: {fallback_base}")
+            push(os.path.splitext(player.getPlayingFile())[0])
+    except RuntimeError:
+        pass
+    return bases
+
+
+def _chapter_xml_paths_to_try(video_path):
+    ext = os.path.splitext(video_path)[1].lower()
+    _log_paths_detail(f"🎬 Video container extension: {ext}")
+    suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
+
+    bases = _unique_trimmed_basenames(video_path)
+    paths_to_try = []
+    try:
+        player = xbmc.Player()
+        if player.isPlayingVideo():
+            fb = player.getPlayingFile().rsplit(".", 1)[0]
+            _log_paths_detail(f"🔄 Fallback base path from player: {fb}")
     except RuntimeError:
         log("⚠️ getPlayingFile() failed inside chapter path resolution")
-    paths_to_try = [f"{base}{s}" for s in suffixes]
-    if fallback_base:
-        paths_to_try += [f"{fallback_base}{s}" for s in suffixes]
+
+    # 1) Traditional sidecars beside the video (same basename)
+    for base in bases:
+        for s in suffixes:
+            paths_to_try.append(f"{base}{s}")
+
+    # 2) Jellyfin-style: parent/.chapters/<stem><suffix>
+    for base in bases:
+        parent = os.path.dirname(base)
+        stem = os.path.basename(base)
+        if not parent or not stem:
+            continue
+        subdir = os.path.join(parent, _JF_CHAPTERS_SUBDIR)
+        for s in suffixes:
+            paths_to_try.append(os.path.join(subdir, f"{stem}{s}"))
+
+    paths_to_try = _dedupe_paths(paths_to_try)
+
+    # 3) Directory chapters.xml beside the media file (no basename match)
+    vp_parent = os.path.dirname(video_path)
+    if vp_parent:
+        chap = os.path.join(vp_parent, "chapters.xml")
+        if chap not in set(paths_to_try):
+            paths_to_try.append(chap)
+
     _log_parent_dir_contents(video_path, ext)
     return paths_to_try
 
@@ -60,21 +117,38 @@ def _log_parent_dir_contents(video_path, ext):
 
 
 def _edl_paths_to_try(video_path):
-    base = video_path.rsplit(".", 1)[0]
     ext = ("." + video_path.rsplit(".", 1)[1]).lower() if "." in video_path else ""
     _log_paths_detail(f"🎬 Video container extension (EDL path): {ext}")
-    fallback_base = None
     try:
         player = xbmc.Player()
         if player.isPlayingVideo():
-            fallback_base = player.getPlayingFile().rsplit(".", 1)[0]
-            _log_paths_detail(f"🔄 Fallback base path from player: {fallback_base}")
+            _log_paths_detail(
+                f"🔄 Fallback base path from player: {player.getPlayingFile().rsplit('.', 1)[0]}"
+            )
     except RuntimeError:
         log("⚠️ getPlayingFile() failed inside EDL path resolution")
-    paths_to_try = [f"{base}.edl"]
-    if fallback_base:
-        paths_to_try.append(f"{fallback_base}.edl")
-    return paths_to_try
+
+    bases = _unique_trimmed_basenames(video_path)
+    paths_to_try = []
+    for base in bases:
+        paths_to_try.append(f"{base}.edl")
+    for base in bases:
+        parent = os.path.dirname(base)
+        stem = os.path.basename(base)
+        if parent and stem:
+            paths_to_try.append(os.path.join(parent, _JF_CHAPTERS_SUBDIR, f"{stem}.edl"))
+    return _dedupe_paths(paths_to_try)
+
+
+def _find_existing_edl_path(video_path):
+    """First existing .edl in discovery order (sibling preferred, then .chapters/)."""
+    for p in _edl_paths_to_try(video_path):
+        try:
+            if p and xbmcvfs.exists(p):
+                return p
+        except Exception:
+            continue
+    return None
 
 
 def local_chapter_or_edl_file_exists(video_path):
@@ -85,17 +159,6 @@ def local_chapter_or_edl_file_exists(video_path):
         if p and xbmcvfs.exists(p):
             return True
     return False
-
-
-def _dedupe_paths(paths):
-    seen = set()
-    result = []
-    for path in paths:
-        if not path or path in seen:
-            continue
-        seen.add(path)
-        result.append(path)
-    return result
 
 
 def _sidecar_paths_to_watch(video_path):
