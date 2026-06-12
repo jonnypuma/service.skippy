@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Reusable editor-styled WindowDialog helpers (stripes, buttons) for Skippy modals."""
+"""Editor-styled ``xbmcgui.WindowDialog`` helpers (upload modals, yes/no, list pick).
+
+These dialogs use **1280×720** coordinates via ``get_modal_dialog_layout()`` — see the
+module docstring in ``addon_skin_resolution.py`` (WindowDialog vs WindowXML). Do not
+copy coords from ``1080i/*.xml``; they will spill off-screen.
+"""
 from __future__ import annotations
 
 import os
@@ -8,15 +13,24 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
+from addon_skin_resolution import get_modal_dialog_layout, get_modal_metrics
 from settings_utils import get_addon
+
+
+def _modal_full_panel_height(lay, computed=None):
+    m = get_modal_metrics(lay)
+    max_h = min(
+        lay.panel_max_h,
+        lay.canvas_h - lay.panel_y - m.panel_bottom_pad,
+    )
+    if computed is None:
+        return max_h
+    return min(computed, max_h)
 
 # Match SegmentEditorDialog.xml bottom button row darkening (white.png + colordiffuse).
 EDITOR_STRIPE_DIFFUSE = "E0000000"
 EDITOR_PANEL_DIFFUSE = "F0222222"
 EDITOR_DIM_OVERLAY = "D0000000"
-
-_MODAL_W = 1280
-_MODAL_H = 720
 
 _CANCEL_ACTION_IDS = (10, 92, 216)
 _MOVE_LEFT = getattr(xbmcgui, "ACTION_MOVE_LEFT", 1)
@@ -119,7 +133,7 @@ def segment_style_push_button(x, y, w, h, label, tex_focus):
 class EditorTallYesNoDialog(xbmcgui.WindowDialog):
     """
     Scrollable body + ▲/▼ scroll + Yes / Cancel; top and bottom dark stripes
-    (editor button-row style). Layout 1280×720, top-left panel.
+    (editor button-row style). Always 1280×720 — Kodi upscales ``WindowDialog`` to the screen.
     """
 
     def __init__(self, heading, message, yes_label="Yes", cancel_label="Cancel"):
@@ -127,21 +141,24 @@ class EditorTallYesNoDialog(xbmcgui.WindowDialog):
         self.result = False
         tex = addon_skin_media("white.png")
         tex_focus = addon_skin_media("button_focus.png")
+        lay = get_modal_dialog_layout()
+        m = get_modal_metrics(lay)
+        mw, mh = lay.canvas_w, lay.canvas_h
         try:
-            bg = xbmcgui.ControlImage(0, 0, _MODAL_W, _MODAL_H, tex)
+            bg = xbmcgui.ControlImage(0, 0, mw, mh, tex)
             bg.setColorDiffuse(EDITOR_DIM_OVERLAY)
             self.addControl(bg)
         except Exception:
             pass
-        p_x, p_y = 36, 28
-        p_w = _MODAL_W - 72
-        p_h = _MODAL_H - 56
+        p_x, p_y = lay.panel_x, lay.panel_y
+        p_w = lay.panel_w
+        p_h = _modal_full_panel_height(lay)
         panel = xbmcgui.ControlImage(p_x, p_y, p_w, p_h, tex)
         panel.setColorDiffuse(EDITOR_PANEL_DIFFUSE)
         self.addControl(panel)
-        inner_x = p_x + 20
-        inner_w = p_w - 40
-        head_stripe_h = 48
+        inner_x = p_x + m.inner_margin
+        inner_w = p_w - m.inner_gutter
+        head_stripe_h = m.head_stripe_h
         head_stripe_y = p_y
         try:
             hs = xbmcgui.ControlImage(
@@ -150,21 +167,21 @@ class EditorTallYesNoDialog(xbmcgui.WindowDialog):
             hs.setColorDiffuse(EDITOR_STRIPE_DIFFUSE)
             self.addControl(hs)
         except Exception:
-            head_stripe_h = 40
+            head_stripe_h = m.head_stripe_h_fb
         self.addControl(
             xbmcgui.ControlLabel(
-                inner_x + 8,
-                head_stripe_y + 8,
-                inner_w - 16,
-                32,
+                inner_x + m.label_pad,
+                head_stripe_y + m.label_pad,
+                inner_w - m.label_inset,
+                m.title_h,
                 heading or "",
                 "font16",
                 "FFFFFFFF",
             )
         )
-        btn_w, btn_h = 118, 30
-        btn_y = p_y + p_h - btn_h - 14
-        bottom_stripe_h = btn_h + 20
+        btn_w, btn_h = m.btn_w_wide, m.btn_h
+        btn_y = p_y + p_h - btn_h - m.btn_bottom_pad
+        bottom_stripe_h = btn_h + m.stripe_pad
         bottom_stripe_y = p_y + p_h - bottom_stripe_h
         try:
             bs = xbmcgui.ControlImage(
@@ -174,8 +191,8 @@ class EditorTallYesNoDialog(xbmcgui.WindowDialog):
             self.addControl(bs)
         except Exception:
             pass
-        tb_top = head_stripe_y + head_stripe_h + 10
-        tb_h = max(120, bottom_stripe_y - 8 - tb_top)
+        tb_top = head_stripe_y + head_stripe_h + m.section_gap
+        tb_h = max(m.body_min_h, bottom_stripe_y - m.tight_gap - tb_top)
         self._body = xbmcgui.ControlTextBox(
             inner_x, tb_top, inner_w, tb_h, "font13", "FFE8E8E8"
         )
@@ -184,10 +201,10 @@ class EditorTallYesNoDialog(xbmcgui.WindowDialog):
         self._body_scroll_pos = 0
         ylbl = (yes_label or "Yes").strip() or "Yes"
         clbl = (cancel_label or "Cancel").strip() or "Cancel"
-        btn_gap = 14
-        sw = _SCROLL_BTN_W
-        sg = _SCROLL_BTN_PAIR_GAP
-        g0 = _SCROLL_TO_ACTION_GAP
+        btn_gap = m.btn_gap
+        sw = m.scroll_btn_w
+        sg = m.scroll_pair_gap
+        g0 = m.scroll_action_gap
         total_bw = sw * 2 + sg + g0 + btn_w * 2 + btn_gap
         row_left = inner_x + max(0, (inner_w - total_bw) // 2)
         sx0 = row_left
@@ -339,21 +356,24 @@ class EditorOkScrollDialog(xbmcgui.WindowDialog):
         super().__init__()
         tex = addon_skin_media("white.png")
         tex_focus = addon_skin_media("button_focus.png")
+        lay = get_modal_dialog_layout()
+        m = get_modal_metrics(lay)
+        mw, mh = lay.canvas_w, lay.canvas_h
         try:
-            bg = xbmcgui.ControlImage(0, 0, _MODAL_W, _MODAL_H, tex)
+            bg = xbmcgui.ControlImage(0, 0, mw, mh, tex)
             bg.setColorDiffuse(EDITOR_DIM_OVERLAY)
             self.addControl(bg)
         except Exception:
             pass
-        p_x, p_y = 36, 28
-        p_w = _MODAL_W - 72
-        p_h = _MODAL_H - 56
+        p_x, p_y = lay.panel_x, lay.panel_y
+        p_w = lay.panel_w
+        p_h = _modal_full_panel_height(lay)
         panel = xbmcgui.ControlImage(p_x, p_y, p_w, p_h, tex)
         panel.setColorDiffuse(EDITOR_PANEL_DIFFUSE)
         self.addControl(panel)
-        inner_x = p_x + 20
-        inner_w = p_w - 40
-        head_stripe_h = 48
+        inner_x = p_x + m.inner_margin
+        inner_w = p_w - m.inner_gutter
+        head_stripe_h = m.head_stripe_h
         head_stripe_y = p_y
         try:
             hs = xbmcgui.ControlImage(
@@ -362,21 +382,21 @@ class EditorOkScrollDialog(xbmcgui.WindowDialog):
             hs.setColorDiffuse(EDITOR_STRIPE_DIFFUSE)
             self.addControl(hs)
         except Exception:
-            head_stripe_h = 40
+            head_stripe_h = m.head_stripe_h_fb
         self.addControl(
             xbmcgui.ControlLabel(
-                inner_x + 8,
-                head_stripe_y + 8,
-                inner_w - 16,
-                32,
+                inner_x + m.label_pad,
+                head_stripe_y + m.label_pad,
+                inner_w - m.label_inset,
+                m.title_h,
                 heading or "",
                 "font16",
                 "FFFFFFFF",
             )
         )
-        btn_w, btn_h = 100, 30
-        btn_y = p_y + p_h - btn_h - 14
-        bottom_stripe_h = btn_h + 20
+        btn_w, btn_h = m.btn_w_ok, m.btn_h
+        btn_y = p_y + p_h - btn_h - m.btn_bottom_pad
+        bottom_stripe_h = btn_h + m.stripe_pad
         bottom_stripe_y = p_y + p_h - bottom_stripe_h
         try:
             bs = xbmcgui.ControlImage(
@@ -386,8 +406,8 @@ class EditorOkScrollDialog(xbmcgui.WindowDialog):
             self.addControl(bs)
         except Exception:
             pass
-        tb_top = head_stripe_y + head_stripe_h + 10
-        tb_h = max(120, bottom_stripe_y - 8 - tb_top)
+        tb_top = head_stripe_y + head_stripe_h + m.section_gap
+        tb_h = max(m.body_min_h, bottom_stripe_y - m.tight_gap - tb_top)
         self._body = xbmcgui.ControlTextBox(
             inner_x, tb_top, inner_w, tb_h, "font13", "FFE8E8E8"
         )
@@ -395,9 +415,9 @@ class EditorOkScrollDialog(xbmcgui.WindowDialog):
         self._body.setText(message or "")
         self._body_scroll_pos = 0
         ol = (ok_label or "OK").strip() or "OK"
-        sw = _SCROLL_BTN_W
-        sg = _SCROLL_BTN_PAIR_GAP
-        g0 = _SCROLL_TO_ACTION_GAP
+        sw = m.scroll_btn_w
+        sg = m.scroll_pair_gap
+        g0 = m.scroll_action_gap
         total_bw = sw * 2 + sg + g0 + btn_w
         row_left = inner_x + max(0, (inner_w - total_bw) // 2)
         sx0 = row_left
@@ -530,37 +550,40 @@ class EditorListPickDialog(xbmcgui.WindowDialog):
         self._options = list(options or [])
         tex = addon_skin_media("white.png")
         tex_focus = addon_skin_media("button_focus.png")
+        lay = get_modal_dialog_layout()
+        m = get_modal_metrics(lay)
+        mw, mh = lay.canvas_w, lay.canvas_h
         try:
-            bg = xbmcgui.ControlImage(0, 0, _MODAL_W, _MODAL_H, tex)
+            bg = xbmcgui.ControlImage(0, 0, mw, mh, tex)
             bg.setColorDiffuse(EDITOR_DIM_OVERLAY)
             self.addControl(bg)
         except Exception:
             pass
-        p_x, p_y = 36, 28
-        p_w = _MODAL_W - 72
+        p_x, p_y = lay.panel_x, lay.panel_y
+        p_w = lay.panel_w
         n = len(self._options)
-        opt_h = 36
-        gap = 10
-        head_h = 52
-        sub_h = 36 if (subtitle or "").strip() else 0
-        foot_h = 52
+        opt_h = m.opt_h
+        gap = m.opt_gap
+        head_h = m.block_head_h
+        sub_h = m.opt_h if (subtitle or "").strip() else 0
+        foot_h = m.block_head_h
         p_h = (
             head_h
             + sub_h
-            + 20
+            + m.pick_pad1
             + n * opt_h
             + max(0, n - 1) * gap
-            + 24
+            + m.pick_pad2
             + foot_h
-            + 36
+            + m.pick_pad3
         )
-        p_h = min(p_h, _MODAL_H - 56)
+        p_h = _modal_full_panel_height(lay, p_h)
         panel = xbmcgui.ControlImage(p_x, p_y, p_w, p_h, tex)
         panel.setColorDiffuse(EDITOR_PANEL_DIFFUSE)
         self.addControl(panel)
-        inner_x = p_x + 20
-        inner_w = p_w - 40
-        head_stripe_h = 52
+        inner_x = p_x + m.inner_margin
+        inner_w = p_w - m.inner_gutter
+        head_stripe_h = m.block_head_h
         head_stripe_y = p_y
         try:
             hs = xbmcgui.ControlImage(
@@ -573,10 +596,10 @@ class EditorListPickDialog(xbmcgui.WindowDialog):
         y = head_stripe_y + head_stripe_h
         self.addControl(
             xbmcgui.ControlLabel(
-                inner_x + 8,
-                head_stripe_y + 10,
-                inner_w - 16,
-                32,
+                inner_x + m.label_pad,
+                head_stripe_y + m.title_y,
+                inner_w - m.label_inset,
+                m.title_h,
                 heading or "",
                 "font16",
                 "FFFFFFFF",
@@ -585,29 +608,29 @@ class EditorListPickDialog(xbmcgui.WindowDialog):
         if sub_h:
             self.addControl(
                 xbmcgui.ControlLabel(
-                    inner_x + 8,
-                    y + 4,
-                    inner_w - 16,
-                    28,
+                    inner_x + m.label_pad,
+                    y + m.sub_y_off,
+                    inner_w - m.label_inset,
+                    m.sub_label_h,
                     subtitle,
                     "font14",
                     "FFB0D4E8",
                 )
             )
-            y += sub_h + 8
-        y += 12
-        btn_w = inner_w - 24
+            y += sub_h + m.sub_y_after
+        y += m.list_y_after
+        btn_w = inner_w - m.pick_btn_inset
         self._option_buttons = []
         for label in self._options:
             b = segment_style_push_button(
-                inner_x + 12, y, btn_w, opt_h, label, tex_focus
+                inner_x + m.pick_btn_side, y, btn_w, opt_h, label, tex_focus
             )
             self.addControl(b)
             self._option_buttons.append(b)
             y += opt_h + gap
-        cancel_h = 30
-        btn_y = p_y + p_h - cancel_h - 14
-        bottom_stripe_h = cancel_h + 20
+        cancel_h = m.btn_h
+        btn_y = p_y + p_h - cancel_h - m.btn_bottom_pad
+        bottom_stripe_h = cancel_h + m.stripe_pad
         bottom_stripe_y = p_y + p_h - bottom_stripe_h
         try:
             bs = xbmcgui.ControlImage(
@@ -617,7 +640,7 @@ class EditorListPickDialog(xbmcgui.WindowDialog):
             self.addControl(bs)
         except Exception:
             pass
-        cw = 118
+        cw = m.btn_w_wide
         cl = (cancel_label or "Cancel").strip() or "Cancel"
         self._btn_cancel = segment_style_push_button(
             inner_x + max(0, (inner_w - cw) // 2),

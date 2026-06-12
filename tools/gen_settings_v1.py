@@ -605,6 +605,15 @@ def main():
         "Show a toast notification if a segment is skipped.",
         True,
     )
+    bool_setting(
+        g,
+        "show_toast_for_segment_marker",
+        0,
+        "33004",
+        "33005",
+        True,
+        vis=[("segment_marker_enabled", "true")],
+    )
 
     # ---- 30005 marker ----
     cat = ET.SubElement(section, "category", id="marker", label="30005")
@@ -613,15 +622,6 @@ def main():
     bool_setting(g, "segment_marker_enabled", 0, "36000", "36001", False)
     bool_setting(
         g, "segment_marker_auto_save", 1, "36002", "36003", False, vis=v_marker
-    )
-    bool_setting(
-        g,
-        "segment_marker_show_indicator",
-        1,
-        "36004",
-        "36005",
-        True,
-        vis=v_marker,
     )
     labelenum_setting(
         g,

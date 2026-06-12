@@ -3,11 +3,11 @@
 Segment Marker — manual segment creation via long-press hotkey or remote button.
 
 Flow:
-1. First invocation: mark start time, show toast
-2. Second invocation: mark end time, show segment type picker
+1. First invocation: mark start time; optional **Notification** (~2s, **Toast Notifications → segment marker**), via ``notify_skippy`` with ``prefer_builtin=True`` for fullscreen
+2. Second invocation: mark end time (optional same notification); cancel or invalid range shows an optional cancelled toast; policy / type / confirm modals; pending state clears on any exit
 3. Save to EDL and chapters.xml (with optional confirmation)
 
-State is stored in addon settings (pending_marker_start) to persist across invocations.
+State is stored in Window(10000) properties to persist across invocations.
 """
 import json
 import os
@@ -26,12 +26,19 @@ from keymap_utils import install_marker_keymap
 from segment_editor_parser import (
     CHAPTER_XML_SIDECAR_SUFFIXES,
     DEFAULT_NEW_CHAPTER_XML_SUFFIX,
+    seconds_to_hms,
 )
+from segment_editor_utils import (
+    segment_editor_modal_is_open,
+    set_marker_second_press_flow_active,
+)
+from addon_skin_resolution import get_modal_dialog_layout, get_modal_metrics, init_window_xml_dialog
 from settings_utils import (
+    addon_get_bool,
     get_edl_label_to_action_map,
     normalize_label,
     get_custom_segment_keyword_labels,
-    skippy_notification_icon,
+    notify_skippy,
 )
 
 ADDON_ID = "service.skippy"
@@ -177,9 +184,49 @@ def get_pending_path():
 
 
 def show_toast(msg, time_ms=3000):
+    """Marker toasts use the built-in ``Notification`` path so they still show under fullscreen XML."""
     addon = get_addon()
-    icon = skippy_notification_icon(addon) if addon else ""
-    xbmcgui.Dialog().notification("Skippy", msg, icon, time_ms, sound=False)
+    notify_skippy(
+        addon,
+        msg,
+        title="Skippy",
+        time_ms=time_ms,
+        prefer_builtin=True,
+    )
+
+
+def notify_marker_pending_like_editor(addon, message):
+    """Marking feedback during fullscreen: ``Notification`` builtin (same as ``show_toast``).
+
+    Segment Editor uses ``Dialog().notification`` while its own dialog is active; during
+    fullscreen video that API is often invisible, so we use ``notify_skippy`` with
+    ``prefer_builtin=True``.
+    """
+    try:
+        title = addon.getAddonInfo("name") or "Skippy"
+    except Exception:
+        title = "Skippy"
+    notify_skippy(
+        addon,
+        message,
+        title=title,
+        time_ms=2000,
+        prefer_builtin=True,
+    )
+
+
+def notify_segment_marker_start_or_end_toast(addon, message):
+    """Respects **show_toast_for_segment_marker** (Toast Notifications)."""
+    if not addon_get_bool(addon, "show_toast_for_segment_marker", True):
+        return
+    notify_marker_pending_like_editor(addon, message)
+
+
+def notify_segment_marker_cancelled_toast(addon):
+    """Second-press flow aborted before save (same toast toggle as start/end)."""
+    if not addon_get_bool(addon, "show_toast_for_segment_marker", True):
+        return
+    notify_marker_pending_like_editor(addon, get_localized(addon, 36036))
 
 
 def set_marker_modal_open(is_open):
@@ -213,24 +260,82 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
 
     def _build_controls(self):
         white_texture = self._addon_media_path("white.png")
+        lay = get_modal_dialog_layout()
+        m = get_modal_metrics(lay)
         try:
-            overlay = xbmcgui.ControlImage(0, 0, 1280, 720, white_texture)
+            overlay = xbmcgui.ControlImage(
+                0, 0, lay.canvas_w, lay.canvas_h, white_texture
+            )
             overlay.setColorDiffuse("80000000")
             self.addControl(overlay)
         except Exception:
             pass
         try:
-            panel = xbmcgui.ControlImage(250, 220, 780, 280, white_texture)
+            panel = xbmcgui.ControlImage(
+                m.disc_x, m.disc_y, m.disc_w, m.disc_h, white_texture
+            )
             panel.setColorDiffuse("F0202020")
             self.addControl(panel)
         except Exception:
             pass
 
-        self.addControl(xbmcgui.ControlLabel(280, 248, 720, 45, "Skippy Remote Button Discovery", "font30", "FFFFFFFF"))
-        self.addControl(xbmcgui.ControlLabel(280, 312, 720, 35, "Press the remote button to use for Segment Marker.", "font14", "FFB0D4E8"))
-        self.addControl(xbmcgui.ControlLabel(280, 352, 720, 35, "Bluetooth/raw remotes save as key:<code>.", "font14", "FFFFFFFF"))
-        self.addControl(xbmcgui.ControlLabel(280, 392, 720, 35, "CEC remotes save as Kodi remote button names when possible.", "font14", "FFFFFFFF"))
-        self.addControl(xbmcgui.ControlLabel(280, 442, 720, 30, "Back/Esc cancels.", "font12", "FFB0B0B0"))
+        lx = m.disc_lx
+        lw = m.disc_lw
+        self.addControl(
+            xbmcgui.ControlLabel(
+                lx,
+                m.disc_title_y,
+                lw,
+                m.disc_title_h,
+                "Skippy Remote Button Discovery",
+                "font30",
+                "FFFFFFFF",
+            )
+        )
+        self.addControl(
+            xbmcgui.ControlLabel(
+                lx,
+                m.disc_line2_y,
+                lw,
+                m.disc_line_h,
+                "Press the remote button to use for Segment Marker.",
+                "font14",
+                "FFB0D4E8",
+            )
+        )
+        self.addControl(
+            xbmcgui.ControlLabel(
+                lx,
+                m.disc_line3_y,
+                lw,
+                m.disc_line_h,
+                "Bluetooth/raw remotes save as key:<code>.",
+                "font14",
+                "FFFFFFFF",
+            )
+        )
+        self.addControl(
+            xbmcgui.ControlLabel(
+                lx,
+                m.disc_line4_y,
+                lw,
+                m.disc_line_h,
+                "CEC remotes save as Kodi remote button names when possible.",
+                "font14",
+                "FFFFFFFF",
+            )
+        )
+        self.addControl(
+            xbmcgui.ControlLabel(
+                lx,
+                m.disc_foot_y,
+                lw,
+                m.disc_foot_h,
+                "Back/Esc cancels.",
+                "font12",
+                "FFB0B0B0",
+            )
+        )
 
     def onAction(self, action):
         try:
@@ -278,10 +383,7 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
 
     def __init__(self, *args, **kwargs):
         try:
-            try:
-                super().__init__(args[0], args[1], args[2], "720p")
-            except TypeError:
-                super().__init__(*args)
+            init_window_xml_dialog(super(SegmentTypePickerDialog, self), args)
         except Exception:
             super().__init__(*args)
         self.title = kwargs.get("title", "Choose segment type")
@@ -289,7 +391,8 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
         self.footer = kwargs.get("footer", "Enter/OK selects. Back/Esc cancels.")
         self.options = kwargs.get("options", [])
         self.selected_index = -1
-        self.cancelled = False
+        # Treat as aborted until OK/list selection confirms (implicit closes stay cancelled).
+        self.cancelled = True
         self.list_control = None
 
     def onInit(self):
@@ -425,12 +528,14 @@ def pick_marker_option(addon, title, subtitle, options, footer="Enter/OK selects
         except (TypeError, ValueError):
             idx = -1
     finally:
+        set_marker_modal_open(False)
         try:
             if dialog:
                 del dialog
         except Exception:
             pass
-        set_marker_modal_open(False)
+        # Do **not** clear marker props here: save flow chains multiple modals; clearing runs in
+        # ``segment_marker.main`` finally / cancel paths once the UX completes.
     if cancelled_result or idx < 0:
         return None
     if idx >= len(options):
@@ -810,8 +915,20 @@ def sort_chapter_atoms_by_start(edition):
         edition.append(atom)
 
 
-def save_to_chapters_xml(video_path, start, end, label, perm_setting, policy=None, backup_before_write=True):
-    """Add segment to chapters.xml next to video."""
+def save_to_chapters_xml(
+    video_path,
+    start,
+    end,
+    label,
+    perm_setting,
+    addon=None,
+    policy=None,
+    backup_before_write=True,
+):
+    """Add segment to chapters.xml next to the video.
+
+    ``addon`` is accepted for symmetry with ``save_to_edl`` calls (unused today).
+    """
     try:
         policy = normalize_marker_policy(policy)
         xml_path = None
@@ -889,26 +1006,9 @@ def save_to_chapters_xml(video_path, start, end, label, perm_setting, policy=Non
         return False
 
 
-def update_indicator(start_time=None, end_time=None):
-    """Update or clear the pending marker indicator (Window 10000 property).
-
-    * ``start_time`` is None: clear the indicator.
-    * ``end_time`` is None: show start only (waiting for second press).
-    * Both set: show start and end (e.g. while save / type dialogs are open).
-    """
-    window = xbmcgui.Window(10000)
-    if start_time is None:
-        window.clearProperty("skippy_marker_indicator")
-    elif end_time is None:
-        window.setProperty(
-            "skippy_marker_indicator",
-            f"Start: {format_time(start_time)}",
-        )
-    else:
-        window.setProperty(
-            "skippy_marker_indicator",
-            f"Start: {format_time(start_time)}  →  End: {format_time(end_time)}",
-        )
+def clear_marker_pending_state():
+    """Clear pending segment marker start (stored on Window 10000)."""
+    set_pending_start(None)
 
 
 def main():
@@ -917,103 +1017,65 @@ def main():
         log("Could not get addon instance")
         return
 
-    if len(sys.argv) > 1:
-        command = (sys.argv[1] or "").strip().lower()
-        if command == "discover_button":
-            discover_remote_button(addon)
-            return
-        if command == "install_keymap":
-            install_marker_keymap(addon, notify=True)
-            return
-        if command == "open_segment_editor":
-            from segment_editor_session import open_segment_editor
-
-            open_segment_editor()
-            return
-        if command == "discover_editor_button":
-            from segment_editor import discover_editor_remote_button
-
-            discover_editor_remote_button(addon)
-            return
-        if command == "install_editor_keymap":
-            from keymap_utils import install_editor_keymap
-
-            install_editor_keymap(addon, notify=True)
-            return
-        if command == "backup_settings":
-            from settings_backup import run_backup_ui
-            from settings_utils import skippy_notification_icon
-
-            run_backup_ui(addon, skippy_notification_icon(addon) or "", log)
-            return
-        if command == "restore_settings":
-            from settings_backup import run_restore_ui
-            from settings_utils import skippy_notification_icon
-
-            run_restore_ui(addon, skippy_notification_icon(addon) or "", log)
-            return
-
     enabled = addon.getSetting("segment_marker_enabled") == "true"
     if not enabled:
-        set_pending_start(None)
-        update_indicator(None)
-        show_toast(get_localized(addon, 36016))
+        clear_marker_pending_state()
         log("Segment Marker is disabled in settings")
         return
     
     current_time = get_current_playback_time()
     if current_time is None:
-        show_toast(get_localized(addon, 36015))
         log("No video playing")
         return
     
     video_path = get_video_path()
     if not video_path:
-        show_toast(get_localized(addon, 36015))
         log("Could not get video path")
+        return
+
+    if segment_editor_modal_is_open():
+        notify_skippy(
+            addon,
+            "Close the Segment Editor before using the Segment Marker.",
+            prefer_builtin=True,
+        )
+        log("Segment Marker ignored — Segment Editor is open")
         return
     
     pending_start = get_pending_start()
     pending_path = get_pending_path()
     
-    show_indicator = addon.getSetting("segment_marker_show_indicator") == "true"
-    
     if pending_start is None or pending_path != video_path:
         set_pending_start(current_time)
-        toast_msg = f"{get_localized(addon, 36008)}: {format_time(current_time)}"
-        show_toast(toast_msg)
+        hms = seconds_to_hms(float(current_time))
+        start_line = "{}: {}".format(get_localized(addon, 36008), hms)
+        notify_segment_marker_start_or_end_toast(
+            addon,
+            "{}\n{}".format(start_line, get_localized(addon, 36035)),
+        )
         log(f"Start time marked: {current_time} for {video_path}")
-        
-        if show_indicator:
-            update_indicator(current_time)
-        else:
-            update_indicator(None)
         return
     
     end_time = current_time
     start_time = pending_start
     
     if end_time <= start_time:
-        set_pending_start(None)
-        update_indicator(None)
-        show_toast(
-            f"End time must be after start ({format_time(start_time)}). "
-            "Pending mark cleared."
+        log(
+            f"Invalid end time {end_time} <= start {start_time}; cleared pending mark"
         )
-        log(f"Invalid end time {end_time} <= start {start_time}; cleared pending mark")
+        notify_segment_marker_cancelled_toast(addon)
+        clear_marker_pending_state()
         return
     
+    notify_segment_marker_start_or_end_toast(
+        addon,
+        "{}: {}".format(get_localized(addon, 36009), seconds_to_hms(float(end_time))),
+    )
+
+    set_marker_second_press_flow_active(True)
     set_pending_start(None)
-    if show_indicator:
-        update_indicator(start_time, end_time)
-    else:
-        update_indicator(None)
-    
-    toast_msg = f"{get_localized(addon, 36009)}: {format_time(end_time)}"
-    show_toast(toast_msg, time_ms=1500)
+
     log(f"End time marked: {end_time}")
-    
-    xbmc.sleep(500)
 
     try:
         save_format = addon.getSetting("segment_marker_save_format") or "Both"
@@ -1029,8 +1091,9 @@ def main():
                 )
                 chosen_policy = ask_marker_existing_policy(addon, overlaps)
                 if not chosen_policy:
-                    show_toast(get_localized(addon, 36014))
                     log("Marker save policy selection cancelled")
+                    notify_segment_marker_cancelled_toast(addon)
+                    clear_marker_pending_state()
                     return
                 existing_policy = chosen_policy
             else:
@@ -1041,15 +1104,17 @@ def main():
 
         label = pick_segment_type(addon)
         if not label:
-            show_toast(get_localized(addon, 36014))
             log("Segment type selection cancelled")
+            notify_segment_marker_cancelled_toast(addon)
+            clear_marker_pending_state()
             return
 
         auto_save = addon.getSetting("segment_marker_auto_save") == "true"
         if not auto_save:
             if not confirm_save(addon, start_time, end_time, label):
-                show_toast(get_localized(addon, 36014))
                 log("Save cancelled by user")
+                notify_segment_marker_cancelled_toast(addon)
+                clear_marker_pending_state()
                 return
 
         perm_setting = addon.getSetting("segment_marker_file_permissions") or "Default"
@@ -1091,45 +1156,37 @@ def main():
 
         if save_format == "Both":
             if edl_saved and xml_saved:
-                show_toast(f"{get_localized(addon, 36012)}: {label}")
                 log(f"Segment saved: {label} [{start_time}-{end_time}]")
             elif (edl_skipped and xml_skipped) or (
                 (edl_skipped or xml_skipped) and not (edl_saved or xml_saved)
             ):
-                show_toast("Segment overlaps existing entry; not changed")
                 log(
                     "Marker save skipped by merge policy because the range overlaps existing entries"
                 )
             elif edl_saved or xml_saved:
-                partial = "EDL" if edl_saved else "chapters.xml"
-                show_toast(f"Partial save ({partial})")
                 log(f"Partial save: EDL={edl_ok}, XML={xml_ok}")
             else:
-                show_toast(get_localized(addon, 36013))
                 log("Failed to save segment to both files")
         elif save_format == "EDL":
             if edl_saved:
-                show_toast(f"{get_localized(addon, 36012)}: {label} (EDL)")
                 log(f"Segment saved to EDL: {label} [{start_time}-{end_time}]")
             elif edl_skipped:
-                show_toast("Segment overlaps existing EDL entry; not changed")
                 log("Marker EDL save skipped by merge policy")
             else:
-                show_toast(get_localized(addon, 36013))
                 log("Failed to save segment to EDL")
         elif save_format == "XML":
             if xml_saved:
-                show_toast(f"{get_localized(addon, 36012)}: {label} (XML)")
-                log(f"Segment saved to chapters.xml: {label} [{start_time}-{end_time}]")
+                log(
+                    f"Segment saved to chapters.xml: {label} [{start_time}-{end_time}]"
+                )
             elif xml_skipped:
-                show_toast("Segment overlaps existing XML chapter; not changed")
                 log("Marker XML save skipped by merge policy")
             else:
-                show_toast(get_localized(addon, 36013))
                 log("Failed to save segment to chapters.xml")
 
     finally:
-        update_indicator(None)
+        set_marker_second_press_flow_active(False)
+        clear_marker_pending_state()
 
 
 if __name__ == "__main__":

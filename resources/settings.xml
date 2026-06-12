@@ -582,6 +582,14 @@
                     <default>true</default>
                     <control type="toggle"></control>
                 </setting>
+                <setting id="show_toast_for_segment_marker" type="boolean" label="33004" help="33005">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
+                    </dependencies>
+                </setting>
             </group>
         </category>
         <category id="marker" label="30005">
@@ -594,14 +602,6 @@
                 <setting id="segment_marker_auto_save" type="boolean" label="36002" help="36003">
                     <level>1</level>
                     <default>false</default>
-                    <control type="toggle"></control>
-                    <dependencies>
-                        <dependency type="visible" setting="segment_marker_enabled">true</dependency>
-                    </dependencies>
-                </setting>
-                <setting id="segment_marker_show_indicator" type="boolean" label="36004" help="36005">
-                    <level>1</level>
-                    <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>

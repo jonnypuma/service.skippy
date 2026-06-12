@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <window>
   <coordinates>
     <system>1</system>
@@ -7,23 +7,17 @@
     <width>1920</width>
     <height>1080</height>
   </coordinates>
-
   <zorder>1</zorder>
   <defaultcontrol>5018</defaultcontrol>
-
   <animation type="WindowOpen">
-    <effect type="slide" start="0,100" end="0,0" time="300" tween="quadratic" easing="out" />
+    <effect type="slide" start="0,150" end="0,0" time="300" tween="quadratic" easing="out" />
     <effect type="fade" start="0" end="100" time="400" />
   </animation>
-
   <animation type="WindowClose">
-    <effect type="slide" start="0,0" end="0,100" time="300" tween="quadratic" easing="in" />
+    <effect type="slide" start="0,0" end="0,150" time="300" tween="quadratic" easing="in" />
     <effect type="fade" start="100" end="0" time="300" />
   </animation>
-
   <controls>
-    <!-- Background - semi-transparent black overlay like Skippy -->
-    <!-- Only visible if EnableFullscreenOverlay property is set to "true" -->
     <control type="image">
       <left>0</left>
       <top>0</top>
@@ -33,89 +27,77 @@
       <colordiffuse>F0000000</colordiffuse>
       <visible>String.IsEqual(Window.Property(EnableFullscreenOverlay),true)</visible>
     </control>
-
-    <!-- Main panel - centered and sized to fit within video window -->
     <control type="group">
-      <left>50</left>
-      <top>60</top>
-      <width>1170</width>
-      <height>570</height>
-
-      <!-- Panel background - darker semi-transparent background -->
+      <left>75</left>
+      <top>90</top>
+      <width>1755</width>
+      <height>855</height>
       <control type="image">
         <left>0</left>
         <top>0</top>
-        <width>1170</width>
-        <height>570</height>
+        <width>1755</width>
+        <height>855</height>
         <texture>white.png</texture>
         <colordiffuse>F0202020</colordiffuse>
       </control>
-
-      <!-- Title banner (top-left, proportional — do not stretch full width) -->
       <control type="image">
-        <left>20</left>
-        <top>20</top>
-        <width>229</width>
-        <height>40</height>
+        <left>30</left>
+        <top>30</top>
+        <width>344</width>
+        <height>60</height>
         <texture>segment_editor_banner.png</texture>
         <aspectratio aligny="center">keep</aspectratio>
       </control>
-
-      <!-- Current time label -->
       <control type="label" id="5001">
-        <left>20</left>
-        <top>70</top>
-        <width>480</width>
-        <height>30</height>
+        <left>30</left>
+        <top>105</top>
+        <width>720</width>
+        <height>45</height>
         <label>Current Time: --:--:--</label>
         <font>font16</font>
         <textcolor>FFB0D4E8</textcolor>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <align>left</align>
       </control>
-
-      <!-- Status label (for marked times) -->
       <control type="label" id="5008">
-        <left>520</left>
-        <top>70</top>
-        <width>460</width>
-        <height>30</height>
-        <label></label>
+        <left>780</left>
+        <top>105</top>
+        <width>690</width>
+        <height>45</height>
+        <label />
         <font>font14</font>
         <textcolor>FFFFAA00</textcolor>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <align>left</align>
       </control>
-
-      <!-- Segments list -->
       <control type="list" id="5000">
-        <left>20</left>
-        <top>110</top>
-        <width>1140</width>
-        <height>290</height>
+        <left>30</left>
+        <top>165</top>
+        <width>1710</width>
+        <height>435</height>
         <ondown>5018</ondown>
         <onup>5018</onup>
         <onright>5037</onright>
-        <itemlayout width="1140" height="50">
+        <itemlayout width="1710" height="75">
           <control type="label">
-            <left>10</left>
-            <top>5</top>
-            <width>680</width>
-            <height>25</height>
+            <left>15</left>
+            <top>8</top>
+            <width>1020</width>
+            <height>38</height>
             <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
             <font>font12</font>
             <textcolor>FFFFFFFF</textcolor>
             <align>left</align>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FFB0B0B0</textcolor>
@@ -123,10 +105,10 @@
             <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FFFF0000</textcolor>
@@ -134,10 +116,10 @@
             <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FF0080FF</textcolor>
@@ -145,29 +127,29 @@
             <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
           </control>
         </itemlayout>
-        <focusedlayout width="1140" height="50">
+        <focusedlayout width="1710" height="75">
           <control type="image">
             <left>0</left>
             <top>0</top>
-            <width>1140</width>
-            <height>50</height>
+            <width>1710</width>
+            <height>75</height>
             <texture colordiffuse="40FFFFFF">white.png</texture>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>5</top>
-            <width>680</width>
-            <height>25</height>
+            <left>15</left>
+            <top>8</top>
+            <width>1020</width>
+            <height>38</height>
             <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
             <font>font12</font>
             <textcolor>FFFFFFFF</textcolor>
             <align>left</align>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FFB0B0B0</textcolor>
@@ -175,10 +157,10 @@
             <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FFFF0000</textcolor>
@@ -186,10 +168,10 @@
             <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
           </control>
           <control type="label">
-            <left>10</left>
-            <top>28</top>
-            <width>1000</width>
-            <height>20</height>
+            <left>15</left>
+            <top>42</top>
+            <width>1500</width>
+            <height>30</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
             <textcolor>FF0080FF</textcolor>
@@ -198,13 +180,11 @@
           </control>
         </focusedlayout>
       </control>
-
-      <!-- List row actions — Y position tracks selection (set in Python) -->
       <control type="button" id="5037">
-        <left>470</left>
-        <top>110</top>
-        <width>100</width>
-        <height>30</height>
+        <left>705</left>
+        <top>165</top>
+        <width>165</width>
+        <height>45</height>
         <label>Start@Curr</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -212,8 +192,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5038</onright>
@@ -222,10 +202,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5038">
-        <left>572</left>
-        <top>110</top>
-        <width>86</width>
-        <height>30</height>
+        <left>872</left>
+        <top>165</top>
+        <width>140</width>
+        <height>45</height>
         <label>End@Curr</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -233,8 +213,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5027</onright>
@@ -243,10 +223,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5027">
-        <left>660</left>
-        <top>110</top>
-        <width>90</width>
-        <height>30</height>
+        <left>1014</left>
+        <top>165</top>
+        <width>145</width>
+        <height>45</height>
         <label>Snap Start</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -254,8 +234,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5028</onright>
@@ -264,10 +244,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5028">
-        <left>752</left>
-        <top>110</top>
-        <width>92</width>
-        <height>30</height>
+        <left>1159</left>
+        <top>165</top>
+        <width>148</width>
+        <height>45</height>
         <label>Snap End</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -275,8 +255,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5041</onright>
@@ -285,10 +265,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5041">
-        <left>846</left>
-        <top>110</top>
-        <width>70</width>
-        <height>30</height>
+        <left>1309</left>
+        <top>165</top>
+        <width>102</width>
+        <height>45</height>
         <label>Merge</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -296,8 +276,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5042</onright>
@@ -306,10 +286,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5042">
-        <left>918</left>
-        <top>110</top>
-        <width>48</width>
-        <height>30</height>
+        <left>1413</left>
+        <top>165</top>
+        <width>70</width>
+        <height>45</height>
         <label>Split</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -317,8 +297,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5043</onright>
@@ -327,10 +307,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5043">
-        <left>968</left>
-        <top>110</top>
-        <width>80</width>
-        <height>30</height>
+        <left>1485</left>
+        <top>165</top>
+        <width>125</width>
+        <height>45</height>
         <label>Fix Ovl</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -338,8 +318,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5021</onright>
@@ -348,10 +328,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5021">
-        <left>1050</left>
-        <top>110</top>
-        <width>48</width>
-        <height>30</height>
+        <left>1612</left>
+        <top>165</top>
+        <width>78</width>
+        <height>45</height>
         <label>Edit</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -359,8 +339,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onright>5022</onright>
@@ -369,10 +349,10 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5022">
-        <left>1100</left>
-        <top>110</top>
-        <width>50</width>
-        <height>30</height>
+        <left>1690</left>
+        <top>165</top>
+        <width>65</width>
+        <height>45</height>
         <label>Del</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -380,8 +360,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onleft>5021</onleft>
@@ -389,23 +369,19 @@
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
-
-      <!-- Darkening overlay for bottom button rows (seek, mark, and action rows) -->
       <control type="image">
         <left>0</left>
-        <top>445</top>
-        <width>1170</width>
-        <height>125</height>
+        <top>668</top>
+        <width>1755</width>
+        <height>188</height>
         <texture>white.png</texture>
         <colordiffuse>E0000000</colordiffuse>
       </control>
-
-      <!-- Row 1: Seek controls (-10m … Resume … +10m) -->
       <control type="button" id="5031">
-        <left>15</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>22</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-10m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -413,20 +389,19 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
         <onright>5032</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5032">
-        <left>91</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>136</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-5m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -434,8 +409,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -443,12 +418,11 @@
         <onright>5033</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5033">
-        <left>167</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>250</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-1m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -456,8 +430,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -465,12 +439,11 @@
         <onright>5011</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5011">
-        <left>243</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>364</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-30s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -478,8 +451,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -487,12 +460,11 @@
         <onright>5010</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5010">
-        <left>319</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>478</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-10s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -500,8 +472,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -509,12 +481,11 @@
         <onright>5009</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5009">
-        <left>395</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>592</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-5s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -522,8 +493,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -531,12 +502,11 @@
         <onright>5019</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5019">
-        <left>471</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>706</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>-1s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -544,8 +514,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -553,12 +523,11 @@
         <onright>5018</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5018">
-        <left>547</left>
-        <top>450</top>
-        <width>76</width>
-        <height>30</height>
+        <left>820</left>
+        <top>675</top>
+        <width>114</width>
+        <height>45</height>
         <label>Pause</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -566,8 +535,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -575,12 +544,11 @@
         <onright>5020</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5020">
-        <left>627</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>940</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+1s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -588,8 +556,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -597,12 +565,11 @@
         <onright>5012</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5012">
-        <left>703</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1054</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+5s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -610,8 +577,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -619,12 +586,11 @@
         <onright>5013</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5013">
-        <left>779</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1168</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+10s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -632,8 +598,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -641,12 +607,11 @@
         <onright>5014</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5014">
-        <left>855</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1282</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+30s</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -654,8 +619,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -663,12 +628,11 @@
         <onright>5034</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5034">
-        <left>931</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1396</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+1m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -676,8 +640,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -685,12 +649,11 @@
         <onright>5035</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5035">
-        <left>1007</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1510</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+5m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -698,8 +661,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
@@ -707,12 +670,11 @@
         <onright>5036</onright>
         <ondown>5015</ondown>
       </control>
-
       <control type="button" id="5036">
-        <left>1083</left>
-        <top>450</top>
-        <width>72</width>
-        <height>30</height>
+        <left>1624</left>
+        <top>675</top>
+        <width>108</width>
+        <height>45</height>
         <label>+10m</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -720,21 +682,19 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5000</onup>
         <onleft>5035</onleft>
         <ondown>5015</ondown>
       </control>
-
-      <!-- Row 2: Mark / create controls -->
       <control type="button" id="5015">
-        <left>27</left>
-        <top>490</top>
-        <width>100</width>
-        <height>30</height>
+        <left>40</left>
+        <top>735</top>
+        <width>168</width>
+        <height>45</height>
         <label>Set as Start</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -742,20 +702,19 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
         <onright>5029</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5029">
-        <left>131</left>
-        <top>490</top>
-        <width>215</width>
-        <height>30</height>
+        <left>196</left>
+        <top>735</top>
+        <width>345</width>
+        <height>45</height>
         <label>Set Start to Start of File</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -763,8 +722,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
@@ -772,12 +731,11 @@
         <onright>5016</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5016">
-        <left>350</left>
-        <top>490</top>
-        <width>100</width>
-        <height>30</height>
+        <left>548</left>
+        <top>735</top>
+        <width>168</width>
+        <height>45</height>
         <label>Set as End</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -785,8 +743,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
@@ -794,12 +752,11 @@
         <onright>5030</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5030">
-        <left>454</left>
-        <top>490</top>
-        <width>200</width>
-        <height>30</height>
+        <left>719</left>
+        <top>735</top>
+        <width>330</width>
+        <height>45</height>
         <label>Set End to End of File</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -807,8 +764,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
@@ -816,12 +773,11 @@
         <onright>5017</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5017">
-        <left>658</left>
-        <top>490</top>
-        <width>70</width>
-        <height>30</height>
+        <left>1056</left>
+        <top>735</top>
+        <width>115</width>
+        <height>45</height>
         <label>Create</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -829,8 +785,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
@@ -838,12 +794,11 @@
         <onright>5023</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5023">
-        <left>732</left>
-        <top>490</top>
-        <width>195</width>
-        <height>30</height>
+        <left>1176</left>
+        <top>735</top>
+        <width>320</width>
+        <height>45</height>
         <label>Start at End of Segment</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -851,8 +806,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
@@ -860,12 +815,11 @@
         <onright>5024</onright>
         <ondown>5025</ondown>
       </control>
-
       <control type="button" id="5024">
-        <left>931</left>
-        <top>490</top>
-        <width>195</width>
-        <height>30</height>
+        <left>1396</left>
+        <top>735</top>
+        <width>292</width>
+        <height>45</height>
         <label>End at Start of Segment</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -873,21 +827,19 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5018</onup>
         <onleft>5023</onleft>
         <ondown>5025</ondown>
       </control>
-
-      <!-- Row 3: Action buttons -->
       <control type="button" id="5025">
-        <left>20</left>
-        <top>530</top>
-        <width>115</width>
-        <height>30</height>
+        <left>30</left>
+        <top>795</top>
+        <width>172</width>
+        <height>45</height>
         <label>Jump To</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -895,20 +847,19 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
         <onright>5005</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5005">
-        <left>138</left>
-        <top>530</top>
-        <width>310</width>
-        <height>30</height>
+        <left>207</left>
+        <top>795</top>
+        <width>465</width>
+        <height>45</height>
         <label>Add at Current Time + User Set Time</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -916,8 +867,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -925,12 +876,11 @@
         <onright>5002</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5002">
-        <left>451</left>
-        <top>530</top>
-        <width>278</width>
-        <height>30</height>
+        <left>676</left>
+        <top>795</top>
+        <width>417</width>
+        <height>45</height>
         <label>Add Manual Start and End Points</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -938,8 +888,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -947,12 +897,11 @@
         <onright>5004</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5004">
-        <left>732</left>
-        <top>530</top>
-        <width>85</width>
-        <height>30</height>
+        <left>1098</left>
+        <top>795</top>
+        <width>145</width>
+        <height>45</height>
         <label>Delete All</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -960,8 +909,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -969,12 +918,11 @@
         <onright>5040</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5040">
-        <left>820</left>
-        <top>530</top>
-        <width>60</width>
-        <height>30</height>
+        <left>1230</left>
+        <top>795</top>
+        <width>90</width>
+        <height>45</height>
         <label>Undo</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -982,8 +930,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -991,12 +939,11 @@
         <onright>5026</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5026">
-        <left>883</left>
-        <top>530</top>
-        <width>90</width>
-        <height>30</height>
+        <left>1324</left>
+        <top>795</top>
+        <width>135</width>
+        <height>45</height>
         <label>Upload</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -1004,8 +951,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -1013,12 +960,11 @@
         <onright>5006</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5006">
-        <left>976</left>
-        <top>530</top>
-        <width>70</width>
-        <height>30</height>
+        <left>1464</left>
+        <top>795</top>
+        <width>105</width>
+        <height>45</height>
         <label>Save</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -1026,8 +972,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -1035,12 +981,11 @@
         <onright>5007</onright>
         <ondown>5000</ondown>
       </control>
-
       <control type="button" id="5007">
-        <left>1049</left>
-        <top>530</top>
-        <width>80</width>
-        <height>30</height>
+        <left>1574</left>
+        <top>795</top>
+        <width>120</width>
+        <height>45</height>
         <label>Exit</label>
         <font>font10</font>
         <textcolor>lightgrey</textcolor>
@@ -1048,8 +993,8 @@
         <texturenofocus>-</texturenofocus>
         <texturefocus>button_focus.png</texturefocus>
         <shadowcolor>FF000000</shadowcolor>
-        <shadowoffsetx>1</shadowoffsetx>
-        <shadowoffsety>1</shadowoffsety>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
         <onup>5015</onup>
@@ -1059,4 +1004,3 @@
     </control>
   </controls>
 </window>
-

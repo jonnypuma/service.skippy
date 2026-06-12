@@ -440,7 +440,7 @@ def _remote_fetch_mark_success(bucket):
     _REMOTE_FETCH_FAILURE_STREAK.pop(bucket, None)
 
 
-def fetch_remote_json(url, source_name):
+def fetch_remote_json(url, source_name, extra_headers=None):
     bucket = _remote_cooldown_bucket(source_name)
     if _remote_fetch_cooldown_active(bucket):
         _rlog(
@@ -450,12 +450,17 @@ def fetch_remote_json(url, source_name):
         return None
 
     _rlog("%s lookup request -> %s" % (source_name, _safe_log_url(url)))
+    headers = {
+        "User-Agent": "%s/%s" % (ADDON_ID, _addon_version()),
+        "Accept": "application/json",
+    }
+    if extra_headers:
+        for k, v in extra_headers.items():
+            if v is not None and str(v).strip():
+                headers[k] = str(v).strip()
     request = Request(
         url,
-        headers={
-            "User-Agent": "%s/%s" % (ADDON_ID, _addon_version()),
-            "Accept": "application/json",
-        },
+        headers=headers,
     )
     try:
         with closing(urlopen(request, timeout=REMOTE_LOOKUP_TIMEOUT)) as response:
@@ -1465,16 +1470,22 @@ def build_tv_cache_key(context):
     )
 
 
-def normalize_skip_window(start_value, end_value, total_time):
+def normalize_skip_window(start_value, end_value, total_time, allow_zero_start=False):
     try:
         end_seconds = float(end_value)
     except (TypeError, ValueError):
         return None
     try:
-        start_seconds = float(start_value) if start_value is not None else 1.0
+        if start_value is None:
+            start_seconds = 0.0 if allow_zero_start else 1.0
+        else:
+            start_seconds = float(start_value)
     except (TypeError, ValueError):
-        start_seconds = 1.0
-    start_seconds = max(1.0, start_seconds)
+        start_seconds = 0.0 if allow_zero_start else 1.0
+    if allow_zero_start:
+        start_seconds = max(0.0, start_seconds)
+    else:
+        start_seconds = max(1.0, start_seconds)
     try:
         tt = float(total_time)
     except (TypeError, ValueError):
@@ -1551,18 +1562,19 @@ def _theintrodb_segment_entries(payload, total_time):
                     continue
             start_ms_raw = entry.get("start_ms")
             if start_ms_raw is None:
-                start_seconds = None
+                start_seconds = 0.0
             else:
                 try:
                     start_seconds = float(start_ms_raw) / 1000.0
                 except (TypeError, ValueError):
                     continue
-            if start_seconds is not None and start_seconds >= end_seconds:
+            if start_seconds >= end_seconds:
                 continue
             window = normalize_skip_window(
                 start_seconds,
                 end_seconds,
                 total_time,
+                allow_zero_start=True,
             )
             if window:
                 out.append(
@@ -1574,6 +1586,14 @@ def _theintrodb_segment_entries(payload, total_time):
                     )
                 )
     return out
+
+
+def _theintrodb_lookup_api_key():
+    addon = get_addon()
+    if not addon:
+        return None
+    key = (addon_get_setting_text(addon, "online_upload_theintrodb_api_key", "") or "").strip()
+    return key or None
 
 
 def fetch_theintrodb_segments(context, total_time):
@@ -1615,9 +1635,15 @@ def fetch_theintrodb_segments(context, total_time):
         except (TypeError, ValueError):
             pass
 
+    extra_headers = {}
+    api_key = _theintrodb_lookup_api_key()
+    if api_key:
+        extra_headers["Authorization"] = "Bearer %s" % api_key
+
     payload = fetch_remote_json(
         "%s?%s" % (THEINTRODB_BASE_URL, urlencode(query)),
         "TheIntroDB",
+        extra_headers=extra_headers or None,
     )
     if not payload:
         _rlog("TheIntroDB: no JSON payload (HTTP error, timeout, or empty body — see messages above)")

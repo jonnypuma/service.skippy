@@ -110,6 +110,85 @@ def set_editor_modal_open(is_open):
         pass
 
 
+def _truthy_window_prop(value):
+    s = (value or "").strip().lower()
+    return s in ("1", "true", "yes", "on")
+
+
+# Set for the whole open_segment_editor() try/finally (covers RunScript timing vs onInit).
+EDITOR_SESSION_MODAL_PROP = "skippy_editor_session_modal"
+
+
+def set_editor_session_modal(is_open):
+    try:
+        window = xbmcgui.Window(10000)
+        if is_open:
+            window.setProperty(EDITOR_SESSION_MODAL_PROP, "true")
+        else:
+            window.clearProperty(EDITOR_SESSION_MODAL_PROP)
+    except Exception:
+        pass
+
+
+def _window_home(win):
+    if win is not None:
+        return win
+    try:
+        return xbmcgui.Window(10000)
+    except Exception:
+        return None
+
+
+def segment_editor_modal_is_open(win=None):
+    """True when the segment editor session or dialog has marked the home window."""
+    wh = _window_home(win)
+    if wh is None:
+        return False
+    try:
+        if _truthy_window_prop(wh.getProperty("skippy_editor_modal_open")):
+            return True
+        if _truthy_window_prop(wh.getProperty(EDITOR_SESSION_MODAL_PROP)):
+            return True
+    except Exception:
+        pass
+    return False
+
+
+MARKER_SECOND_PRESS_FLOW_PROP = "skippy_marker_second_press_flow"
+
+
+def marker_flow_blocks_editor_launch(win=None):
+    """True while marker UX is active — pending first press, picker modal, or second-press save flow."""
+    wh = _window_home(win)
+    if wh is None:
+        return False
+    try:
+        # Wide truthy parsing for marker session props (Omega uses 1/true/yes/on).
+        if _truthy_window_prop(wh.getProperty(MARKER_SECOND_PRESS_FLOW_PROP)):
+            return True
+        if (wh.getProperty("skippy_marker_start") or "").strip():
+            return True
+        if _truthy_window_prop(wh.getProperty("skippy_marker_modal_open")):
+            return True
+    except Exception:
+        return False
+    return False
+
+
+def set_marker_second_press_flow_active(is_active, win=None):
+    """True while segment marker is in second-press save flow (editor-launch guard timing)."""
+    wh = _window_home(win)
+    if wh is None:
+        return
+    try:
+        if is_active:
+            wh.setProperty(MARKER_SECOND_PRESS_FLOW_PROP, "true")
+        else:
+            wh.clearProperty(MARKER_SECOND_PRESS_FLOW_PROP)
+    except Exception:
+        pass
+
+
 # Window(10000) IPC: RunScript cannot share Python globals; second editor hotkey sets this
 # and SegmentEditorDialog's time thread calls close() (same pattern as label updates).
 EDITOR_TOGGLE_CLOSE_REQUESTED = "skippy_editor_toggle_close_requested"

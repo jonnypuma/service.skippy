@@ -510,12 +510,12 @@ msgstr "When both local files and online lookup are enabled for movies: prefer s
 
 # Toast Settings
 msgctxt "#33000"
-msgid "Enable Missing Segment File Toast for TV Episodes"
-msgstr "Enable Missing Segment File Toast for TV Episodes"
+msgid "Enable missing segment file toast for TV Episodes"
+msgstr "Enable missing segment file toast for TV Episodes"
 
 msgctxt "#33001"
-msgid "Enable Missing Segment File Toast for Movies"
-msgstr "Enable Missing Segment File Toast for Movies"
+msgid "Enable missing segment file toast for movies"
+msgstr "Enable missing segment file toast for movies"
 
 msgctxt "#33002"
 msgid "Enable overlapping segment toast if found in segment file"
@@ -524,6 +524,14 @@ msgstr "Enable overlapping segment toast if found in segment file"
 msgctxt "#33003"
 msgid "Enable toast notification for skipped segment"
 msgstr "Enable toast notification for skipped segment"
+
+msgctxt "#33004"
+msgid "Enable toast notifications for segment marker"
+msgstr "Enable toast notifications for segment marker"
+
+msgctxt "#33005"
+msgid "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
+msgstr "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
 
 # Debug Settings
 msgctxt "#34000"
@@ -823,6 +831,10 @@ msgctxt "#39055"
 msgid "IntroDB.app"
 msgstr "IntroDB.app"
 
+msgctxt "#39056"
+msgid "not sent to IntroDB.app (preview segments not accepted)"
+msgstr "not sent to IntroDB.app (preview segments not accepted)"
+
 msgctxt "#36000"
 msgid "Enable Segment Marker"
 msgstr "Enable Segment Marker"
@@ -839,13 +851,7 @@ msgctxt "#36003"
 msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
 msgstr "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
 
-msgctxt "#36004"
-msgid "Show pending marker indicator"
-msgstr "Show pending marker indicator"
 
-msgctxt "#36005"
-msgid "While waiting for the second marker press, shows a semi-transparent label at the top-left of the screen (during playback) with the pending start time. After you set the end time, it shows the full range until you finish or cancel saving. Requires the Skippy service to be running."
-msgstr "While waiting for the second marker press, shows a semi-transparent label at the top-left of the screen (during playback) with the pending start time. After you set the end time, it shows the full range until you finish or cancel saving. Requires the Skippy service to be running."
 
 msgctxt "#36006"
 msgid "Saved file permissions"
@@ -962,3 +968,11 @@ msgstr "Back up files before marker save"
 msgctxt "#36034"
 msgid "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
 msgstr "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
+
+msgctxt "#36035"
+msgid "Press the segment marker key again to set the end time."
+msgstr "Press the segment marker key again to set the end time."
+
+msgctxt "#36036"
+msgid "Segment marker cancelled."
+msgstr "Segment marker cancelled."

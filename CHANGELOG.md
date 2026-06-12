@@ -1,5 +1,364 @@
 # Changelog
 
+## [3.6.9] - 2026-06-12
+
+### Fixed
+- **Segment editor button text at 1080p**: All editor buttons now get **`font12`** via ``setLabel`` in ``onInit`` (WindowXML ignores skin ``<font>`` tags; row 3 buttons were using the skin default and clipped). **1080i** list-row and long row-3 controls are slightly wider with positions updated to match ``segment_editor_dialog.py``.
+- **Skip dialog open latency**: ``onInit`` sets **final panel height** and progress **track** first (no ``player.getTime()`` on open — fill starts at 0 and the monitor thread updates immediately). Removed duplicate early focus pass and verbose layout logging from the open path.
+
+## [3.6.8] - 2026-05-31
+
+### Fixed
+- **Skip dialog focus texture delay**: Focus frame appeared 1–2 s after the dialog because (1) every segment re-wrote all Full/Minimal skip skin XML files on disk before ``doModal()``, forcing Kodi to reload textures, and (2) Full layouts had no ``defaultcontrol`` so focus waited until ``onInit`` finished heavy layout work. Textures are now warmed once at service start (cached; refreshed on settings change), ``defaultcontrol`` **3012** is restored for the common case, and focus is set immediately when ``onInit`` starts (again after label refresh).
+
+## [3.6.7] - 2026-05-31
+
+### Changed
+- **Dialog layout docs**: ``addon_skin_resolution.py`` now documents the **WindowXML vs WindowDialog** split at the top of the module (which surfaces use ``1080i``, why Python modals must stay 1280×720, and what happens if you mix them). Removed unused ``_MODAL_METRICS_1080I`` table that invited the same mistake again.
+
+## [3.6.6] - 2026-05-31
+
+### Fixed
+- **Online upload / editor modals spilling off-screen on 1080**: ``xbmcgui.WindowDialog`` uses a **1280×720** coordinate canvas on all GUI resolutions (Kodi upscales it to the display). The upload target picker and other modals were using **1080i** panel coords (width **1755**), which extends past **x=1280** and clipped off the right. Modals now always use the **720p** panel box (`50/60/1170×570`) and 720p control metrics — same footprint as ``720p/SegmentEditorDialog.xml``, visually matched on HD after Kodi scaling. ``WindowXML`` skins still use ``1080i`` where appropriate.
+
+## [3.6.5] - 2026-05-31
+
+### Fixed
+- **Addon startup crash**: ``ModalMetrics`` declared ``__slots__`` but had no ``__init__``, so importing ``addon_skin_resolution.py`` failed with ``ModalMetrics() takes no arguments``.
+
+## [3.6.4] - 2026-05-29
+
+### Fixed
+- **Editor modals on 1080**: Removed runtime ``unit_scale`` / “inner spacing ×1.5” — modal control sizes are now **explicit pixel tables** (`ModalMetrics` in ``addon_skin_resolution.py``): one set for 1280×720, one for 1920×1080. Canvas stays **1920×1080** with the **1080i** segment-editor panel box (`75/90/1755×855`); no 720 canvas on HD displays.
+
+## [3.6.3] - 2026-05-29
+
+### Fixed
+- **Editor modals on 1080**: ``WindowDialog`` now uses a fixed **1920×1080** canvas with the **1080i** segment-editor panel (`75/90/1755×855` — same as ``1080i/SegmentEditorDialog.xml``). Inner control spacing uses a single ×1.5 pass from the original 720p-authored constants. Short dialogs (upload picker, results) stay shorter than the full panel height. **1280×720 canvas is only used when GUI height is below 1080.**
+
+## [3.6.2] - 2026-05-29
+
+### Fixed
+- **Editor modals**: Use the segment editor's exact main panel on a **1280×720** ``WindowDialog`` canvas (`left=50`, `top=60`, `1170×570` — same as ``720p/SegmentEditorDialog.xml``). Previous attempts used full screen width or 1080i pixel coords, which ``WindowDialog`` does not share with WindowXML and made modals spill off-screen.
+
+## [3.6.1] - 2026-05-29
+
+### Fixed
+- **Editor modals on 1080 displays** (upload target picker, upload results, Yes/No, list pick): Panel now uses the same footprint as the segment editor main group (`left=75`, `width=1755` on 1920×1080, scaled to actual screen size) instead of a fixed 1280×720 canvas that overflowed when Kodi mapped coordinates to the full screen.
+
+## [3.6.0] - 2026-05-29
+
+### Fixed
+- **TheIntroDB v3 upload**: Accept HTTP 200 when the response contains a ``submissions`` array (v3 OpenAPI), not only legacy ``ok: true``. Send ``end_ms: null`` for credits/preview through end-of-media; ``start_ms: null`` for intro/recap from the beginning. Relaxed local validation for null-end credits/preview (no 30-minute cap when end is omitted).
+- **TheIntroDB v3 GET**: Optional ``Authorization: Bearer`` using the user's upload API key so pending submissions can appear in lookup. ``start_ms: null`` on GET now maps to start at 0 s (was 1 s).
+- **Editor modals on 1080 displays** (upload target picker, upload results, Yes/No, list pick): ``WindowDialog`` layouts stay **1280×720** — they were incorrectly scaled ×1.5 with the 1080i skin folder (panels overflowed off-screen). Remote button discovery dialog reverted to the same fixed size.
+
+## [3.5.9] - 2026-05-29
+
+### Fixed
+- **1080i segment list**: ``itemlayout`` / ``focusedlayout`` ``width`` and ``height`` attributes were not scaled (only inner controls were), so row height stayed 50px while content and the focus overlay were 75px — misaligned highlight bar and row 2 overlapping the next entry. Regenerated all ``1080i`` dialog XML with layout attributes included.
+
+## [3.5.8] - 2026-05-29
+
+### Fixed
+- **1080i segment editor / skip dialogs**: Layouts in the ``720p`` folder are 1280-reference coordinates on a 1920 canvas; Kodi upscales them on 1080 displays. The ``1080i`` copies were not scaled, so the editor panel looked too small. ``1080i`` XML for the editor and skip dialogs is now ×1.5; Python list-row and skip progress layout constants scale the same way.
+
+## [3.5.7] - 2026-05-29
+
+### Added
+- **1080i skin folder**: Addon dialogs now load from ``resources/skins/default/1080i`` when the GUI height is 1080 or higher (``720p`` otherwise). Includes full-size variants of **Segment Marker type picker** and **button discovery** (scaled from 1280×720), plus copies of segment editor and skip dialog layouts (1920×1080 coordinates).
+- **`addon_skin_resolution.py`**: Shared resolution selection and coordinate scaling for WindowXML and programmatic modals.
+
+### Changed
+- **Editor modals** (Yes/No, OK, list pick) and **remote button discovery** use fixed 1280×720 ``WindowDialog`` coordinates on all GUI resolutions (1080i scaling applies to WindowXML skins only).
+- **Skip dialog skin texture patches** apply to both ``720p`` and ``1080i`` XML.
+
+## [3.5.6] - 2026-05-29
+
+### Fixed
+- **Segment list row 2**: One left-aligned line built in Python (`Duration: … | Source: … | Nested/Overlapping`). Kodi list item layouts cannot place a second label after variable-width text, so the split-label / right-align attempts truncated or misaligned the source field.
+
+## [3.5.5] - 2026-05-29
+
+### Fixed
+- **Segment list row 2**: **Nested** / **Overlapping** suffix uses a right-aligned prefix field plus fixed suffix column (Kodi list items do not honour dynamic `$INFO` left positions).
+
+### Changed
+- **List-row buttons**: **Merge** 70px, **Fix Ovl** 80px; rail shifted 37px left so **Del** stays at 1150px.
+
+## [3.5.4] - 2026-05-29
+
+### Fixed
+- **Segment list row 2**: **Nested** / **Overlapping** suffix position follows the end of `Duration: … | Source: …` (computed `line2_suffix_left`), not a fixed screen-centre offset.
+
+### Changed
+- **List-row buttons**: Restored original widths for **Start@Curr** … **Del** (pre-3.5.2); **Merge** / **Split** / **Fix Ovl** widened; full rail shifted left so **Del** stays inside the list overlay (ends at 1150px).
+
+## [3.5.3] - 2026-05-29
+
+### Changed
+- **Segment Editor**: Seek/mark/action button rows and bottom dark overlay shifted down to align with the panel bottom edge (570px). **Add at Current Time + User Set Time** and **Add Manual Start and End Points** widened; row-3 controls spread toward **Exit** using available width.
+
+## [3.5.2] - 2026-05-29
+
+### Changed
+- **Segment Editor list row**: Nine floating actions — **Merge** (picker: previous/next), **Split**, **Fix Ovl**, plus existing six — reachable via **Right** from the list without losing the highlighted segment. Row-3 **Tools** button removed (**Undo** remains). Buttons shifted 15px left; labels use **font10** via `setLabel`.
+- **Segment list row 2**: **Nested** / **Overlapping** suffixes moved from row 1 to row 2 after source (coloured labels); row 1 is always the plain segment title line.
+
+## [3.5.1] - 2026-05-29
+
+### Changed
+- **Segment Editor**: **Snap End** list-row button widened (78→92px); **Edit** / **Del** shifted right to match.
+
+## [3.5.0] - 2026-05-29
+
+### Added
+- **Segment Editor — Tools picker** (row 3): **Merge with previous segment**, **Merge with next segment**, **Split at playhead**, and **Fix overlap**. Adjacent merge uses the shared label when both segments match; otherwise the standard segment type picker is shown.
+- **Segment Editor — Undo** (row 3): Restores the previous segment list state (up to 20 steps). Cleared after a successful save.
+
+## [3.4.9] - 2026-05-29
+
+### Changed
+- **Segment Editor**: Action row (row 3) buttons match seek/mark row height (30px); row 3 moved up and bottom overlay shortened. **Start@Curr**, **End@Curr**, and **Snap End** list-row buttons widened.
+
+## [3.4.8] - 2026-05-29
+
+### Fixed
+- **Segment Editor banner**: Top-left placement at ~40px height with ``aspectratio keep`` (no full-width stretch). Layout below the title restored to pre-banner offsets.
+
+## [3.4.7] - 2026-05-29
+
+### Changed
+- **Segment Editor**: Text title replaced with bundled banner image ``segment_editor_banner.png``.
+
+## [3.4.6] - 2026-05-29
+
+### Fixed
+- **IntroDB.app upload**: **Preview** segments are no longer sent as **outro** (IntroDB.app does not accept preview). Only **credits** (and local **outro** labels) map to **outro**; preview still uploads to TheIntroDB.org when selected.
+
+## [3.4.5] - 2026-05-29
+
+### Changed
+- **Segment Editor**: Wider **Start@Curr** / **End@Curr** / **Snap Start** / **Snap End** list-row buttons (Edit/Del unchanged); seek jump row shifted 5px left.
+
+## [3.4.4] - 2026-05-29
+
+### Fixed
+- **Segment Editor list fonts**: Custom ``skippyListLine*`` names are not loaded for script WindowXML (Kodi uses the **active skin** fonts); unknown names all became **font13**, so line 1 and line 2 matched. List row 1 uses **font12**, row 2 **font10**.
+- **List-row action buttons**: Skin XML ``<font>`` is ignored on buttons; ``onInit`` now calls ``setLabel(..., font_flag)`` so Start@Curr … Del render smaller than list text (Estuary **font_flag** ≈18px vs **font12** ≈25px).
+
+## [3.4.3] - 2026-05-29
+
+### Fixed
+- **Segment Editor fonts actually apply**: Added bundled ``resources/skins/default/Font.xml``. Unknown names like ``font8`` were falling back to the active skin's **font13** (larger than **font12**), so list row 2 and list-row buttons never looked smaller. List lines now use **skippyListLine1** / **skippyListLine2**; the six row actions use **skippyListBtn**.
+
+## [3.4.2] - 2026-05-29
+
+### Fixed
+- **Segment list focus highlight** spans the full row again (list width restored so the overlay covers list-row action buttons).
+- **Duration / Source** sub-line uses `font8` (below row-one `font12`); Kodi often has no `font9`, which made line two render too large.
+
+### Changed
+- **List-row action buttons**: `font8` labels; non-Edit buttons widened; Edit width unchanged.
+- **Mark row** (row 2): shifted 7px right.
+
+## [3.4.1] - 2026-05-29
+
+### Added
+- **Segment Editor list row**: **Start@Curr** / **End@Curr** set the selected segment's start or end to the current playhead (six-button rail: Start@Curr | End@Curr | Snap Start | Snap End | Edit | Del).
+
+### Changed
+- **Segment list**: Narrower text column (`font12` / `font9`); action buttons use `font9` with tighter widths.
+- **Mark row**: **Set Start to Start of File** / **Set End to End of File** (was SOF/EOF); **Start at End of Segment** / **End at Start of Segment** buttons narrowed.
+
+## [3.4.0] - 2026-05-29
+
+### Changed
+- **Segment Editor layout**: Three button rows — seek jumps (including ±1/5/10 minute steps with Resume centered), mark/create (with **Set to SOF** / **Set to EOF**), then actions. Dark overlay height adjusted for the extra row; snap button labels **Start at End of Segment** / **End at Start of Segment**.
+
+### Added
+- **Set to SOF** / **Set to EOF**: Set pending start to `0.0` or pending end to video duration without seeking.
+
+## [3.3.28] - 2026-05-23
+
+### Removed
+- **Legacy marker overlay machinery**: Deleted ``marker_indicator.py``, ``MarkerPendingChip.xml``, service-loop ``sync_marker_pending_indicator`` polling, ``NotifyAll`` **skippy_detach_marker_chip** handling, and RunScript **force-detach** IPC. Segment marker cleanup is ``clear_marker_pending_state()`` → ``set_pending_start(None)`` only.
+
+## [3.3.27] - 2026-05-22
+
+### Removed
+- **Cursor/session NDJSON debugger**: Deleted ``agent_debug_ndjson.py`` and all **`H*`** / **`NM1`** / **`H_BOOT`** hooks; marker service periodic **H3** snapshots removed. **kodi.log** unchanged.
+
+## [3.3.26] - 2026-05-22
+
+### Added
+- **Segment Marker cancelled toast**: When the second-press flow aborts (**invalid end time**, **Back** from overlap-policy picker, segment **type** picker, or **save confirmation**), Skippy shows **#36036** *Segment marker cancelled.* — gated by **`show_toast_for_segment_marker`** like start/end notifications. Help text **#33005** updated.
+
+## [3.3.25] - 2026-05-22
+
+### Added
+- **Toast Notifications**: **Enable toast notifications for segment marker** (``show_toast_for_segment_marker``, default on, visible when Segment Marker is enabled). When off, no Kodi notification for marker **start** / **end** presses; type/save dialogs unchanged.
+
+### Changed
+- **Toast Notifications** labels **#33000** / **#33001**: sentence-style wording (*missing segment file toast for TV Episodes / movies*).
+
+## [3.3.24] - 2026-05-22
+
+### Removed
+- **Settings**: **Show pending marker indicator** (``segment_marker_show_indicator``) — marker feedback is **toasts only**; the home-window ``skippy_marker_indicator`` property is no longer written. Stale values are cleared when marker state resets or marker is disabled.
+
+### Changed
+- **``segment_editor_utils.marker_flow_blocks_editor_launch``**: Dropped the ``skippy_marker_indicator`` check (other marker props already cover active flows).
+
+## [3.3.23] - 2026-05-22
+
+### Fixed
+- **Segment Marker** start/end toasts during **fullscreen playback**: ``notify_marker_pending_like_editor`` mistakenly used ``Dialog().notification`` only, which often does not appear on top of fullscreen video. It now calls ``notify_skippy(..., prefer_builtin=True)`` — same **Kodi ``Notification`` builtin** path as the pre-3.3.22 marker toasts (multiline body is flattened to a single line by the builtin formatter).
+
+## [3.3.22] - 2026-05-22
+
+### Changed
+- **Segment Marker** pending feedback uses Kodi **notifications** (about **2 seconds**) on start and end, with **HH:MM:SS.mmm** via **`segment_editor_parser.seconds_to_hms`**. **Removed** fullscreen **`addControl` / `removeControl`** chip on **`Window(12005/10800)`**. The Skippy **service only tears down legacy** controls left from older installs. (The old home-window ``skippy_marker_indicator`` toggle was removed in **3.3.24**.)
+
+### Debug
+- **NDJSON**: Service snapshots use **`chip_overlay: notifications_editor_parity`**; **`marker_indicator.detach_fs_marker_chip`** logs **`impl: editor_parity_no_attach`**. **`NM1`** on marker notifications (`segment_marker.py:notify_marker_pending_like_editor`).
+
+## [3.3.21] - 2026-05-24
+
+### Fixed
+- **Marker pending chip / Omega GUI meltdown (NDJSON)**: ``WindowXML`` ``show()`` left the chip **alive** while ``getCurrentWindowId()`` flapped through **13001** (HDR/DV info) and **10502** (playback UI). That stacked state correlated with **black video**, **OSD blocked**, and **wrong window** (e.g. music library file mode). Reverted the chip to **native ``ControlImage`` + ``ControlLabel``** on ``Window(12005/10800)`` with **module-level refs** and **strict detach** whenever we are **not** in fullscreen video/live fullscreen. Shipped **``resources/textures/white.png``** (1×1) for the semi-transparent pill.
+
+### Debug
+- **NDJSON**: ``H6`` ``marker_fs_chip_show``, ``H7`` ``chip_detached`` (``impl: fs_controls``); ``H12`` targets ``_ensure_fs_chip``; snapshots use ``chip_overlay: fs_native_controls``.
+
+## [3.3.20] - 2026-05-22
+
+### Changed
+- **Pending marker badge uses ``WindowXML``** (**`MarkerPendingChip.xml`**) in the addon service interpreter — **same Kodi skin/control stack as Segment Editor / marker pickers** — instead of injecting ``ControlLabel`` onto ``VideoFullScreen`` (**12005**). **``close()``** removes the Kodi window graph so **cancel/back no longer fights ``removeControl``** (NDJSON **`H11` + EXCEPTION**).
+
+### Removed
+- **Fullscreen ``addControl`` / ``physical_remove`** branch for marker chip teardown.
+
+### Debug
+- **NDJSON**: `H6` `marker_xml_window_show`, `H7` `xml_overlay_closed`; **H3** snapshot uses **`xml_overlay_visible`** (replaces fullscreen **`has_bg_control`**).
+
+## [3.3.19] - 2026-05-22
+
+### Notes
+- **Superseded by 3.3.20**: fullscreen chip **physical ``removeControl``** path — removed in favour of **`WindowXML`** overlay.
+
+## [3.3.18] - 2026-05-22
+
+### Fixed
+- **Marker chip invisible during picker (NDJSON)**: Snapshots showed `indicator_len` 25 while `marker_modal_prop` was **`true`** and **`has_bg_control`** stayed **`false`** — **`_marker_ui_suppressed`** was still treating **`skippy_marker_modal_open`** like the editor-modal case and forced **`_detach`** for the entire Segment Marker dialog chain. **`skippy_marker_modal_open` is no longer a chip suppressor**, so the fullscreen chip can stay attached while marker pickers and yes/no confirm run. **Segment Editor** suppression is unchanged (**`skippy_editor_modal_open`** / **`skippy_editor_session_modal`**).
+
+### Changed
+- **Segment Marker**: Restored the **first-press start time** **`Notification`** (**`show_toast`**) while keeping later save-flow prompts toast-free.
+
+## [3.3.17] - 2026-05-22
+
+### Changed
+- **Segment Marker UX**: First press shows the **service overlay** (when enabled); second press sets the end time, updates the overlay to **start → end**, runs policy / type / confirm dialogs, then **clears the overlay in `finally` or on any cancel path** — no reliance on **toast** feedback (notifications are dropped for this flow on CoreELEC/fullscreen). **`pick_marker_option`** no longer wipes props mid-chain; **`skippy_marker_second_press_flow` no longer hides the chip** (only active **modal** flags still suppress attaching while a dialog is open).
+
+## [3.3.16] - 2026-05-24
+
+### Fixed
+- **`EXCEPTION: Control does not exist`** on second marker press: NDJSON proved **`detach_lock`** always ran on one thread (`ident` unchanged) while **`removeControl`** still raised **`RuntimeError`** (**`remove_control_failed`**). On Omega the binding logs **EXCEPTION** before Python sees the exception, so **`removeControl` is never called on detach** — only module refs are cleared (orphans clear when Kodi rebuilds fullscreen or playback stops).
+
+### Debug
+- **NDJSON**: **`H10`** `detach_refs_only_no_removecontrol` (replaces **`H9`** `remove_control_failed` from the old path).
+
+## [3.3.15] - 2026-05-24
+
+### Fixed
+- **Concurrent marker chip detach (Kodi Omega `EXCEPTION: Control does not exist`)**: `PlayerMonitor.onNotification` can detach the chip while the service loop is also handling `NotifyAll` / `sync_marker_pending_indicator`. Those paths now share a **`threading.RLock`**, and `_detach()` clears module globals **before** `removeControl` so a second thread cannot re-snapshot stale wrappers mid-teardown.
+- **Stop/teardown `player.getTime()` errors**: The main monitor loop (and replay-detection `getTime()` sample) now swallow **all** `Exception` types, matching Omega’s **`Kodi is not playing any media file`** throw when playback ends between `HasVideo`/poll and `getTime()`.
+
+### Debug
+- **NDJSON**: `H9` logs **`detach_lock_acquired`**, failed **`removeControl` / `addControl`** (**`exc`** type); **`H7`** unchanged.
+
+## [3.3.14] - 2026-05-24
+
+### Fixed
+- **Marker chip detach / Kodi `EXCEPTION: Control does not exist`**: **`_detach()`** no longer calls **`setVisible` / `setColorDiffuse` / `setLabel`** on chip wrappers before **`removeControl`**. Kodi can invalidate fullscreen child controls slightly ahead of the Python wrapper during **second-press / picker prep**; poking accessors then logs Omega **`EXCEPTION`** even though removal was imminent.
+- **Editor launch guard vs Segment Marker**: **`marker_flow_blocks_editor_launch`** now treats **`skippy_marker_second_press_flow`** and **`skippy_marker_modal_open`** with the same **_truthy** parsing as **`marker_indicator`** suppression (consistent `1/true/yes/on`).
+
+### Debug
+- **NDJSON**: **`marker_indicator.py:_detach`** logs **`detach_enter` / `detach_exit`** (**hypothesisId `H7`**) until this regression is verified on-device.
+
+## [3.3.13] - 2026-05-24
+
+### Fixed
+- **Marker chip / `Control does not exist` / ghost text**: Overlay is **fullscreen `Window(12005/10800)`** again so **marker hotkey** is not stolen by `WindowDialog`. **`sync_marker_pending_indicator` no longer calls `setLabel` every tick** — it only **re-attaches** controls when **text or fullscreen window id** changes, avoiding stale Python wrappers after Kodi rebuilds `VideoFullScreen` during picker/modals.
+
+- **Segment Editor vs Segment Marker**: Added **`skippy_editor_session_modal`** (set for the whole `open_segment_editor` try/finally) and **`segment_editor_modal_is_open()`** now accepts **truthy** property spellings. The **second Segment Editor key** relies on **`segment_editor_modal_is_open`**, so **close** still works if **`skippy_editor_modal_open`** flickers. **`marker_indicator`** suppresses the chip when **either** editor flag is active.
+
+## [3.3.12] - 2026-05-24
+
+### Changed
+- **(Superseded by 3.3.13)** Option B used **`xbmcgui.WindowDialog`** for the chip; it regressed **marker focus/toasts** versus fullscreen parenting. **3.3.13** restores **fullscreen** parenting and stops **per-tick `setLabel`.**
+
+### Notes (historical — 3.3.12 WindowDialog)
+- **Second marker press vs focus**: **`WindowDialog.show()` can still divert input on some setups** despite no focus widgets; string **#36035** prompts **press marker again for end**. If Back is needed before end-mark, note your Kodi skin/device so we can try a tighter mitigations pass.
+
+### Fixed (continued from fullscreen chip path)
+- **Toasts under fullscreen overlays**: Kodi **`Notification`** via **`prefer_builtin`** remains visible alongside this chip (unlike stacking our own fullscreen-injected overlays).
+
+## [3.3.11] - 2026-05-24
+
+### Fixed
+- **Segment Marker second press / double-Back**: **3.3.10** used a **`WindowDialog`** chip; **`show()` grabbed focus**, so the marker hotkey did not reach the player until **Back** returned focus. The chip is **again parented to fullscreen `Window(12005/10800)`** (same as pre-3.3.10) so **start → end** works with **no extra Back**.
+- **Detach / ghost mitigation**: Before **`removeControl`**, Skippy now **hides** the chip, **clears** the label, and **zeroes** the image **`ColorDiffuse`** so a failed removal is less likely to leave readable “Start…” text on Omega/CoreELEC.
+- **Toasts (e.g. open Segment Editor while marker pending)**: With **`WindowDialog`** gone, Kodi’s **`Notification`** built-in used by **`notify_skippy(..., prefer_builtin=True)`** is no longer covered by Skippy’s own overlay dialog.
+
+### Added
+- String **#36035** and first-mark toast line: reminds you to **press the segment marker key again** for the **end** time (no reliance on Back).
+
+## [3.3.10] - 2026-05-24
+
+### Fixed
+- **(Superseded by 3.3.11 — `WindowDialog` stole marker focus.)** **Ghost “Start: …” chip after end mark / picker** (Kodi Omega, CoreELEC): Runtime logs showed **`removeControl`** on fullscreen could diverge from what was painted. **3.3.11** restores fullscreen parenting and mitigates with pre-removal hiding (see above).
+- **`SegmentMarkerTypePicker.xml`**: **`defaultcontrol`** must be focusable (**tiny off-screen `button` id 9098**). **`9101`** is the **title label** — using it caused **“Control 9101 … can’t focus”** (the 3.3.9 defaultcontrol change was incorrect).
+- **Segment Editor modal flag**: **`SegmentEditorDialog.close()`** clears **`skippy_editor_modal_open`** in a **`finally`** after **`super().close()`**. **`segment_editor_session`** no longer calls **`set_editor_modal_open(False)`** when rejecting an editor launch only because marker flow is active (spurious clears).
+
+## [3.3.9] - 2026-05-24
+
+### Fixed
+- **Persistent “Start: …” fullscreen chip** (attempt): service-side fullscreen **`setLabel`/`removeControl`** hardening + second-press ordering + picker defaultfocus experiment. **Superseded by 3.3.10** (WindowDialog chip + picker **9098** defaultcontrol).
+
+## [3.3.8] - 2026-05-24
+
+### Fixed
+- **`segment_marker.py` syntax**: Repaired the second-press save block so **`try:`** wraps the whole policy/type/save sequence and **`finally`** always clears **`skippy_marker_second_press_flow`** plus **`clear_marker_chip_and_sync()`** (`SyntaxError: expected except or finally` near **`existing_policy`** when the body was accidentally dedented).
+- **RunScript robustness**: The **`xbmc.python.script`** entry is now **`skippy_runscript_entry.py`**, which handles **`open_segment_editor`**, **`discover_editor_button`**, and **`install_editor_keymap`** **without importing** **`segment_marker`**, so a broken marker script no longer blocks the Segment Editor launcher (Kodi still parses **`segment_marker.py`** when other commands import it).
+- **Segment Marker toasts**: All marker **`show_toast(...)` paths use `notify_skippy(..., prefer_builtin=True)`** so notifications still show **under fullscreen WindowXML** (same path as mutual-exclusion messages). **`SegmentEditorDialog`** re-sets **`skippy_editor_modal_open`** from **`onInit`** so **`RunScript(segment_marker)`** reliably sees an open editor before blocking the marker hotkey.
+- **Stale “Start: …” chip**: **`marker_indicator.sync_marker_pending_indicator`** now **drops the fullscreen chip** whenever **`skippy_marker_modal_open`**, **`skippy_marker_second_press_flow`**, or **`skippy_editor_modal_open`** is active, and **`pick_marker_option`'s `finally`** calls **`clear_marker_chip_and_sync()`** after **`doModal`** so picker **close/cancel** cannot leave orphaned controls until the next loop tick (**`marker_indicator.py`**, **`segment_marker.py`**).
+
+## [3.3.7] - 2026-05-24
+
+### Fixed
+- **Pending marker chip (“Start: …”) not disappearing**: The fullscreen chip is **`ControlImage` / `ControlLabel`** added by the **addon service** to `Window(12005/10800)`; those widgets live inside the **service** Python interpreter. **`segment_marker.py` runs via `RunScript` in a different interpreter**, so importing `marker_indicator` there cannot call `removeControl` on the real controls (`marker_indicator.sync_marker_pending_indicator` only had empty refs). RunScript now sets **`Window(10000)`** property **`skippy_marker_chip_force_detach`**, emits **`NotifyAll(..., skippy_detach_marker_chip)`**, and **`service.py`** / each **`sync_marker_pending_indicator`** pass **`force_detach_marker_pending_overlay()`** immediately with **retried `removeControl`** (`marker_indicator.py`, `segment_marker.py`, `service.py`).
+- **Repo**: `tools/_repair_marker_try_block.py` restores the valid `try`/`finally` second-press save block when `segment_marker.py` ends up dedented (`SyntaxError: expected except or finally` around `existing_policy`).
+
+## [3.3.6] - 2026-05-24
+
+### Changed
+- **Segment Marker chip**: Once **end time** is set, the pending **top-left chip is cleared immediately** (before policy/type/confirm dialogs) so playback no longer carries a phantom “marker” badge through the picker. A short-lived window property (**`skippy_marker_second_press_flow`**) fills the timing gap until the picker sets **`skippy_marker_modal_open`**, so Segment Editor stays blocked consistently (`segment_marker.py`, `segment_editor_utils.py`).
+
+### Fixed
+- **Toasts blocked by Kodi modals**: **`settings_utils.notify_skippy(..., prefer_builtin=True)`** sends the Kodi **`Notification(...)` built-in** (with **`skippy_notification_icon`**) when the fullscreen segment editor or picker would hide **`xbmcgui.Dialog().notification`** — used for mutual-exclusion prompts in both directions.
+- **Duplicate `marker_flow_blocks_editor_launch`** / broken **`MARKER_SECOND_PRESS_FLOW`** helpers in **`segment_editor_utils.py`** (repair).
+
+### Notes
+- **Saving a marker when a sidecar already exists**: behavior is solely the **Existing segment overlap policy** (**Settings → Segment Marker**). **`Merge non-overlapping`** (default) writes **nothing** when the new range overlaps an existing chapter/EDL row and shows “not changed”; **`Append always`** keeps existing rows **and adds** the marked range regardless of overlaps/nesting; **`Overwrite`** / **`Keep both`** / **`Replace file`** do what their labels say in `save_to_edl` / `save_to_chapters_xml`.
+
+## [3.3.5] - 2026-05-24
+
+### Fixed
+- **Segment Marker → chapters.xml**: `save_to_chapters_xml` now accepts the same **`addon`** positional argument as **`save_to_edl`**, fixing **`TypeError: … got multiple values for argument 'policy'`** when saving **Both** EDL + XML after an EDL merge skip.
+- **Marker chip after cancel / errors**: `SegmentTypePickerDialog` defaults to **cancelled** until an explicit OK/list pick; leaving the skin dialog without a mapped back action no longer behaves like confirming the first keyword. Clearing the overlay calls **`marker_indicator.sync_marker_pending_indicator`** so the top-left chip hides immediately after abort or **`finally`**.
+- **Mutual exclusion**: **Segment Editor** does not launch while a marker **pending start**, **picker modal**, or **chip** property is active; the **marker hotkey** is ignored while the editor modal flag is set (`segment_editor_utils.py`, `segment_editor_session.py`, `segment_marker.py`).
+
 ## [3.3.4] - 2026-05-22
 
 ### Changed

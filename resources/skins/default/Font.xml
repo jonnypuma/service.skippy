@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Optional bundled fontset (not loaded for script WindowXML on most Kodi builds).
+     Segment Editor list/button fonts use active-skin names: font12, font10, font_flag. -->
+<fonts>
+  <fontset id="Default" idloc="31390" unicode="true">
+    <font>
+      <name>font13</name>
+      <filename>arial.ttf</filename>
+      <size>26</size>
+    </font>
+    <font>
+      <name>font10</name>
+      <filename>arial.ttf</filename>
+      <size>20</size>
+    </font>
+    <font>
+      <name>font12</name>
+      <filename>arial.ttf</filename>
+      <size>22</size>
+    </font>
+    <font>
+      <name>font14</name>
+      <filename>arial.ttf</filename>
+      <size>26</size>
+    </font>
+    <font>
+      <name>font16</name>
+      <filename>arial.ttf</filename>
+      <size>30</size>
+    </font>
+    <font>
+      <name>font30</name>
+      <filename>arial.ttf</filename>
+      <size>48</size>
+    </font>
+  </fontset>
+</fonts>

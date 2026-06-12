@@ -11,7 +11,7 @@ import xbmcvfs
 import xbmcaddon
 
 from settings_utils import is_skip_dialog_enabled, is_skip_enabled
-from skipdialog import SkipDialog, _minimal_plate_filename
+from skipdialog import SkipDialog
 from segment_item import SegmentItem, segments_active_for_playback, segment_is_active_lenient
 from settings_utils import (
     addon_get_bool,
@@ -30,7 +30,6 @@ from settings_utils import (
     skippy_notification_icon,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
-from marker_indicator import sync_marker_pending_indicator
 from playback_segment_cache import publish_parse_cache
 from prefetch_segment_cache import clear_prefetch_segment_cache
 from segment_editor_utils import set_editor_modal_open
@@ -50,8 +49,7 @@ from service_segment_processing import (
 )
 from service_skip_dialog_skin import (
     _skip_dialog_layout_suffix,
-    _update_full_skip_dialog_textures,
-    _update_minimal_skip_dialog_textures,
+    warm_skip_dialog_skin_textures,
 )
 
 
@@ -67,6 +65,7 @@ SIDECAR_MTIME_CHECK_INTERVAL = 5
 MARKER_PENDING_STALE_SECONDS = 86400
 _MARKER_PENDING_TS_PROP = "skippy_marker_pending_ts"
 ICON_PATH = skippy_notification_icon(get_addon()) or ""
+
 
 class PlayerMonitor(xbmc.Monitor):
     def __init__(self):
@@ -114,6 +113,7 @@ class PlayerMonitor(xbmc.Monitor):
             }
             if method in ignored_methods:
                 return
+
             try:
                 if isinstance(data, str):
                     data_lower = data.lower()
@@ -153,8 +153,18 @@ class PlayerMonitor(xbmc.Monitor):
         except Exception:
             pass
 
+        try:
+            warm_skip_dialog_skin_textures(get_addon())
+        except Exception as exc:
+            log(f"⚠️ Failed to refresh skip dialog skin textures after settings change: {exc}")
+
 monitor = PlayerMonitor()
 player = xbmc.Player()
+
+try:
+    warm_skip_dialog_skin_textures(get_addon())
+except Exception as exc:
+    log(f"⚠️ Failed to warm skip dialog skin textures at service start: {exc}")
 
 
 def get_video_file():
@@ -882,18 +892,6 @@ install_marker_keymap(get_addon())
 install_editor_keymap(get_addon())
 
 while not monitor.abortRequested():
-    playback_active = False
-    try:
-        playback_active = player.isPlayingVideo() or xbmc.getCondVisibility(
-            "Player.HasVideo"
-        )
-    except Exception:
-        playback_active = False
-    try:
-        sync_marker_pending_indicator(playback_active)
-    except Exception:
-        pass
-
     try:
         win = xbmcgui.Window(10000)
         skip_ui = skippy_skip_ui_suppression_state(win)
@@ -933,10 +931,15 @@ while not monitor.abortRequested():
             try:
                 is_playing_replay = player.isPlayingVideo()
                 is_paused_replay = xbmc.getCondVisibility("Player.Paused")
+                current_playback_time = None
                 if not is_paused_replay and is_playing_replay:
-                    current_playback_time = player.getTime()
+                    try:
+                        current_playback_time = player.getTime()
+                    except Exception:
+                        current_playback_time = None
                     if (
-                        video == monitor.last_video
+                        current_playback_time is not None
+                        and video == monitor.last_video
                         and monitor.playback_ready
                         and current_playback_time < 5.0
                         and time.time() - monitor.playback_ready_time > 5.0
@@ -1097,7 +1100,7 @@ while not monitor.abortRequested():
             current_time = player.getTime()
             # Only log time changes, not every second
             log_if_changed("playback_time", f"⏱️ Playback time: {current_time:.2f}s")
-        except RuntimeError:
+        except Exception:
             log("⚠ player.getTime() failed — no media playing")
             continue
 
@@ -1642,22 +1645,7 @@ while not monitor.abortRequested():
                     log(f"📐 Using skip dialog ({dialog_mode}): {dialog_name}")
 
                     try:
-                        if dialog_mode == "Minimal":
-                            plate_file = _minimal_plate_filename(addon)
-                            _update_minimal_skip_dialog_textures(plate_file)
-                            log(f"🎨 Minimal textures set to: {plate_file}")
-                        else:
-                            focus_texture_file = addon_get_setting_text(addon, "button_focus_style", "") or ""
-                            mid_texture_file = addon_get_setting_text(addon, "progress_bar_style", "") or ""
-                            if not focus_texture_file:
-                                focus_texture_file = "button_focus.png"
-                            if addon_get_bool(addon, "hide_close_button", False) and not addon_get_bool(
-                                addon, "show_skip_button_focus_texture", True
-                            ):
-                                focus_texture_file = "-"
-                            if not mid_texture_file:
-                                mid_texture_file = "progress_mid.png"
-                            _update_full_skip_dialog_textures(focus_texture_file, mid_texture_file)
+                        warm_skip_dialog_skin_textures(addon)
                     except Exception as e:
                         log(f"⚠️ Failed to update skip dialog skin XML: {e}")
 

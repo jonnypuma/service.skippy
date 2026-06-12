@@ -35,6 +35,8 @@ TARGET_INTRODB_APP = "IntroDBApp"
 _HISTORY_VERSION = 1
 _MAX_HISTORY_ENTRIES_PER_API = 4000
 _POST_TIMEOUT = 20
+_MEDIA_END_TOLERANCE_SEC = 3.0
+_INTRO_RECAP_START_AT_BEGINNING_SEC = 0.5
 
 
 def _up_log_err(msg: str) -> None:
@@ -155,7 +157,7 @@ def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None
     """
     Map a normalized label to (TheIntroDB segment, IntroDB segment).
     TheIntroDB allows intro / recap / credits / preview; IntroDB.app only
-    intro / recap / outro (credits and preview are sent as outro).
+    intro / recap / outro (credits → outro; preview is not accepted).
     Returns None if this segment should not be uploaded (ads, unknown, etc.).
     """
     if not norm:
@@ -174,13 +176,17 @@ def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None
     return None
 
 
-def _introdb_for_tidb(tidb: str) -> str:
-    """Map TheIntroDB segment name to IntroDB.app ``segment_type`` (three values only)."""
+def _introdb_for_tidb(tidb: str) -> str | None:
+    """Map TheIntroDB segment name to IntroDB.app ``segment_type``, or None to skip."""
     if tidb == "intro":
         return "intro"
     if tidb == "recap":
         return "recap"
-    return "outro"
+    if tidb == "credits":
+        return "outro"
+    if tidb == "preview":
+        return None
+    return None
 
 
 def remote_payload_label_to_online_bucket(label: str) -> str | None:
@@ -289,17 +295,84 @@ def _history_record(api_bucket: str, fp: str) -> None:
     _save_history(data)
 
 
-def _validate_theintrodb_times(segment: str, start: float, end: float) -> str | None:
-    if start < 0 or end < 0 or start > 21600 or end > 21600:
-        return "times must be within 0-21600 s"
-    dur = end - start
+def _validate_theintrodb_times(
+    segment: str,
+    start: float,
+    end: float,
+    *,
+    end_at_media_end: bool = False,
+) -> str | None:
+    if start < 0 or start > 21600:
+        return "start must be within 0-21600 s"
+    if not end_at_media_end:
+        if end < 0 or end > 21600:
+            return "end must be within 0-21600 s"
+    dur = end - start if not end_at_media_end else None
     if segment in ("intro", "recap"):
+        if dur is None:
+            return "%s end time is required" % segment
         if not (5 <= dur <= (200 if segment == "intro" else 1200)):
             return "%s duration must be within API limits (see TheIntroDB docs)" % segment
     elif segment in ("credits", "preview"):
-        if not (5 <= dur <= 1800):
+        if end_at_media_end:
+            if start > 0 and start < 5:
+                return segment + " start must be >= 5 s (or 0 for no segment)"
+            return None
+        if dur is None or not (5 <= dur <= 1800):
             return segment + " duration must be 5-1800 s when an end time is set"
     return None
+
+
+def _near_media_end(end_sec: float, duration_sec) -> bool:
+    if duration_sec is None:
+        return False
+    try:
+        return float(end_sec) >= float(duration_sec) - _MEDIA_END_TOLERANCE_SEC
+    except (TypeError, ValueError):
+        return False
+
+
+def _build_theintrodb_submit_times(
+    segment: str,
+    start_sec: float,
+    end_sec: float,
+    duration_sec,
+) -> tuple[object, object, bool]:
+    """
+    Return (start_ms, end_ms, end_at_media_end) for v3 POST.
+
+    ``None`` values are encoded as JSON null (intro/recap start at beginning;
+    credits/preview through end of media).
+    """
+    start = float(start_sec)
+    end = float(end_sec)
+    end_at_media = segment in ("credits", "preview") and _near_media_end(
+        end, duration_sec
+    )
+
+    if segment in ("intro", "recap") and start <= _INTRO_RECAP_START_AT_BEGINNING_SEC:
+        start_ms = None
+    else:
+        start_ms = int(round(start * 1000.0))
+
+    if end_at_media:
+        end_ms = None
+    else:
+        end_ms = int(round(end * 1000.0))
+
+    return start_ms, end_ms, end_at_media
+
+
+def _theintrodb_submit_accepted(parsed: dict | None) -> bool:
+    if not isinstance(parsed, dict):
+        return False
+    subs = parsed.get("submissions")
+    if isinstance(subs, list) and subs:
+        return True
+    legacy = parsed.get("submission")
+    if isinstance(legacy, dict):
+        return True
+    return parsed.get("ok") is True and bool(subs or legacy)
 
 
 def _submit_theintrodb(
@@ -311,8 +384,8 @@ def _submit_theintrodb(
 ) -> tuple[bool, str]:
     """
     POST /v3/submit (flat JSON: ``tmdb_id``, ``type``, ``segment``, times — **not** the nested
-    ``intro``/``recap``/… arrays from GET /media). TheIntroDB accepts times as ``start_sec``/``end_sec``
-    **or** ``start_ms``/``end_ms`` (not both pairs); Skippy sends **ms** integers. Optional
+    ``intro``/``recap``/… arrays from GET /media). Sends ``start_ms``/``end_ms`` as integers or
+    JSON ``null`` (intro/recap from beginning; credits/preview through end-of-media). Optional
     ``video_duration_ms`` aligns submissions with release cuts when playback/library duration is known.
     """
     key = (api_key or "").strip()
@@ -337,8 +410,10 @@ def _submit_theintrodb(
         return False, _translate(39044)
 
     api_type = "movie" if ctx.get("type") == "movie" else "tv"
-    start_ms = int(round(float(start_sec) * 1000.0))
-    end_ms = int(round(float(end_sec) * 1000.0))
+    duration_sec = ctx.get("playback_duration_seconds")
+    start_ms, end_ms, end_at_media = _build_theintrodb_submit_times(
+        tidb_segment, float(start_sec), float(end_sec), duration_sec
+    )
     body: dict = {
         "tmdb_id": tmdb_int,
         "type": api_type,
@@ -375,7 +450,12 @@ def _submit_theintrodb(
     if imdb_opt:
         body["imdb_id"] = imdb_opt
 
-    err = _validate_theintrodb_times(tidb_segment, float(start_sec), float(end_sec))
+    err = _validate_theintrodb_times(
+        tidb_segment,
+        float(start_sec),
+        float(end_sec),
+        end_at_media_end=end_at_media,
+    )
     if err:
         _up_log_err(
             "TheIntroDB submit: local validation failed segment=%s %s-%s: %s"
@@ -410,9 +490,9 @@ def _submit_theintrodb(
         {"Authorization": "Bearer %s" % key},
         body,
     )
-    if code == 200 and isinstance(parsed, dict) and parsed.get("ok") is True:
-        subs = parsed.get("submissions")
-        legacy = parsed.get("submission")
+    if code == 200 and _theintrodb_submit_accepted(parsed):
+        subs = (parsed or {}).get("submissions")
+        legacy = (parsed or {}).get("submission")
         if isinstance(subs, list) and subs:
             n = len(subs)
             sid = subs[0].get("id") if isinstance(subs[0], dict) else None
@@ -427,7 +507,6 @@ def _submit_theintrodb(
                     % n
                 )
             return True, "ok"
-        # v2 single-object response (backward compat during transition)
         if isinstance(legacy, dict):
             sid = legacy.get("id")
             _up_log_info(
@@ -435,20 +514,14 @@ def _submit_theintrodb(
                 % (sid or "?")
             )
             return True, "ok"
-        detail = _detail_from_parsed(parsed, raw_err)
-        _up_log_err(
-            "TheIntroDB submit: HTTP 200 ok=true but missing submissions payload: %s"
-            % (detail or raw_err or "")
-        )
-        return False, _translate(39041) + (
-            ("\n\n" + detail) if detail else ""
-        )
+        _up_log_info("TheIntroDB v3 submit OK (HTTP 200, ok=true)")
+        return True, "ok"
     if code == 200:
         detail = _detail_from_parsed(parsed, raw_err)
         base = _translate(39041)
         msg = base + ("\n\n" + detail if detail else "")
         _up_log_err(
-            "TheIntroDB submit: HTTP 200 but not ok (segment=%s tmdb=%s): %s"
+            "TheIntroDB submit: HTTP 200 but no submissions in response (segment=%s tmdb=%s): %s"
             % (tidb_segment, tmdb_int, detail or raw_err or "")
         )
         return False, msg
@@ -469,8 +542,7 @@ def _submit_introdb_app(
 ) -> tuple[bool, str]:
     """
     IntroDB.app POST /submit with X-API-Key: numeric ``start_sec`` / ``end_sec`` (integers).
-    ``segment_type`` is only intro, recap, or outro (credits/preview from classification
-    are mapped to outro before calling this).
+    ``segment_type`` is only intro, recap, or outro (credits → outro; preview is not sent).
     """
     key = (api_key or "").strip()
     if not key:
@@ -722,33 +794,43 @@ def upload_all_segments(video_path, segments, target: str) -> None:
             xbmc.sleep(200)
 
         if do_idb:
-            fp_i = _fingerprint("introdb", media_key, idb_seg, start, end)
-            if _history_contains("introdb", fp_i):
+            if idb_seg is None:
                 lines_skip.append(
                     "%s — %s (%s) — %s — %s"
-                    % (lbl_idb, raw, idb_seg, tr, _translate(39021))
+                    % (lbl_idb, raw, tidb_seg, tr, _translate(39056))
                 )
                 _up_log_info(
-                    "skip IntroDB.app (already in local submit history): %r segment_type=%s %.3f-%.3f fp=%s %s"
-                    % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
+                    "skip IntroDB.app (segment type not accepted): %r tidb=%s %s"
+                    % (raw, tidb_seg, media_key)
                 )
             else:
-                ok, err = _submit_introdb_app(ctx, idb_seg, start, end, idb_key)
-                if ok:
-                    _history_record("introdb", fp_i)
-                    lines_ok.append(
-                        "%s — %s (%s) — %s"
-                        % (lbl_idb, raw, idb_seg, tr)
+                fp_i = _fingerprint("introdb", media_key, idb_seg, start, end)
+                if _history_contains("introdb", fp_i):
+                    lines_skip.append(
+                        "%s — %s (%s) — %s — %s"
+                        % (lbl_idb, raw, idb_seg, tr, _translate(39021))
                     )
                     _up_log_info(
-                        "ok IntroDB.app: %r segment_type=%s %.3f-%.3f fp=%s %s"
+                        "skip IntroDB.app (already in local submit history): %r segment_type=%s %.3f-%.3f fp=%s %s"
                         % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
                     )
                 else:
-                    lines_err.append(
-                        "%s — %s (%s) — %s — %s"
-                        % (lbl_idb, raw, idb_seg, tr, err)
-                    )
+                    ok, err = _submit_introdb_app(ctx, idb_seg, start, end, idb_key)
+                    if ok:
+                        _history_record("introdb", fp_i)
+                        lines_ok.append(
+                            "%s — %s (%s) — %s"
+                            % (lbl_idb, raw, idb_seg, tr)
+                        )
+                        _up_log_info(
+                            "ok IntroDB.app: %r segment_type=%s %.3f-%.3f fp=%s %s"
+                            % (raw, idb_seg, start, end, _fp_short(fp_i), media_key)
+                        )
+                    else:
+                        lines_err.append(
+                            "%s — %s (%s) — %s — %s"
+                            % (lbl_idb, raw, idb_seg, tr, err)
+                        )
             xbmc.sleep(200)
 
     more_el = _translate(39048)

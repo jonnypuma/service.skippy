@@ -11,7 +11,6 @@ from typing import Any, Callable
 import xbmc
 import xbmcgui
 
-from marker_indicator import sync_marker_pending_indicator
 from playback_segment_cache import publish_parse_cache
 from segment_item import segments_active_for_playback, segment_is_active_lenient
 from settings_utils import (
@@ -27,7 +26,7 @@ from settings_utils import (
     log_playback_settings_snapshot,
     log_service_detail,
 )
-from skipdialog import SkipDialog, _minimal_plate_filename
+from skipdialog import SkipDialog
 
 
 @dataclass(frozen=True)
@@ -48,26 +47,13 @@ class ServiceLoopBindings:
     re_evaluate_segment_jump_points: Callable[..., None]
     is_nested_segment: Callable[..., bool]
     skip_dialog_layout_suffix: Callable[..., str]
-    update_minimal_skip_dialog_textures: Callable[..., None]
-    update_full_skip_dialog_textures: Callable[..., None]
+    warm_skip_dialog_skin_textures: Callable[..., None]
 
 
 def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     """Block until abort; body moved verbatim from service.py."""
 
     while not ctx.monitor.abortRequested():
-        playback_active = False
-        try:
-            playback_active = ctx.player.isPlayingVideo() or xbmc.getCondVisibility(
-                "Player.HasVideo"
-            )
-        except Exception:
-            playback_active = False
-        try:
-            sync_marker_pending_indicator(playback_active)
-        except Exception:
-            pass
-    
         try:
             win = xbmcgui.Window(10000)
             skip_ui = ctx.skippy_skip_ui_suppression_state(win)
@@ -837,22 +823,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                         log(f"📐 Using skip dialog ({dialog_mode}): {dialog_name}")
     
                         try:
-                            if dialog_mode == "Minimal":
-                                plate_file = _minimal_plate_filename(addon)
-                                ctx.update_minimal_skip_dialog_textures(plate_file)
-                                log(f"🎨 Minimal textures set to: {plate_file}")
-                            else:
-                                focus_texture_file = addon_get_setting_text(addon, "button_focus_style", "") or ""
-                                mid_texture_file = addon_get_setting_text(addon, "progress_bar_style", "") or ""
-                                if not focus_texture_file:
-                                    focus_texture_file = "button_focus.png"
-                                if addon_get_bool(addon, "hide_close_button", False) and not addon_get_bool(
-                                    addon, "show_skip_button_focus_texture", True
-                                ):
-                                    focus_texture_file = "-"
-                                if not mid_texture_file:
-                                    mid_texture_file = "progress_mid.png"
-                                ctx.update_full_skip_dialog_textures(focus_texture_file, mid_texture_file)
+                            ctx.warm_skip_dialog_skin_textures(addon)
                         except Exception as e:
                             log(f"⚠️ Failed to update skip dialog skin XML: {e}")
     

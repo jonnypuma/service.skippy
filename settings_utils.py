@@ -4,6 +4,7 @@ import re
 import unicodedata
 import xbmcaddon
 import xbmc
+import xbmcgui
 import xbmcvfs
 
 # Log detail when enable_verbose_logging is true (skippy_log_detail_level)
@@ -99,6 +100,76 @@ def skippy_notification_icon(addon):
     if candidates:
         return (candidates[0] or "").replace("\\", "/")
     return ""
+
+
+def notify_skippy(
+    addon, message, title="Skippy", time_ms=4500, *, prefer_builtin=False
+):
+    """Toast with Skippy icon. Use ``prefer_builtin=True`` when a fullscreen WindowXML/modal hides ``Dialog.notification``."""
+
+    if addon is None:
+        try:
+            addon = xbmcaddon.Addon("service.skippy")
+        except Exception:
+            addon = None
+    icon = skippy_notification_icon(addon) if addon else ""
+    dlg = None
+    try:
+        dlg = xbmcgui.Dialog()
+    except Exception:
+        dlg = None
+
+    def _builtin():
+        tc = (
+            ((title or "Skippy").replace(",", " — ").replace("\n", " ").strip())
+            .replace('"', "'")[:240]
+        )
+        mc = (
+            ((message or "").replace(",", " — ").replace("\n", " ").strip())
+            .replace('"', "'")[:2000]
+        )
+        ic = (icon or "").strip().replace("\\", "/")
+        tm = max(1500, int(time_ms))
+        try:
+            if ic:
+                xbmc.executebuiltin(
+                    'Notification("%s","%s",%d,"%s")' % (tc, mc, tm, ic)
+                )
+            else:
+                xbmc.executebuiltin('Notification("%s","%s",%d)' % (tc, mc, tm))
+        except Exception:
+            pass
+
+    if prefer_builtin:
+        _builtin()
+        return
+
+    if dlg is not None:
+        try:
+            dlg.notification(
+                title or "Skippy",
+                message or "",
+                icon=icon,
+                time=max(1500, int(time_ms)),
+                sound=False,
+            )
+            return
+        except TypeError:
+            try:
+                dlg.notification(
+                    title or "Skippy",
+                    message or "",
+                    icon,
+                    max(1500, int(time_ms)),
+                    False,
+                )
+                return
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    _builtin()
 
 
 def _addon_read_setting_raw(addon, key):
@@ -374,6 +445,8 @@ def log_playback_settings_snapshot(addon=None):
             "toast_not_found_movie=%s" % bo("show_not_found_toast_for_movies", False),
             "toast_overlap=%s" % bo("show_toast_for_overlapping_nested_segments", False),
             "toast_skipped_segment=%s" % bo("show_toast_for_skipped_segment", True),
+            "toast_segment_marker=%s"
+            % bo("show_toast_for_segment_marker", True),
             "enable_verbose_logging=%s" % verb,
             "skippy_log_detail_level=%s" % detail,
         ]

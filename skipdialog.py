@@ -7,6 +7,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
+from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
@@ -23,7 +24,11 @@ FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 _FULL_SKIP_PANEL_GROUP_ID = 3080
 _FULL_SKIP_PANEL_BACKDROP_ID = 3081
 
-FULL_SKIP_PROGRESS_BAR_WIDTH = 370
+FULL_SKIP_PROGRESS_BAR_WIDTH = 370  # base width; use _skip_sc() at runtime for 1080i
+
+
+def _skip_sc(value):
+    return scale_skin_coord(value)
 _SMOOTH_PROGRESS_BG_ID = 3030
 _SMOOTH_PROGRESS_FILL_ID = 3031
 # Skin <visible> on 3030/3031 reads this; Python setVisible on images is unreliable vs XML.
@@ -187,10 +192,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
     def __init__(self, *args, **kwargs):
         try:
-            try:
-                super().__init__(args[0], args[1], args[2], '720p')
-            except TypeError:
-                super().__init__(*args)
+            init_window_xml_dialog(super(SkipDialog, self), args)
             self.segment = kwargs.get("segment", None)
             self._minimal_mode = False
             log(f"📦 Loaded dialog layout: {args[0]}")
@@ -304,33 +306,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log("➡️ Dialog configured for normal skip to end of segment")
 
         if not self._minimal_mode:
-            self._set_smooth_bar_window_visible(False)
             self._apply_full_skip_layout(addon)
 
         self._apply_dialog_text_colors()
-
-        try:
-            if self._minimal_mode:
-                self.setFocusId(3012)
-                log("📐 Minimal: focus on skip chip (3012)")
-            else:
-                focus_id = _full_skip_focus_id(hide_close, hide_skip_icon)
-                self.setFocusId(focus_id)
-                log(
-                    f"📐 Focus set to control {focus_id} (hide_close={hide_close}, hide_skip_icon={hide_skip_icon})"
-                )
-        except Exception as e:
-            log(f"⚠️ Error setting dialog focus: {e}")
-            try:
-                fid = (
-                    3012
-                    if self._minimal_mode
-                    else _full_skip_focus_id(hide_close, hide_skip_icon)
-                )
-                self.setFocusId(fid)
-                log(f"📐 Fallback: Focus set to control {fid}")
-            except Exception as e2:
-                log_always(f"❌ CRITICAL: Failed to set focus to any button - dialog may not be functional: {e2}")
+        self._apply_skip_dialog_focus(hide_close, hide_skip_icon)
 
         try:
             log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
@@ -345,20 +324,21 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 pass
 
     def _apply_full_skip_layout(self, addon):
-        """Re-stack optional Full rows and shrink the panel so invisible rows do not reserve space."""
-        CONTENT_TOP = 41
-        GAP_AFTER_JUMP = 5
-        GAP_BEFORE_PROGRESS = 4
-        BOTTOM_MARGIN = 5
-        META_LINE_H = 20
-        BTN_BOTTOM = 35
-        UNDER_BTNS_FALLBACK = 14
-        LEFT_MARGIN = 5
+        """Stack optional Full rows, set final panel height, show progress track (fill via monitor thread)."""
+        sc = _skip_sc
+        CONTENT_TOP = sc(41)
+        GAP_AFTER_JUMP = sc(5)
+        GAP_BEFORE_PROGRESS = sc(4)
+        BOTTOM_MARGIN = sc(5)
+        META_LINE_H = sc(20)
+        BTN_BOTTOM = sc(35)
+        UNDER_BTNS_FALLBACK = sc(14)
+        LEFT_MARGIN = sc(5)
+        progress_bar_width = sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
 
         ad = addon if addon is not None else get_addon()
         show_jump = self.getProperty("show_next_jump") == "true"
         hide_end = self.getProperty("hide_ending_text") == "true"
-        raw_prog = addon_get_setting_text(ad, "show_progress_bar", "") if ad else ""
         show_progress = addon_get_bool(ad, "show_progress_bar", False) if ad else False
         countdown = addon_get_bool(ad, "progress_bar_countdown", False) if ad else False
 
@@ -368,6 +348,27 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             else 16
         )
         smooth_ui = addon_get_bool(ad, "smooth_progress_bar", False) if ad else False
+
+        bottom = CONTENT_TOP
+        if show_jump:
+            bottom += META_LINE_H
+            if not hide_end or show_progress:
+                bottom += GAP_AFTER_JUMP
+        if not hide_end:
+            bottom += META_LINE_H
+            if show_progress:
+                bottom += GAP_BEFORE_PROGRESS
+        if show_progress:
+            bottom += progress_h
+        has_meta = show_jump or (not hide_end) or show_progress
+        total_h = (bottom + BOTTOM_MARGIN) if has_meta else (BTN_BOTTOM + UNDER_BTNS_FALLBACK)
+        total_h = max(total_h, BTN_BOTTOM + UNDER_BTNS_FALLBACK)
+
+        try:
+            self.getControl(_FULL_SKIP_PANEL_GROUP_ID).setHeight(total_h)
+            self.getControl(_FULL_SKIP_PANEL_BACKDROP_ID).setHeight(total_h)
+        except Exception as e:
+            log(f"⚠️ Full skip panel height: {e}")
 
         bottom = CONTENT_TOP
 
@@ -392,64 +393,53 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 py = bottom
                 progress.setPosition(LEFT_MARGIN, py)
                 progress.setHeight(progress_h)
-                bottom += progress_h
                 init_pct = _progress_initial_percent(countdown)
                 progress.setPercent(init_pct)
-                init_w = 0
                 try:
                     bg = self.getControl(_SMOOTH_PROGRESS_BG_ID)
                     fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
                     bg.setPosition(LEFT_MARGIN, py)
-                    bg.setWidth(FULL_SKIP_PROGRESS_BAR_WIDTH)
+                    bg.setWidth(progress_bar_width)
                     bg.setHeight(progress_h)
                     fill.setPosition(LEFT_MARGIN, py)
                     fill.setHeight(progress_h)
-                    cur = self.player.getTime()
-                    init_pct_f = _progress_display_percent_float(
-                        _elapsed_progress_percent_float(
-                            cur, self.segment.start_seconds, self._total_duration
-                        ),
-                        countdown,
-                    )
-                    init_w = int(
-                        round((init_pct_f / 100.0) * FULL_SKIP_PROGRESS_BAR_WIDTH)
-                    )
-                    init_w = max(0, min(FULL_SKIP_PROGRESS_BAR_WIDTH, init_w))
-                    fill.setWidth(init_w)
+                    fill.setWidth(0)
                 except Exception as e:
                     log(f"⚠️ Smooth progress controls (3030/3031): {e}")
                     self._set_smooth_bar_window_visible(False)
                 else:
                     self._set_smooth_bar_window_visible(smooth_ui)
-                log(
-                    f"📊 Progress bar stacked (raw '{raw_prog}', countdown={countdown}, smooth={smooth_ui}) "
-                    f"→ classic {init_pct}%"
-                    + (f", smooth {init_w}px" if smooth_ui else "")
-                    + f" at y≈{py} height={progress_h}"
-                )
             else:
                 self._set_smooth_bar_window_visible(False)
-                log(f"📊 Progress hidden (raw '{raw_prog}')")
-
-            has_meta = show_jump or (not hide_end) or show_progress
-            total_h = (bottom + BOTTOM_MARGIN) if has_meta else (BTN_BOTTOM + UNDER_BTNS_FALLBACK)
-            total_h = max(total_h, BTN_BOTTOM + UNDER_BTNS_FALLBACK)
-
-            try:
-                self.getControl(_FULL_SKIP_PANEL_GROUP_ID).setHeight(total_h)
-            except Exception as e:
-                log(f"⚠️ Full skip group resize: {e}")
-            try:
-                self.getControl(_FULL_SKIP_PANEL_BACKDROP_ID).setHeight(total_h)
-            except Exception as e:
-                log(f"⚠️ Full skip backdrop resize: {e}")
-
-            log(
-                f"📐 Full skip panel → {total_h}px (next_jump_line={show_jump}, "
-                f"segment_end_line={not hide_end}, progress={show_progress})"
-            )
         except Exception as e:
             log(f"⚠️ Full skip vertical layout failed: {e}")
+
+    def _apply_skip_dialog_focus(self, hide_close, hide_skip_icon):
+        """Set button focus so texturefocus appears with the dialog (not after layout lag)."""
+        try:
+            if self._minimal_mode:
+                focus_id = 3012
+            else:
+                focus_id = _full_skip_focus_id(hide_close, hide_skip_icon)
+            self.setFocusId(focus_id)
+            log(
+                f"📐 Focus set to control {focus_id} (minimal={self._minimal_mode}, "
+                f"hide_close={hide_close}, hide_skip_icon={hide_skip_icon})"
+            )
+        except Exception as e:
+            log(f"⚠️ Error setting dialog focus: {e}")
+            try:
+                fid = (
+                    3012
+                    if self._minimal_mode
+                    else _full_skip_focus_id(hide_close, hide_skip_icon)
+                )
+                self.setFocusId(fid)
+                log(f"📐 Fallback: Focus set to control {fid}")
+            except Exception as e2:
+                log_always(
+                    f"❌ CRITICAL: Failed to set focus to any button - dialog may not be functional: {e2}"
+                )
 
     def _monitor_segment_end(self):
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
@@ -491,9 +481,9 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                             )
                             pct_f = _progress_display_percent_float(elapsed_f, countdown)
                             w = int(
-                                round((pct_f / 100.0) * FULL_SKIP_PROGRESS_BAR_WIDTH)
+                                round((pct_f / 100.0) * _skip_sc(FULL_SKIP_PROGRESS_BAR_WIDTH))
                             )
-                            w = max(0, min(FULL_SKIP_PROGRESS_BAR_WIDTH, w))
+                            w = max(0, min(_skip_sc(FULL_SKIP_PROGRESS_BAR_WIDTH), w))
                             if w != self._last_smooth_fill_w:
                                 self._last_smooth_fill_w = w
                                 fill.setWidth(w)

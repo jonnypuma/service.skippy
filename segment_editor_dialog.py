@@ -16,6 +16,7 @@ Architectural notes:
   navigation actions (debounced timer so ``getSelectedPosition()`` matches Kodi's
   selection).
 """
+import copy
 import os
 import threading
 import time
@@ -39,7 +40,9 @@ from segment_editor_utils import (
     log,
     log_always,
     log_error,
+    set_editor_modal_open,
 )
+from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
 from settings_utils import get_custom_segment_keyword_labels, normalize_label
 
 
@@ -96,6 +99,18 @@ def _format_segment_label_list_display(label):
     return s[0].upper() + s[1:]
 
 
+# Floating list-row action buttons (must match SegmentEditorDialog.xml).
+_LIST_ROW_ACTION_IDS = (5037, 5038, 5027, 5028, 5041, 5042, 5043, 5021, 5022)
+
+# All editor push buttons — WindowXML ignores <font>; apply via setLabel in onInit.
+_EDITOR_BUTTON_IDS = _LIST_ROW_ACTION_IDS + (
+    5031, 5032, 5033, 5011, 5010, 5009, 5019, 5018, 5020,
+    5012, 5013, 5014, 5034, 5035, 5036,
+    5015, 5029, 5016, 5030, 5017, 5023, 5024, 5025,
+    5005, 5002, 5004, 5040, 5026, 5006, 5007,
+)
+
+
 class _EditorPlayerListener(xbmc.Player):
     """xbmc.Player subclass that pushes pause/resume events to the dialog."""
 
@@ -121,7 +136,10 @@ class _EditorPlayerListener(xbmc.Player):
 
 class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args)
+        try:
+            init_window_xml_dialog(super(SegmentEditorDialog, self), args)
+        except Exception:
+            super().__init__(*args)
         self.video_path = kwargs.get("video_path")
         self.segments = kwargs.get("segments", [])
         self.current_time = kwargs.get("current_time", 0)
@@ -134,16 +152,26 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self.pending_end_time = None
         self.is_paused = False
         # List row geometry (must match SegmentEditorDialog.xml list + buttons).
-        self._list_top = 110
-        self._list_item_height = 50
-        self._list_height = 290
-        self._snap_start_btn_left = 775
-        self._snap_end_btn_left = 878
-        self._edit_btn_left = 981
-        self._delete_btn_left = 1058
-        self._edit_delete_btn_height = 30
+        sc = scale_skin_coord
+        self._list_top = sc(110)
+        self._list_item_height = sc(50)
+        self._list_height = sc(290)
+        self._start_curr_btn_left = sc(470)
+        self._end_curr_btn_left = sc(581)
+        self._snap_start_btn_left = sc(676)
+        self._snap_end_btn_left = sc(773)
+        self._merge_btn_left = sc(873)
+        self._split_btn_left = sc(942)
+        self._fix_btn_left = sc(990)
+        self._edit_btn_left = sc(1075)
+        self._delete_btn_left = sc(1127)
+        self._edit_delete_btn_height = sc(30)
         self._selection_sync_timer = None
         self._indicator_win_home = None
+        self._undo_stack = []
+        self._undo_stack_max = 20
+        # font12 via setLabel — XML <font> is ignored on WindowXML buttons; smaller at 1080p.
+        self._editor_btn_font = "font12"
 
         try:
             addon = get_addon()
@@ -160,6 +188,13 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def onInit(self):
         try:
             log_always("onInit called")
+
+            # Reinforce IPC flag once the WindowXML exists (helps RunScript callers that
+            # check modal state vs. Kodi's fullscreen dialog stacking).
+            try:
+                set_editor_modal_open(True)
+            except Exception:
+                pass
 
             try:
                 xbmcgui.Window(10000).clearProperty(EDITOR_TOGGLE_CLOSE_REQUESTED)
@@ -194,6 +229,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 if not self.segments and self.video_path:
                     self._maybe_import_embedded_chapters()
                 self.refresh_list()
+
+            self._apply_editor_button_fonts()
+            self._update_undo_button()
 
             try:
                 self.is_paused = self._detect_initial_pause_state()
@@ -235,7 +273,13 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self._selection_sync_timer = None
         # Drop the player listener so Kodi stops delivering events.
         self._player_listener = None
-        super().close()
+        try:
+            super().close()
+        finally:
+            try:
+                set_editor_modal_open(False)
+            except Exception:
+                pass
 
     # ------------------------------------------------------------------
     # Pause / time display
@@ -261,11 +305,56 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         log(f"Pause state changed via Player callback: paused={paused}")
         self._update_pause_button_label()
 
+    def _set_button_label_font(self, btn, label=None):
+        """Apply editor button font/colors; WindowXML ignores skin <font> tags."""
+        if not btn:
+            return
+        font = self._editor_btn_font
+        if label is None:
+            label = btn.getLabel() or ""
+        try:
+            btn.setLabel(
+                label,
+                font,
+                "0xFFC0C0C0",
+                "0xFF808080",
+                "0xFF000000",
+                "0xFFFFFFFF",
+            )
+        except TypeError:
+            try:
+                btn.setLabel(label, font)
+            except Exception:
+                pass
+
+    def _apply_editor_button_fonts(self):
+        """Apply font12 to every editor button (list row + toolbar rows)."""
+        for cid in _EDITOR_BUTTON_IDS:
+            try:
+                btn = self.getControl(cid)
+                if btn:
+                    self._set_button_label_font(btn)
+            except Exception:
+                pass
+
+    def _apply_list_row_button_fonts(self):
+        """Re-apply fonts on list-row action buttons after label changes."""
+        for cid in _LIST_ROW_ACTION_IDS:
+            try:
+                btn = self.getControl(cid)
+                if btn:
+                    self._set_button_label_font(btn)
+            except Exception:
+                pass
+
     def _update_pause_button_label(self):
         try:
             pause_button = self.getControl(5018)
             if pause_button:
-                pause_button.setLabel("Pause" if not self.is_paused else "Resume")
+                self._set_button_label_font(
+                    pause_button,
+                    "Pause" if not self.is_paused else "Resume",
+                )
         except Exception:
             pass
 
@@ -390,6 +479,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             log("User skipped embedded chapter import")
             return
 
+        self._push_undo()
         self.segments = embedded
         self.segments_modified = True
         log_always(f"Imported {len(embedded)} embedded chapter(s) as segments")
@@ -410,39 +500,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
             self.segments = segments_chronological(self.segments)
 
+            nested_indices, overlapping_indices = self._compute_segment_overlap_sets()
+
             items = []
             n = len(self.segments)
-            nested_indices = set()
-            for i in range(n):
-                seg = self.segments[i]
-                for j in range(n):
-                    if i == j:
-                        continue
-                    other = self.segments[j]
-                    if (other.start_seconds <= seg.start_seconds
-                            and seg.end_seconds <= other.end_seconds):
-                        nested_indices.add(i)
-                        break
-
-            overlapping_indices = set()
-            for i in range(n):
-                if i in nested_indices:
-                    continue
-                seg = self.segments[i]
-                for j in range(n):
-                    if i == j or j in nested_indices:
-                        continue
-                    other = self.segments[j]
-                    if (seg.start_seconds < other.end_seconds
-                            and other.start_seconds < seg.end_seconds):
-                        seg_nested_in_other = (other.start_seconds <= seg.start_seconds
-                                               and seg.end_seconds <= other.end_seconds)
-                        other_nested_in_seg = (seg.start_seconds <= other.start_seconds
-                                               and other.end_seconds <= seg.end_seconds)
-                        if not seg_nested_in_other and not other_nested_in_seg:
-                            overlapping_indices.add(i)
-                        break
-
             for i, seg in enumerate(self.segments):
                 start_hms = seconds_to_hms(seg.start_seconds)
                 end_hms = seconds_to_hms(seg.end_seconds)
@@ -456,6 +517,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
                 line1 = f"Segment {segment_num} - {list_label} - {start_hms} to {end_hms}"
                 line2 = f"Duration: {duration:.1f}s | Source: {seg.source}"
+                if is_nested:
+                    line2 += " | Nested"
+                elif is_overlapping:
+                    line2 += " | Overlapping"
 
                 item = xbmcgui.ListItem(line1, line2)
                 item.setProperty("index", str(i))
@@ -482,14 +547,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 has_segments = len(self.segments) > 0
                 self.setProperty("HasSegments", "true" if has_segments else "false")
 
-                snap_start_btn = self.getControl(5027)
-                snap_end_btn = self.getControl(5028)
-                edit_btn = self.getControl(5021)
-                delete_btn = self.getControl(5022)
-                for btn in (snap_start_btn, snap_end_btn, edit_btn, delete_btn):
-                    if btn:
-                        btn.setVisible(has_segments)
-                        btn.setEnabled(has_segments)
+                for cid in _LIST_ROW_ACTION_IDS:
+                    try:
+                        btn = self.getControl(cid)
+                        if btn:
+                            btn.setVisible(has_segments)
+                            btn.setEnabled(has_segments)
+                    except Exception:
+                        pass
             except Exception:
                 pass
 
@@ -542,13 +607,27 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             5018: self.toggle_pause,
             5019: lambda: self.seek_relative(-1),
             5020: lambda: self.seek_relative(1),
+            5029: self.set_pending_to_sof,
+            5030: self.set_pending_to_eof,
+            5031: lambda: self.seek_relative(-600),
+            5032: lambda: self.seek_relative(-300),
+            5033: lambda: self.seek_relative(-60),
+            5034: lambda: self.seek_relative(60),
+            5035: lambda: self.seek_relative(300),
+            5036: lambda: self.seek_relative(600),
             5027: self.snap_segment_start,
             5028: self.snap_segment_end,
+            5037: self.set_segment_start_to_current,
+            5038: self.set_segment_end_to_current,
             5021: self.edit_segment,
             5022: self.delete_segment,
+            5041: self.show_merge_picker,
+            5042: self.split_at_playhead,
+            5043: self.fix_overlap_selected,
             5023: self.start_at_end_of_segment,
             5024: self.end_at_start_of_segment,
             5025: self.jump_to_time,
+            5040: self.undo_last_change,
             5000: self.jump_to_segment_start,  # Select on list
         }
 
@@ -672,8 +751,310 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             pass
         return 0.0
 
+    @staticmethod
+    def _segment_display_label(seg):
+        if hasattr(seg, "raw_label") and seg.raw_label:
+            return seg.raw_label
+        return seg.segment_type_label or "segment"
+
+    def _segments_same_label(self, seg_a, seg_b):
+        return normalize_label(self._segment_display_label(seg_a)) == normalize_label(
+            self._segment_display_label(seg_b)
+        )
+
+    def _compute_segment_overlap_sets(self, segments=None):
+        """Return (nested_indices, overlapping_indices) for segment list overlap UI."""
+        if segments is None:
+            segments = self.segments
+        n = len(segments)
+        nested_indices = set()
+        for i in range(n):
+            seg = segments[i]
+            for j in range(n):
+                if i == j:
+                    continue
+                other = segments[j]
+                if (other.start_seconds <= seg.start_seconds
+                        and seg.end_seconds <= other.end_seconds):
+                    nested_indices.add(i)
+                    break
+
+        overlapping_indices = set()
+        for i in range(n):
+            if i in nested_indices:
+                continue
+            seg = segments[i]
+            for j in range(n):
+                if i == j or j in nested_indices:
+                    continue
+                other = segments[j]
+                if (seg.start_seconds < other.end_seconds
+                        and other.start_seconds < seg.end_seconds):
+                    seg_nested_in_other = (
+                        other.start_seconds <= seg.start_seconds
+                        and seg.end_seconds <= other.end_seconds
+                    )
+                    other_nested_in_seg = (
+                        seg.start_seconds <= other.start_seconds
+                        and other.end_seconds <= seg.end_seconds
+                    )
+                    if not seg_nested_in_other and not other_nested_in_seg:
+                        overlapping_indices.add(i)
+                        break
+        return nested_indices, overlapping_indices
+
+    def _snapshot_segments_for_undo(self):
+        return {
+            "segments": copy.deepcopy(self.segments),
+            "selected_index": self.selected_index,
+        }
+
+    def _push_undo(self):
+        self._undo_stack.append(self._snapshot_segments_for_undo())
+        if len(self._undo_stack) > self._undo_stack_max:
+            self._undo_stack.pop(0)
+        self._update_undo_button()
+
+    def _update_undo_button(self):
+        try:
+            undo_btn = self.getControl(5040)
+            if undo_btn:
+                undo_btn.setEnabled(bool(self._undo_stack))
+        except Exception:
+            pass
+
+    def undo_last_change(self):
+        if not self._undo_stack:
+            return
+        state = self._undo_stack.pop()
+        self.segments = state["segments"]
+        self.selected_index = state["selected_index"]
+        self.segments_modified = True
+        self.refresh_list()
+        self._update_undo_button()
+        log("Undo restored previous segment list state")
+
+    def show_merge_picker(self):
+        """Merge with previous or next segment (list-row Merge button)."""
+        try:
+            from skippy_editor_modal_skin import show_editor_list_pick
+        except Exception as exc:
+            log_error(f"show_editor_list_pick import failed: {exc}")
+            return
+
+        self._refresh_selected_index()
+        options = [
+            "Merge with previous segment",
+            "Merge with next segment",
+        ]
+        try:
+            picked = show_editor_list_pick("Merge segment", options)
+        except Exception:
+            try:
+                picked = xbmcgui.Dialog().select("Merge segment", options)
+            except Exception as exc:
+                log_error(f"Merge picker failed: {exc}")
+                return
+        if picked < 0:
+            return
+        if picked == 0:
+            self.merge_with_previous_segment()
+        elif picked == 1:
+            self.merge_with_next_segment()
+
+    def merge_with_previous_segment(self):
+        self._refresh_selected_index()
+        idx = self.selected_index
+        if not self.segments:
+            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            return
+        if idx <= 0:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot merge with previous segment — there is no prior segment.",
+            )
+            return
+        self._merge_adjacent_segments(idx - 1, idx)
+
+    def merge_with_next_segment(self):
+        self._refresh_selected_index()
+        idx = self.selected_index
+        if not self.segments:
+            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            return
+        if idx < 0 or idx >= len(self.segments) - 1:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot merge with next segment — there is no following segment.",
+            )
+            return
+        self._merge_adjacent_segments(idx, idx + 1)
+
+    def _merge_adjacent_segments(self, idx_a, idx_b):
+        if idx_a > idx_b:
+            idx_a, idx_b = idx_b, idx_a
+        if idx_b != idx_a + 1:
+            log_error(f"Merge rejected: indices {idx_a} and {idx_b} are not adjacent")
+            return
+        seg_a = self.segments[idx_a]
+        seg_b = self.segments[idx_b]
+        new_start = min(seg_a.start_seconds, seg_b.start_seconds)
+        new_end = max(seg_a.end_seconds, seg_b.end_seconds)
+
+        if self._segments_same_label(seg_a, seg_b):
+            label = self._segment_display_label(seg_a)
+            action_type = seg_a.action_type
+        else:
+            default = self._segment_display_label(
+                self.segments[self.selected_index]
+            )
+            label = self.get_label_from_user(default=default)
+            if label is None:
+                return
+            action_type = None
+
+        source = seg_a.source
+        try:
+            merged = SegmentItem(
+                new_start, new_end, label, source=source, action_type=action_type
+            )
+        except ValueError as exc:
+            xbmcgui.Dialog().ok("Segment Editor", f"Cannot merge segments: {exc}")
+            return
+
+        self._push_undo()
+        self.segments[idx_a] = merged
+        del self.segments[idx_b]
+        self.selected_index = idx_a
+        self.segments_modified = True
+        self.refresh_list()
+        log(f"Merged segments at indices {idx_a}+{idx_b} -> {merged}")
+
+    def split_at_playhead(self):
+        self._refresh_selected_index()
+        if not self.segments or self.selected_index < 0 or self.selected_index >= len(
+            self.segments
+        ):
+            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            return
+        if not self.player.isPlayingVideo():
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot split — video is not playing.",
+            )
+            return
+        idx = self.selected_index
+        seg = self.segments[idx]
+        split_at = float(self.player.getTime())
+        if split_at <= seg.start_seconds or split_at >= seg.end_seconds:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Playhead must be strictly inside the selected segment.\n\n"
+                f"Segment: {seconds_to_hms(seg.start_seconds)} to "
+                f"{seconds_to_hms(seg.end_seconds)}\n"
+                f"Playhead: {seconds_to_hms(split_at)}",
+            )
+            return
+
+        label = self._segment_display_label(seg)
+        source = seg.source
+        action_type = seg.action_type
+        try:
+            first = SegmentItem(
+                seg.start_seconds,
+                split_at,
+                label,
+                source=source,
+                action_type=action_type,
+            )
+            second = SegmentItem(
+                split_at,
+                seg.end_seconds,
+                label,
+                source=source,
+                action_type=action_type,
+            )
+        except ValueError as exc:
+            xbmcgui.Dialog().ok("Segment Editor", f"Cannot split segment: {exc}")
+            return
+
+        self._push_undo()
+        self.segments[idx] = first
+        self.segments.insert(idx + 1, second)
+        self.selected_index = idx + 1
+        self.segments_modified = True
+        self.refresh_list()
+        log(
+            f"Split segment {idx} at {split_at:.3f}s into "
+            f"[{first.start_seconds:.3f}-{first.end_seconds:.3f}] and "
+            f"[{second.start_seconds:.3f}-{second.end_seconds:.3f}]"
+        )
+
+    def fix_overlap_selected(self):
+        self._refresh_selected_index()
+        if not self.segments or self.selected_index < 0 or self.selected_index >= len(
+            self.segments
+        ):
+            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            return
+        idx = self.selected_index
+        nested_indices, overlapping_indices = self._compute_segment_overlap_sets()
+        if idx in nested_indices:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Fix overlap does not apply to nested segments.\n"
+                "Use merge or manual edit instead.",
+            )
+            return
+        if idx not in overlapping_indices:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "The selected segment is not flagged as overlapping.",
+            )
+            return
+
+        seg = self.segments[idx]
+        new_start = seg.start_seconds
+        new_end = seg.end_seconds
+        if idx > 0:
+            prev = self.segments[idx - 1]
+            if new_start < prev.end_seconds:
+                candidate = float(prev.end_seconds)
+                if candidate < new_end:
+                    new_start = candidate
+        if idx < len(self.segments) - 1:
+            nxt = self.segments[idx + 1]
+            if new_end > nxt.start_seconds:
+                candidate = float(nxt.start_seconds)
+                if candidate > new_start:
+                    new_end = candidate
+
+        if new_start == seg.start_seconds and new_end == seg.end_seconds:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Could not fix overlap automatically for this segment.",
+            )
+            return
+        if new_end <= new_start:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Fix overlap would remove the segment entirely.\n"
+                "Use merge or delete instead.",
+            )
+            return
+
+        self._push_undo()
+        seg.start_seconds = new_start
+        seg.end_seconds = new_end
+        self.segments_modified = True
+        self.refresh_list()
+        log(
+            f"Fixed overlap on segment {idx}: "
+            f"{seconds_to_hms(new_start)} to {seconds_to_hms(new_end)}"
+        )
+
     def _update_edit_delete_positions(self):
-        """Align snap / Edit / Delete with the highlighted list row (matches skin layout)."""
+        """Align list-row action buttons with the highlighted list row (matches skin layout)."""
         try:
             if (
                 not hasattr(self, "list_control")
@@ -698,18 +1079,24 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             max_top = self._list_top + self._list_height - self._edit_delete_btn_height
             row_top = max(self._list_top, min(row_top, max_top))
 
-            snap_start_btn = self.getControl(5027)
-            snap_end_btn = self.getControl(5028)
-            edit_btn = self.getControl(5021)
-            delete_btn = self.getControl(5022)
-            if snap_start_btn:
-                snap_start_btn.setPosition(self._snap_start_btn_left, row_top)
-            if snap_end_btn:
-                snap_end_btn.setPosition(self._snap_end_btn_left, row_top)
-            if edit_btn:
-                edit_btn.setPosition(self._edit_btn_left, row_top)
-            if delete_btn:
-                delete_btn.setPosition(self._delete_btn_left, row_top)
+            btn_positions = (
+                (5037, self._start_curr_btn_left),
+                (5038, self._end_curr_btn_left),
+                (5027, self._snap_start_btn_left),
+                (5028, self._snap_end_btn_left),
+                (5041, self._merge_btn_left),
+                (5042, self._split_btn_left),
+                (5043, self._fix_btn_left),
+                (5021, self._edit_btn_left),
+                (5022, self._delete_btn_left),
+            )
+            for cid, left in btn_positions:
+                try:
+                    btn = self.getControl(cid)
+                    if btn:
+                        btn.setPosition(left, row_top)
+                except Exception:
+                    pass
         except Exception:
             pass
 
@@ -758,6 +1145,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 source = "xml"
 
             new_seg = SegmentItem(start, end, label, source=source)
+            self._push_undo()
             self.segments.append(new_seg)
             self.segments_modified = True
             self.refresh_list()
@@ -819,6 +1207,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 source = "xml"
 
             new_seg = SegmentItem(start, end, label, source=source)
+            self._push_undo()
             self.segments.append(new_seg)
             self.segments_modified = True
             self.refresh_list()
@@ -841,6 +1230,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 "Use marked times for this segment?",
             ):
                 if self.pending_end_time > self.pending_start_time:
+                    self._push_undo()
                     seg.start_seconds = self.pending_start_time
                     seg.end_seconds = self.pending_end_time
                     self.pending_start_time = None
@@ -885,6 +1275,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 xbmcgui.Dialog().ok("Segment Editor", "End time must be after start time.")
                 return
 
+            self._push_undo()
             seg.start_seconds = start
             seg.end_seconds = end
             old_label = seg.segment_type_label
@@ -923,6 +1314,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 f"Snap target: {seconds_to_hms(new_start)}",
             )
             return
+        self._push_undo()
         seg.start_seconds = new_start
         self.segments_modified = True
         self.refresh_list()
@@ -958,10 +1350,73 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 f"Snap target: {seconds_to_hms(new_end)}",
             )
             return
+        self._push_undo()
         seg.end_seconds = new_end
         self.segments_modified = True
         self.refresh_list()
         log(f"Snapped segment end (index {idx}) to {new_end:.3f}s")
+
+    def set_segment_start_to_current(self):
+        """Set the selected segment's start to the current playback time."""
+        self._refresh_selected_index()
+        if not self.segments or self.selected_index < 0 or self.selected_index >= len(
+            self.segments
+        ):
+            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            return
+        if not self.player.isPlayingVideo():
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot set start to current time: video is not playing.",
+            )
+            return
+        idx = self.selected_index
+        seg = self.segments[idx]
+        new_start = float(self.player.getTime())
+        if new_start >= seg.end_seconds:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot set start to current time: playhead is not before the segment end.\n\n"
+                f"End: {seconds_to_hms(seg.end_seconds)}\n"
+                f"Current: {seconds_to_hms(new_start)}",
+            )
+            return
+        self._push_undo()
+        seg.start_seconds = new_start
+        self.segments_modified = True
+        self.refresh_list()
+        log(f"Set segment start (index {idx}) to current time {new_start:.3f}s")
+
+    def set_segment_end_to_current(self):
+        """Set the selected segment's end to the current playback time."""
+        self._refresh_selected_index()
+        if not self.segments or self.selected_index < 0 or self.selected_index >= len(
+            self.segments
+        ):
+            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            return
+        if not self.player.isPlayingVideo():
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot set end to current time: video is not playing.",
+            )
+            return
+        idx = self.selected_index
+        seg = self.segments[idx]
+        new_end = float(self.player.getTime())
+        if new_end <= seg.start_seconds:
+            xbmcgui.Dialog().ok(
+                "Segment Editor",
+                "Cannot set end to current time: playhead is not after the segment start.\n\n"
+                f"Start: {seconds_to_hms(seg.start_seconds)}\n"
+                f"Current: {seconds_to_hms(new_end)}",
+            )
+            return
+        self._push_undo()
+        seg.end_seconds = new_end
+        self.segments_modified = True
+        self.refresh_list()
+        log(f"Set segment end (index {idx}) to current time {new_end:.3f}s")
 
     def delete_segment(self):
         self._refresh_selected_index()
@@ -973,6 +1428,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         label = seg.raw_label if hasattr(seg, 'raw_label') else seg.segment_type_label
 
         if xbmcgui.Dialog().yesno("Segment Editor", f"Delete segment '{label}'?"):
+            self._push_undo()
             del self.segments[self.selected_index]
             self.segments_modified = True
             self.refresh_list()
@@ -988,6 +1444,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             yeslabel="Delete All",
             nolabel="Cancel",
         ):
+            self._push_undo()
             self.segments = []
             self.segments_modified = True
             self.refresh_list()
@@ -1165,6 +1622,57 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         except Exception as e:
             log_error(f"Error marking end: {e}")
 
+    def set_pending_to_sof(self):
+        """Set pending start to start-of-file (0.0)."""
+        try:
+            if (self.pending_end_time is not None
+                    and 0.0 >= self.pending_end_time):
+                xbmcgui.Dialog().ok(
+                    "Segment Editor",
+                    f"Cannot set start time after end time.\n\n"
+                    f"Current end: {seconds_to_hms(self.pending_end_time)}\n"
+                    f"Attempted start: {seconds_to_hms(0.0)}",
+                )
+                return
+            self.pending_start_time = 0.0
+            log("Marked start time at SOF (0.0)")
+            xbmcgui.Dialog().notification(
+                "Segment Editor",
+                f"Start marked: {seconds_to_hms(self.pending_start_time)}",
+                icon=self.icon_path, time=2000,
+            )
+        except Exception as e:
+            log_error(f"Error setting start to SOF: {e}")
+
+    def set_pending_to_eof(self):
+        """Set pending end to end-of-file (video duration)."""
+        try:
+            duration = self._get_playback_duration_seconds()
+            if duration <= 0:
+                xbmcgui.Dialog().ok(
+                    "Segment Editor",
+                    "Cannot set end to EOF — video duration is not available.",
+                )
+                return
+            if (self.pending_start_time is not None
+                    and duration <= self.pending_start_time):
+                xbmcgui.Dialog().ok(
+                    "Segment Editor",
+                    f"Cannot set end time before start time.\n\n"
+                    f"Current start: {seconds_to_hms(self.pending_start_time)}\n"
+                    f"Attempted end: {seconds_to_hms(duration)}",
+                )
+                return
+            self.pending_end_time = duration
+            log(f"Marked end time at EOF ({duration:.2f})")
+            xbmcgui.Dialog().notification(
+                "Segment Editor",
+                f"End marked: {seconds_to_hms(self.pending_end_time)}",
+                icon=self.icon_path, time=2000,
+            )
+        except Exception as e:
+            log_error(f"Error setting end to EOF: {e}")
+
     def select_segment_from_list(self, title):
         if not self.segments:
             xbmcgui.Dialog().ok("Segment Editor", "No segments available to select.")
@@ -1284,6 +1792,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             label,
             source=source,
         )
+        self._push_undo()
         self.segments.append(new_seg)
         self.segments_modified = True
 
@@ -1319,6 +1828,8 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         if edl_ok or xml_ok:
             self.segments_modified = False
+            self._undo_stack.clear()
+            self._update_undo_button()
             if save_format == SAVE_FORMAT_BOTH:
                 if edl_ok and xml_ok:
                     msg = "Segments saved to both formats"
