@@ -207,6 +207,7 @@
         <height>30</height>
         <label>Start@Curr</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -228,6 +229,7 @@
         <height>30</height>
         <label>End@Curr</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -249,6 +251,7 @@
         <height>30</height>
         <label>Snap Start</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -270,6 +273,7 @@
         <height>30</height>
         <label>Snap End</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -291,6 +295,7 @@
         <height>30</height>
         <label>Merge</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -312,6 +317,7 @@
         <height>30</height>
         <label>Split</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -333,6 +339,7 @@
         <height>30</height>
         <label>Fix Ovl</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -354,6 +361,7 @@
         <height>30</height>
         <label>Edit</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -375,6 +383,7 @@
         <height>30</height>
         <label>Del</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -408,6 +417,7 @@
         <height>30</height>
         <label>-10m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -429,6 +439,7 @@
         <height>30</height>
         <label>-5m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -451,6 +462,7 @@
         <height>30</height>
         <label>-1m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -473,6 +485,7 @@
         <height>30</height>
         <label>-30s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -495,6 +508,7 @@
         <height>30</height>
         <label>-10s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -517,6 +531,7 @@
         <height>30</height>
         <label>-5s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -539,6 +554,7 @@
         <height>30</height>
         <label>-1s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -561,6 +577,7 @@
         <height>30</height>
         <label>Pause</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -583,6 +600,7 @@
         <height>30</height>
         <label>+1s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -605,6 +623,7 @@
         <height>30</height>
         <label>+5s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -627,6 +646,7 @@
         <height>30</height>
         <label>+10s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -649,6 +669,7 @@
         <height>30</height>
         <label>+30s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -671,6 +692,7 @@
         <height>30</height>
         <label>+1m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -693,6 +715,7 @@
         <height>30</height>
         <label>+5m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -715,6 +738,7 @@
         <height>30</height>
         <label>+10m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -731,12 +755,13 @@
 
       <!-- Row 2: Mark / create controls -->
       <control type="button" id="5015">
-        <left>27</left>
+        <left>20</left>
         <top>490</top>
-        <width>100</width>
+        <width>95</width>
         <height>30</height>
         <label>Set as Start</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -752,12 +777,13 @@
       </control>
 
       <control type="button" id="5029">
-        <left>131</left>
+        <left>117</left>
         <top>490</top>
-        <width>215</width>
+        <width>218</width>
         <height>30</height>
         <label>Set Start to Start of File</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -774,12 +800,13 @@
       </control>
 
       <control type="button" id="5016">
-        <left>350</left>
+        <left>337</left>
         <top>490</top>
-        <width>100</width>
+        <width>95</width>
         <height>30</height>
         <label>Set as End</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -796,12 +823,13 @@
       </control>
 
       <control type="button" id="5030">
-        <left>454</left>
+        <left>434</left>
         <top>490</top>
-        <width>200</width>
+        <width>208</width>
         <height>30</height>
         <label>Set End to End of File</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -818,12 +846,13 @@
       </control>
 
       <control type="button" id="5017">
-        <left>658</left>
+        <left>644</left>
         <top>490</top>
-        <width>70</width>
+        <width>62</width>
         <height>30</height>
         <label>Create</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -840,12 +869,13 @@
       </control>
 
       <control type="button" id="5023">
-        <left>732</left>
+        <left>708</left>
         <top>490</top>
-        <width>195</width>
+        <width>208</width>
         <height>30</height>
         <label>Start at End of Segment</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -862,12 +892,13 @@
       </control>
 
       <control type="button" id="5024">
-        <left>931</left>
+        <left>918</left>
         <top>490</top>
-        <width>195</width>
+        <width>208</width>
         <height>30</height>
         <label>End at Start of Segment</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -886,10 +917,11 @@
       <control type="button" id="5025">
         <left>20</left>
         <top>530</top>
-        <width>115</width>
+        <width>78</width>
         <height>30</height>
         <label>Jump To</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -905,12 +937,13 @@
       </control>
 
       <control type="button" id="5005">
-        <left>138</left>
+        <left>100</left>
         <top>530</top>
-        <width>310</width>
+        <width>378</width>
         <height>30</height>
         <label>Add at Current Time + User Set Time</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -927,12 +960,13 @@
       </control>
 
       <control type="button" id="5002">
-        <left>451</left>
+        <left>480</left>
         <top>530</top>
-        <width>278</width>
+        <width>350</width>
         <height>30</height>
         <label>Add Manual Start and End Points</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -949,12 +983,13 @@
       </control>
 
       <control type="button" id="5004">
-        <left>732</left>
+        <left>832</left>
         <top>530</top>
-        <width>85</width>
+        <width>82</width>
         <height>30</height>
         <label>Delete All</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -971,12 +1006,13 @@
       </control>
 
       <control type="button" id="5040">
-        <left>820</left>
+        <left>916</left>
         <top>530</top>
-        <width>60</width>
+        <width>52</width>
         <height>30</height>
         <label>Undo</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -993,12 +1029,13 @@
       </control>
 
       <control type="button" id="5026">
-        <left>883</left>
+        <left>970</left>
         <top>530</top>
-        <width>90</width>
+        <width>72</width>
         <height>30</height>
         <label>Upload</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1015,12 +1052,13 @@
       </control>
 
       <control type="button" id="5006">
-        <left>976</left>
+        <left>1044</left>
         <top>530</top>
-        <width>70</width>
+        <width>52</width>
         <height>30</height>
         <label>Save</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1037,12 +1075,13 @@
       </control>
 
       <control type="button" id="5007">
-        <left>1049</left>
+        <left>1098</left>
         <top>530</top>
-        <width>80</width>
+        <width>52</width>
         <height>30</height>
         <label>Exit</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>

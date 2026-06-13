@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Optional bundled fontset (not loaded for script WindowXML on most Kodi builds).
-     Segment Editor list/button fonts use active-skin names: font12, font10, font_flag. -->
+<!-- Not loaded for script WindowXML — Kodi resolves fonts from the active skin only.
+     Segment Editor uses skin-standard font10/font12; button text is narrowed via <aspect> in XML. -->
 <fonts>
   <fontset id="Default" idloc="31390" unicode="true">
     <font>

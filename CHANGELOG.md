@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.6.12] - 2026-06-12
+
+### Fixed
+- **Segment editor button fonts**: Dropped Estuary-only **font_flag**; buttons use skin-standard **font10** via ``setLabel`` with **``<aspect>0.85</aspect>``** in ``720p`` / ``1080i`` XML to fit long labels without skin-specific font names.
+
+## [3.6.11] - 2026-06-12
+
+### Fixed
+- **Segment editor toolbar layout (1080p)**: Rows 2–3 repacked edge-to-edge (2px gaps) with wider buttons so long labels are not clipped; **5024** and **Del** moved left (Python list-row positions synced to skin XML — **Del** was drifting 27px right on 1080i).
+- **Segment editor button fonts**: Switched from **font10** to **font_flag** via ``setLabel`` / ``setFont`` (Estuary **font10** matched the skin default; **font_flag** is visibly smaller).
+
+## [3.6.10] - 2026-06-12
+
+### Fixed
+- **Segment editor toolbar buttons**: All editor buttons use **font10** via ``setLabel`` (was font12). Narrower **5029**, **5030**, **5005**, **5002** in ``720p`` and ``1080i`` skins. **5024** (End at Start of Segment) moved right — **1080i** had a 100px overlap with **5023**.
+
 ## [3.6.9] - 2026-06-12
 
 ### Fixed

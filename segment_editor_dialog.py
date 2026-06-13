@@ -157,21 +157,21 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._list_item_height = sc(50)
         self._list_height = sc(290)
         self._start_curr_btn_left = sc(470)
-        self._end_curr_btn_left = sc(581)
-        self._snap_start_btn_left = sc(676)
-        self._snap_end_btn_left = sc(773)
-        self._merge_btn_left = sc(873)
-        self._split_btn_left = sc(942)
-        self._fix_btn_left = sc(990)
-        self._edit_btn_left = sc(1075)
-        self._delete_btn_left = sc(1127)
+        self._end_curr_btn_left = sc(572)
+        self._snap_start_btn_left = sc(660)
+        self._snap_end_btn_left = sc(752)
+        self._merge_btn_left = sc(846)
+        self._split_btn_left = sc(918)
+        self._fix_btn_left = sc(968)
+        self._edit_btn_left = sc(1050)
+        self._delete_btn_left = sc(1100)
         self._edit_delete_btn_height = sc(30)
         self._selection_sync_timer = None
         self._indicator_win_home = None
         self._undo_stack = []
         self._undo_stack_max = 20
-        # font12 via setLabel — XML <font> is ignored on WindowXML buttons; smaller at 1080p.
-        self._editor_btn_font = "font12"
+        # font10 via setLabel — WindowXML ignores skin <font> on buttons; aspect is in XML.
+        self._editor_btn_font = "font10"
 
         try:
             addon = get_addon()
@@ -328,7 +328,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 pass
 
     def _apply_editor_button_fonts(self):
-        """Apply font12 to every editor button (list row + toolbar rows)."""
+        """Apply font10 to every editor button (list row + toolbar rows)."""
         for cid in _EDITOR_BUTTON_IDS:
             try:
                 btn = self.getControl(cid)

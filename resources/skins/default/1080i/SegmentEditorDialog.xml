@@ -183,10 +183,11 @@
       <control type="button" id="5037">
         <left>705</left>
         <top>165</top>
-        <width>165</width>
+        <width>150</width>
         <height>45</height>
         <label>Start@Curr</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -202,12 +203,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5038">
-        <left>872</left>
+        <left>858</left>
         <top>165</top>
-        <width>140</width>
+        <width>129</width>
         <height>45</height>
         <label>End@Curr</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -223,12 +225,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5027">
-        <left>1014</left>
+        <left>990</left>
         <top>165</top>
-        <width>145</width>
+        <width>135</width>
         <height>45</height>
         <label>Snap Start</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -244,12 +247,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5028">
-        <left>1159</left>
+        <left>1128</left>
         <top>165</top>
-        <width>148</width>
+        <width>138</width>
         <height>45</height>
         <label>Snap End</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -265,12 +269,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5041">
-        <left>1309</left>
+        <left>1269</left>
         <top>165</top>
-        <width>102</width>
+        <width>105</width>
         <height>45</height>
         <label>Merge</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -286,12 +291,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5042">
-        <left>1413</left>
+        <left>1377</left>
         <top>165</top>
-        <width>70</width>
+        <width>72</width>
         <height>45</height>
         <label>Split</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -307,12 +313,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5043">
-        <left>1485</left>
+        <left>1452</left>
         <top>165</top>
-        <width>125</width>
+        <width>120</width>
         <height>45</height>
         <label>Fix Ovl</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -328,12 +335,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5021">
-        <left>1612</left>
+        <left>1575</left>
         <top>165</top>
-        <width>78</width>
+        <width>72</width>
         <height>45</height>
         <label>Edit</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -349,12 +357,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5022">
-        <left>1690</left>
+        <left>1650</left>
         <top>165</top>
-        <width>65</width>
+        <width>75</width>
         <height>45</height>
         <label>Del</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -384,6 +393,7 @@
         <height>45</height>
         <label>-10m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -404,6 +414,7 @@
         <height>45</height>
         <label>-5m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -425,6 +436,7 @@
         <height>45</height>
         <label>-1m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -446,6 +458,7 @@
         <height>45</height>
         <label>-30s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -467,6 +480,7 @@
         <height>45</height>
         <label>-10s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -488,6 +502,7 @@
         <height>45</height>
         <label>-5s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -509,6 +524,7 @@
         <height>45</height>
         <label>-1s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -530,6 +546,7 @@
         <height>45</height>
         <label>Pause</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -551,6 +568,7 @@
         <height>45</height>
         <label>+1s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -572,6 +590,7 @@
         <height>45</height>
         <label>+5s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -593,6 +612,7 @@
         <height>45</height>
         <label>+10s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -614,6 +634,7 @@
         <height>45</height>
         <label>+30s</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -635,6 +656,7 @@
         <height>45</height>
         <label>+1m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -656,6 +678,7 @@
         <height>45</height>
         <label>+5m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -677,6 +700,7 @@
         <height>45</height>
         <label>+10m</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -691,12 +715,13 @@
         <ondown>5015</ondown>
       </control>
       <control type="button" id="5015">
-        <left>40</left>
+        <left>30</left>
         <top>735</top>
-        <width>168</width>
+        <width>143</width>
         <height>45</height>
         <label>Set as Start</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -711,12 +736,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5029">
-        <left>196</left>
+        <left>176</left>
         <top>735</top>
-        <width>345</width>
+        <width>327</width>
         <height>45</height>
         <label>Set Start to Start of File</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -732,12 +758,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5016">
-        <left>548</left>
+        <left>506</left>
         <top>735</top>
-        <width>168</width>
+        <width>143</width>
         <height>45</height>
         <label>Set as End</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -753,12 +780,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5030">
-        <left>719</left>
+        <left>651</left>
         <top>735</top>
-        <width>330</width>
+        <width>312</width>
         <height>45</height>
         <label>Set End to End of File</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -774,12 +802,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5017">
-        <left>1056</left>
+        <left>966</left>
         <top>735</top>
-        <width>115</width>
+        <width>93</width>
         <height>45</height>
         <label>Create</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -795,12 +824,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5023">
-        <left>1176</left>
+        <left>1062</left>
         <top>735</top>
-        <width>320</width>
+        <width>312</width>
         <height>45</height>
         <label>Start at End of Segment</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -816,12 +846,13 @@
         <ondown>5025</ondown>
       </control>
       <control type="button" id="5024">
-        <left>1396</left>
+        <left>1377</left>
         <top>735</top>
-        <width>292</width>
+        <width>312</width>
         <height>45</height>
         <label>End at Start of Segment</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -838,10 +869,11 @@
       <control type="button" id="5025">
         <left>30</left>
         <top>795</top>
-        <width>172</width>
+        <width>117</width>
         <height>45</height>
         <label>Jump To</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -856,12 +888,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5005">
-        <left>207</left>
+        <left>150</left>
         <top>795</top>
-        <width>465</width>
+        <width>567</width>
         <height>45</height>
         <label>Add at Current Time + User Set Time</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -877,12 +910,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5002">
-        <left>676</left>
+        <left>720</left>
         <top>795</top>
-        <width>417</width>
+        <width>525</width>
         <height>45</height>
         <label>Add Manual Start and End Points</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -898,12 +932,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5004">
-        <left>1098</left>
+        <left>1248</left>
         <top>795</top>
-        <width>145</width>
+        <width>123</width>
         <height>45</height>
         <label>Delete All</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -919,12 +954,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5040">
-        <left>1230</left>
+        <left>1374</left>
         <top>795</top>
-        <width>90</width>
+        <width>78</width>
         <height>45</height>
         <label>Undo</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -940,12 +976,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5026">
-        <left>1324</left>
+        <left>1455</left>
         <top>795</top>
-        <width>135</width>
+        <width>108</width>
         <height>45</height>
         <label>Upload</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -961,12 +998,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5006">
-        <left>1464</left>
+        <left>1566</left>
         <top>795</top>
-        <width>105</width>
+        <width>78</width>
         <height>45</height>
         <label>Save</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -982,12 +1020,13 @@
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5007">
-        <left>1574</left>
+        <left>1647</left>
         <top>795</top>
-        <width>120</width>
+        <width>78</width>
         <height>45</height>
         <label>Exit</label>
         <font>font10</font>
+        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
