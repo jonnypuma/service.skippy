@@ -182,8 +182,14 @@ def _progress_display_percent(elapsed_pct, countdown):
     return 100 - elapsed_pct if countdown else elapsed_pct
 
 
-def _progress_initial_percent(countdown):
-    return 100 if countdown else 0
+def _seed_progress_values(current_time, segment_start, total_duration, countdown, bar_width):
+    """Return (classic_percent, smooth_fill_width) for the current playhead."""
+    elapsed_f = _elapsed_progress_percent_float(current_time, segment_start, total_duration)
+    pct_f = _progress_display_percent_float(elapsed_f, countdown)
+    pct_f = min(max(pct_f, 0.0), 100.0)
+    disp = int(round(pct_f))
+    w = int(round((pct_f / 100.0) * float(bar_width)))
+    return disp, max(0, min(int(bar_width), w))
 
 
 class SkipDialog(xbmcgui.WindowXMLDialog):
@@ -203,6 +209,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         # Default until onInit resolves skip_dialog_font_color (XML uses $INFO[Window.Property(...)]).
         try:
             self.setProperty("skip_dialog_text_color", "FFFFFFFF")
+            self.setProperty("skippy_progress_ready", "false")
         except Exception:
             pass
 
@@ -324,7 +331,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 pass
 
     def _apply_full_skip_layout(self, addon):
-        """Stack optional Full rows, set final panel height, show progress track (fill via monitor thread)."""
+        """Stack optional Full rows, set final panel height, seed progress from playhead, then show."""
         sc = _skip_sc
         CONTENT_TOP = sc(41)
         GAP_AFTER_JUMP = sc(5)
@@ -388,13 +395,25 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     bottom += GAP_BEFORE_PROGRESS
 
             progress = self.getControl(3014)
-            progress.setVisible(show_progress and not smooth_ui)
+            progress.setVisible(False)
+            self._set_smooth_bar_window_visible(False)
             if show_progress:
                 py = bottom
                 progress.setPosition(LEFT_MARGIN, py)
                 progress.setHeight(progress_h)
-                init_pct = _progress_initial_percent(countdown)
+                try:
+                    current = self.player.getTime()
+                except Exception:
+                    current = self.segment.start_seconds
+                init_pct, init_w = _seed_progress_values(
+                    current,
+                    self.segment.start_seconds,
+                    self._total_duration,
+                    countdown,
+                    progress_bar_width,
+                )
                 progress.setPercent(init_pct)
+                self._last_smooth_fill_w = init_w
                 try:
                     bg = self.getControl(_SMOOTH_PROGRESS_BG_ID)
                     fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
@@ -403,14 +422,32 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     bg.setHeight(progress_h)
                     fill.setPosition(LEFT_MARGIN, py)
                     fill.setHeight(progress_h)
-                    fill.setWidth(0)
+                    fill.setWidth(init_w)
                 except Exception as e:
                     log(f"⚠️ Smooth progress controls (3030/3031): {e}")
                     self._set_smooth_bar_window_visible(False)
+                    progress.setVisible(True)
                 else:
-                    self._set_smooth_bar_window_visible(smooth_ui)
+                    if smooth_ui:
+                        progress.setVisible(False)
+                        self._set_smooth_bar_window_visible(True)
+                    else:
+                        self._set_smooth_bar_window_visible(False)
+                        progress.setVisible(True)
+                try:
+                    self.setProperty("skippy_progress_ready", "true")
+                except Exception:
+                    pass
+                log(
+                    f"📊 Progress seeded at open: {init_pct}% / {init_w}px "
+                    f"(countdown={countdown}, playhead={current:.2f}s)"
+                )
             else:
                 self._set_smooth_bar_window_visible(False)
+                try:
+                    self.setProperty("skippy_progress_ready", "false")
+                except Exception:
+                    pass
         except Exception as e:
             log(f"⚠️ Full skip vertical layout failed: {e}")
 
@@ -443,7 +480,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
     def _monitor_segment_end(self):
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
-        self._last_smooth_fill_w = None
+        self._last_smooth_fill_w = getattr(self, "_last_smooth_fill_w", None)
         self._last_smooth_log_ts = 0.0
         self._last_classic_log_ts = 0.0
 
@@ -604,6 +641,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             if getattr(self, "_minimal_mode", False):
                 return
             self._set_smooth_bar_window_visible(False)
+            try:
+                self.setProperty("skippy_progress_ready", "false")
+            except Exception:
+                pass
             _ad = get_addon()
             show_progress = addon_get_bool(_ad, "show_progress_bar", False) if _ad else False
             if show_progress:

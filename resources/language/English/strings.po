@@ -313,8 +313,8 @@ msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and
 msgstr "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
 
 msgctxt "#32063"
-msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other."
-msgstr "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other."
+msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
 
 msgctxt "#32064"
 msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
@@ -505,8 +505,8 @@ msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl
 msgstr "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
 
 msgctxt "#32054"
-msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other."
-msgstr "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other."
+msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
 
 # Toast Settings
 msgctxt "#33000"

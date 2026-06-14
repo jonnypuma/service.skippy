@@ -41,9 +41,9 @@ _BASE_H_1080 = 1080
 
 # WindowXML 1080i/SegmentEditorDialog.xml main group (1920×1080 space). Reference only —
 # WindowDialog modals must use _EDITOR_MODAL_PANEL_720P instead (see module docstring).
-_EDITOR_MODAL_PANEL_1080I = (75, 90, 1755, 855)
+_EDITOR_MODAL_PANEL_1080I = (75, 90, 1755, 878)
 # WindowDialog panel box — same footprint as 720p/SegmentEditorDialog.xml main group.
-_EDITOR_MODAL_PANEL_720P = (50, 60, 1170, 570)
+_EDITOR_MODAL_PANEL_720P = (50, 60, 1170, 585)
 
 
 class ModalDialogLayout:

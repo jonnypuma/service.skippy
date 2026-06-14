@@ -485,7 +485,8 @@ def _parse_source_segments_uncached(
         local_file_found = local_chapter_or_edl_file_exists(path) if tv_local else False
 
         remote_list = []
-        if tv_online:
+        defer_remote = priority == "LocalFirst" and bool(local_list)
+        if tv_online and not defer_remote:
             try:
                 total_time = segment_player.getTotalTime()
             except RuntimeError:
@@ -495,12 +496,10 @@ def _parse_source_segments_uncached(
             )
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-                if tv_local:
-                    pxml = parse_chapters(path, update_monitor=False)
-                    if pxml:
-                        local_list = pxml
-                    else:
-                        local_list = parse_edl(path, update_monitor=False)
+        elif tv_online and defer_remote:
+            log(
+                "📺 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
+            )
 
         if priority == "OnlineFirst":
             parsed = remote_list if remote_list else local_list
@@ -589,7 +588,8 @@ def _parse_source_segments_uncached(
         )
 
         remote_list = []
-        if movie_online:
+        movie_defer_remote = priority == "LocalFirst" and bool(local_list)
+        if movie_online and not movie_defer_remote:
             try:
                 total_time = segment_player.getTotalTime()
             except RuntimeError:
@@ -599,12 +599,10 @@ def _parse_source_segments_uncached(
             )
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-                if movie_local:
-                    pxml = parse_chapters(path, update_monitor=False)
-                    if pxml:
-                        local_list = pxml
-                    else:
-                        local_list = parse_edl(path, update_monitor=False)
+        elif movie_online and movie_defer_remote:
+            log(
+                "🎬 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
+            )
 
         if priority == "OnlineFirst":
             parsed = remote_list if remote_list else local_list

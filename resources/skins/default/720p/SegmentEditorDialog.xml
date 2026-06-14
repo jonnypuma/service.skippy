@@ -39,14 +39,14 @@
       <left>50</left>
       <top>60</top>
       <width>1170</width>
-      <height>570</height>
+      <height>585</height>
 
       <!-- Panel background - darker semi-transparent background -->
       <control type="image">
         <left>0</left>
         <top>0</top>
         <width>1170</width>
-        <height>570</height>
+        <height>585</height>
         <texture>white.png</texture>
         <colordiffuse>F0202020</colordiffuse>
       </control>
@@ -162,6 +162,7 @@
             <font>font12</font>
             <textcolor>FFFFFFFF</textcolor>
             <align>left</align>
+            <scroll>true</scroll>
           </control>
           <control type="label">
             <left>10</left>
@@ -172,6 +173,7 @@
             <font>font10</font>
             <textcolor>FFB0B0B0</textcolor>
             <align>left</align>
+            <scroll>true</scroll>
             <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
           </control>
           <control type="label">
@@ -183,6 +185,7 @@
             <font>font10</font>
             <textcolor>FFFF0000</textcolor>
             <align>left</align>
+            <scroll>true</scroll>
             <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
           </control>
           <control type="label">
@@ -194,6 +197,7 @@
             <font>font10</font>
             <textcolor>FF0080FF</textcolor>
             <align>left</align>
+            <scroll>true</scroll>
             <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
           </control>
         </focusedlayout>
@@ -201,13 +205,12 @@
 
       <!-- List row actions — Y position tracks selection (set in Python) -->
       <control type="button" id="5037">
-        <left>470</left>
+        <left>425</left>
         <top>110</top>
-        <width>100</width>
+        <width>105</width>
         <height>30</height>
         <label>Start@Curr</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -217,19 +220,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5038</onright>
         <onleft>5000</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5038">
-        <left>572</left>
+        <left>532</left>
         <top>110</top>
-        <width>86</width>
+        <width>91</width>
         <height>30</height>
         <label>End@Curr</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -239,19 +242,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5027</onright>
         <onleft>5037</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5027">
-        <left>660</left>
+        <left>625</left>
         <top>110</top>
-        <width>90</width>
+        <width>95</width>
         <height>30</height>
         <label>Snap Start</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -261,19 +264,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5028</onright>
         <onleft>5038</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5028">
-        <left>752</left>
+        <left>722</left>
         <top>110</top>
-        <width>92</width>
+        <width>97</width>
         <height>30</height>
         <label>Snap End</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -283,19 +286,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5041</onright>
         <onleft>5027</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5041">
-        <left>846</left>
+        <left>821</left>
         <top>110</top>
-        <width>70</width>
+        <width>75</width>
         <height>30</height>
         <label>Merge</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -305,19 +308,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5042</onright>
         <onleft>5028</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5042">
-        <left>918</left>
+        <left>898</left>
         <top>110</top>
-        <width>48</width>
+        <width>53</width>
         <height>30</height>
         <label>Split</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -327,19 +330,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5043</onright>
         <onleft>5041</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5043">
-        <left>968</left>
+        <left>953</left>
         <top>110</top>
-        <width>80</width>
+        <width>85</width>
         <height>30</height>
         <label>Fix Ovl</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -349,19 +352,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5021</onright>
         <onleft>5042</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5021">
-        <left>1050</left>
+        <left>1040</left>
         <top>110</top>
-        <width>48</width>
+        <width>53</width>
         <height>30</height>
         <label>Edit</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -371,19 +374,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onright>5022</onright>
         <onleft>5043</onleft>
         <onup>5000</onup>
         <ondown>5000</ondown>
       </control>
       <control type="button" id="5022">
-        <left>1100</left>
+        <left>1095</left>
         <top>110</top>
-        <width>50</width>
+        <width>55</width>
         <height>30</height>
         <label>Del</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -393,6 +396,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onleft>5021</onleft>
         <onright>5000</onright>
         <onup>5000</onup>
@@ -404,20 +408,19 @@
         <left>0</left>
         <top>445</top>
         <width>1170</width>
-        <height>125</height>
+        <height>140</height>
         <texture>white.png</texture>
         <colordiffuse>E0000000</colordiffuse>
       </control>
 
       <!-- Row 1: Seek controls (-10m … Resume … +10m) -->
       <control type="button" id="5031">
-        <left>15</left>
+        <left>6</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>-10m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -427,19 +430,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onright>5032</onright>
         <ondown>5015</ondown>
       </control>
 
       <control type="button" id="5032">
-        <left>91</left>
+        <left>85</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>-5m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -449,6 +452,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5031</onleft>
         <onright>5033</onright>
@@ -456,13 +460,12 @@
       </control>
 
       <control type="button" id="5033">
-        <left>167</left>
+        <left>160</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>-1m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -472,6 +475,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5032</onleft>
         <onright>5011</onright>
@@ -479,13 +483,12 @@
       </control>
 
       <control type="button" id="5011">
-        <left>243</left>
+        <left>235</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>-30s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -495,6 +498,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5033</onleft>
         <onright>5010</onright>
@@ -502,13 +506,12 @@
       </control>
 
       <control type="button" id="5010">
-        <left>319</left>
+        <left>314</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>-10s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -518,6 +521,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5011</onleft>
         <onright>5009</onright>
@@ -525,13 +529,12 @@
       </control>
 
       <control type="button" id="5009">
-        <left>395</left>
+        <left>393</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>-5s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -541,6 +544,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5010</onleft>
         <onright>5019</onright>
@@ -548,13 +552,12 @@
       </control>
 
       <control type="button" id="5019">
-        <left>471</left>
+        <left>468</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>-1s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -564,6 +567,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5009</onleft>
         <onright>5018</onright>
@@ -571,13 +575,12 @@
       </control>
 
       <control type="button" id="5018">
-        <left>547</left>
+        <left>543</left>
         <top>450</top>
-        <width>76</width>
+        <width>83</width>
         <height>30</height>
         <label>Pause</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -587,6 +590,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5019</onleft>
         <onright>5020</onright>
@@ -594,13 +598,12 @@
       </control>
 
       <control type="button" id="5020">
-        <left>627</left>
+        <left>628</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>+1s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -610,6 +613,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5018</onleft>
         <onright>5012</onright>
@@ -619,11 +623,10 @@
       <control type="button" id="5012">
         <left>703</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>+5s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -633,6 +636,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5020</onleft>
         <onright>5013</onright>
@@ -640,13 +644,12 @@
       </control>
 
       <control type="button" id="5013">
-        <left>779</left>
+        <left>778</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>+10s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -656,6 +659,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5012</onleft>
         <onright>5014</onright>
@@ -663,13 +667,12 @@
       </control>
 
       <control type="button" id="5014">
-        <left>855</left>
+        <left>857</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>+30s</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -679,6 +682,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5013</onleft>
         <onright>5034</onright>
@@ -686,13 +690,12 @@
       </control>
 
       <control type="button" id="5034">
-        <left>931</left>
+        <left>936</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>+1m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -702,6 +705,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5014</onleft>
         <onright>5035</onright>
@@ -709,13 +713,12 @@
       </control>
 
       <control type="button" id="5035">
-        <left>1007</left>
+        <left>1011</left>
         <top>450</top>
-        <width>72</width>
+        <width>73</width>
         <height>30</height>
         <label>+5m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -725,6 +728,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5034</onleft>
         <onright>5036</onright>
@@ -732,13 +736,12 @@
       </control>
 
       <control type="button" id="5036">
-        <left>1083</left>
+        <left>1086</left>
         <top>450</top>
-        <width>72</width>
+        <width>77</width>
         <height>30</height>
         <label>+10m</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -748,6 +751,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5000</onup>
         <onleft>5035</onleft>
         <ondown>5015</ondown>
@@ -755,13 +759,12 @@
 
       <!-- Row 2: Mark / create controls -->
       <control type="button" id="5015">
-        <left>20</left>
+        <left>0</left>
         <top>490</top>
-        <width>95</width>
+        <width>128</width>
         <height>30</height>
         <label>Set as Start</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -771,19 +774,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onright>5029</onright>
         <ondown>5025</ondown>
       </control>
 
       <control type="button" id="5029">
-        <left>117</left>
+        <left>130</left>
         <top>490</top>
-        <width>218</width>
+        <width>194</width>
         <height>30</height>
-        <label>Set Start to Start of File</label>
+        <label>Set to Start of File</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -793,6 +796,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5015</onleft>
         <onright>5016</onright>
@@ -800,13 +804,12 @@
       </control>
 
       <control type="button" id="5016">
-        <left>337</left>
+        <left>326</left>
         <top>490</top>
-        <width>95</width>
+        <width>120</width>
         <height>30</height>
         <label>Set as End</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -816,6 +819,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5029</onleft>
         <onright>5030</onright>
@@ -823,13 +827,12 @@
       </control>
 
       <control type="button" id="5030">
-        <left>434</left>
+        <left>448</left>
         <top>490</top>
-        <width>208</width>
+        <width>184</width>
         <height>30</height>
-        <label>Set End to End of File</label>
+        <label>Set to End of File</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -839,6 +842,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5016</onleft>
         <onright>5017</onright>
@@ -846,13 +850,12 @@
       </control>
 
       <control type="button" id="5017">
-        <left>644</left>
+        <left>634</left>
         <top>490</top>
-        <width>62</width>
+        <width>88</width>
         <height>30</height>
         <label>Create</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -862,6 +865,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5030</onleft>
         <onright>5023</onright>
@@ -869,13 +873,12 @@
       </control>
 
       <control type="button" id="5023">
-        <left>708</left>
+        <left>724</left>
         <top>490</top>
-        <width>208</width>
+        <width>222</width>
         <height>30</height>
         <label>Start at End of Segment</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -885,6 +888,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5017</onleft>
         <onright>5024</onright>
@@ -892,13 +896,12 @@
       </control>
 
       <control type="button" id="5024">
-        <left>918</left>
+        <left>948</left>
         <top>490</top>
-        <width>208</width>
+        <width>222</width>
         <height>30</height>
         <label>End at Start of Segment</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -908,6 +911,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5018</onup>
         <onleft>5023</onleft>
         <ondown>5025</ondown>
@@ -915,13 +919,12 @@
 
       <!-- Row 3: Action buttons -->
       <control type="button" id="5025">
-        <left>20</left>
+        <left>2</left>
         <top>530</top>
-        <width>78</width>
+        <width>118</width>
         <height>30</height>
         <label>Jump To</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -931,19 +934,19 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onright>5005</onright>
         <ondown>5000</ondown>
       </control>
 
       <control type="button" id="5005">
-        <left>100</left>
+        <left>122</left>
         <top>530</top>
-        <width>378</width>
+        <width>268</width>
         <height>30</height>
-        <label>Add at Current Time + User Set Time</label>
+        <label>Add Current + User Set Time</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -953,6 +956,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5025</onleft>
         <onright>5002</onright>
@@ -960,13 +964,12 @@
       </control>
 
       <control type="button" id="5002">
-        <left>480</left>
+        <left>392</left>
         <top>530</top>
-        <width>350</width>
+        <width>238</width>
         <height>30</height>
-        <label>Add Manual Start and End Points</label>
+        <label>Manual Start + End Times</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -976,6 +979,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5005</onleft>
         <onright>5004</onright>
@@ -983,13 +987,12 @@
       </control>
 
       <control type="button" id="5004">
-        <left>832</left>
+        <left>632</left>
         <top>530</top>
-        <width>82</width>
+        <width>128</width>
         <height>30</height>
         <label>Delete All</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -999,6 +1002,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5002</onleft>
         <onright>5040</onright>
@@ -1006,13 +1010,12 @@
       </control>
 
       <control type="button" id="5040">
-        <left>916</left>
+        <left>762</left>
         <top>530</top>
-        <width>52</width>
+        <width>98</width>
         <height>30</height>
         <label>Undo</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1022,6 +1025,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5004</onleft>
         <onright>5026</onright>
@@ -1029,13 +1033,12 @@
       </control>
 
       <control type="button" id="5026">
-        <left>970</left>
+        <left>862</left>
         <top>530</top>
-        <width>72</width>
+        <width>112</width>
         <height>30</height>
         <label>Upload</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1045,6 +1048,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5040</onleft>
         <onright>5006</onright>
@@ -1052,13 +1056,12 @@
       </control>
 
       <control type="button" id="5006">
-        <left>1044</left>
+        <left>976</left>
         <top>530</top>
-        <width>52</width>
+        <width>96</width>
         <height>30</height>
         <label>Save</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1068,6 +1071,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5026</onleft>
         <onright>5007</onright>
@@ -1075,13 +1079,12 @@
       </control>
 
       <control type="button" id="5007">
-        <left>1098</left>
+        <left>1074</left>
         <top>530</top>
-        <width>52</width>
+        <width>94</width>
         <height>30</height>
         <label>Exit</label>
         <font>font10</font>
-        <aspect>0.85</aspect>
         <textcolor>lightgrey</textcolor>
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <texturenofocus>-</texturenofocus>
@@ -1091,6 +1094,7 @@
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
         <align>center</align>
+        <textoffsetx>0</textoffsetx>
         <onup>5015</onup>
         <onleft>5006</onleft>
         <ondown>5000</ondown>

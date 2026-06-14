@@ -1142,10 +1142,22 @@ while not monitor.abortRequested():
         else:
             # CRITICAL: Only call parse_and_process_segments when NOT paused
             # This prevents toast spamming when paused
+            parse_started = time.time()
             monitor.current_segments = parse_and_process_segments(
                 video, current_time, playback_type
             ) or []
+            parse_elapsed_ms = int((time.time() - parse_started) * 1000)
             log(f"📦 Parsed {len(monitor.current_segments)} segments for playback_type: {playback_type}")
+            try:
+                refreshed_time = player.getTime()
+                if abs(refreshed_time - current_time) > 0.5:
+                    log(
+                        f"⏱️ Playhead moved during segment parse ({current_time:.2f}s → {refreshed_time:.2f}s, parse took {parse_elapsed_ms}ms) — using refreshed time"
+                    )
+                current_time = refreshed_time
+                log_if_changed("playback_time", f"⏱️ Playback time: {current_time:.2f}s")
+            except RuntimeError:
+                pass
 
         if not show_dialogs:
             log(f"🚫 Skip dialogs disabled for {playback_type} — segments will not trigger prompts")

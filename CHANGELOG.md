@@ -1,5 +1,55 @@
 # Changelog
 
+## [3.7.7] - 2026-05-29
+
+### Fixed
+- **Skip dialog late or missing at playback start**: Segment parsing blocked the main loop for several seconds while still using a stale playhead from before the parse — on resume-from-bookmark this picked the wrong active segment (e.g. ``main`` instead of ``recap``). Playhead is refreshed after parse before dialog processing. With **LocalFirst** and a local sidecar present, online API lookup is deferred on the dialog path so local segments are ready in ~300–400ms instead of waiting on TheIntroDB/IntroDB (~9s).
+
+## [3.7.6] - 2026-05-29
+
+### Removed
+- **Orphan ``resources/textures/white.png``**: Leftover from the removed Segment Marker pending chip (3.3.28). All UI uses ``resources/skins/default/media/white.png`` via skin XML and ``addon_skin_media()``.
+
+## [3.7.5] - 2026-05-29
+
+### Fixed
+- **Segment editor 1080i button height**: Repack script was double-scaling toolbar and list-row button height (``45 × 1.5 → 68px``) while Python still centered floats for **45px**, so list-row actions sat low and focus clipped the row below; row 3 toolbar focus clipped the panel bottom. All editor buttons are **45px** at 1080i again (**30px** at 720p).
+- **Segment editor panel bottom margin**: Main panel and bottom button-row dark overlay extended **+15px** (``570→585`` at 720p, ``855→878`` at 1080i) so toolbar focus textures clear the panel edge.
+
+## [3.7.4] - 2026-05-29
+
+### Fixed
+- **Segment editor toolbar rows 1–3**: All three rows use the same packer — minimum width per label, then **equal extra pixels on every button** to fill the 1170px panel, with any leftover slack split as **equal side margins** so rows stay centered and focus textures do not clip the panel edges. Replaces 3.7.3 left-aligned rows 2–3 and uneven per-button stretching from earlier releases.
+
+## [3.7.3] - 2026-05-29
+
+### Fixed
+- **Segment editor toolbar buttons**: Reverted toolbar and list-row button height to **30px** at 720p (**45px** at 1080i) — the 38px height was never requested and caused the blue focus texture to clip into the row below. Row 1 seek buttons are **centered** in the panel instead of left-aligned. Row 2 **Start at End of Segment** / **End at Start of Segment** and row 3 **Add Current + User Set Time** / **Manual Start + End Times** use **tight fixed widths** (label + small padding only) instead of stretching across spare panel space — the focus texture matches the control box, so narrower widths sit closer to the label text.
+
+## [3.7.2] - 2026-05-29
+
+### Fixed
+- **Segment editor list-row action buttons**: Each button **+5px** wider with **2px** gaps repacked from the list row (``Start@Curr`` … ``Del``). **``textoffsetx=0``** already applied; Python ``_update_edit_delete_positions`` left coords synced to match skin XML.
+
+## [3.7.1] - 2026-05-29
+
+### Fixed
+- **Segment editor toolbar layout**: Removed **``<aspect>0.85</aspect>``** and **auto width** from toolbar buttons (they shrank unfocused labels and left large empty gaps when width stayed at ``min``). Rows 1–3 are repacked edge-to-edge with **2px** gaps and fixed widths sized to each label. Seek row widened for **-10m**, **+10s**, **+30s**, **+10m**; row 3 action buttons widened (**Jump**, **Delete**, **Upload**, **Save**, **Exit**). **``<textoffsetx>0</textoffsetx>``** so label text uses the full button width inside the focus texture.
+
+### Changed
+- **Segment editor labels**: **Add at Current Time + User Set Time** → **Add Current + User Set Time**; **Add Manual Start and End Points** → **Manual Start + End Times**.
+
+## [3.7.0] - 2026-05-29
+
+### Changed
+- **Segment editor — skin-independent toolbar (Phase 1)**: Toolbar and list-row action buttons are taller (**38px** at 720p / **57px** at 1080i). Long row-2/row-3 labels use **``<width min="…" max="…">auto</width>``** so Kodi can size to the active skin font without exceeding the previous fixed layout. Segment list **focused** lines use **``<scroll>true</scroll>``** when text overflows.
+- **Segment editor button labels**: **Set Start to Start of File** → **Set to Start of File**; **Set End to End of File** → **Set to End of File**.
+
+## [3.6.14] - 2026-05-29
+
+### Fixed
+- **Skip dialog progress bar flash on open**: Progress controls stay hidden until seeded from one ``player.getTime()`` sample. Classic bar no longer becomes visible at Kodi's default (~100% fill) before ``setPercent`` runs. Countdown mode seeds at the correct remaining width/percent (full at segment start); elapsed mode seeds empty. Smooth fill width uses the same seed instead of always starting at 0.
+
 ## [3.6.13] - 2026-06-12
 
 ### Added
