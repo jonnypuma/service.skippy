@@ -880,6 +880,21 @@
                     <default>false</default>
                     <control type="toggle"></control>
                 </setting>
+                <setting id="sync_local_to_online" type="string" label="39057" help="39058">
+                    <level>3</level>
+                    <default>Off</default>
+                    <constraints>
+                        <options>
+                            <option label="Off">Off</option>
+                            <option label="Ask">Ask</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="online_upload_enabled">true</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="online_upload_default_target" type="string" label="39001" help="39002">
                     <level>3</level>
                     <default>Both</default>

@@ -161,6 +161,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                         ctx.monitor._last_log_state.clear()
                                         ctx.monitor.overlap_editor_opened_for_path = None
                                         ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
+                                        ctx.monitor.local_to_online_sync_suppressed_path = None
                                         ctx.monitor.prefetch_tv_scheduled_path = None
                                         log(f"✅ Replay state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
                             except RuntimeError:
@@ -208,6 +209,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                     ctx.monitor.skipped_to_nested_segment.clear()
                                     ctx.monitor.overlap_editor_opened_for_path = None
                                     ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
+                                    ctx.monitor.local_to_online_sync_suppressed_path = None
                                     ctx.monitor.prefetch_tv_scheduled_path = None
                                     # Clear log cache on new video to allow re-logging
                                     ctx.monitor._last_log_state.clear()

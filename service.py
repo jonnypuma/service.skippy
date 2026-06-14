@@ -37,6 +37,7 @@ from service_online_sidecar_save import (
     maybe_save_online_segments_to_chapters_xml as _maybe_save_online_segments_to_chapters_xml_impl,
     maybe_save_online_segments_to_sidecars as _maybe_save_online_segments_to_sidecars_impl,
 )
+from service_local_to_online_sync import maybe_prompt_sync_local_to_online
 from service_sidecar_paths import local_chapter_or_edl_file_exists
 from service_segment_sources import (
     get_cached_source_segments as _get_cached_source_segments_impl,
@@ -95,6 +96,7 @@ class PlayerMonitor(xbmc.Monitor):
         self.overlap_editor_opened_for_path = None
         # Overwrite/update ask was answered (Yes or No) for this file — no re-prompt until next title.
         self.online_sidecar_save_prompt_suppressed_path = None
+        self.local_to_online_sync_suppressed_path = None
         clear_prefetch_segment_cache()
         self.prefetch_tv_scheduled_path = None
 
@@ -521,6 +523,7 @@ def get_cached_source_segments(path, playback_type):
         segment_monitor=monitor,
         segment_player=player,
         on_remote_segments_saved=maybe_save_online_segments_to_sidecars,
+        on_local_to_online_sync_check=maybe_prompt_sync_local_to_online,
         sidecar_mtime_check_interval=SIDECAR_MTIME_CHECK_INTERVAL,
     )
 
@@ -1004,6 +1007,7 @@ while not monitor.abortRequested():
                                     monitor._last_log_state.clear()
                                     monitor.overlap_editor_opened_for_path = None
                                     monitor.online_sidecar_save_prompt_suppressed_path = None
+                                    monitor.local_to_online_sync_suppressed_path = None
                                     monitor.prefetch_tv_scheduled_path = None
                                     log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
                         except RuntimeError:
@@ -1051,6 +1055,7 @@ while not monitor.abortRequested():
                                 monitor.skipped_to_nested_segment.clear()
                                 monitor.overlap_editor_opened_for_path = None
                                 monitor.online_sidecar_save_prompt_suppressed_path = None
+                                monitor.local_to_online_sync_suppressed_path = None
                                 monitor.prefetch_tv_scheduled_path = None
                                 # Clear log cache on new video to allow re-logging
                                 monitor._last_log_state.clear()

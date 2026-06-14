@@ -679,27 +679,64 @@ def _submit_http_user_message(
     return head
 
 
-def upload_all_segments(video_path, segments, target: str) -> None:
+def segment_has_pending_upload(
+    seg,
+    target: str,
+    media_key: str,
+    t_db_key: str,
+    idb_key: str,
+) -> bool:
+    """True if ``seg`` would be POSTed to at least one API (not history-skipped)."""
+    label_norm = getattr(seg, "segment_type_label", "") or ""
+    mapped = classify_segment_label_normalized(label_norm)
+    if mapped is None:
+        return False
+    tidb_seg, idb_seg = mapped
+    start = float(seg.start_seconds)
+    end = float(seg.end_seconds)
+    do_tidb = target in (TARGET_BOTH, TARGET_THEINTRODB) and (t_db_key or "").strip()
+    do_idb = target in (TARGET_BOTH, TARGET_INTRODB_APP) and (idb_key or "").strip()
+    if do_tidb:
+        fp = _fingerprint("theintrodb", media_key, tidb_seg, start, end)
+        if not _history_contains("theintrodb", fp):
+            return True
+    if do_idb and idb_seg is not None:
+        fp_i = _fingerprint("introdb", media_key, idb_seg, start, end)
+        if not _history_contains("introdb", fp_i):
+            return True
+    return False
+
+
+def upload_segments_subset(
+    video_path,
+    segments,
+    target: str,
+    *,
+    show_empty_message: bool = True,
+    show_result: bool = True,
+) -> None:
     """
     Upload ``segments`` (SegmentItem list) for ``video_path``.
     ``target`` is TARGET_* constant matching settings stored values.
     """
     addon = xbmcaddon.Addon(ADDON_ID)
     if not segments:
-        show_editor_ok(
-            _translate(39013),
-            _translate(39014),
-        )
-        _up_log_info("Upload dismissed: no segments in editor")
+        if show_empty_message:
+            show_editor_ok(
+                _translate(39013),
+                _translate(39014),
+            )
+        _up_log_info("Upload dismissed: no segments to upload")
         return
 
     item = get_enriched_item_for_path(video_path)
     ctx = build_upload_context(item)
     if not ctx:
-        show_editor_ok(
-            _translate(39013),
-            _translate(39016),
-        )
+        if show_result:
+            show_editor_ok(
+                _translate(39013),
+                _translate(39016),
+            )
         _up_log_err("Upload aborted: could not build library/TMDB context for path")
         return
 
@@ -720,17 +757,18 @@ def upload_all_segments(video_path, segments, target: str) -> None:
     if do_idb and not idb_key:
         do_idb = False
     if not do_tidb and not do_idb:
-        body_parts = []
-        if need_tidb and not t_db_key:
-            body_parts.append(_translate(39028))
-        if need_idb and not idb_key:
-            body_parts.append(_translate(39029))
-        body = "\n\n".join(body_parts) if body_parts else _translate(39015)
-        show_editor_ok(
-            _translate(39037),
-            body,
-        )
-        _up_log_err("Upload aborted (missing API keys): %s" % body.replace("\n", " | "))
+        if show_result:
+            body_parts = []
+            if need_tidb and not t_db_key:
+                body_parts.append(_translate(39028))
+            if need_idb and not idb_key:
+                body_parts.append(_translate(39029))
+            body = "\n\n".join(body_parts) if body_parts else _translate(39015)
+            show_editor_ok(
+                _translate(39037),
+                body,
+            )
+        _up_log_err("Upload aborted (missing API keys)")
         return
 
     lines_ok = []
@@ -833,6 +871,13 @@ def upload_all_segments(video_path, segments, target: str) -> None:
                         )
             xbmc.sleep(200)
 
+    if not show_result:
+        _up_log_info(
+            "Upload finished (no modal): ok=%d skip=%d err=%d — %s"
+            % (len(lines_ok), len(lines_skip), len(lines_err), media_key)
+        )
+        return
+
     more_el = _translate(39048)
     if not (more_el or "").strip():
         more_el = "… and %d more (not shown)."
@@ -866,3 +911,14 @@ def upload_all_segments(video_path, segments, target: str) -> None:
         _up_log_info("err lines: %s" % " | ".join(lines_err[:12]))
         if len(lines_err) > 12:
             _up_log_info("err lines: ... +%d more" % (len(lines_err) - 12))
+
+
+def upload_all_segments(video_path, segments, target: str) -> None:
+    """Upload every uploadable segment from ``segments`` (Segment Editor)."""
+    upload_segments_subset(
+        video_path,
+        segments,
+        target,
+        show_empty_message=True,
+        show_result=True,
+    )

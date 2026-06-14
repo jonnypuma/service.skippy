@@ -835,6 +835,34 @@ msgctxt "#39056"
 msgid "not sent to IntroDB.app (preview segments not accepted)"
 msgstr "not sent to IntroDB.app (preview segments not accepted)"
 
+msgctxt "#39057"
+msgid "Sync local to online"
+msgstr "Sync local to online"
+
+msgctxt "#39058"
+msgid "During playback, compare local sidecar segments with online databases. When local has segment types missing online (e.g. recap or credits), ask to upload them. May query APIs even when online lookup is off for playback. Requires API keys below."
+msgstr "During playback, compare local sidecar segments with online databases. When local has segment types missing online (e.g. recap or credits), ask to upload them. May query APIs even when online lookup is off for playback. Requires API keys below."
+
+msgctxt "#39059"
+msgid "Sync local segments to online?"
+msgstr "Sync local segments to online?"
+
+msgctxt "#39060"
+msgid "No online segment data was found for this title."
+msgstr "No online segment data was found for this title."
+
+msgctxt "#39061"
+msgid "Some segment types from your local sidecar are not online yet."
+msgstr "Some segment types from your local sidecar are not online yet."
+
+msgctxt "#39062"
+msgid "Local sidecar has segments not found online:"
+msgstr "Local sidecar has segments not found online:"
+
+msgctxt "#39063"
+msgid "Upload these using your default upload target?"
+msgstr "Upload these using your default upload target?"
+
 msgctxt "#36000"
 msgid "Enable Segment Marker"
 msgstr "Enable Segment Marker"

@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.6.13] - 2026-06-12
+
+### Added
+- **Sync local to online**: New Expert → Upload setting **Sync local to online** (**Off** / **Ask**). During playback, when a local sidecar has segment types missing from online databases (e.g. local recap/credits but online intro only), Skippy prompts to upload the missing types using your default upload target and API keys. Probes online APIs even when online lookup is disabled for playback.
+
 ## [3.6.12] - 2026-06-12
 
 ### Fixed

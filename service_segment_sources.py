@@ -38,6 +38,41 @@ def _log_seg_detail(msg):
     log_service_detail(msg, tag="segments")
 
 
+def _invoke_local_to_online_sync(
+    path,
+    playback_type,
+    local_list,
+    local_file_found,
+    online_lookup_enabled,
+    remote_list,
+    segment_monitor,
+    segment_player,
+    on_local_to_online_sync_check,
+    addon,
+):
+    if not on_local_to_online_sync_check or not local_list or not local_file_found:
+        return
+    try:
+        from service_local_to_online_sync import (
+            probe_remote_segments_for_sync,
+            sync_local_to_online_enabled,
+        )
+    except Exception as exc:
+        log("⚠ Local→online sync import failed: %s" % exc)
+        return
+    if not sync_local_to_online_enabled(addon):
+        return
+    if online_lookup_enabled:
+        remote_for_sync = list(remote_list or [])
+    else:
+        remote_for_sync = probe_remote_segments_for_sync(
+            playback_type, segment_monitor, segment_player
+        )
+    on_local_to_online_sync_check(
+        path, playback_type, local_list, remote_for_sync, segment_monitor
+    )
+
+
 def hms_to_seconds(hms):
     h, m, s = hms.strip().split(":")
     return int(h) * 3600 + int(m) * 60 + float(s)
@@ -411,6 +446,7 @@ def _parse_source_segments_uncached(
     segment_monitor,
     segment_player,
     on_remote_segments_saved,
+    on_local_to_online_sync_check=None,
 ):
     """Read/select segment sources. Per-time filtering/linking remains in parse_and_process_segments.
 
@@ -509,6 +545,18 @@ def _parse_source_segments_uncached(
                 _src_tags,
             )
         )
+        _invoke_local_to_online_sync(
+            path,
+            playback_type,
+            local_list,
+            local_file_found,
+            tv_online,
+            remote_list,
+            segment_monitor,
+            segment_player,
+            on_local_to_online_sync_check,
+            addon,
+        )
 
     elif playback_type == "movie":
         movie_local = addon_get_bool(addon, "movie_use_local_chapter_edl", True)
@@ -601,6 +649,18 @@ def _parse_source_segments_uncached(
                 _src_tags_m,
             )
         )
+        _invoke_local_to_online_sync(
+            path,
+            playback_type,
+            local_list,
+            local_file_found,
+            movie_online,
+            remote_list,
+            segment_monitor,
+            segment_player,
+            on_local_to_online_sync_check,
+            addon,
+        )
     else:
         pxml = parse_chapters(path, segment_monitor=segment_monitor)
         if pxml:
@@ -626,6 +686,7 @@ def get_cached_source_segments(
     segment_monitor,
     segment_player,
     on_remote_segments_saved,
+    on_local_to_online_sync_check=None,
     sidecar_mtime_check_interval,
 ):
     addon = get_addon()
@@ -666,6 +727,7 @@ def get_cached_source_segments(
         segment_monitor,
         segment_player,
         on_remote_segments_saved,
+        on_local_to_online_sync_check,
     )
     sidecar_sig_after = _sidecar_signature(path)
     segment_monitor.segment_parse_cache = {
