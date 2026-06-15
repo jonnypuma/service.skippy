@@ -159,10 +159,14 @@ Enable **Segment Editor** under its own settings category (below **Segment Marke
 Editor saves use **`userdata/keymaps/skippy_editor.xml`** — independent of the marker keymap. Use **Discover remote button (editor)** and **Update editor keymap now** in the editor category. Optional **Full-screen dark overlay** dims the video behind the editor panel.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`**.
 =======
 Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`** (as with the old `service.segmenteditor` add-on).
 >>>>>>> 6886271f432f9087a7b4c899c0da7086b7e95424
+=======
+Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`**.
+>>>>>>> facb69fedd9d0f8ebe086791dc4b22f94d59f40c
 
 ---
 
