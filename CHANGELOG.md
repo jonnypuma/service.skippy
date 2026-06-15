@@ -8,7 +8,7 @@
 ## [3.7.6] - 2026-05-29
 
 ### Removed
-- **Orphan ``resources/textures/white.png``**: Leftover from the removed Segment Marker pending chip (3.3.28). All UI uses ``resources/skins/default/media/white.png`` via skin XML and ``addon_skin_media()``.
+- **Orphan ``resources/textures/white.png``**: Leftover from the removed Segment Marker pending on-screen chip. All UI uses ``resources/skins/default/media/white.png`` via skin XML and ``addon_skin_media()``.
 
 ## [3.7.5] - 2026-05-29
 
