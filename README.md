@@ -32,6 +32,7 @@ service.skippy/
 ├── addon.xml
 ├── README.md
 ├── service.py
+├── segment_marker.py                          # Segment Marker (RunScript entry + marker UX)
 ├── skipdialog.py
 ├── segment_item.py
 ├── settings_utils.py
@@ -104,9 +105,8 @@ Third-party skins—and sometimes **individual colour schemes** within those ski
 - Label logic allows fine-grained control: `"intro"`, `"recap"`, `"ads"`, etc.
 - Platform-agnostic compatibility: Works seamlessly across Android, Windows, CoreELEC, and Linux.
 - Progress Bar Display toggle: Progress bar which fills up until end of segment. On/off toggle available under settings.
-- Skip Dialog Placement: Choose dialog layout position (Bottom Right, Top Right, Top Left, Bottom Left) — separate positions for **Full** and **Minimal** mode.
-- **Full** vs **Minimal** skip UI: Full = classic panel (icons, optional Close, progress bar). Minimal = small plate + Skip only; font color and plate style are configurable.
-- **Skip dialog font color**: Stored preset (**Skip dialogue font colour** under Playback) is published as **`Window.Property(skip_dialog_text_color)`** and applied in WindowXML (**`$INFO[...]`** on Full / Minimal dialogs) so **focus** does not fight Python; label text is still updated from code.
+- Skip dialog modes: **Full** (panel with optional Close, progress bar, icons) or **Minimal** (small corner chip + Skip only). Separate corner placement per mode. See **Skip dialog modes** below.
+- **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied via **`Window.Property(skip_dialog_text_color)`** in bundled WindowXML (see **Skip dialog modes**).
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
@@ -146,17 +146,19 @@ For remotes, use **Remote marker button** in the same settings category. You can
 
 Skippy writes these choices to Kodi userdata at `userdata/keymaps/skippy_marker.xml` for `global`, `FullscreenVideo`, `VideoOSD`, and `VideoMenu`, then reloads keymaps when settings change. That lets the marker work both during fullscreen playback and while the video OSD is open. You can also run **Update marker keymap now** from the settings screen after manual edits.
 
+Press the marker hotkey once to set **start**, then again for **end**, then choose a segment type and save. While you are between presses, Skippy shows short **Kodi notifications** (about two seconds) with the marked time — not a persistent on-screen chip. Toggle that feedback under **Toast Notifications → Enable toast notifications for segment marker**; the same setting covers cancel toasts when you back out before saving.
+
 When saving marked segments, **How to save marked segments** controls how Skippy combines a new marker range with existing sidecar entries: merge only when non-overlapping, remove overlapping entries first, append anyway, replace the file, or ask each time. In **Ask each time** mode, Skippy shows the save-method picker only when at least one sidecar selected by **Save format** already exists; otherwise it goes straight to segment type selection. When shown, the picker includes an overlap warning when needed. **Back up files before marker save** follows **Save format**: EDL only backs up `.edl`, Chapters XML only backs up chapter XML, and Both backs up both existing files to `*.bck`.
 
 ---
 
-## Segment Editor (v2.0+)
+## Segment Editor
 
 Enable **Segment Editor** under its own settings category (below **Segment Marker**). While a video is playing, use the configured shortcut (**CTRL+SHIFT+E** by default) or remote to open the editor. Label pick lists come from **Segment keywords to watch for** (`custom_segment_keywords`); EDL types use **`edl_action_mapping`** from **Segment Settings**.
 
-Editor saves use **`userdata/keymaps/skippy_editor.xml`** — independent of the marker keymap. Use **Discover remote button (editor)** and **Update editor keymap now** in the editor category. Optional **Full-screen dark overlay** matches the legacy editor behavior.
+Editor saves use **`userdata/keymaps/skippy_editor.xml`** — independent of the marker keymap. Use **Discover remote button (editor)** and **Update editor keymap now** in the editor category. Optional **Full-screen dark overlay** dims the video behind the editor panel.
 
-Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`** (as with the old `service.segmenteditor` add-on).
+Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`**.
 
 ---
 
@@ -191,6 +193,44 @@ Before creating the ask dialog, the service sleeps **300 ms** once (`service.py`
 
 - **Lowering** the delay (source change): prompt appears sooner, but duplicate-dialog or focus glitches become more likely.
 - **Raising** it: fewer races, but the user waits slightly longer every time an ask fires.
+
+---
+
+## Skip dialog modes
+
+Choose **Skip dialog mode** under **Customize Skip Dialog Look and Behavior** — **Full** or **Minimal**. Each mode has its own **dialog placement** setting (bottom/top × left/right).
+
+### Full mode
+
+Classic panel: optional skip/close icons, **Skip** and **Close** buttons, optional progress bar, optional **Segment ending in:** countdown, and optional **next jump** hint line. **Hide Close Button** and related toggles apply here only (not Minimal).
+
+Focus textures for skip/close buttons and the progress bar **midtexture** are patched from settings when the dialog opens (`service_skip_dialog_skin.py`), same pattern as **Button focus style** and **Progress bar style**.
+
+### Minimal mode
+
+Small corner **chip** only: background plate (**Minimal plate style**) plus one **Skip** button — no progress bar, Close control, or skip/close icons.
+
+- **Dismiss**: **Back** / **ESC** declines the skip (same as Close in Full mode). The dialog also closes automatically when playback reaches the segment end (no skip performed).
+- **Layout**: Bundled skins use the **720p** coordinate grid. Chip size is **120×46** (skin coordinates); each corner template insets the group slightly from the screen edge so the chip is not clipped.
+- **Skin templates**: `Minimal_Skip_Dialog_BottomRight.xml`, `Minimal_Skip_Dialog_BottomLeft.xml`, `Minimal_Skip_Dialog_TopRight.xml`, `Minimal_Skip_Dialog_TopLeft.xml` under `resources/skins/default/720p/` (1080i variants scale from the same layout). Before opening the dialog, the service patches plate image control **3021** and skip-button focus texture **3012** from **Minimal plate style** (same idea as Full-mode button focus patching).
+
+### Skip dialogue font colour
+
+**Skip dialogue font colour** (Playback behavior) offers named presets — white, light grey, grey, dark grey, black, blue, red, green, aquamarine, pink, purple, peach, orange, yellow — with values stored as **ARGB hex** in settings for consistent reads across Kodi builds.
+
+On dialog open, `skipdialog.py` publishes the resolved colour as **`Window.Property(skip_dialog_text_color)`**. Full and Minimal WindowXML bind **`textcolor`** / **`textcolorfocus`** to **`$INFO[Window.Property(skip_dialog_text_color)]`**. Python only updates label **text** (`setLabel` without colour arguments) so focus and skin rendering stay stable. Full mode: the **next-jump** line is control **3011**; the **Segment ending in:** / countdown line is control **2**, refreshed as playback time updates.
+
+---
+
+## Sidecar resolution at playback start
+
+Skippy must resolve the on-disk video path before it can load `.edl` / `chapters.xml` sidecars. During startup and buffering, Kodi sometimes reports video before playback is fully active:
+
+- **`get_video_file()`** treats **`Player.HasVideo`** like active playback when calling **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so sidecar parsing can start while Kodi is still starting the player.
+- **`Player.GetItem`** (JSON-RPC) no longer requires **title** / **label** to be present; if metadata is still loading, **file**-based heuristics still run (**SxxExx**, standalone **Exx** in the path, etc.) to infer movie vs episode for dialog and toast settings.
+- If JSON-RPC fails or returns an empty item, **playback type** falls back from the **resolved video path** so segment parsing and skip-dialog enablement are not skipped for the whole session.
+
+Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing missing sidecars on first play.
 
 ---
 
@@ -240,7 +280,11 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | progress_bar_height | Full mode: progress bar height (**slider** **5–32** px, default **16**). |
 | smooth_progress_bar | Full mode (Advanced): smoother bar motion via higher refresh + easing; default off — disable if stutter on slow devices |
 | progress_bar_updates_per_second | Full mode (Advanced): when smooth progress is on, updates per second (**2–120**, default **4**, same as legacy 0.25 s interval) |
-| skip_dialog_position | Chooses layout position for the skip confirmation dialog |
+| skip_dialog_mode | **Full** (panel) or **Minimal** (corner chip + Skip only) |
+| skip_dialog_position | Corner placement for **Full** mode skip dialog |
+| minimal_skip_dialog_position | Corner placement for **Minimal** mode chip |
+| minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (patched into skin XML before open) |
+| skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied via `Window.Property(skip_dialog_text_color)` in bundled XML |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
@@ -259,6 +303,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | show_not_found_toast_for_tv_episodes | Enable Missing Segment File Toast for TV Episodes |
 | show_toast_for_overlapping_nested_segments | Enable overlapping segment toast if found in segment file |
 | show_toast_for_skipped_segment | Enable toast notification for skipped segment |
+| show_toast_for_segment_marker | Enable toast notifications for segment marker (start/end times and cancel) |
 
 | Category: | Debug Logging |
 | ----------------------------- | ---------------------------------------------------------------- |
