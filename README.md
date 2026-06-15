@@ -160,28 +160,6 @@ Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_butt
 
 ---
 
-## Release notes
-
-### v1.0.17 (April 2026)
-
-**Minimal skip dialog**
-
-- **Minimal mode** is a small corner chip only: background plate (**Minimal plate style**) plus one **Skip** button—no progress bar, Close control, or skip/close icons. Dismiss with **Back** / **ESC**; the dialog still closes when the segment ends.
-- Layout follows the **720p** skin grid so the chip stays on-screen. Chip size **120×46** (skin coordinates); bottom/top right variants are offset inward so the chip is not clipped at the screen edge.
-- Skin templates: `Minimal_Skip_Dialog_BottomRight.xml`, `Minimal_Skip_Dialog_BottomLeft.xml`, `Minimal_Skip_Dialog_TopRight.xml`, `Minimal_Skip_Dialog_TopLeft.xml` in `resources/skins/default/720p/`. The service patches plate and skip-button focus textures from settings (same pattern as Full mode button focus textures).
-
-**Skip dialog font color**
-
-- **Skip dialog font color** (Playback behavior) offers named presets—white, light/dark grey, black, blue, red, green, aquamarine, pink, purple, peach, orange, yellow—with values stored as **ARGB hex** (`optionvalues`) for consistent reads across Kodi builds.
-- Colors are applied in **`skipdialog.py`** via **`Control.setLabel`** with explicit text and shadow colors, because `$INFO[Window.Property(…)]` inside `textcolor` / `textcolorfocus` is unreliable for **WindowXML** script dialogs on many builds. Skin XML keeps static fallbacks. Full mode: **next-jump** line control id **3011**; **countdown** line id **2** is refreshed as playback time updates.
-
-**Playback and segment file detection**
-
-- **`get_video_file()`** treats **`Player.HasVideo`** like active playback when resolving **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so **chapters.xml** / **.edl** resolve during startup when Kodi reports video before playback is fully started.
-- **JSON-RPC `Player.GetItem`** no longer discards the item when **title** is temporarily missing; **file**-based inference still runs. If JSON-RPC fails, **playback type** falls back from the **resolved video path** so segment parsing is not skipped.
-
----
-
 ## Play the Video
 Start playback of MyMovie.mkv in Kodi. Skippy will:
 
