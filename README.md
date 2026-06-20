@@ -134,6 +134,8 @@ Under **Segment sources**, **TV episodes** and **Movies** each have **online API
 
 **Segment source priority** (label **Prefer when both local and online are enabled**, under TV episodes and Movies): **Local first** (default) or **Online first**. When both local sidecars and online lookup are on, Skippy uses the preferred source when it has data, otherwise the other. **Local first** serves sidecar segments during playback right away (online lookup can run later). **Online first** waits for TheIntroDB / IntroDB network calls before the first skip dialog can show — usually a few seconds, and **up to about 10 seconds** on a cold start or slow network. Use **Local first** if you care about the recap/intro prompt appearing as soon as playback starts.
 
+With **Local first** and a local sidecar, online APIs are still queried **in the background** (when online lookup is enabled) so **Save online segments** and **Sync local → online** can run after playback starts without delaying the first skip dialog. Skip/ask behavior during that session still uses the local sidecar.
+
 **Seconds to pause remote API calls after errors** (same category) sets the **base** backoff per host (TheIntroDB, IntroDB.app, TMDB). After errors, wait time **doubles** on repeated failures (capped at one hour) until a call succeeds. **HTTP 429** responses may carry a **`Retry-After`** header; when the server sends it (as seconds), Skippy honors that wait (still capped). **HTTP 404** does not trigger backoff.
 
 ---

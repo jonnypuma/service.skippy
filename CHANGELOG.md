@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.7.8] - 2026-05-29
+
+### Added
+- **Local first — background online probe**: When **Local first** and a local sidecar are in use, online segment lookup still runs in a **background thread** after parse so **Save online segments** and **Sync local → online** work without blocking the first skip dialog. Results apply on the main service thread when no skip/editor/marker modal is open.
+
+### Fixed
+- **Sync local → online**: When online lookup is enabled but the dialog path had no remote data yet, sync now **probes online APIs** instead of comparing against an empty remote list (which could over-prompt for upload).
+
 ## [3.7.7] - 2026-05-29
 
 ### Fixed

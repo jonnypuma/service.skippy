@@ -1,5 +1,6 @@
 import os
 import time
+import threading
 import platform
 import json
 import re
@@ -36,6 +37,10 @@ from segment_editor_utils import set_editor_modal_open
 from service_online_sidecar_save import (
     maybe_save_online_segments_to_chapters_xml as _maybe_save_online_segments_to_chapters_xml_impl,
     maybe_save_online_segments_to_sidecars as _maybe_save_online_segments_to_sidecars_impl,
+)
+from service_deferred_remote_probe import (
+    clear_deferred_remote_probe_state,
+    process_deferred_remote_probe,
 )
 from service_local_to_online_sync import maybe_prompt_sync_local_to_online
 from service_sidecar_paths import local_chapter_or_edl_file_exists
@@ -99,6 +104,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.local_to_online_sync_suppressed_path = None
         clear_prefetch_segment_cache()
         self.prefetch_tv_scheduled_path = None
+        self.deferred_remote_probe_lock = threading.Lock()
+        clear_deferred_remote_probe_state(self)
 
     def onNotification(self, sender, method, data):
         """Open segment editor when triggered via JSON-RPC NotifyAll (legacy: service.segmenteditor)."""
@@ -1009,6 +1016,7 @@ while not monitor.abortRequested():
                                     monitor.online_sidecar_save_prompt_suppressed_path = None
                                     monitor.local_to_online_sync_suppressed_path = None
                                     monitor.prefetch_tv_scheduled_path = None
+                                    clear_deferred_remote_probe_state(monitor)
                                     log(f"✅ Replay state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
                         except RuntimeError:
                             log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -1057,6 +1065,7 @@ while not monitor.abortRequested():
                                 monitor.online_sidecar_save_prompt_suppressed_path = None
                                 monitor.local_to_online_sync_suppressed_path = None
                                 monitor.prefetch_tv_scheduled_path = None
+                                clear_deferred_remote_probe_state(monitor)
                                 # Clear log cache on new video to allow re-logging
                                 monitor._last_log_state.clear()
                                 log(f"✅ New video state cleared - recently_dismissed now has {len(monitor.recently_dismissed)} items")
@@ -1790,6 +1799,22 @@ while not monitor.abortRequested():
 
         # Update last_time at the end of each main loop cycle for next iteration's rewind detection
         monitor.last_time = current_time
+
+        if video and playback_type:
+            try:
+                process_deferred_remote_probe(
+                    monitor,
+                    video,
+                    playback_type,
+                    maybe_save_online_segments_to_sidecars,
+                    maybe_prompt_sync_local_to_online,
+                    player,
+                )
+            except Exception as exc:
+                log_service_detail(
+                    "deferred remote probe apply failed: %s" % exc,
+                    tag="remote_probe",
+                )
 
 
     if monitor.waitForAbort(CHECK_INTERVAL):

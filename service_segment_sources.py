@@ -16,6 +16,7 @@ from remote_segments import (
 from segment_editor_parser import dedupe_overlapping_same_label_segments, normalize_matroska_chapter_xml_text
 from segment_item import SegmentItem
 from service_online_policy import _normalize_segment_source_priority
+from service_deferred_remote_probe import schedule_deferred_remote_probe
 from service_segment_prefetch import schedule_tv_successor_prefetch
 from service_sidecar_paths import (
     _chapter_xml_paths_to_try,
@@ -62,8 +63,8 @@ def _invoke_local_to_online_sync(
         return
     if not sync_local_to_online_enabled(addon):
         return
-    if online_lookup_enabled:
-        remote_for_sync = list(remote_list or [])
+    if remote_list:
+        remote_for_sync = list(remote_list)
     else:
         remote_for_sync = probe_remote_segments_for_sync(
             playback_type, segment_monitor, segment_player
@@ -500,6 +501,14 @@ def _parse_source_segments_uncached(
             log(
                 "📺 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
+            schedule_deferred_remote_probe(
+                segment_monitor,
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                segment_player,
+            )
 
         if priority == "OnlineFirst":
             parsed = remote_list if remote_list else local_list
@@ -544,18 +553,19 @@ def _parse_source_segments_uncached(
                 _src_tags,
             )
         )
-        _invoke_local_to_online_sync(
-            path,
-            playback_type,
-            local_list,
-            local_file_found,
-            tv_online,
-            remote_list,
-            segment_monitor,
-            segment_player,
-            on_local_to_online_sync_check,
-            addon,
-        )
+        if not defer_remote:
+            _invoke_local_to_online_sync(
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                tv_online,
+                remote_list,
+                segment_monitor,
+                segment_player,
+                on_local_to_online_sync_check,
+                addon,
+            )
 
     elif playback_type == "movie":
         movie_local = addon_get_bool(addon, "movie_use_local_chapter_edl", True)
@@ -603,6 +613,14 @@ def _parse_source_segments_uncached(
             log(
                 "🎬 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
+            schedule_deferred_remote_probe(
+                segment_monitor,
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                segment_player,
+            )
 
         if priority == "OnlineFirst":
             parsed = remote_list if remote_list else local_list
@@ -647,18 +665,19 @@ def _parse_source_segments_uncached(
                 _src_tags_m,
             )
         )
-        _invoke_local_to_online_sync(
-            path,
-            playback_type,
-            local_list,
-            local_file_found,
-            movie_online,
-            remote_list,
-            segment_monitor,
-            segment_player,
-            on_local_to_online_sync_check,
-            addon,
-        )
+        if not movie_defer_remote:
+            _invoke_local_to_online_sync(
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                movie_online,
+                remote_list,
+                segment_monitor,
+                segment_player,
+                on_local_to_online_sync_check,
+                addon,
+            )
     else:
         pxml = parse_chapters(path, segment_monitor=segment_monitor)
         if pxml:
