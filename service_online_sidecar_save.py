@@ -1,4 +1,5 @@
 """Merge or update online segments into local sidecars; write chapters.xml / EDL."""
+from __future__ import annotations
 
 import os
 import xml.etree.ElementTree as ET

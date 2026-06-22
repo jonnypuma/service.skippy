@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.7.9] - 2026-06-21
+
+### Fixed
+- **Kodi v21 startup crash on Windows**: `service_online_sidecar_save.py` used PEP 604 type hints (`str | None`) without deferred annotation evaluation; Kodi’s embedded Python 3.8/3.9 evaluates those at import time and raised `TypeError`. Added `from __future__ import annotations` to match other service modules.
+
 ## [3.7.8] - 2026-05-29
 
 ### Added
