@@ -31,7 +31,9 @@ When **Save online segments** is enabled, fetched lookup ranges can be written n
 service.skippy/
 ├── addon.xml
 ├── README.md
-├── service.py
+├── service.py                                 # Kodi service entry + monitor helpers
+├── service_main_loop.py                       # Playback monitor loop (single source of truth)
+├── service_segment_processing.py              # Parse, filter, link segments for playback
 ├── segment_marker.py                          # Segment Marker (RunScript entry + marker UX)
 ├── skipdialog.py
 ├── segment_item.py
@@ -138,6 +140,12 @@ With **Local first** and a local sidecar, online APIs are still queried **in the
 
 **Seconds to pause remote API calls after errors** (same category) sets the **base** backoff per host (TheIntroDB, IntroDB.app, TMDB). After errors, wait time **doubles** on repeated failures (capped at one hour) until a call succeeds. **HTTP 429** responses may carry a **`Retry-After`** header; when the server sends it (as seconds), Skippy honors that wait (still capped). **HTTP 404** does not trigger backoff.
 
+**Save online segments** (under **Online segments sidecar**) writes fetched windows to disk using your chosen format and overwrite/merge/update policies.
+
+**Sync local → online** (Expert → **Upload**): when enabled (**Ask**), Skippy compares your local sidecar to online data during playback and can prompt once per title to upload segment types that exist locally but not online (requires upload API keys and **Enable upload**). With **Local first**, online data is fetched in the background so this comparison uses real remote results without delaying skip dialogs.
+
+**Prefetch next episode** (Advanced, **Online segments sidecar**): when **Segment source priority** is **Online first** and TV online lookup is on, Skippy pre-fetches merged online segments for the **library** successor episode (next in season, or first episode of the next season) so the next file can start with data ready. Requires a matching path and IDs on handoff — not used with **Local first**.
+
 ---
 
 ## Segment Marker hotkey and remote button
@@ -159,6 +167,10 @@ When saving marked segments, **How to save marked segments** controls how Skippy
 Enable **Segment Editor** under its own settings category (below **Segment Marker**). While a video is playing, use the configured shortcut (**CTRL+SHIFT+E** by default) or remote to open the editor. Label pick lists come from **Segment keywords to watch for** (`custom_segment_keywords`); EDL types use **`edl_action_mapping`** from **Segment Settings**.
 
 Editor saves use **`userdata/keymaps/skippy_editor.xml`** — independent of the marker keymap. Use **Discover remote button (editor)** and **Update editor keymap now** in the editor category. Optional **Full-screen dark overlay** dims the video behind the editor panel.
+
+**Embedded chapters**: If no sidecar exists, **Use embedded chapters fallback** (Segment Settings) lets playback use Matroska chapters from the file when they match your keywords. In the editor, opening with no segments can offer to **import embedded chapters** from the current file.
+
+**Overlapping segments**: With **Ignore overlapping segments** off, **Open Segment Editor when overlaps are detected** (Segment Settings) can launch the editor once per file when overlapping or nested segments remain after parse. Per-row **Fix overlap** in the editor trims the selected segment manually.
 
 Advanced: `RunScript(service.skippy,open_segment_editor)`, `discover_editor_button`, and `install_editor_keymap` are supported the same way as marker script arguments (see `segment_marker.py` dispatch). External automation can also broadcast an IPC message containing **`open_segment_editor`**.
 
@@ -191,9 +203,9 @@ Segments are marked **prompted** as they are handled so the same interval is not
 
 ## Ask dialog debounce
 
-Before creating the ask dialog, the service sleeps **300 ms** once (`service.py`; not exposed in settings). That **debounce** soaks up rapid re-entries from the ~1 s loop and overlapping edge cases, and gives Kodi a moment to settle **focus and input**, which reduces stacked or duplicate modals on some skins and devices.
+Before creating the ask dialog, the service waits **`ask_dialog_debounce_ms`** once (default **300**, range **0–500** under **Playback → Global options**). That debounce soaks up rapid re-entries from the ~1 s loop and overlapping edge cases, and gives Kodi a moment to settle **focus and input**, which reduces stacked or duplicate modals on some skins and devices.
 
-- **Lowering** the delay (source change): prompt appears sooner, but duplicate-dialog or focus glitches become more likely.
+- **Lowering** the value (including **0**): prompt appears sooner; duplicate-dialog or focus glitches become more likely on some devices.
 - **Raising** it: fewer races, but the user waits slightly longer every time an ask fires.
 
 ---
@@ -231,6 +243,7 @@ Skippy must resolve the on-disk video path before it can load `.edl` / `chapters
 - **`get_video_file()`** treats **`Player.HasVideo`** like active playback when calling **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so sidecar parsing can start while Kodi is still starting the player.
 - **`Player.GetItem`** (JSON-RPC) no longer requires **title** / **label** to be present; if metadata is still loading, **file**-based heuristics still run (**SxxExx**, standalone **Exx** in the path, etc.) to infer movie vs episode for dialog and toast settings.
 - If JSON-RPC fails or returns an empty item, **playback type** falls back from the **resolved video path** so segment parsing and skip-dialog enablement are not skipped for the whole session.
+- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords.
 
 Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing missing sidecars on first play.
 
@@ -273,6 +286,10 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | ignore_internal_edl_actions | Ignore internal EDL action types not in mapping (default: true) |
 | edl_action_mapping | Map .edl action codes to skip labels (e.g. 4:intro,5:credits) |
 | skip_overlapping_segments | Ignore overlapping segments to help avoid redundant or conflicting skips |
+| use_embedded_chapters_fallback | When no sidecar/online segments, use embedded Matroska chapters that match keywords |
+| open_segment_editor_on_overlap | Open Segment Editor once per file when overlaps/nesting remain (requires editor enabled; **Ignore overlapping segments** off) |
+| tv_prefetch_next_episode | **Online first** only: prefetch online segments for the library next TV episode |
+| sync_local_to_online | Expert upload: **Ask** to upload local segment types missing online (requires upload keys) |
 
 | Category: | Customize Skip Dialog Look and Behavior |
 | ----------------------------- | ------------------------------------------------------------------------------- |
@@ -296,6 +313,8 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | enable_skip_movies | Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies (default: true) |
 | enable_skip_episodes | Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes (default: true) |
 | rewind_threshold_seconds | Threshold for detecting rewind and clearing dialog suppression states |
+| ask_dialog_debounce_ms | Milliseconds before opening an Ask skip dialog (**0–500**, default **300**) |
+| skip_jump_offset_seconds | Seconds added/subtracted when seeking past a segment (Auto or confirmed Ask) |
 | show_skip_dialog_movies | Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled (default: true) |
 | show_skip_dialog_episodes | Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled (default: true) |
 
@@ -716,7 +735,7 @@ If your .edl file contains:
 0.0 90.0 9
 And action code 9 maps to "Recap", and "Recap" is mapped to the "Ask to skip" setting, you'll be prompted to skip it.
 
-Just before the dialog opens, Skippy waits **300 ms** (internal debounce; see **Ask dialog debounce** above) so the prompt is not double-fired from rapid loop ticks.
+Just before the dialog opens, Skippy waits **`ask_dialog_debounce_ms`** (see **Ask dialog debounce** above) so the prompt is not double-fired from rapid loop ticks.
 
 ### Never skip example
 If your segment label is "Credits" and you've mapped "Credits" to the "Never skip" setting, playback continues uninterrupted with no skip popup.

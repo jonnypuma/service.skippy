@@ -404,6 +404,7 @@ def log_playback_settings_snapshot(addon=None):
             "ignore_internal_edl_actions=%s" % bo("ignore_internal_edl_actions", True),
             "rewind_threshold_seconds=%s" % ni("rewind_threshold_seconds", 8),
             "skip_jump_offset_seconds=%s" % ni("skip_jump_offset_seconds", 0),
+            "ask_dialog_debounce_ms=%s" % ni("ask_dialog_debounce_ms", 300),
             "skip_dialog_mode=%s" % tx("skip_dialog_mode", "Full"),
             "skip_dialog_positions_full_minimal=%s" % positions,
             "show_progress_bar=%s" % bo("show_progress_bar", True),

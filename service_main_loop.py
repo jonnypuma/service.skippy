@@ -48,6 +48,8 @@ class ServiceLoopBindings:
     is_nested_segment: Callable[..., bool]
     skip_dialog_layout_suffix: Callable[..., str]
     warm_skip_dialog_skin_textures: Callable[..., None]
+    process_deferred_remote_probe: Callable[..., None]
+    clear_deferred_remote_probe_state: Callable[..., None]
 
 
 def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
@@ -163,6 +165,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                         ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
                                         ctx.monitor.local_to_online_sync_suppressed_path = None
                                         ctx.monitor.prefetch_tv_scheduled_path = None
+                                        ctx.clear_deferred_remote_probe_state(ctx.monitor)
                                         log(f"✅ Replay state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
                             except RuntimeError:
                                 log(f"🔕 CRITICAL: Cannot verify pause state during replay - NOT clearing recently_dismissed to prevent clearing on pause")
@@ -211,6 +214,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                                     ctx.monitor.online_sidecar_save_prompt_suppressed_path = None
                                     ctx.monitor.local_to_online_sync_suppressed_path = None
                                     ctx.monitor.prefetch_tv_scheduled_path = None
+                                    ctx.clear_deferred_remote_probe_state(ctx.monitor)
                                     # Clear log cache on new video to allow re-logging
                                     ctx.monitor._last_log_state.clear()
                                     log(f"✅ New video state cleared - recently_dismissed now has {len(ctx.monitor.recently_dismissed)} items")
@@ -808,8 +812,12 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     
                     ctx.monitor.skip_dialog_modal_active = True
                     try:
-                        log("🛑 Debouncing skip dialog for 300ms")
-                        xbmc.sleep(300)
+                        debounce_ms = addon_get_int(
+                            addon, "ask_dialog_debounce_ms", 300, minimum=0, maximum=500
+                        )
+                        if debounce_ms > 0:
+                            log("🛑 Debouncing skip dialog for %dms" % debounce_ms)
+                            xbmc.sleep(debounce_ms)
     
                         dialog_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip()
                         if dialog_mode == "Minimal":
@@ -969,7 +977,15 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     
             # Update last_time at the end of each main loop cycle for next iteration's rewind detection
             ctx.monitor.last_time = current_time
-    
-    
+
+            if video and playback_type:
+                try:
+                    ctx.process_deferred_remote_probe(video, playback_type)
+                except Exception as exc:
+                    log_service_detail(
+                        "deferred remote probe apply failed: %s" % exc,
+                        tag="remote_probe",
+                    )
+
         if ctx.monitor.waitForAbort(ctx.check_interval):
             log("🛑 Abort requested — exiting monitor loop")

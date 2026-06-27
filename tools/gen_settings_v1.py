@@ -291,6 +291,18 @@ def main():
         step=1,
         slider=True,
     )
+    int_setting(
+        g,
+        "ask_dialog_debounce_ms",
+        2,
+        "32097",
+        "32098",
+        300,
+        minimum=0,
+        maximum=500,
+        step=10,
+        slider=True,
+    )
     bool_setting(g, "enable_skip_movies", 0, "32010", "32087", True)
     bool_setting(
         g,

@@ -256,6 +256,14 @@ msgctxt "#32092"
 msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
 msgstr "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
 
+msgctxt "#32097"
+msgid "Ask dialog debounce (ms)"
+msgstr "Ask dialog debounce (ms)"
+
+msgctxt "#32098"
+msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
+msgstr "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
+
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
 msgstr "Use local chapter / EDL files"

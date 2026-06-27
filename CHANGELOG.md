@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.0.0] - 2026-06-22
+
+### Changed
+- **Service architecture**: Playback monitor loop lives in **`service_main_loop.py`** only; **`service.py`** is the Kodi entry (monitor, helpers, bindings). Segment parse/link logic uses **`service_segment_processing.py`** (no duplicate implementations in the entry module).
+- **Ask dialog debounce**: New setting **`ask_dialog_debounce_ms`** (**0–500**, default **300**) under **Playback → Global options** replaces the hard-coded 300 ms delay before Ask dialogs open.
+
+### Added
+- **README**: Documents **Sync local → online**, **Prefetch next episode**, **embedded chapters fallback**, **Open Segment Editor when overlaps are detected**, and the debounce setting.
+
 ## [3.7.9] - 2026-06-21
 
 ### Fixed

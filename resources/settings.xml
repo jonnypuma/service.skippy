@@ -172,6 +172,18 @@
                         <popup>false</popup>
                     </control>
                 </setting>
+                <setting id="ask_dialog_debounce_ms" type="integer" label="32097" help="32098">
+                    <level>2</level>
+                    <default>300</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <maximum>500</maximum>
+                        <step>10</step>
+                    </constraints>
+                    <control type="slider" format="integer">
+                        <popup>false</popup>
+                    </control>
+                </setting>
                 <setting id="enable_skip_movies" type="boolean" label="32010" help="32087">
                     <level>0</level>
                     <default>true</default>
