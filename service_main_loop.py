@@ -294,16 +294,91 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                 continue
     
             # Only parse segments when NOT paused
+            if video and playback_type:
+                try:
+                    ctx.process_deferred_remote_probe(video, playback_type)
+                except Exception as exc:
+                    log_service_detail(
+                        "deferred remote probe apply failed: %s" % exc,
+                        tag="remote_probe",
+                    )
+
             if not playback_type:
                 log("⚠ Playback type not detected — skipping segment parsing")
                 ctx.monitor.current_segments = []
             else:
                 # CRITICAL: Only call parse_and_process_segments when NOT paused
                 # This prevents toast spamming when paused
+                parse_started = time.time()
                 ctx.monitor.current_segments = ctx.parse_and_process_segments(
                     video, current_time, playback_type
                 ) or []
+                parse_elapsed_ms = int((time.time() - parse_started) * 1000)
                 log(f"📦 Parsed {len(ctx.monitor.current_segments)} segments for playback_type: {playback_type}")
+                try:
+                    refreshed_time = ctx.player.getTime()
+                    if abs(refreshed_time - current_time) > 0.5:
+                        log(
+                            "⏱️ Playhead moved during segment parse "
+                            "(%.2fs → %.2fs, parse took %dms) — using refreshed time"
+                            % (current_time, refreshed_time, parse_elapsed_ms)
+                        )
+                    current_time = refreshed_time
+                    ctx.log_if_changed(
+                        "playback_time", f"⏱️ Playback time: {current_time:.2f}s"
+                    )
+                except RuntimeError:
+                    pass
+
+                if video and playback_type:
+                    parse_cache_before_probe = ctx.monitor.segment_parse_cache
+                    try:
+                        ctx.process_deferred_remote_probe(video, playback_type)
+                    except Exception as exc:
+                        log_service_detail(
+                            "deferred remote probe apply failed: %s" % exc,
+                            tag="remote_probe",
+                        )
+                    deferred_remote_applied = (
+                        parse_cache_before_probe is not None
+                        and ctx.monitor.segment_parse_cache is None
+                    )
+                    stash_ready = getattr(
+                        ctx.monitor, "deferred_remote_playback_stash", None
+                    )
+                    has_playback_stash = (
+                        isinstance(stash_ready, dict)
+                        and stash_ready.get("path") == video
+                        and stash_ready.get("playback_type") == playback_type
+                        and stash_ready.get("remote_list")
+                    )
+                    if deferred_remote_applied or (
+                        not ctx.monitor.current_segments and has_playback_stash
+                    ):
+                        reparsed = ctx.parse_and_process_segments(
+                            video, current_time, playback_type
+                        ) or []
+                        if reparsed:
+                            ctx.monitor.current_segments = reparsed
+                            log(
+                                "📦 Reparsed after deferred remote probe: %d segment(s)"
+                                % len(reparsed)
+                            )
+                            try:
+                                refreshed_time = ctx.player.getTime()
+                                if abs(refreshed_time - current_time) > 0.5:
+                                    log(
+                                        "⏱️ Playhead moved during reparsed segments "
+                                        "(%.2fs → %.2fs) — using refreshed time"
+                                        % (current_time, refreshed_time)
+                                    )
+                                current_time = refreshed_time
+                                ctx.log_if_changed(
+                                    "playback_time",
+                                    f"⏱️ Playback time: {current_time:.2f}s",
+                                )
+                            except RuntimeError:
+                                pass
     
             if not show_dialogs:
                 log(f"🚫 Skip dialogs disabled for {playback_type} — segments will not trigger prompts")
@@ -977,15 +1052,6 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     
             # Update last_time at the end of each main loop cycle for next iteration's rewind detection
             ctx.monitor.last_time = current_time
-
-            if video and playback_type:
-                try:
-                    ctx.process_deferred_remote_probe(video, playback_type)
-                except Exception as exc:
-                    log_service_detail(
-                        "deferred remote probe apply failed: %s" % exc,
-                        tag="remote_probe",
-                    )
 
         if ctx.monitor.waitForAbort(ctx.check_interval):
             log("🛑 Abort requested — exiting monitor loop")

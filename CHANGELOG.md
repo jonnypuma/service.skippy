@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.1] - 2026-06-29
+
+### Fixed
+- **Skip dialog late after blocking parse (3.7.7 regression)**: **`service_main_loop.py`** again re-reads **`player.getTime()`** after segment parse before active-segment / dialog processing, so a multi-second NFS or API parse does not leave a stale playhead from loop start.
+- **Local first without local sidecar**: With **Local first** and online lookup enabled, online APIs always run in a **background thread** (not only when a local sidecar exists). Completed remote segments are stashed and applied on the next parse so the skip dialog can appear as soon as data arrives while playback is still inside the segment.
+
 ## [4.0.0] - 2026-06-22
 
 ### Changed

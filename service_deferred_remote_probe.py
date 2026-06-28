@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Non-blocking online segment probe when Local-first defers the dialog-path fetch.
 
-With **Local first** and a local sidecar, segment parsing uses local data immediately so
-the first skip dialog is not blocked by TheIntroDB / IntroDB network calls. When online
-lookup is enabled, a background thread fetches merged online segments for **Save online
-segments** and **Sync local → online**; results are applied on the main service thread
-when no skip/editor/marker modal is open.
+With **Local first** and online lookup enabled, segment parsing never blocks on TheIntroDB
+/ IntroDB on the dialog path. Local sidecars are used immediately when present; when no
+local sidecar exists, playback starts without waiting and remote segments are stashed for
+the next parse when the background probe completes. The probe also feeds **Save online
+segments** and **Sync local → online**; results apply on the main service thread when no
+skip/editor/marker modal is open.
 """
 from __future__ import annotations
 
@@ -28,6 +29,8 @@ def clear_deferred_remote_probe_state(segment_monitor) -> None:
         segment_monitor.deferred_remote_probe_local_list = None
         segment_monitor.deferred_remote_probe_local_file_found = False
         segment_monitor.deferred_remote_probe_result = None
+        segment_monitor.deferred_remote_playback_stash = None
+        segment_monitor.deferred_remote_probe_completed_path = None
         return
     with lock:
         segment_monitor.deferred_remote_probe_path = None
@@ -35,6 +38,46 @@ def clear_deferred_remote_probe_state(segment_monitor) -> None:
         segment_monitor.deferred_remote_probe_local_list = None
         segment_monitor.deferred_remote_probe_local_file_found = False
         segment_monitor.deferred_remote_probe_result = None
+        segment_monitor.deferred_remote_playback_stash = None
+        segment_monitor.deferred_remote_probe_completed_path = None
+
+
+def stash_deferred_remote_for_playback(
+    segment_monitor, path, playback_type, remote_list
+) -> None:
+    """Hold completed online segments until the next source parse picks them up."""
+    if segment_monitor is None or not path or not playback_type or not remote_list:
+        return
+    segment_monitor.deferred_remote_playback_stash = {
+        "path": path,
+        "playback_type": playback_type,
+        "remote_list": list(remote_list),
+    }
+
+
+def pop_deferred_remote_for_playback(segment_monitor, path, playback_type):
+    """Return and clear stashed online segments for this title, if any."""
+    if segment_monitor is None or not path or not playback_type:
+        return None
+    stash = getattr(segment_monitor, "deferred_remote_playback_stash", None)
+    if not isinstance(stash, dict):
+        return None
+    if stash.get("path") != path or stash.get("playback_type") != playback_type:
+        return None
+    segment_monitor.deferred_remote_playback_stash = None
+    remote_list = stash.get("remote_list") or []
+    return list(remote_list) if remote_list else None
+
+
+def _deferred_probe_already_satisfied(segment_monitor, path) -> bool:
+    if not segment_monitor or not path:
+        return False
+    if getattr(segment_monitor, "deferred_remote_probe_completed_path", None) == path:
+        return True
+    stash = getattr(segment_monitor, "deferred_remote_playback_stash", None)
+    if isinstance(stash, dict) and stash.get("path") == path and stash.get("remote_list"):
+        return True
+    return False
 
 
 def _probe_log_detail(msg: str) -> None:
@@ -62,8 +105,10 @@ def schedule_deferred_remote_probe(
     local_file_found,
     segment_player,
 ):
-    """Start a daemon thread to fetch online segments for sidecar save / sync."""
+    """Start a daemon thread to fetch online segments for playback / save / sync."""
     if not path or not playback_type:
+        return
+    if _deferred_probe_already_satisfied(segment_monitor, path):
         return
     lock = segment_monitor.deferred_remote_probe_lock
     with lock:
@@ -77,10 +122,16 @@ def schedule_deferred_remote_probe(
         segment_monitor.deferred_remote_probe_local_file_found = bool(local_file_found)
         segment_monitor.deferred_remote_probe_result = _PROBE_RUNNING
 
-    log(
-        "🌐 LocalFirst with local sidecar — online probe scheduled in background "
-        "(save/sync; dialog path uses local segments)"
-    )
+    if local_list:
+        log(
+            "🌐 LocalFirst — online probe scheduled in background "
+            "(save/sync; dialog path uses local segments)"
+        )
+    else:
+        log(
+            "🌐 LocalFirst — online probe scheduled in background "
+            "(no local sidecar; dialog when remote data arrives)"
+        )
 
     def _worker():
         remote_list = []
@@ -168,6 +219,25 @@ def process_deferred_remote_probe(
             on_remote_segments_saved(path, remote_list)
         except Exception as exc:
             log("⚠ Deferred probe save callback failed: %s" % exc)
+
+    segment_monitor.deferred_remote_probe_completed_path = path
+
+    if remote_list and not local_list:
+        stash_deferred_remote_for_playback(
+            segment_monitor, path, playback_type, remote_list
+        )
+        segment_monitor.segment_parse_cache = None
+        try:
+            from playback_segment_cache import publish_parse_cache
+
+            publish_parse_cache(None)
+        except Exception:
+            pass
+        segment_monitor.segment_file_found = True
+        _probe_log_detail(
+            "deferred remote stashed for playback (%d segment(s))"
+            % len(remote_list)
+        )
 
     if not local_list or not local_file_found or not on_local_to_online_sync_check:
         return

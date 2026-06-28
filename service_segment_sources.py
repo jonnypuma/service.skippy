@@ -16,7 +16,10 @@ from remote_segments import (
 from segment_editor_parser import dedupe_overlapping_same_label_segments, normalize_matroska_chapter_xml_text
 from segment_item import SegmentItem
 from service_online_policy import _normalize_segment_source_priority
-from service_deferred_remote_probe import schedule_deferred_remote_probe
+from service_deferred_remote_probe import (
+    pop_deferred_remote_for_playback,
+    schedule_deferred_remote_probe,
+)
 from service_segment_prefetch import schedule_tv_successor_prefetch
 from service_sidecar_paths import (
     _chapter_xml_paths_to_try,
@@ -486,7 +489,11 @@ def _parse_source_segments_uncached(
         local_file_found = local_chapter_or_edl_file_exists(path) if tv_local else False
 
         remote_list = []
-        defer_remote = priority == "LocalFirst" and bool(local_list)
+        defer_remote = priority == "LocalFirst" and tv_online
+        if defer_remote and not local_list:
+            remote_list = pop_deferred_remote_for_playback(
+                segment_monitor, path, playback_type
+            ) or []
         if tv_online and not defer_remote:
             try:
                 total_time = segment_player.getTotalTime()
@@ -497,7 +504,19 @@ def _parse_source_segments_uncached(
             )
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-        elif tv_online and defer_remote:
+        elif tv_online and defer_remote and not remote_list:
+            log(
+                "📺 LocalFirst — deferring online segment lookup to background"
+            )
+            schedule_deferred_remote_probe(
+                segment_monitor,
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                segment_player,
+            )
+        elif tv_online and defer_remote and local_list:
             log(
                 "📺 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
@@ -598,7 +617,11 @@ def _parse_source_segments_uncached(
         )
 
         remote_list = []
-        movie_defer_remote = priority == "LocalFirst" and bool(local_list)
+        movie_defer_remote = priority == "LocalFirst" and movie_online
+        if movie_defer_remote and not local_list:
+            remote_list = pop_deferred_remote_for_playback(
+                segment_monitor, path, playback_type
+            ) or []
         if movie_online and not movie_defer_remote:
             try:
                 total_time = segment_player.getTotalTime()
@@ -609,7 +632,19 @@ def _parse_source_segments_uncached(
             )
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-        elif movie_online and movie_defer_remote:
+        elif movie_online and movie_defer_remote and not remote_list:
+            log(
+                "🎬 LocalFirst — deferring online segment lookup to background"
+            )
+            schedule_deferred_remote_probe(
+                segment_monitor,
+                path,
+                playback_type,
+                local_list,
+                local_file_found,
+                segment_player,
+            )
+        elif movie_online and movie_defer_remote and local_list:
             log(
                 "🎬 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
