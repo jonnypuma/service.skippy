@@ -30,7 +30,11 @@ from service_deferred_remote_probe import (
     process_deferred_remote_probe,
 )
 from service_local_to_online_sync import maybe_prompt_sync_local_to_online
-from service_sidecar_paths import local_chapter_or_edl_file_exists
+from service_sidecar_probe_cache import local_sidecar_exists
+from service_playback_context import (
+    _fetch_player_item_via_jsonrpc,
+    evaluate_toast_allowed,
+)
 from service_segment_sources import (
     get_cached_source_segments as _get_cached_source_segments_impl,
 )
@@ -75,9 +79,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.playback_ready_time = 0
         self.play_start_time = 0
         self.last_toast_time = 0
-        self.item_metadata_ready = False
-        self.last_playback_item = None
         self.last_toast_for_file = {}
+        self.sidecar_probe_cache = {}
         self.toast_overlap_shown = False
         self.skipped_to_nested_segment = {}  # Track when we've skipped to nested segments
         self._last_log_state = {}  # Cache for logging state changes only
@@ -177,17 +180,6 @@ def get_video_file():
         path = None
     if not path:
         return None
-
-    log_service_detail(f"🎯 Kodi playback path: {path}", tag="playback")
-    _ga = get_addon()
-    log_service_detail(
-        f"🔧 show_not_found_toast_for_movies: {addon_get_bool(_ga, 'show_not_found_toast_for_movies', False) if _ga else False}",
-        tag="playback",
-    )
-    log_service_detail(
-        f"🔧 show_not_found_toast_for_tv_episodes: {addon_get_bool(_ga, 'show_not_found_toast_for_tv_episodes', False) if _ga else False}",
-        tag="playback",
-    )
 
     if xbmcvfs.exists(path):
         return path
@@ -330,117 +322,22 @@ def infer_playback_type(item):
 
     return "movie"
 
-def should_show_missing_file_toast():
+def should_show_missing_file_toast(item=None, playback_type=None):
+    """
+    Return (toast_allowed, item). When item/type are supplied, skips JSON-RPC
+    (used by the monitor loop playback context cache).
+    """
+    if item is not None and playback_type:
+        allowed = evaluate_toast_allowed(
+            item, playback_type, infer_playback_type=infer_playback_type
+        )
+        return allowed, item
+
     log_service_detail("🚦 Entered should_show_missing_file_toast()", tag="jsonrpc")
-
-    addon = get_addon()
-    show_not_found_toast_for_movies = (
-        addon_get_bool(addon, "show_not_found_toast_for_movies", False) if addon else False
+    fetched_item, allowed = _fetch_player_item_via_jsonrpc(
+        infer_playback_type, log_jsonrpc=True
     )
-    show_not_found_toast_for_tv_episodes = (
-        addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", False) if addon else False
-    )
-
-    query_active = {
-        "jsonrpc": "2.0",
-        "id": "getPlayers",
-        "method": "Player.GetActivePlayers"
-    }
-    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_active)}", tag="jsonrpc")
-    try:
-        response_active = xbmc.executeJSONRPC(json.dumps(query_active))
-    except (TypeError, ValueError, AttributeError) as exc:
-        log_service_detail(
-            "executeJSONRPC(Player.GetActivePlayers) failed: %s" % exc,
-            tag="jsonrpc",
-        )
-        return False, {}
-    log_service_detail(f"📬 JSON-RPC response: {response_active}", tag="jsonrpc")
-    active_result, err_a = parse_kodi_jsonrpc_raw(response_active)
-    if err_a:
-        log_service_detail("Player.GetActivePlayers parse: %s" % err_a, tag="jsonrpc")
-        return False, {}
-    active_players = active_result.get("result", [])
-
-    if not active_players:
-        log("⏳ No active players — retrying after 250ms")
-        xbmc.sleep(250)
-        try:
-            retry_response = xbmc.executeJSONRPC(json.dumps(query_active))
-        except (TypeError, ValueError, AttributeError) as exc:
-            log_service_detail(
-                "executeJSONRPC(Player.GetActivePlayers retry) failed: %s" % exc,
-                tag="jsonrpc",
-            )
-            return False, {}
-        log(f"📬 JSON-RPC retry response: {retry_response}")
-        retry_result, err_r = parse_kodi_jsonrpc_raw(retry_response)
-        if err_r:
-            log_service_detail("Player.GetActivePlayers retry parse: %s" % err_r, tag="jsonrpc")
-            return False, {}
-        active_players = retry_result.get("result", [])
-
-    if not active_players:
-        log_service_detail("🚫 No active video player found — suppressing toast", tag="jsonrpc")
-        return False, {}
-
-    video_player = next((p for p in active_players if p.get("type") == "video"), None)
-    player_id = video_player.get("playerid") if video_player else None
-
-    if player_id is None:
-        log_service_detail("🚫 No video player ID found — suppressing toast", tag="jsonrpc")
-        return False, {}
-
-    query_item = {
-        "jsonrpc": "2.0",
-        "id": "VideoGetItem",
-        "method": "Player.GetItem",
-        "params": {
-            "playerid": player_id,
-            "properties": ["file", "title", "showtitle", "episode"]
-        }
-    }
-    log_service_detail(f"📨 JSON-RPC request: {json.dumps(query_item)}", tag="jsonrpc")
-    try:
-        response_item = xbmc.executeJSONRPC(json.dumps(query_item))
-    except (TypeError, ValueError, AttributeError) as exc:
-        log_service_detail(
-            "executeJSONRPC(Player.GetItem) failed: %s" % exc,
-            tag="jsonrpc",
-        )
-        return False, {}
-    log_service_detail(f"📬 JSON-RPC response: {response_item}", tag="jsonrpc")
-    item_result, err_i = parse_kodi_jsonrpc_raw(response_item)
-    if err_i:
-        log_service_detail("Player.GetItem parse: %s" % err_i, tag="jsonrpc")
-        return False, {}
-    item = item_result.get("result", {}).get("item", {})
-
-    if not item:
-        log("⚠ Player.GetItem returned empty item — metadata not ready")
-        return False, {}
-    if not item.get("title") and not item.get("label"):
-        log("⚠ Player.GetItem missing title/label — metadata may still be loading (file-based inference will be used)")
-
-    playback_type = infer_playback_type(item)
-    log(f"🧠 Inferred playback type: {playback_type}")
-    log(f"📁 File: {item.get('file')}, Title: {item.get('title')}, Showtitle: {item.get('showtitle')}, Episode: {item.get('episode')}")
-
-    if playback_type == "movie":
-        if not show_not_found_toast_for_movies:
-            log("🛑 Suppressing toast — movie playback and disabled in settings")
-            return False, item
-        log("✅ Toast allowed — movie playback and enabled in settings")
-    elif playback_type == "episode":
-        if not show_not_found_toast_for_tv_episodes:
-            log("🛑 Suppressing toast — episode playback and disabled in settings")
-            return False, item
-        log("✅ Toast allowed — episode playback and enabled in settings")
-    else:
-        log(f"⚠ Unknown playback type '{playback_type}' — suppressing toast")
-        return False, item
-
-    return True, item
+    return allowed, fetched_item
 
 
 def _both_segment_sources_disabled_for_playback(playback_type):
@@ -479,7 +376,9 @@ def _missing_segments_toast_message(playback_type, video_path):
     else:
         return "No skip segments found for this video."
 
-    has_sidecar = bool(video_path) and local_chapter_or_edl_file_exists(video_path)
+    has_sidecar = bool(video_path) and local_sidecar_exists(
+        video_path, segment_monitor=monitor
+    )
 
     if not loc and onl:
         if has_sidecar:

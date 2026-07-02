@@ -192,6 +192,16 @@ def _parse_chapter_xml_string(xml_data):
 def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
     paths_to_try = _chapter_xml_paths_to_try(video_path)
 
+    if segment_monitor is not None:
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        probe = resolve_sidecar_paths(video_path, segment_monitor)
+        if probe.probed and not probe.chapter_path:
+            if update_monitor:
+                segment_monitor.segment_file_found = False
+                log("🚫 No chapter XML file found — segment_file_found set to False")
+            return None
+
     _log_seg_detail(f"🔍 Attempting chapter XML paths: {paths_to_try}")
 
     if update_monitor:
@@ -289,6 +299,16 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
 
 def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     paths_to_try = _edl_paths_to_try(video_path)
+
+    if segment_monitor is not None:
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        probe = resolve_sidecar_paths(video_path, segment_monitor)
+        if probe.probed and not probe.edl_path:
+            if update_monitor:
+                segment_monitor.segment_file_found = False
+                log("🚫 No EDL file found — segment_file_found set to False")
+            return []
 
     _log_seg_detail(f"🔍 Attempting EDL paths: {paths_to_try}")
     edl_data = safe_file_read(*paths_to_try)
@@ -481,12 +501,16 @@ def _parse_source_segments_uncached(
 
         local_list = []
         if tv_local:
-            pxml = parse_chapters(path, update_monitor=False)
+            pxml = parse_chapters(path, update_monitor=False, segment_monitor=segment_monitor)
             if pxml:
                 local_list = pxml
             else:
-                local_list = parse_edl(path, update_monitor=False)
-        local_file_found = local_chapter_or_edl_file_exists(path) if tv_local else False
+                local_list = parse_edl(path, update_monitor=False, segment_monitor=segment_monitor)
+        local_file_found = (
+            local_chapter_or_edl_file_exists(path, segment_monitor)
+            if tv_local
+            else False
+        )
 
         remote_list = []
         defer_remote = priority == "LocalFirst" and tv_online
@@ -605,15 +629,17 @@ def _parse_source_segments_uncached(
         local_list = []
         if movie_local:
             log(f"🎬 Movie: attempting local chapter/EDL parsing for {path}")
-            pxml = parse_chapters(path, update_monitor=False)
+            pxml = parse_chapters(path, update_monitor=False, segment_monitor=segment_monitor)
             if pxml:
                 local_list = pxml
                 log(f"🎬 Movie: found {len(pxml)} segments from chapters.xml")
             else:
-                local_list = parse_edl(path, update_monitor=False)
+                local_list = parse_edl(path, update_monitor=False, segment_monitor=segment_monitor)
                 log(f"🎬 Movie: found {len(local_list)} segments from EDL")
         local_file_found = (
-            local_chapter_or_edl_file_exists(path) if movie_local else False
+            local_chapter_or_edl_file_exists(path, segment_monitor)
+            if movie_local
+            else False
         )
 
         remote_list = []
@@ -763,7 +789,7 @@ def get_cached_source_segments(
             )
             return _clone_segments(cache.get("segments", []))
 
-        sidecar_sig = _sidecar_signature(path)
+        sidecar_sig = _sidecar_signature(path, segment_monitor)
         cache["last_sidecar_check"] = now
         if sidecar_sig == cache.get("sidecar_signature"):
             segment_monitor.segment_file_found = cache.get("segment_file_found", False)
@@ -772,7 +798,7 @@ def get_cached_source_segments(
 
         log("🔄 Sidecar file change detected — reparsing segments")
 
-    sidecar_sig_before = _sidecar_signature(path)
+    sidecar_sig_before = _sidecar_signature(path, segment_monitor)
     parsed, segment_origin = _parse_source_segments_uncached(
         path,
         playback_type,
@@ -781,7 +807,7 @@ def get_cached_source_segments(
         on_remote_segments_saved,
         on_local_to_online_sync_check,
     )
-    sidecar_sig_after = _sidecar_signature(path)
+    sidecar_sig_after = _sidecar_signature(path, segment_monitor)
     segment_monitor.segment_parse_cache = {
         "path": path,
         "playback_type": playback_type,

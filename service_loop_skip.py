@@ -1,0 +1,351 @@
+# -*- coding: utf-8 -*-
+"""Skip dialog orchestration and auto-skip for active segments."""
+
+from __future__ import annotations
+
+import traceback
+from typing import Any
+
+import xbmc
+import xbmcgui
+
+from segment_item import segments_active_for_playback
+from settings_utils import (
+    addon_get_bool,
+    addon_get_int,
+    addon_get_setting_text,
+    compute_skip_seek_destination_seconds,
+    get_addon,
+    get_user_skip_mode,
+    is_skip_enabled,
+    log,
+    log_service_detail,
+)
+from skipdialog import SkipDialog
+
+
+def process_segment_skips(
+    ctx: Any,
+    *,
+    video: str,
+    playback_type: str,
+    show_dialogs: bool,
+    current_time: float,
+    major_rewind_detected: bool,
+) -> None:
+    monitor = ctx.monitor
+    addon = get_addon()
+
+    if not monitor.playback_ready:
+        ctx.log_if_changed(
+            "playback_ready", "⏳ Playback not ready — waiting before processing segments"
+        )
+        monitor.last_time = current_time
+        return
+
+    segments_to_process = monitor.current_segments
+    if major_rewind_detected:
+        log("🔄 Major rewind detected — re-evaluating all segments for active dialogs")
+        monitor._last_log_state.clear()
+
+    ctx.log_if_changed(
+        "state_summary",
+        "📊 Current state: prompted=%d items, recently_dismissed=%d items, skipped_to_nested=%d items"
+        % (
+            len(monitor.prompted),
+            len(monitor.recently_dismissed),
+            len(monitor.skipped_to_nested_segment),
+        ),
+    )
+
+    active_for_playback = segments_active_for_playback(monitor.current_segments, current_time)
+    active_playback_ids = {
+        (int(round(s.start_seconds)), int(round(s.end_seconds)))
+        for s in active_for_playback
+    }
+
+    for segment in segments_to_process:
+        seg_id = (
+            int(round(segment.start_seconds)),
+            int(round(segment.end_seconds)),
+        )
+
+        if seg_id in monitor.recently_dismissed:
+            log(
+                "🚫 Segment %s (%s) was dismissed — skipping ALL processing"
+                % (seg_id, segment.segment_type_label)
+            )
+            monitor.prompted.add(seg_id)
+            continue
+
+        if seg_id in monitor.prompted:
+            continue
+
+        if seg_id not in active_playback_ids:
+            continue
+
+        if ctx.should_suppress_segment_dialog(
+            segment,
+            monitor.current_segments,
+            current_time,
+            monitor.recently_dismissed,
+        ):
+            ctx.log_if_changed(
+                "suppressed_%s" % (seg_id,),
+                "🚫 Segment %s dialog suppressed due to overlapping/nested segment priority"
+                % (seg_id,),
+            )
+            continue
+
+        if seg_id in monitor.skipped_to_nested_segment:
+            nested_segment = monitor.skipped_to_nested_segment[seg_id]
+            if nested_segment.is_active(current_time):
+                ctx.log_if_changed(
+                    "nested_%s" % (seg_id,),
+                    "🚫 Segment %s dialog suppressed — still in nested segment '%s'"
+                    % (seg_id, nested_segment.segment_type_label),
+                )
+                continue
+            nested_seg_id_defensive = (
+                int(round(nested_segment.start_seconds)),
+                int(round(nested_segment.end_seconds)),
+            )
+            if nested_seg_id_defensive in monitor.recently_dismissed:
+                monitor.recently_dismissed.remove(nested_seg_id_defensive)
+            del monitor.skipped_to_nested_segment[seg_id]
+            if seg_id not in monitor.recently_dismissed and seg_id in monitor.prompted:
+                monitor.prompted.remove(seg_id)
+
+        log(
+            "🔎 Processing active segment: '%s' [%s-%s]"
+            % (
+                segment.segment_type_label,
+                segment.start_seconds,
+                segment.end_seconds,
+            )
+        )
+        behavior = get_user_skip_mode(segment.segment_type_label)
+        log("🧪 Segment behavior: %s" % behavior)
+
+        if not show_dialogs:
+            ctx.log_if_changed(
+                "dialogs_disabled_%s" % (seg_id,),
+                "🚫 Dialogs disabled — suppressing segment %s" % seg_id,
+            )
+            monitor.prompted.add(seg_id)
+            continue
+        if behavior == "never":
+            ctx.log_if_changed(
+                "never_%s" % (seg_id,),
+                "🚫 Skipping dialog for '%s' (never)" % segment.segment_type_label,
+            )
+            continue
+
+        log(
+            "🕒 Active segment: %s [%s-%s] → %s"
+            % (
+                segment.segment_type_label,
+                segment.start_seconds,
+                segment.end_seconds,
+                behavior,
+            )
+        )
+
+        if not is_skip_enabled(playback_type):
+            log("🚫 Skipping disabled for %s — segment %s" % (playback_type, seg_id))
+            monitor.prompted.add(seg_id)
+            continue
+
+        jump_to = compute_skip_seek_destination_seconds(segment, addon)
+
+        if behavior == "auto":
+            _handle_auto_skip(ctx, segment, seg_id, jump_to, addon)
+        elif behavior == "ask":
+            _handle_ask_skip(ctx, segment, seg_id, jump_to, addon)
+
+
+def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
+    monitor = ctx.monitor
+    if segment.next_segment_start is None:
+        return
+    target_segment = None
+    for seg in monitor.current_segments:
+        if seg.start_seconds == segment.next_segment_start:
+            target_segment = seg
+            break
+    if not target_segment or not ctx.is_nested_segment(segment, target_segment):
+        return
+    monitor.skipped_to_nested_segment[seg_id] = target_segment
+    monitor.prompted.add(seg_id)
+    if seg_id in monitor.recently_dismissed:
+        nested_seg_id = (
+            int(round(target_segment.start_seconds)),
+            int(round(target_segment.end_seconds)),
+        )
+        clearance_key = (seg_id, nested_seg_id)
+        if clearance_key not in monitor.cleared_parent_dismissals:
+            monitor.recently_dismissed.remove(seg_id)
+            monitor.cleared_parent_dismissals.add(clearance_key)
+
+
+def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
+    monitor = ctx.monitor
+    log(
+        "⚙ Auto-skip behavior triggered for segment ID %s (%s)"
+        % (seg_id, segment.segment_type_label)
+    )
+    _track_skip_to_nested(ctx, segment, seg_id)
+    log_service_detail("🎯 Auto-skip: Issuing seekTime(%s) now..." % jump_to, tag="playback")
+    ctx.player.seekTime(jump_to)
+    xbmc.sleep(500)
+    try:
+        actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
+    except RuntimeError:
+        actual_time = -1
+    log_service_detail(
+        "🎯 Auto-skip: After seek: requested=%s, actual=%s" % (jump_to, actual_time),
+        tag="playback",
+    )
+    monitor.last_time = jump_to
+    if seg_id not in monitor.prompted:
+        monitor.prompted.add(seg_id)
+    _maybe_show_skip_toast(ctx, addon, segment, "auto")
+    log("⚡ Auto-skipped to %s" % jump_to)
+
+
+def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
+    monitor = ctx.monitor
+    log(
+        "🧠 Ask-skip behavior triggered for segment ID %s (%s)"
+        % (seg_id, segment.segment_type_label)
+    )
+
+    try:
+        dialog_is_playing = ctx.player.isPlayingVideo()
+        dialog_is_paused = xbmc.getCondVisibility("Player.Paused")
+    except RuntimeError:
+        dialog_is_playing = False
+        dialog_is_paused = True
+
+    if dialog_is_paused or not dialog_is_playing:
+        log("⏸️ Video paused/stopped right before dialog — skipping segment %s" % seg_id)
+        return
+
+    try:
+        editor_modal_open = (
+            xbmcgui.Window(10000).getProperty("skippy_editor_modal_open") == "true"
+        )
+    except RuntimeError:
+        editor_modal_open = False
+    if editor_modal_open:
+        ctx.log_if_changed(
+            "skip_dlg_segment_editor_open",
+            "⏸️ Skip dialog suppressed — Segment Editor is open",
+        )
+        return
+
+    if monitor.skip_dialog_modal_active:
+        ctx.log_if_changed(
+            "skip_dialog_in_flight",
+            "⏳ Skip dialog already active — skipping duplicate ask for segment %s"
+            % (seg_id,),
+        )
+        return
+
+    monitor.skip_dialog_modal_active = True
+    try:
+        debounce_ms = addon_get_int(addon, "ask_dialog_debounce_ms", 300, minimum=0, maximum=500)
+        if debounce_ms > 0:
+            log("🛑 Debouncing skip dialog for %dms" % debounce_ms)
+            xbmc.sleep(debounce_ms)
+
+        dialog_mode = (
+            addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full"
+        ).strip()
+        if dialog_mode == "Minimal":
+            layout_value = ctx.skip_dialog_layout_suffix(addon, "minimal_skip_dialog_position")
+            dialog_name = "Minimal_Skip_Dialog_%s.xml" % layout_value
+        else:
+            layout_value = ctx.skip_dialog_layout_suffix(addon, "skip_dialog_position")
+            dialog_name = "SkipDialog_%s.xml" % layout_value
+        log("📐 Using skip dialog (%s): %s" % (dialog_mode, dialog_name))
+
+        try:
+            ctx.warm_skip_dialog_skin_textures(addon)
+        except Exception as e:
+            log("⚠️ Failed to update skip dialog skin XML: %s" % e)
+
+        try:
+            dialog = SkipDialog(
+                dialog_name, addon.getAddonInfo("path"), "default", segment=segment
+            )
+        except Exception as e:
+            log("❌ Failed to create skip dialog: %s" % e)
+            monitor.prompted.add(seg_id)
+            return
+
+        confirmed = None
+        try:
+            dialog.doModal()
+            confirmed = getattr(dialog, "response", None)
+        except Exception as e:
+            log("❌ Dialog doModal() failed: %s" % e)
+            monitor.prompted.add(seg_id)
+            return
+        finally:
+            try:
+                del dialog
+            except Exception:
+                pass
+
+        if confirmed:
+            log("✅ User confirmed skip for segment ID %s" % seg_id)
+            _track_skip_to_nested(ctx, segment, seg_id)
+            if seg_id not in monitor.prompted:
+                monitor.prompted.add(seg_id)
+            log_service_detail("🎯 Issuing seekTime(%s) now..." % jump_to, tag="playback")
+            ctx.player.seekTime(jump_to)
+            xbmc.sleep(500)
+            try:
+                actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
+            except RuntimeError:
+                actual_time = -1
+            log_service_detail(
+                "🎯 After seek: requested=%s, actual=%s" % (jump_to, actual_time),
+                tag="playback",
+            )
+            monitor.last_time = jump_to
+            _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
+            log("🚀 Jumped to %s" % jump_to)
+        else:
+            log("🙅 User dismissed skip dialog for segment ID %s" % seg_id)
+            monitor.recently_dismissed.add(seg_id)
+            monitor.prompted.add(seg_id)
+    except RuntimeError as e:
+        log("❌ Error showing skip dialog (RuntimeError): %s" % e)
+        monitor.prompted.add(seg_id)
+    except Exception as e:
+        log(
+            "❌ Error showing skip dialog (%s): %s\n%s"
+            % (type(e).__name__, e, traceback.format_exc())
+        )
+        monitor.prompted.add(seg_id)
+    finally:
+        monitor.skip_dialog_modal_active = False
+
+
+def _maybe_show_skip_toast(ctx: Any, addon, segment, reason: str) -> None:
+    if not addon_get_bool(addon, "show_toast_for_skipped_segment", False):
+        log("🔕 Skipped segment toast disabled by user setting")
+        return
+    log("🔔 Showing toast notification for %s skip" % reason)
+    try:
+        xbmcgui.Dialog().notification(
+            heading="Skipped",
+            message="%s skipped" % segment.segment_type_label.title(),
+            icon=ctx.icon_path,
+            time=2000,
+            sound=False,
+        )
+    except Exception as e:
+        log("❌ Failed to display skip toast notification: %s" % e)

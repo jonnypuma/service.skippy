@@ -151,7 +151,11 @@ def _find_existing_edl_path(video_path):
     return None
 
 
-def local_chapter_or_edl_file_exists(video_path):
+def local_chapter_or_edl_file_exists(video_path, segment_monitor=None):
+    if segment_monitor is not None:
+        from service_sidecar_probe_cache import local_sidecar_exists
+
+        return local_sidecar_exists(video_path, segment_monitor)
     for p in _chapter_xml_paths_to_try(video_path):
         if p and xbmcvfs.exists(p):
             return True
@@ -175,10 +179,32 @@ def _safe_stat_value(stat_obj, name):
         return None
 
 
-def _sidecar_signature(video_path):
+def _sidecar_signature(video_path, segment_monitor=None):
     """Return existing sidecar paths with mtime/size so edits during playback can refresh parsing."""
+    if segment_monitor is not None:
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        probe = resolve_sidecar_paths(video_path, segment_monitor)
+        if probe.probed and not probe.chapter_path and not probe.edl_path:
+            return tuple()
+
     signature = []
-    for path in _sidecar_paths_to_watch(video_path):
+    watch_paths = _sidecar_paths_to_watch(video_path)
+    if segment_monitor is not None:
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        probe = resolve_sidecar_paths(video_path, segment_monitor)
+        if probe.probed:
+            watch_paths = [
+                p
+                for p in watch_paths
+                if p
+                in (
+                    probe.chapter_path,
+                    probe.edl_path,
+                )
+            ]
+    for path in watch_paths:
         try:
             if not xbmcvfs.exists(path):
                 continue

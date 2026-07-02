@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.0.0] - 2026-07-02
+
+### Changed
+- **Monitor loop performance**: Playback metadata (path, type, toast settings) is cached in **`service_playback_context.py`**; JSON-RPC runs on cache miss or video change only. While paused, the loop uses a fast path with no JSON-RPC and minimal logging.
+- **Smarter pause handling**: Pause is checked immediately after a lightweight context refresh, **before** segment parse, toast logic, or JSON-RPC. After a skip seek Kodi often reports `is_playing=True` and `is_paused=True` for several seconds; the service no longer repeats `get_video_file`, `Player.GetItem`, and settings logs every tick during that window.
+- **Sidecar probing**: **`service_sidecar_probe_cache.py`** negative-caches NFS `exists()` probes per video so titles without sidecars are not re-scanned every loop tick.
+- **Service refactor**: **`service_main_loop.py`** is a thin orchestrator; replay/video change, toast, nested-segment, and skip logic live in **`service_loop_playback.py`**, **`service_loop_toast.py`**, **`service_loop_nested.py`**, and **`service_loop_skip.py`**.
+
+### Removed
+- Unused **`PlayerMonitor.item_metadata_ready`** and **`last_playback_item`** fields.
+
+### Added
+- Offline unit tests under **`tests/`** (`python -m unittest discover -s tests`).
+
 ## [4.0.1] - 2026-06-29
 
 ### Fixed

@@ -954,6 +954,12 @@ def invalidate_segment_parse_cache_if_path(video_path, segment_monitor):
         )
         segment_monitor.segment_parse_cache = None
         publish_parse_cache(None)
+    try:
+        from service_sidecar_probe_cache import clear_sidecar_probe_cache
+
+        clear_sidecar_probe_cache(segment_monitor, video_path)
+    except Exception:
+        pass
 
 
 def _maybe_save_online_segments_chapters_xml(
