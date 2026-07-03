@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.0.1] - 2026-07-03
+
+### Fixed
+- **Service startup crash on Windows/Kodi**: **`service_loop_nested.py`** had an invalid `except` / `elif` pair in the rewind handler (`SyntaxError` at import), preventing the monitor service from starting.
+
+### Added
+- **`tests/test_service_imports.py`**: Offline import tests for refactored loop modules and **`service.py`** (with Kodi stubs) to catch startup `SyntaxError`s before deploy.
+
 ## [5.0.0] - 2026-07-02
 
 ### Changed

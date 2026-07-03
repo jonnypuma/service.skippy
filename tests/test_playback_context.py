@@ -1,28 +1,14 @@
 # -*- coding: utf-8 -*-
-import sys
-import types
+import importlib
 import unittest
 from unittest.mock import MagicMock, patch
 
-
-def _install_stubs():
-    xbmc = types.ModuleType("xbmc")
-    xbmc.getCondVisibility = lambda cond: False
-    sys.modules["xbmc"] = xbmc
-    xbmcvfs = types.ModuleType("xbmcvfs")
-    xbmcvfs.exists = lambda _p: True
-    sys.modules["xbmcvfs"] = xbmcvfs
-    xbmcaddon = types.ModuleType("xbmcaddon")
-    xbmcaddon.Addon = lambda _id: MagicMock()
-    sys.modules["xbmcaddon"] = xbmcaddon
-    sys.modules.setdefault("xbmcgui", types.ModuleType("xbmcgui"))
+from tests.kodi_stubs import install_kodi_stubs
 
 
 class PlaybackContextTests(unittest.TestCase):
     def setUp(self):
-        _install_stubs()
-        import importlib
-
+        install_kodi_stubs()
         self.mod = importlib.import_module("service_playback_context")
 
     def test_pause_fast_path_skips_jsonrpc(self):

@@ -1,38 +1,15 @@
 # -*- coding: utf-8 -*-
-import sys
-import types
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-
-def _install_xbmc_stubs():
-    if "xbmcvfs" in sys.modules and hasattr(sys.modules.get("xbmc"), "getCondVisibility"):
-        return
-    xbmcvfs = types.ModuleType("xbmcvfs")
-
-    def exists(path):
-        return path in _EXISTING
-
-    xbmcvfs.exists = exists
-    sys.modules["xbmcvfs"] = xbmcvfs
-
-    xbmc = types.ModuleType("xbmc")
-    xbmc.getCondVisibility = lambda cond: False
-    sys.modules["xbmc"] = xbmc
-
-    xbmcaddon = types.ModuleType("xbmcaddon")
-    xbmcaddon.Addon = lambda _id: None
-    sys.modules["xbmcaddon"] = xbmcaddon
-    sys.modules["xbmcgui"] = types.ModuleType("xbmcgui")
-
-
-_EXISTING = set()
+from tests.kodi_stubs import install_kodi_stubs
 
 
 class SidecarProbeCacheTests(unittest.TestCase):
     def setUp(self):
-        _install_xbmc_stubs()
-        _EXISTING.clear()
+        install_kodi_stubs()
+        from unittest.mock import MagicMock
+
         self.monitor = MagicMock()
         self.monitor.sidecar_probe_cache = {}
 

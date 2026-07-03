@@ -47,30 +47,30 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
                 try:
                     final_rewind_playing = ctx.player.isPlayingVideo()
                     final_rewind_paused = xbmc.getCondVisibility("Player.Paused")
+                    if final_rewind_paused or not final_rewind_playing:
+                        log(
+                            "🔕 CRITICAL: Rewind detected but paused - NOT clearing recently_dismissed"
+                        )
+                    else:
+                        log(
+                            "⏪ Significant rewind detected (%.2f → %.2f) — threshold: %ds"
+                            % (monitor.last_time, current_time, rewind_threshold)
+                        )
+                        monitor.prompted.clear()
+                        monitor.recently_dismissed.clear()
+                        monitor.cleared_parent_dismissals.clear()
+                        monitor.skipped_to_nested_segment.clear()
+                        if monitor.current_segments:
+                            ctx.re_evaluate_segment_jump_points(
+                                monitor.current_segments, current_time
+                            )
+                        major_rewind_detected = True
+                        log(
+                            "🧹 recently_dismissed cleared due to rewind, nested segment tracking cleared"
+                        )
                 except RuntimeError:
                     log(
                         "🔕 CRITICAL: Cannot verify pause state during rewind - NOT clearing"
-                    )
-                elif final_rewind_paused or not final_rewind_playing:
-                    log(
-                        "🔕 CRITICAL: Rewind detected but paused - NOT clearing recently_dismissed"
-                    )
-                else:
-                    log(
-                        "⏪ Significant rewind detected (%.2f → %.2f) — threshold: %ds"
-                        % (monitor.last_time, current_time, rewind_threshold)
-                    )
-                    monitor.prompted.clear()
-                    monitor.recently_dismissed.clear()
-                    monitor.cleared_parent_dismissals.clear()
-                    monitor.skipped_to_nested_segment.clear()
-                    if monitor.current_segments:
-                        ctx.re_evaluate_segment_jump_points(
-                            monitor.current_segments, current_time
-                        )
-                    major_rewind_detected = True
-                    log(
-                        "🧹 recently_dismissed cleared due to rewind, nested segment tracking cleared"
                     )
             else:
                 log("⏪ Rewind detected but paused - NOT clearing recently_dismissed")
