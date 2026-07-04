@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.0.3] - 2026-07-04
+
+### Fixed
+- **Ask skip still did not seek after OK (5.0.2)**: After the dialog returned a valid jump time, logging `"… %s" % seg_id` raised `TypeError` because `seg_id` is a `(start, end)` tuple — Python treats that as two format arguments. The exception was caught before `seekTime`, so playback never jumped. Fixed in **`service_loop_skip.py`** and **`service_loop_nested.py`** by wrapping tuple ids as `(seg_id,)` for single-placeholder logs.
+
+## [5.0.2] - 2026-07-04
+
+### Fixed
+- **Ask skip did not seek after OK**: The skip dialog could close with `response` still unset (lost when the Kodi window is destroyed after `close()`), so the service treated it as a dismiss and never called `seekTime`. **`skipdialog.py`** now stashes `_skippy_dialog_result` before close; **`service_loop_skip.py`** reads that stash, logs the outcome, and only marks a segment dismissed when the user explicitly declined.
+- **Skip button control id**: Normalize `onClick` control ids to `int` (matches other Skippy dialogs) so OK/Skip is recognized on all Kodi builds.
+- **Playhead tracking after skip**: The main loop refreshes `last_time` from the player after skip processing instead of overwriting a successful seek with the pre-dialog playhead.
+
 ## [5.0.1] - 2026-07-03
 
 ### Fixed

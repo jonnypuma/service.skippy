@@ -251,4 +251,7 @@ def _cleanup_skipped_to_nested(ctx: Any, current_time: float) -> None:
 
     for seg_id in segments_to_remove:
         del monitor.skipped_to_nested_segment[seg_id]
-        log("🗑️ Removed parent segment %s from skipped_to_nested_segment tracking" % seg_id)
+        log(
+            "🗑️ Removed parent segment %s from skipped_to_nested_segment tracking"
+            % (seg_id,)
+        )

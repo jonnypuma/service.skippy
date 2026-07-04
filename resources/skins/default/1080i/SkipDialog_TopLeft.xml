@@ -8,14 +8,15 @@
     <height>1080</height>
   </coordinates>
   <zorder>1</zorder>
+
   <defaultcontrol>3012</defaultcontrol>
   <animation type="WindowOpen">
-    <effect type="slide" start="0,-150" end="0,0" time="300" tween="quadratic" easing="out"></effect>
-    <effect type="fade" start="0" end="100" time="400"></effect>
+    <effect type="slide" start="0,-150" end="0,0" time="300" tween="quadratic" easing="out" />
+    <effect type="fade" start="0" end="100" time="400" />
   </animation>
   <animation type="WindowClose">
-    <effect type="slide" start="0,0" end="0,-150" time="300" tween="quadratic" easing="in"></effect>
-    <effect type="fade" start="100" end="0" time="300"></effect>
+    <effect type="slide" start="0,0" end="0,-150" time="300" tween="quadratic" easing="in" />
+    <effect type="fade" start="100" end="0" time="300" />
   </animation>
   <controls>
     <control type="group" id="3080">
@@ -55,7 +56,7 @@
         <label>Skip</label>
         <onright>3013</onright>
         <font>font16</font>
-        <texturefocus>button_focus_aqua_vignette.png</texturefocus>
+        <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -74,7 +75,7 @@
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
-        <texturefocus>button_focus_aqua_vignette.png</texturefocus>
+        <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -93,7 +94,7 @@
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
-        <texturefocus>button_focus_aqua_vignette.png</texturefocus>
+        <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -114,7 +115,7 @@
         <onleft>3012</onleft>
         <onclick>Close</onclick>
         <font>font16</font>
-        <texturefocus>button_focus_aqua_vignette.png</texturefocus>
+        <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -162,12 +163,12 @@
         <reveal>true</reveal>
         <texturebg>progress_background.png</texturebg>
         <textureleft>progress_left.png</textureleft>
-        <midtexture>progress_mid_pink_lightblue.png</midtexture>
+        <midtexture>progress_mid.png</midtexture>
         <textureright>progress_right.png</textureright>
         <aspectratio>stretch</aspectratio>
         <orientation>horizontal</orientation>
-        <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + !String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
-      </control>
+              <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + !String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+</control>
       <control type="image" id="3030">
         <left>8</left>
         <top>135</top>
@@ -181,7 +182,7 @@
         <top>135</top>
         <width>555</width>
         <height>24</height>
-        <texture>progress_mid_pink_lightblue.png</texture>
+        <texture>progress_mid.png</texture>
         <aspectratio>stretch</aspectratio>
         <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
       </control>

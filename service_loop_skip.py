@@ -130,7 +130,7 @@ def process_segment_skips(
         if not show_dialogs:
             ctx.log_if_changed(
                 "dialogs_disabled_%s" % (seg_id,),
-                "🚫 Dialogs disabled — suppressing segment %s" % seg_id,
+                "🚫 Dialogs disabled — suppressing segment %s" % (seg_id,),
             )
             monitor.prompted.add(seg_id)
             continue
@@ -228,7 +228,7 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         dialog_is_paused = True
 
     if dialog_is_paused or not dialog_is_playing:
-        log("⏸️ Video paused/stopped right before dialog — skipping segment %s" % seg_id)
+        log("⏸️ Video paused/stopped right before dialog — skipping segment %s" % (seg_id,))
         return
 
     try:
@@ -287,24 +287,35 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         confirmed = None
         try:
             dialog.doModal()
-            confirmed = getattr(dialog, "response", None)
         except Exception as e:
             log("❌ Dialog doModal() failed: %s" % e)
             monitor.prompted.add(seg_id)
             return
-        finally:
-            try:
-                del dialog
-            except Exception:
-                pass
 
-        if confirmed:
-            log("✅ User confirmed skip for segment ID %s" % seg_id)
+        response = getattr(dialog, "_skippy_dialog_result", None)
+        if response is None:
+            response = getattr(dialog, "response", None)
+        try:
+            del dialog
+        except Exception:
+            pass
+
+        log(
+            "Skip dialog closed: response=%r jump_to=%s seg=%s"
+            % (response, jump_to, seg_id)
+        )
+
+        if response is not False and response is not None:
+            log("✅ User confirmed skip for segment ID %s" % (seg_id,))
             _track_skip_to_nested(ctx, segment, seg_id)
             if seg_id not in monitor.prompted:
                 monitor.prompted.add(seg_id)
             log_service_detail("🎯 Issuing seekTime(%s) now..." % jump_to, tag="playback")
-            ctx.player.seekTime(jump_to)
+            try:
+                ctx.player.seekTime(float(jump_to))
+            except (TypeError, ValueError, RuntimeError) as exc:
+                log("❌ seekTime(%s) failed: %s" % (jump_to, exc))
+                return
             xbmc.sleep(500)
             try:
                 actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
@@ -314,13 +325,18 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
                 "🎯 After seek: requested=%s, actual=%s" % (jump_to, actual_time),
                 tag="playback",
             )
-            monitor.last_time = jump_to
+            monitor.last_time = float(jump_to)
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
-        else:
-            log("🙅 User dismissed skip dialog for segment ID %s" % seg_id)
+        elif response is False:
+            log("🙅 User dismissed skip dialog for segment ID %s" % (seg_id,))
             monitor.recently_dismissed.add(seg_id)
             monitor.prompted.add(seg_id)
+        else:
+            log(
+                "⚠ Skip dialog closed without a choice for segment %s — will retry"
+                % (seg_id,)
+            )
     except RuntimeError as e:
         log("❌ Error showing skip dialog (RuntimeError): %s" % e)
         monitor.prompted.add(seg_id)

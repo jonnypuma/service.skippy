@@ -39,6 +39,15 @@ def _ascii_log_text(msg):
     return unicodedata.normalize("NFKD", str(msg)).encode("ascii", "ignore").decode("ascii")
 
 
+def _normalize_control_id(control_id):
+    if hasattr(control_id, "getId"):
+        control_id = control_id.getId()
+    try:
+        return int(control_id)
+    except (TypeError, ValueError):
+        return control_id
+
+
 def _full_skip_focus_id(hide_close, hide_skip_icon):
     """3012 is hidden when the close button is hidden; match Full dialog XML visibility."""
     if hide_close:
@@ -280,6 +289,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         self._closing = False
         self.response = None
+        self._skippy_dialog_result = None
         self.player = xbmc.Player()
         self._total_duration = self.segment.end_seconds - self.segment.start_seconds
         self._start_time = time.time()
@@ -556,17 +566,13 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             # ⌛ Segment end reached
             if current >= self.segment.end_seconds - 0.5:
                 log("⌛ Segment ended — auto-decline")
-                self._closing = True
-                self.response = False
-                self.close()
+                self._finish_dialog(False)
                 break
 
             # ⏳ Timeout fallback
             if time.time() - self._start_time > timeout:
                 log("⏳ Timeout reached — auto-decline")
-                self._closing = True
-                self.response = False
-                self.close()
+                self._finish_dialog(False)
                 break
 
             time.sleep(delay)
@@ -617,23 +623,27 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         except Exception:
             pass
 
-    def onClick(self, controlId):
-        if controlId in FULL_SKIP_BUTTON_IDS:
-            self.response = self.segment.next_segment_start or self.segment.end_seconds + 1.0
-            log(f"🖱️ User clicked skip → skipping to {self.response}s")
-        else:
-            self.response = False
-            log(f"🖱️ User clicked cancel/close → declining skip")
-
+    def _finish_dialog(self, response):
+        """Record result before close() so the service loop can read it after doModal()."""
+        self.response = response
+        self._skippy_dialog_result = response
         self._closing = True
         self.close()
+
+    def onClick(self, controlId):
+        cid = _normalize_control_id(controlId)
+        if cid in FULL_SKIP_BUTTON_IDS:
+            result = self.segment.next_segment_start or self.segment.end_seconds + 1.0
+            log(f"🖱️ User clicked skip → skipping to {result}s")
+        else:
+            result = False
+            log(f"🖱️ User clicked cancel/close → declining skip (controlId={cid})")
+        self._finish_dialog(result)
 
     def onAction(self, action):
         if action.getId() in [10, 92, 216]:
             log(f"🔙 User cancelled via action ID {action.getId()}")
-            self.response = False
-            self._closing = True
-            self.close()
+            self._finish_dialog(False)
 
 
     def onClose(self):

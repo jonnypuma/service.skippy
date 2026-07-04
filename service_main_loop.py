@@ -225,7 +225,13 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             major_rewind_detected=major_rewind_detected,
         )
 
-        ctx.monitor.last_time = current_time
+        try:
+            if ctx.player.isPlayingVideo():
+                ctx.monitor.last_time = ctx.player.getTime()
+            else:
+                ctx.monitor.last_time = current_time
+        except RuntimeError:
+            ctx.monitor.last_time = current_time
 
         if ctx.monitor.waitForAbort(ctx.check_interval):
             log("🛑 Abort requested — exiting monitor loop")
