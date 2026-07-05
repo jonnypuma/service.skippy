@@ -10,6 +10,7 @@ import xbmc
 import xbmcgui
 
 from segment_item import segments_active_for_playback
+from segment_editor_utils import get_home_window
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
@@ -71,9 +72,10 @@ def process_segment_skips(
         )
 
         if seg_id in monitor.recently_dismissed:
-            log(
+            ctx.log_if_changed(
+                "dismissed_%s" % (seg_id,),
                 "🚫 Segment %s (%s) was dismissed — skipping ALL processing"
-                % (seg_id, segment.segment_type_label)
+                % (seg_id, segment.segment_type_label),
             )
             monitor.prompted.add(seg_id)
             continue
@@ -197,7 +199,6 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
     _track_skip_to_nested(ctx, segment, seg_id)
     log_service_detail("🎯 Auto-skip: Issuing seekTime(%s) now..." % jump_to, tag="playback")
     ctx.player.seekTime(jump_to)
-    xbmc.sleep(500)
     try:
         actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
     except RuntimeError:
@@ -232,8 +233,10 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         return
 
     try:
+        home = get_home_window(ctx.monitor)
         editor_modal_open = (
-            xbmcgui.Window(10000).getProperty("skippy_editor_modal_open") == "true"
+            home is not None
+            and home.getProperty("skippy_editor_modal_open") == "true"
         )
     except RuntimeError:
         editor_modal_open = False
@@ -316,7 +319,6 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
             except (TypeError, ValueError, RuntimeError) as exc:
                 log("❌ seekTime(%s) failed: %s" % (jump_to, exc))
                 return
-            xbmc.sleep(500)
             try:
                 actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
             except RuntimeError:

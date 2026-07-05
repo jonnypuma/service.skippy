@@ -1,5 +1,85 @@
 # Changelog
 
+## [5.1.4] - 2026-07-05
+
+### Fixed
+- **Skip dialog white font colour (Windows / WindowXML)**: Bundled skip layouts no longer bind button and label **`textcolor`** to **`$INFO[Window.Property(...)]`** (unreliable in addon WindowXML; often left colours unset on focus). Skin XML now uses literal **`FFFFFFFF`** like the segment editor; **`skipdialog.py`** applies the user's **Skip dialogue font colour** via keyword **`setLabel`** (**`textColor`**, **`focusedColor`**, etc.), re-applies after **`setFocusId`**, and logs the resolved colour at dialog open.
+
+## [5.1.3] - 2026-07-05
+
+### Fixed
+- **Skip dialog white font colour**: **`setLabel(text)`** without colour arguments reset button and countdown labels to the skin default, overriding **Skip dialogue font colour** (including White). **`skipdialog.py`** now applies text colours via **`setLabel`** with the correct Kodi argument order (matching **`skip_dialog_window_ui.py`**) on init, countdown refresh, and progress ticks.
+
+### Added
+- **`tests/test_skip_dialog_font_color.py`**: White preset resolution and coloured **`setLabel`** regression test.
+
+## [5.1.2] - 2026-07-05
+
+### Added
+- Integration/regression tests: **`test_parse_and_process.py`**, **`test_deferred_remote_probe.py`**, **`test_service_loop_skip.py`**, **`test_service_loop_nested.py`**, **`test_skipdialog_result.py`**.
+
+## [5.1.1] - 2026-07-05
+
+### Added
+- **Toast when online segments apply**: New setting **`toast_online_segments_applied`** (Toasts category). One-shot notification when deferred online lookup updates the playback timeline (Local first, no local sidecar).
+- **`tests/test_online_segments_toast.py`**.
+
+## [5.1.0] - 2026-07-05
+
+### Changed
+- **Cached home window**: **`get_home_window(monitor)`** in **`segment_editor_utils.py`** reuses `Window(10000)` on the monitor instead of constructing it every service tick.
+
+### Added
+- **`tests/test_home_window_cache.py`**.
+
+## [5.0.9] - 2026-07-05
+
+### Changed
+- **Hot-path logging**: Removed per-call detail logs from **`SegmentItem.is_active`** / **`get_duration`**. Dismissed-segment messages in **`service_loop_skip.py`** use **`log_if_changed`**.
+
+### Added
+- **`tests/test_hot_path_logging.py`**.
+
+## [5.0.8] - 2026-07-05
+
+### Changed
+- **Faster post-skip monitor**: Removed blocking **`xbmc.sleep(500)`** after auto-skip and confirmed ask-skip seeks; playhead verification happens on subsequent ticks.
+
+### Added
+- **`tests/test_service_loop_skip_sleep.py`**.
+
+## [5.0.7] - 2026-07-05
+
+### Changed
+- **Unified player snapshot**: New **`service_player_snapshot.py`** stores `player_id` and minimal `Player.GetItem` data from the playback context. Remote lookup, deferred online probe, and embedded-chapter fallback reuse the snapshot to skip duplicate `GetActivePlayers` / `GetItem` JSON-RPC when the playing file is unchanged.
+
+### Added
+- **`tests/test_player_snapshot.py`**: Snapshot path matching and enriched-item reuse.
+
+## [5.0.6] - 2026-07-05
+
+### Changed
+- **Nested parent map**: Pass 2 builds `nested_parent_map` (child → parent segment ids) once per title; **`service_loop_nested.py`** uses O(1) map lookups instead of scanning all segment pairs every monitor tick.
+
+### Added
+- **`tests/test_nested_parent_map.py`**: Verifies nested parent map construction.
+
+## [5.0.5] - 2026-07-05
+
+### Changed
+- **TV prefetch non-blocking**: **`schedule_tv_successor_prefetch`** now runs library lookup and online API fetch in a daemon thread (same pattern as deferred remote probe), so Online-first TV playback no longer blocks the main monitor loop during successor prefetch.
+
+### Added
+- **`tests/test_tv_prefetch_threading.py`**: Verifies prefetch schedules a background thread and dedupes in-flight work.
+
+## [5.0.4] - 2026-07-05
+
+### Changed
+- **Processed segment cache**: Pass 1 (overlap filter) and Pass 2 (nested linking) results are cached per title with link-phase invalidation when the playhead crosses nested segment boundaries. Subsequent monitor ticks reuse the cache instead of re-linking every second. New **`service_segment_processed_cache.py`**; invalidated on video change, sidecar/settings change, deferred remote apply, and major rewind.
+
+### Added
+- **`tests/test_segment_processed_cache.py`**: Offline tests for link phase, cache hit/miss, and invalidation.
+
 ## [5.0.3] - 2026-07-04
 
 ### Fixed

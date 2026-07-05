@@ -12,7 +12,10 @@ from __future__ import annotations
 
 import threading
 
+from segment_editor_utils import get_home_window
 from remote_segments import fetch_remote_movie_segments, fetch_remote_tv_segments
+from service_player_snapshot import get_player_snapshot
+from service_segment_processed_cache import clear_segment_processed_cache
 from settings_utils import log, log_service_detail
 
 _PROBE_RUNNING = "running"
@@ -90,10 +93,11 @@ def _fetch_remote_for_playback(playback_type, segment_monitor, segment_player):
     except RuntimeError:
         total_time = 0
     cache = segment_monitor.remote_segment_cache
+    snapshot = get_player_snapshot(segment_monitor)
     if playback_type == "episode":
-        return fetch_remote_tv_segments(total_time, cache) or []
+        return fetch_remote_tv_segments(total_time, cache, snapshot=snapshot) or []
     if playback_type == "movie":
-        return fetch_remote_movie_segments(total_time, cache) or []
+        return fetch_remote_movie_segments(total_time, cache, snapshot=snapshot) or []
     return []
 
 
@@ -165,7 +169,9 @@ def _playback_allows_deferred_apply(segment_monitor) -> bool:
     try:
         import xbmcgui
 
-        win = xbmcgui.Window(10000)
+        win = get_home_window(segment_monitor)
+        if win is None:
+            return False
         if win.getProperty("skippy_marker_modal_open") == "true":
             return False
         if win.getProperty("skippy_editor_modal_open") == "true":
@@ -227,6 +233,7 @@ def process_deferred_remote_probe(
             segment_monitor, path, playback_type, remote_list
         )
         segment_monitor.segment_parse_cache = None
+        clear_segment_processed_cache(segment_monitor)
         try:
             from playback_segment_cache import publish_parse_cache
 

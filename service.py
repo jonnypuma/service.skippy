@@ -87,6 +87,10 @@ class PlayerMonitor(xbmc.Monitor):
         self.cleared_parent_dismissals = set()  # Track which parent dismissals have been cleared for nested segments
         self.remote_segment_cache = {}  # Online lookup cache (TV: TheIntroDB+IntroDB; movies: TheIntroDB)
         self.segment_parse_cache = None  # Parsed source segments for current playback; refreshed when sidecars change
+        self.segment_processed_cache = None  # Pass 1/2 linked segments; invalidated on source/settings change
+        self.nested_parent_map = {}  # child seg id -> parent seg id (built during Pass 2)
+        self.online_segments_toast_shown_for_path = None
+        self._home_window = None
         self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
         # Once per file: auto-open editor when overlaps present (open_segment_editor_on_overlap).
         self.overlap_editor_opened_for_path = None
@@ -95,6 +99,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.local_to_online_sync_suppressed_path = None
         clear_prefetch_segment_cache()
         self.prefetch_tv_scheduled_path = None
+        self.prefetch_tv_lock = threading.Lock()
+        self.prefetch_tv_result = None
         self.deferred_remote_probe_lock = threading.Lock()
         clear_deferred_remote_probe_state(self)
 
@@ -334,7 +340,7 @@ def should_show_missing_file_toast(item=None, playback_type=None):
         return allowed, item
 
     log_service_detail("🚦 Entered should_show_missing_file_toast()", tag="jsonrpc")
-    fetched_item, allowed = _fetch_player_item_via_jsonrpc(
+    fetched_item, allowed, _player_id = _fetch_player_item_via_jsonrpc(
         infer_playback_type, log_jsonrpc=True
     )
     return allowed, fetched_item

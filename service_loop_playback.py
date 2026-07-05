@@ -12,6 +12,8 @@ import xbmc
 from playback_segment_cache import publish_parse_cache
 from segment_item import segment_is_active_lenient
 from service_playback_context import invalidate_playback_context_cache
+from service_segment_processed_cache import clear_segment_processed_cache
+from service_segment_prefetch import clear_tv_prefetch_thread_state
 from service_sidecar_probe_cache import clear_sidecar_probe_cache
 from settings_utils import log, log_playback_settings_snapshot
 
@@ -23,6 +25,7 @@ def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     monitor.prompted.clear()
     monitor.recently_dismissed.clear()
     monitor.segment_parse_cache = None
+    clear_segment_processed_cache(monitor)
     publish_parse_cache(None)
     monitor.cleared_parent_dismissals.clear()
     monitor.playback_ready = False
@@ -35,6 +38,10 @@ def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
     monitor.prefetch_tv_scheduled_path = None
+    monitor.nested_parent_map = {}
+    monitor.online_segments_toast_shown_for_path = None
+    monitor._home_window = None
+    clear_tv_prefetch_thread_state(monitor)
     ctx.clear_deferred_remote_probe_state(monitor)
     invalidate_playback_context_cache(monitor)
     clear_sidecar_probe_cache(monitor)

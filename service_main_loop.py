@@ -10,10 +10,14 @@ from typing import Any, Callable
 import xbmc
 import xbmcgui
 
+from segment_editor_utils import get_home_window
 from service_loop_nested import handle_rewind_and_nested_segments
 from service_loop_playback import handle_replay_detection, handle_video_change
 from service_loop_skip import process_segment_skips
-from service_loop_toast import try_show_missing_segments_toast
+from service_loop_toast import (
+    try_show_missing_segments_toast,
+    try_show_online_segments_applied_toast,
+)
 from service_playback_context import refresh_playback_context
 from settings_utils import log, log_service_detail
 
@@ -78,6 +82,8 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
     except RuntimeError:
         pass
 
+    segment_count_after_first_parse = len(ctx.monitor.current_segments)
+
     if video and playback_type:
         parse_cache_before_probe = ctx.monitor.segment_parse_cache
         try:
@@ -97,6 +103,7 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
             and stash_ready.get("playback_type") == playback_type
             and stash_ready.get("remote_list")
         )
+        reparsed = []
         if deferred_remote_applied or (
             not ctx.monitor.current_segments and has_playback_stash
         ):
@@ -123,6 +130,14 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
                     )
                 except RuntimeError:
                     pass
+        new_count = len(ctx.monitor.current_segments)
+        if reparsed or deferred_remote_applied:
+            try_show_online_segments_applied_toast(
+                ctx,
+                video=video,
+                previous_count=segment_count_after_first_parse,
+                new_count=new_count,
+            )
 
     return current_time
 
@@ -132,7 +147,9 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
 
     while not ctx.monitor.abortRequested():
         try:
-            win = xbmcgui.Window(10000)
+            win = get_home_window(ctx.monitor)
+            if win is None:
+                raise RuntimeError("home window unavailable")
             skip_ui = ctx.skippy_skip_ui_suppression_state(win)
             if skip_ui.suppress:
                 if skip_ui.pending_marker_blocks:

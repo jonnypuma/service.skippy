@@ -8,6 +8,7 @@ import xbmcaddon
 import xbmcgui
 
 from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
+from skip_dialog_window_ui import _argb_to_kodi
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
@@ -116,6 +117,89 @@ def _skip_dialog_font_color_argb(addon):
         if 0 <= idx < len(_SKIP_DIALOG_FONT_COLOR_INDEXED):
             return _SKIP_DIALOG_FONT_COLOR_INDEXED[idx]
     return fallback
+
+
+def _shadow_for_text(text_argb):
+    """Dark halo on light text; soft light halo on dark text (see CHANGELOG 1.0.18)."""
+    s = (text_argb or "").strip().upper()
+    if len(s) == 8:
+        r, g, b = int(s[2:4], 16), int(s[4:6], 16), int(s[6:8], 16)
+    elif len(s) == 6:
+        r, g, b = int(s[0:2], 16), int(s[2:4], 16), int(s[4:6], 16)
+    else:
+        return "0xFF000000"
+    lum = 0.299 * r + 0.587 * g + 0.114 * b
+    if lum >= 140:
+        return "0xFF000000"
+    return "0x66FFFFFF"
+
+
+def _set_skip_button_label(control, label, text_argb, font="font16"):
+    """WindowXML ignores skin <font>/textcolor; apply label + colours in Python."""
+    if not control:
+        return
+    tc = _argb_to_kodi(text_argb)
+    sc = _shadow_for_text(text_argb)
+    try:
+        control.setLabel(
+            label,
+            font=font,
+            textColor=tc,
+            disabledColor=tc,
+            shadowColor=sc,
+            focusedColor=tc,
+        )
+        return
+    except TypeError:
+        pass
+    try:
+        control.setLabel(label, font, tc, tc, sc, tc)
+        return
+    except TypeError:
+        pass
+    try:
+        control.setDisabledColor(tc)
+    except Exception:
+        pass
+    try:
+        control.setLabel(label, font, tc, sc, tc)
+    except TypeError:
+        try:
+            control.setLabel(label, font)
+        except Exception:
+            try:
+                control.setLabel(label)
+            except Exception:
+                pass
+
+
+def _set_skip_info_label(control, label, text_argb, font="font10"):
+    if not control:
+        return
+    tc = _argb_to_kodi(text_argb)
+    sc = _shadow_for_text(text_argb)
+    try:
+        control.setLabel(
+            label,
+            font=font,
+            textColor=tc,
+            disabledColor=tc,
+            shadowColor=sc,
+            focusedColor=tc,
+        )
+        return
+    except TypeError:
+        pass
+    try:
+        control.setLabel(label, font, tc, tc, sc, tc)
+    except TypeError:
+        try:
+            control.setLabel(label, font, tc)
+        except TypeError:
+            try:
+                control.setLabel(label)
+            except Exception:
+                pass
 
 
 def _minimal_plate_filename(addon):
@@ -243,8 +327,15 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         duration_str = f"{m}m{s}s" if m else f"{s}s"
 
         addon = get_addon()
+        raw_font_color = (
+            addon_get_setting_text(addon, "skip_dialog_font_color", "FFFFFFFF") or "FFFFFFFF"
+        ).strip()
         self._skip_text_color_argb = _skip_dialog_font_color_argb(addon)
         self.setProperty("skip_dialog_text_color", self._skip_text_color_argb)
+        log_always(
+            f"Skip dialog font colour: raw={raw_font_color!r} "
+            f"resolved={self._skip_text_color_argb} kodi={_argb_to_kodi(self._skip_text_color_argb)}"
+        )
         self._minimal_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip() == "Minimal"
 
         if self._minimal_mode:
@@ -253,9 +344,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         else:
             fmt = addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration") or "Skip + Type + Duration"
         label = _build_skip_button_label(self.segment, fmt, duration_str)
+        text_color = self._skip_text_color_argb
         for cid in FULL_SKIP_BUTTON_IDS:
             try:
-                self.getControl(cid).setLabel(label)
+                _set_skip_button_label(self.getControl(cid), label, text_color)
             except Exception:
                 pass
 
@@ -473,6 +565,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 f"📐 Focus set to control {focus_id} (minimal={self._minimal_mode}, "
                 f"hide_close={hide_close}, hide_skip_icon={hide_skip_icon})"
             )
+            # Focus can re-apply skin XML textcolorfocus; re-assert Python colours.
+            self._apply_dialog_text_colors()
         except Exception as e:
             log(f"⚠️ Error setting dialog focus: {e}")
             try:
@@ -578,31 +672,30 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             time.sleep(delay)
 
     def _apply_dialog_text_colors(self):
-        """Keep label text in sync; colours come from Window.Property(skip_dialog_text_color) in XML."""
+        """Apply label text and colours; plain setLabel() resets XML/$INFO colours."""
         try:
+            text_color = getattr(self, "_skip_text_color_argb", None) or "FF6E6E6E"
+            self.setProperty("skip_dialog_text_color", text_color)
             if self._minimal_mode:
                 c = self.getControl(3012)
-                lab = c.getLabel() or ""
-                c.setLabel(lab)
+                _set_skip_button_label(c, c.getLabel() or "", text_color)
                 return
             for cid in FULL_SKIP_BUTTON_IDS:
                 try:
                     c = self.getControl(cid)
-                    lab = c.getLabel() or ""
-                    c.setLabel(lab)
+                    _set_skip_button_label(c, c.getLabel() or "", text_color)
                 except Exception:
                     pass
             try:
                 c = self.getControl(3013)
-                lab = c.getLabel() or ""
-                c.setLabel(lab)
+                _set_skip_button_label(c, c.getLabel() or "Close", text_color)
             except Exception:
                 pass
             try:
                 if self.getProperty("show_next_jump") == "true":
                     c = self.getControl(3011)
                     txt = self.getProperty("next_jump_label") or ""
-                    c.setLabel(txt)
+                    _set_skip_info_label(c, txt, text_color, font="font11")
             except Exception as e:
                 log(f"⚠️ next-jump label: {e}")
             self._refresh_countdown_label()
@@ -619,7 +712,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             et = self.getProperty("ending_text") or ""
             cd = self.getProperty("countdown") or ""
             line = f"{et} {cd}".strip()
-            c.setLabel(line)
+            text_color = getattr(self, "_skip_text_color_argb", None) or "FF6E6E6E"
+            _set_skip_info_label(c, line, text_color, font="font10")
         except Exception:
             pass
 

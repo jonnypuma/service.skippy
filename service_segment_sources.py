@@ -20,6 +20,7 @@ from service_deferred_remote_probe import (
     pop_deferred_remote_for_playback,
     schedule_deferred_remote_probe,
 )
+from service_player_snapshot import get_player_snapshot
 from service_segment_prefetch import schedule_tv_successor_prefetch
 from service_sidecar_paths import (
     _chapter_xml_paths_to_try,
@@ -40,6 +41,11 @@ from settings_utils import (
 
 def _log_seg_detail(msg):
     log_service_detail(msg, tag="segments")
+
+
+def _embedded_player_id(segment_monitor):
+    snap = get_player_snapshot(segment_monitor)
+    return snap.player_id if snap is not None else None
 
 
 def _invoke_local_to_online_sync(
@@ -367,7 +373,7 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     return segments
 
 
-def parse_embedded_chapters(segment_player=None):
+def parse_embedded_chapters(segment_player=None, player_id=None):
     """
     Parse chapters embedded in the video file via Kodi's JSON-RPC Player.GetItem chapters property.
     Only returns segments whose label matches custom_segment_keywords.
@@ -384,29 +390,23 @@ def parse_embedded_chapters(segment_player=None):
         return []
 
     try:
-        query = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChapters",
-            "method": "Player.GetActivePlayers",
-        }
-        resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
-        players = resp.get("result", [])
-        video_player = next((p for p in players if p.get("type") == "video"), None)
-        if not video_player:
+        if player_id is None:
+            query = {
+                "jsonrpc": "2.0",
+                "id": "EmbeddedChapters",
+                "method": "Player.GetActivePlayers",
+            }
+            resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
+            players = resp.get("result", [])
+            video_player = next((p for p in players if p.get("type") == "video"), None)
+            if not video_player:
+                _log_seg_detail("📖 Embedded chapters: no active video player")
+                return []
+            player_id = video_player.get("playerid")
+
+        if player_id is None:
             _log_seg_detail("📖 Embedded chapters: no active video player")
             return []
-        player_id = video_player.get("playerid")
-
-        query_item = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChaptersItem",
-            "method": "Player.GetItem",
-            "params": {"playerid": player_id, "properties": ["file"]},
-        }
-        resp_item = json.loads(xbmc.executeJSONRPC(json.dumps(query_item)))
-        _log_seg_detail(
-            f"📖 Embedded chapters: Player.GetItem response = {resp_item}"
-        )
 
         query_props = {
             "jsonrpc": "2.0",
@@ -560,7 +560,9 @@ def _parse_source_segments_uncached(
 
         embedded_list = []
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            embedded_list = parse_embedded_chapters(segment_player)
+            embedded_list = parse_embedded_chapters(
+                segment_player, player_id=_embedded_player_id(segment_monitor)
+            )
             if embedded_list:
                 parsed = embedded_list
 
@@ -690,7 +692,9 @@ def _parse_source_segments_uncached(
 
         embedded_list_m = []
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            embedded_list_m = parse_embedded_chapters(segment_player)
+            embedded_list_m = parse_embedded_chapters(
+                segment_player, player_id=_embedded_player_id(segment_monitor)
+            )
             if embedded_list_m:
                 parsed = embedded_list_m
 
@@ -750,7 +754,9 @@ def _parse_source_segments_uncached(
                 parsed = pedl
                 segment_origin = "local"
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
-            parsed = parse_embedded_chapters(segment_player)
+            parsed = parse_embedded_chapters(
+                segment_player, player_id=_embedded_player_id(segment_monitor)
+            )
             if parsed:
                 segment_origin = "embedded"
 

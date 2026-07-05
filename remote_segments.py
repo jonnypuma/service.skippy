@@ -676,21 +676,29 @@ def _item_from_files_get_file_details(path):
     return item
 
 
-def get_enriched_playing_item():
+def get_enriched_playing_item(snapshot=None):
     """Return current video Player.GetItem dict with season, uniqueid, etc., or None."""
-    player_id = get_active_video_player_id()
+    player_id = None
+    if snapshot is not None and snapshot.player_id is not None:
+        player_id = snapshot.player_id
+    if player_id is None:
+        player_id = get_active_video_player_id()
     if player_id is None:
         _rlog("no active video player id (cannot run Player.GetItem)")
         return None
 
     props = _PLAYER_GETITEM_FIELDS
-    result = jsonrpc(
-        "Player.GetItem",
-        {"playerid": player_id, "properties": props},
-        log_errors=False,
-    )
-    raw = (result.get("result") or {}).get("item") or {}
-    item = raw if _item_has_playback_metadata(raw) else None
+    seed = dict(snapshot.item) if snapshot is not None and snapshot.item else {}
+    item = seed if seed and _item_has_playback_metadata(seed) else None
+
+    if not item:
+        result = jsonrpc(
+            "Player.GetItem",
+            {"playerid": player_id, "properties": props},
+            log_errors=False,
+        )
+        raw = (result.get("result") or {}).get("item") or {}
+        item = raw if _item_has_playback_metadata(raw) else None
 
     if not item:
         path = _get_playing_file_path()
@@ -793,17 +801,17 @@ def paths_refer_to_same_video(path_a, path_b):
         return sa.lower() == sb.lower()
 
 
-def get_enriched_item_for_path(video_path):
+def get_enriched_item_for_path(video_path, snapshot=None):
     """
     Library-backed metadata dict (same shape as :func:`get_enriched_playing_item`) for
     ``video_path``, whether or not it is the currently playing file.
     """
     if not video_path or not str(video_path).strip():
-        return get_enriched_playing_item()
+        return get_enriched_playing_item(snapshot=snapshot)
     vp = str(video_path).strip()
     playing = _get_playing_file_path()
     if playing and paths_refer_to_same_video(vp, playing):
-        return get_enriched_playing_item()
+        return get_enriched_playing_item(snapshot=snapshot)
     item = _item_from_files_get_file_details(vp)
     if not item:
         _rlog(
@@ -1759,11 +1767,11 @@ def _online_merge_introdb_primary(playback_kind):
     return (raw or "").strip() == ONLINE_MERGE_INTRODB_FIRST
 
 
-def fetch_remote_movie_segments(total_time, cache):
+def fetch_remote_movie_segments(total_time, cache, snapshot=None):
     """
     Fetch intro/recap SegmentItems for the current movie (TheIntroDB only). Uses cache dict.
     """
-    item = get_enriched_playing_item()
+    item = get_enriched_playing_item(snapshot=snapshot)
     if not item or (item.get("type") or "").lower() != "movie":
         _rlog("Remote movie segments: not a library movie item")
         return []
@@ -1905,12 +1913,12 @@ def _try_tv_prefetch_handoff(item, cache):
     return None
 
 
-def fetch_remote_tv_segments(total_time, cache):
+def fetch_remote_tv_segments(total_time, cache, snapshot=None):
     """
     Fetch intro/recap SegmentItems for the current TV episode. Uses cache dict keyed by episode ids.
     Applies **prefetch** handoff when the playing file matches a stored successor fetch.
     """
-    item = get_enriched_playing_item()
+    item = get_enriched_playing_item(snapshot=snapshot)
     if not item:
         _rlog("Remote TV segments: no enriched playing item")
         return []

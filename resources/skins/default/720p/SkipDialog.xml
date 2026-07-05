@@ -57,8 +57,8 @@
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -75,8 +75,8 @@
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -93,8 +93,8 @@
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -113,8 +113,8 @@
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
@@ -129,7 +129,7 @@
         <width>360</width><height>20</height>
         <label>$INFO[Window.Property(next_jump_label)]</label>
         <font>font11</font>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolor>FFFFFFFF</textcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
@@ -142,7 +142,7 @@
         <width>360</width><height>20</height>
         <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
         <font>font10</font>
-        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolor>FFFFFFFF</textcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>

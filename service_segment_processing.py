@@ -5,6 +5,12 @@ import xbmcgui
 
 from segment_item import segment_is_active_lenient, segments_active_for_playback
 from segment_editor_utils import set_editor_modal_open
+from service_segment_processed_cache import (
+    clear_segment_processed_cache,
+    store_segment_processed_cache,
+    try_get_processed_cache,
+)
+from service_segment_sources import _clone_segments, _source_settings_signature
 from settings_utils import addon_get_bool, get_addon, log, show_overlapping_toast
 
 
@@ -100,6 +106,28 @@ def should_suppress_segment_dialog(
             return True
 
     return False
+
+
+def build_nested_parent_map(filtered_segments):
+    """Map child segment id -> parent segment id for nested pairs."""
+    parent_map = {}
+    for i in range(len(filtered_segments)):
+        parent = filtered_segments[i]
+        parent_id = (
+            int(round(parent.start_seconds)),
+            int(round(parent.end_seconds)),
+        )
+        for j in range(i + 1, len(filtered_segments)):
+            child = filtered_segments[j]
+            if child.start_seconds >= parent.end_seconds:
+                break
+            if is_nested_segment(parent, child):
+                child_id = (
+                    int(round(child.start_seconds)),
+                    int(round(child.end_seconds)),
+                )
+                parent_map[child_id] = parent_id
+    return parent_map
 
 
 def re_evaluate_segment_jump_points(segments, current_time):
@@ -206,7 +234,7 @@ def parse_and_process_segments(
         )
         return []
 
-    log(f"🚦 Starting new segment parse and process for: {path}")
+    log_if_changed("segment_process_path", "🚦 Segment parse and process for: %s" % path)
     addon = get_addon()
     if not addon:
         return []
@@ -215,7 +243,37 @@ def parse_and_process_segments(
 
     if not parsed:
         log("🚫 No segment file found or parsed segments were empty.")
+        clear_segment_processed_cache(segment_monitor)
         return []
+
+    source_cache = getattr(segment_monitor, "segment_parse_cache", None) or {}
+    source_settings_sig = source_cache.get("settings_signature") or _source_settings_signature(
+        addon, playback_type
+    )
+    sidecar_signature = source_cache.get("sidecar_signature")
+
+    cached_result, cache_status = try_get_processed_cache(
+        segment_monitor,
+        path,
+        playback_type,
+        parsed,
+        current_time,
+        source_settings_sig=source_settings_sig,
+        sidecar_signature=sidecar_signature,
+        clone_pass1_fn=_clone_segments,
+        log_if_changed=log_if_changed,
+    )
+    if cache_status == "hit" and cached_result is not None:
+        segment_monitor.nested_parent_map = (
+            getattr(segment_monitor, "segment_processed_cache", None) or {}
+        ).get("nested_parent_map") or {}
+        return cached_result
+
+    if cache_status != "miss" and cached_result is not None:
+        segment_monitor.nested_parent_map = (
+            getattr(segment_monitor, "segment_processed_cache", None) or {}
+        ).get("nested_parent_map") or {}
+        return cached_result
 
     log("⚙️ Pass 1: Filtering segments...")
     skip_overlaps = addon_get_bool(addon, "skip_overlapping_segments", True)
@@ -243,6 +301,8 @@ def parse_and_process_segments(
         filtered_segments.append(current_seg)
 
     log(f"✅ Pass 1 complete. Filtered segments: {len(filtered_segments)}")
+
+    pass1_snapshot = _clone_segments(filtered_segments)
 
     log("🔗 Pass 2: Linking segments for progressive skipping and detecting overlaps/nested...")
     has_overlap_or_nested = False
@@ -327,6 +387,22 @@ def parse_and_process_segments(
                 )
         except RuntimeError:
             pass
+
+    store_segment_processed_cache(
+        segment_monitor,
+        path,
+        playback_type,
+        parsed,
+        pass1_snapshot,
+        filtered_segments,
+        current_time,
+        source_settings_sig=source_settings_sig,
+        sidecar_signature=sidecar_signature,
+        nested_parent_map=build_nested_parent_map(pass1_snapshot),
+    )
+    segment_monitor.nested_parent_map = (
+        getattr(segment_monitor, "segment_processed_cache", None) or {}
+    ).get("nested_parent_map") or {}
 
     if segment_monitor.toast_overlap_shown:
         log_if_changed(

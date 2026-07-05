@@ -541,6 +541,14 @@ msgctxt "#33005"
 msgid "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
 msgstr "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
 
+msgctxt "#33006"
+msgid "Toast when online segments are applied"
+msgstr "Toast when online segments are applied"
+
+msgctxt "#33007"
+msgid "Show a one-shot notification when deferred online segment lookup updates the playback timeline (e.g. Local first with no local sidecar)."
+msgstr "Show a one-shot notification when deferred online segment lookup updates the playback timeline (e.g. Local first with no local sidecar)."
+
 # Debug Settings
 msgctxt "#34000"
 msgid "Enable Verbose Logging"

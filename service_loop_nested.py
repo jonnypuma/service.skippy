@@ -7,7 +7,9 @@ from typing import Any
 
 import xbmc
 
+from segment_item import segments_active_for_playback
 from settings_utils import addon_get_int, get_addon, log
+from service_segment_processed_cache import clear_segment_processed_cache
 
 
 def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
@@ -64,6 +66,7 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
                             ctx.re_evaluate_segment_jump_points(
                                 monitor.current_segments, current_time
                             )
+                        clear_segment_processed_cache(monitor)
                         major_rewind_detected = True
                         log(
                             "🧹 recently_dismissed cleared due to rewind, nested segment tracking cleared"
@@ -83,9 +86,27 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
     return major_rewind_detected
 
 
+def _seg_id(segment):
+    return (
+        int(round(segment.start_seconds)),
+        int(round(segment.end_seconds)),
+    )
+
+
+def _parent_segment_for_id(monitor, parent_id):
+    for seg in monitor.current_segments or []:
+        if _seg_id(seg) == parent_id:
+            return seg
+    return None
+
+
 def _clear_parent_dismissals_when_inside_nested(ctx: Any, current_time: float) -> None:
     monitor = ctx.monitor
     if not monitor.current_segments or not monitor.recently_dismissed:
+        return
+
+    parent_map = getattr(monitor, "nested_parent_map", None) or {}
+    if not parent_map:
         return
 
     ctx.log_if_changed(
@@ -98,49 +119,28 @@ def _clear_parent_dismissals_when_inside_nested(ctx: Any, current_time: float) -
         ),
     )
 
-    for nested_seg in monitor.current_segments:
-        nested_seg_id = (
-            int(round(nested_seg.start_seconds)),
-            int(round(nested_seg.end_seconds)),
-        )
-        is_inside_nested = (
-            current_time >= nested_seg.start_seconds
-            and current_time <= nested_seg.end_seconds
-        )
+    for nested_seg in segments_active_for_playback(monitor.current_segments, current_time):
+        nested_seg_id = _seg_id(nested_seg)
+        parent_seg_id_check = parent_map.get(nested_seg_id)
+        if not parent_seg_id_check:
+            continue
 
-        has_parent = False
-        parent_seg_for_nested = None
-        for potential_parent in monitor.current_segments:
-            if potential_parent != nested_seg and ctx.is_nested_segment(
-                potential_parent, nested_seg
-            ):
-                has_parent = True
-                parent_seg_for_nested = potential_parent
-                break
-
-        if not has_parent:
+        parent_seg_for_nested = _parent_segment_for_id(monitor, parent_seg_id_check)
+        if not parent_seg_for_nested:
             continue
 
         ctx.log_if_changed(
             "nested_check_%s" % (nested_seg_id,),
-            "🔍 Nested segment %s (%s): start=%.2f, end=%.2f, current=%.2f, is_inside=%s"
+            "🔍 Nested segment %s (%s): start=%.2f, end=%.2f, current=%.2f, is_inside=True"
             % (
                 nested_seg_id,
                 nested_seg.segment_type_label,
                 nested_seg.start_seconds,
                 nested_seg.end_seconds,
                 current_time,
-                is_inside_nested,
             ),
         )
 
-        if not is_inside_nested or not parent_seg_for_nested:
-            continue
-
-        parent_seg_id_check = (
-            int(round(parent_seg_for_nested.start_seconds)),
-            int(round(parent_seg_for_nested.end_seconds)),
-        )
         if parent_seg_id_check not in monitor.recently_dismissed:
             continue
 
@@ -148,19 +148,18 @@ def _clear_parent_dismissals_when_inside_nested(ctx: Any, current_time: float) -
         if clearance_key in monitor.cleared_parent_dismissals:
             continue
 
-        if parent_seg_id_check in monitor.recently_dismissed:
-            monitor.recently_dismissed.remove(parent_seg_id_check)
-            monitor.cleared_parent_dismissals.add(clearance_key)
-            log(
-                "🔓 Cleared parent segment %s (%s) from recently_dismissed inside nested %s"
-                % (
-                    parent_seg_id_check,
-                    parent_seg_for_nested.segment_type_label,
-                    nested_seg.segment_type_label,
-                )
+        monitor.recently_dismissed.remove(parent_seg_id_check)
+        monitor.cleared_parent_dismissals.add(clearance_key)
+        log(
+            "🔓 Cleared parent segment %s (%s) from recently_dismissed inside nested %s"
+            % (
+                parent_seg_id_check,
+                parent_seg_for_nested.segment_type_label,
+                nested_seg.segment_type_label,
             )
-            if parent_seg_id_check in monitor.prompted:
-                monitor.prompted.remove(parent_seg_id_check)
+        )
+        if parent_seg_id_check in monitor.prompted:
+            monitor.prompted.remove(parent_seg_id_check)
 
 
 def _clear_dismissals_on_nested_exit(ctx: Any, current_time: float) -> None:

@@ -66,7 +66,7 @@ class PlaybackContextTests(unittest.TestCase):
             with patch.object(
                 self.mod,
                 "_fetch_player_item_via_jsonrpc",
-                return_value=({"title": "Film"}, True),
+                return_value=({"title": "Film"}, True, 1),
             ) as rpc:
                 with patch.object(self.mod, "get_addon", return_value=MagicMock()):
                     with patch.object(self.mod, "addon_get_bool", return_value=False):

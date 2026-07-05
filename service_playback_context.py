@@ -11,6 +11,7 @@ from typing import Any, Callable, Optional
 import xbmc
 import xbmcvfs
 
+from service_player_snapshot import capture_player_snapshot, set_player_snapshot
 from settings_utils import (
     addon_get_bool,
     get_addon,
@@ -67,8 +68,8 @@ def _fetch_player_item_via_jsonrpc(
     infer_playback_type: Callable[..., str],
     *,
     log_jsonrpc: bool,
-) -> tuple[dict, bool]:
-    """Return (item, toast_allowed). Empty item on failure."""
+) -> tuple[dict, bool, Optional[int]]:
+    """Return (item, toast_allowed, player_id). Empty item on failure."""
     addon = get_addon()
     show_not_found_toast_for_movies = (
         addon_get_bool(addon, "show_not_found_toast_for_movies", False) if addon else False
@@ -96,7 +97,7 @@ def _fetch_player_item_via_jsonrpc(
                 "executeJSONRPC(Player.GetActivePlayers) failed: %s" % exc,
                 tag="jsonrpc",
             )
-        return {}, False
+        return {}, False, None
     if log_jsonrpc:
         log_service_detail("📬 JSON-RPC response: %s" % response_active, tag="jsonrpc")
 
@@ -104,7 +105,7 @@ def _fetch_player_item_via_jsonrpc(
     if err_a:
         if log_jsonrpc:
             log_service_detail("Player.GetActivePlayers parse: %s" % err_a, tag="jsonrpc")
-        return {}, False
+        return {}, False, None
     active_players = active_result.get("result", [])
 
     if not active_players:
@@ -119,7 +120,7 @@ def _fetch_player_item_via_jsonrpc(
                     "executeJSONRPC(Player.GetActivePlayers retry) failed: %s" % exc,
                     tag="jsonrpc",
                 )
-            return {}, False
+            return {}, False, None
         if log_jsonrpc:
             log("📬 JSON-RPC retry response: %s" % retry_response)
         retry_result, err_r = parse_kodi_jsonrpc_raw(retry_response)
@@ -128,7 +129,7 @@ def _fetch_player_item_via_jsonrpc(
                 log_service_detail(
                     "Player.GetActivePlayers retry parse: %s" % err_r, tag="jsonrpc"
                 )
-            return {}, False
+            return {}, False, None
         active_players = retry_result.get("result", [])
 
     if not active_players:
@@ -136,7 +137,7 @@ def _fetch_player_item_via_jsonrpc(
             log_service_detail(
                 "🚫 No active video player found — suppressing toast", tag="jsonrpc"
             )
-        return {}, False
+        return {}, False, None
 
     video_player = next((p for p in active_players if p.get("type") == "video"), None)
     player_id = video_player.get("playerid") if video_player else None
@@ -145,7 +146,7 @@ def _fetch_player_item_via_jsonrpc(
             log_service_detail(
                 "🚫 No video player ID found — suppressing toast", tag="jsonrpc"
             )
-        return {}, False
+        return {}, False, None
 
     query_item = {
         "jsonrpc": "2.0",
@@ -167,7 +168,7 @@ def _fetch_player_item_via_jsonrpc(
             log_service_detail(
                 "executeJSONRPC(Player.GetItem) failed: %s" % exc, tag="jsonrpc"
             )
-        return {}, False
+        return {}, False, None
     if log_jsonrpc:
         log_service_detail("📬 JSON-RPC response: %s" % response_item, tag="jsonrpc")
 
@@ -175,26 +176,27 @@ def _fetch_player_item_via_jsonrpc(
     if err_i:
         if log_jsonrpc:
             log_service_detail("Player.GetItem parse: %s" % err_i, tag="jsonrpc")
-        return {}, False
+        return {}, False, None
     item = item_result.get("result", {}).get("item", {}) or {}
 
     if not item:
         if log_jsonrpc:
             log("⚠ Player.GetItem returned empty item — metadata not ready")
-        return {}, False
+        return {}, False, None
     if not item.get("title") and not item.get("label") and log_jsonrpc:
         log(
             "⚠ Player.GetItem missing title/label — metadata may still be loading "
             "(file-based inference will be used)"
         )
 
-    return item, _toast_allowed_for_item(
+    toast_allowed = _toast_allowed_for_item(
         item,
         show_not_found_toast_for_movies,
         show_not_found_toast_for_tv_episodes,
         infer_playback_type=infer_playback_type,
         log_decision=log_jsonrpc,
     )
+    return item, toast_allowed, player_id
 
 
 def _toast_allowed_for_item(
@@ -340,17 +342,25 @@ def refresh_playback_context(
     need_jsonrpc = force or cached_video != video or cached is None
     player_item: dict = {}
     toast_allowed = False
+    player_id = None
 
     if need_jsonrpc:
         log_service_detail(
             "🚦 Fetching Player.GetItem (cache miss or video change)", tag="jsonrpc"
         )
-        player_item, toast_allowed = _fetch_player_item_via_jsonrpc(
+        player_item, toast_allowed, player_id = _fetch_player_item_via_jsonrpc(
             infer_playback_type, log_jsonrpc=True
+        )
+        set_player_snapshot(
+            monitor,
+            capture_player_snapshot(player_id, player_item, video),
         )
     elif cached:
         player_item = cached.player_item
         toast_allowed = cached.toast_allowed
+        snap = getattr(monitor, "_player_snapshot", None)
+        if snap is not None and snap.video_path != video:
+            set_player_snapshot(monitor, None)
 
     playback_type = infer_playback_type(player_item) if player_item else ""
     log_if_changed("playback_type", "🔍 Playback type: '%s'" % playback_type)
@@ -406,3 +416,4 @@ def refresh_playback_context(
 def invalidate_playback_context_cache(monitor) -> None:
     monitor._playback_context_cache = None
     monitor._playback_context_video = None
+    set_player_snapshot(monitor, None)

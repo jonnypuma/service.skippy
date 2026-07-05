@@ -130,13 +130,25 @@ def set_editor_session_modal(is_open):
         pass
 
 
+def get_home_window(monitor=None):
+    """Return Kodi home window (10000), cached on monitor when provided."""
+    if monitor is not None:
+        cached = getattr(monitor, "_home_window", None)
+        if cached is not None:
+            return cached
+    try:
+        win = xbmcgui.Window(10000)
+    except Exception:
+        return None
+    if monitor is not None:
+        monitor._home_window = win
+    return win
+
+
 def _window_home(win):
     if win is not None:
         return win
-    try:
-        return xbmcgui.Window(10000)
-    except Exception:
-        return None
+    return get_home_window()
 
 
 def segment_editor_modal_is_open(win=None):

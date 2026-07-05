@@ -94,7 +94,9 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 | Linux (CoreELEC) | Tested |
 | Windows 11 | Tested |
 
-Third-party skins—and sometimes **individual colour schemes** within those skins—vary in how they tint **add-on** dialogs. Skippy’s skip dialog and Segment Editor use bundled WindowXML tied to your **Skip dialogue font colour** setting and `resources/skins/default/colors/defaults.xml`. **Estuary** generally matches expectations. Heavily customised skins can still restyle label and button text globally. For example, **Arctic Fuse 3**: the **Bright White** colour scheme has been reported to alter skip dialog text tinting, while **Miami Vaporware** looked normal in testing. If colours look muted or wrong, try another **colour scheme** in the skin, switch to **Estuary** to confirm Skippy’s own styling, or stick with a scheme that leaves add-on dialogs readable.
+Third-party skins—and sometimes **individual themes or colour schemes** within those skins—can **override** Skippy’s **Skip dialogue font colour** on add-on dialogs. Skippy resolves your setting and applies it in bundled WindowXML plus Python `setLabel`, but Kodi still renders those controls in the **active skin’s** font and button context (fonts are not loaded from Skippy’s bundled `Font.xml`). **Estuary** generally matches expectations. Heavily customised skins may restyle label and button text globally regardless of Skippy’s setting.
+
+**Known example — Arctic Fuse 3:** the **Default** theme (also labelled **Bright White** in AF3’s theme picker) has been reported to ignore white and other preset colours on the skip dialog, while **Miami Vaporware** renders white as expected. Other AF3 themes may behave differently. If colours look wrong or muted, try another **theme/colour scheme** in the skin, switch to **Estuary** briefly to confirm Skippy’s own styling, or accept that some skin themes cannot be fully overridden from an add-on.
 
 ---
 
@@ -108,7 +110,7 @@ Third-party skins—and sometimes **individual colour schemes** within those ski
 - Platform-agnostic compatibility: Works seamlessly across Android, Windows, CoreELEC, and Linux.
 - Progress Bar Display toggle: Progress bar which fills up until end of segment. On/off toggle available under settings.
 - Skip dialog modes: **Full** (panel with optional Close, progress bar, icons) or **Minimal** (small corner chip + Skip only). Separate corner placement per mode. See **Skip dialog modes** below.
-- **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied via **`Window.Property(skip_dialog_text_color)`** in bundled WindowXML (see **Skip dialog modes**).
+- **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied in Python on dialog open (see **Skip dialog modes**). **May be overridden by the active Kodi skin or theme** — see **Supported Kodi versions and platforms** above.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
@@ -232,7 +234,9 @@ Small corner **chip** only: background plate (**Minimal plate style**) plus one 
 
 **Skip dialogue font colour** (Playback behavior) offers named presets — white, light grey, grey, dark grey, black, blue, red, green, aquamarine, pink, purple, peach, orange, yellow — with values stored as **ARGB hex** in settings for consistent reads across Kodi builds.
 
-On dialog open, `skipdialog.py` publishes the resolved colour as **`Window.Property(skip_dialog_text_color)`**. Full and Minimal WindowXML bind **`textcolor`** / **`textcolorfocus`** to **`$INFO[Window.Property(skip_dialog_text_color)]`**. Python only updates label **text** (`setLabel` without colour arguments) so focus and skin rendering stay stable. Full mode: the **next-jump** line is control **3011**; the **Segment ending in:** / countdown line is control **2**, refreshed as playback time updates.
+On dialog open, `skipdialog.py` resolves the preset and applies colours via Python **`setLabel`** (`textColor`, `focusedColor`, etc.) on skip buttons and auxiliary labels; bundled WindowXML uses literal hex as a baseline. Full mode: the **next-jump** line is control **3011**; the **Segment ending in:** / countdown line is control **2**, refreshed as playback time updates.
+
+> **Skin / theme caveat:** This setting controls what Skippy *requests*; it does **not** guarantee the final pixel colour on every skin. Third-party skins (and **per-theme variants** such as Arctic Fuse 3 **Default / Bright White** vs **Miami Vaporware**) can override add-on dialog text styling at render time. Check `kodi.log` for `Skip dialog font colour: raw=… resolved=…` — if that line shows the expected colour but the UI still looks wrong, the limitation is on the skin side, not Skippy’s setting resolution.
 
 ---
 
@@ -303,7 +307,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | skip_dialog_position | Corner placement for **Full** mode skip dialog |
 | minimal_skip_dialog_position | Corner placement for **Minimal** mode chip |
 | minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (patched into skin XML before open) |
-| skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied via `Window.Property(skip_dialog_text_color)` in bundled XML |
+| skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied in Python on dialog open (**may be overridden by active skin/theme** — see README) |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |

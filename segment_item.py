@@ -85,20 +85,10 @@ class SegmentItem:
         log_segment(f"🧩 New SegmentItem created: {self}")
 
     def is_active(self, current_time):
-        # Check if current time falls within segment bounds
-        active = self.start_seconds <= current_time <= self.end_seconds
-        log_segment_detail(
-            f"is_active({current_time}) -> {active} for [{self.start_seconds}-{self.end_seconds}] {self.segment_type_label}"
-        )
-        return active
+        return self.start_seconds <= current_time <= self.end_seconds
 
     def get_duration(self):
-        # Return duration of the segment
-        d = self.end_seconds - self.start_seconds
-        log_segment_detail(
-            f"get_duration() -> {d}s for [{self.start_seconds}-{self.end_seconds}] {self.segment_type_label}"
-        )
-        return d
+        return self.end_seconds - self.start_seconds
 
     def to_dict(self):
         # Convert segment to dictionary format

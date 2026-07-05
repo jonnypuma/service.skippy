@@ -602,6 +602,11 @@
                         <dependency type="visible" setting="segment_marker_enabled">true</dependency>
                     </dependencies>
                 </setting>
+                <setting id="toast_online_segments_applied" type="boolean" label="33006" help="33007">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                </setting>
             </group>
         </category>
         <category id="marker" label="30005">

@@ -9,7 +9,39 @@ from typing import Any
 import xbmc
 import xbmcgui
 
-from settings_utils import log
+from settings_utils import addon_get_bool, get_addon, log
+
+
+def try_show_online_segments_applied_toast(
+    ctx: Any,
+    *,
+    video: str,
+    previous_count: int,
+    new_count: int,
+) -> None:
+    """One-shot toast when deferred online segments change the playback timeline."""
+    monitor = ctx.monitor
+    if not video or new_count <= 0:
+        return
+    if previous_count > 0 and new_count <= previous_count:
+        return
+    if getattr(monitor, "online_segments_toast_shown_for_path", None) == video:
+        return
+    addon = get_addon()
+    if not addon_get_bool(addon, "toast_online_segments_applied", True):
+        return
+    try:
+        xbmcgui.Dialog().notification(
+            heading="Skippy",
+            message="Online segments loaded",
+            icon=ctx.icon_path,
+            time=3000,
+            sound=False,
+        )
+        monitor.online_segments_toast_shown_for_path = video
+        log("🔔 Online segments applied toast shown for %s" % video)
+    except Exception as exc:
+        log("❌ Failed to show online segments applied toast: %s" % exc)
 
 
 def try_show_missing_segments_toast(
