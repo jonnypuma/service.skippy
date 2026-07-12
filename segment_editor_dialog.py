@@ -42,7 +42,7 @@ from segment_editor_utils import (
     log_error,
     set_editor_modal_open,
 )
-from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
+from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord, SKIN_RES_720P
 from settings_utils import get_custom_segment_keyword_labels, normalize_label
 
 
@@ -136,10 +136,12 @@ class _EditorPlayerListener(xbmc.Player):
 
 class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skin_res = SKIN_RES_720P
         try:
-            init_window_xml_dialog(super(SegmentEditorDialog, self), args)
+            skin_res = init_window_xml_dialog(super(SegmentEditorDialog, self), args)
         except Exception:
             super().__init__(*args)
+        self._skin_resolution = skin_res
         self.video_path = kwargs.get("video_path")
         self.segments = kwargs.get("segments", [])
         self.current_time = kwargs.get("current_time", 0)
@@ -152,7 +154,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self.pending_end_time = None
         self.is_paused = False
         # List row geometry (must match SegmentEditorDialog.xml list + buttons).
-        sc = scale_skin_coord
+        sc = lambda value: scale_skin_coord(value, skin_res)
         self._list_top = sc(110)
         self._list_item_height = sc(50)
         self._list_height = sc(290)

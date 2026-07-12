@@ -21,6 +21,21 @@ from settings_utils import log, log_service_detail
 _PROBE_RUNNING = "running"
 
 
+def is_deferred_remote_probe_pending(segment_monitor, path=None) -> bool:
+    """True while a background online segment fetch is still running."""
+    if segment_monitor is None:
+        return False
+    lock = getattr(segment_monitor, "deferred_remote_probe_lock", None)
+    if lock is None:
+        return False
+    with lock:
+        if segment_monitor.deferred_remote_probe_result != _PROBE_RUNNING:
+            return False
+        if path is not None and segment_monitor.deferred_remote_probe_path != path:
+            return False
+        return True
+
+
 def clear_deferred_remote_probe_state(segment_monitor) -> None:
     """Drop pending/running probe state (new video, replay reset, service start)."""
     if segment_monitor is None:

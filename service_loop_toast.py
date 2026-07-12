@@ -9,6 +9,7 @@ from typing import Any
 import xbmc
 import xbmcgui
 
+from service_deferred_remote_probe import is_deferred_remote_probe_pending
 from settings_utils import addon_get_bool, get_addon, log
 
 
@@ -63,6 +64,11 @@ def try_show_missing_segments_toast(
     if monitor.segment_file_found:
         return
     if ctx.both_segment_sources_disabled_for_playback(playback_type):
+        return
+    if is_deferred_remote_probe_pending(monitor, video):
+        log(
+            "⏳ [TOAST BLOCK] Suppressed — deferred online segment probe still running"
+        )
         return
 
     try:

@@ -25,11 +25,8 @@ FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 _FULL_SKIP_PANEL_GROUP_ID = 3080
 _FULL_SKIP_PANEL_BACKDROP_ID = 3081
 
-FULL_SKIP_PROGRESS_BAR_WIDTH = 370  # base width; use _skip_sc() at runtime for 1080i
+FULL_SKIP_PROGRESS_BAR_WIDTH = 370  # base width; use _skin_sc() at runtime for 1080i
 
-
-def _skip_sc(value):
-    return scale_skin_coord(value)
 _SMOOTH_PROGRESS_BG_ID = 3030
 _SMOOTH_PROGRESS_FILL_ID = 3031
 # Skin <visible> on 3030/3031 reads this; Python setVisible on images is unreliable vs XML.
@@ -286,15 +283,20 @@ def _seed_progress_values(current_time, segment_start, total_duration, countdown
 
 
 class SkipDialog(xbmcgui.WindowXMLDialog):
+    def _skin_sc(self, value):
+        return scale_skin_coord(value, getattr(self, "_skin_resolution", None))
+
     def _set_smooth_bar_window_visible(self, visible):
         self.setProperty(_SMOOTH_BAR_WINDOW_PROP, "true" if visible else "false")
 
     def __init__(self, *args, **kwargs):
         try:
-            init_window_xml_dialog(super(SkipDialog, self), args)
+            self._skin_resolution = init_window_xml_dialog(super(SkipDialog, self), args)
             self.segment = kwargs.get("segment", None)
             self._minimal_mode = False
-            log(f"📦 Loaded dialog layout: {args[0]}")
+            log(
+                f"📦 Loaded dialog layout: {args[0]} ({self._skin_resolution})"
+            )
         except Exception as e:
             log_always(f"❌ Failed to initialize SkipDialog (possible Kodi/device limitation): {e}")
             log_always(f"❌ Dialog initialization failed with args: {args}, kwargs: {kwargs}")
@@ -434,7 +436,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
     def _apply_full_skip_layout(self, addon):
         """Stack optional Full rows, set final panel height, seed progress from playhead, then show."""
-        sc = _skip_sc
+        sc = self._skin_sc
         CONTENT_TOP = sc(41)
         GAP_AFTER_JUMP = sc(5)
         GAP_BEFORE_PROGRESS = sc(4)
@@ -451,7 +453,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         show_progress = addon_get_bool(ad, "show_progress_bar", False) if ad else False
         countdown = addon_get_bool(ad, "progress_bar_countdown", False) if ad else False
 
-        progress_h = (
+        progress_h = sc(
             addon_get_int(ad, "progress_bar_height", 16, minimum=5, maximum=32)
             if ad
             else 16
@@ -622,9 +624,13 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                             )
                             pct_f = _progress_display_percent_float(elapsed_f, countdown)
                             w = int(
-                                round((pct_f / 100.0) * _skip_sc(FULL_SKIP_PROGRESS_BAR_WIDTH))
+                                round(
+                                    (pct_f / 100.0)
+                                    * self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
+                                )
                             )
-                            w = max(0, min(_skip_sc(FULL_SKIP_PROGRESS_BAR_WIDTH), w))
+                            bar_w = self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
+                            w = max(0, min(bar_w, w))
                             if w != self._last_smooth_fill_w:
                                 self._last_smooth_fill_w = w
                                 fill.setWidth(w)

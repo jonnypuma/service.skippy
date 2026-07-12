@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.5] - 2026-07-12
+
+### Fixed
+- **Skip dialog / segment editor layout on Windows 1080p**: WindowXML dialogs now **lock** the skin folder chosen at `__init__` for all Python coordinate scaling (`scale_skin_coord`), instead of re-querying `getScreenHeight()` during `onInit` (can drop below 1080 during fullscreen playback and mis-layout 1080i XML). Resolution detection also treats **width ≥ 1920** as 1080i when height is under-reported. Skip dialog progress bar height is scaled to match 1080i skin XML.
+- **False “no segments” toast with Local first**: Missing-segments toast is suppressed while a **deferred online segment probe** is still running for the current file.
+
 ## [5.1.4] - 2026-07-05
 
 ### Fixed

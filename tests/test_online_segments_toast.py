@@ -42,6 +42,33 @@ class OnlineSegmentsToastTests(unittest.TestCase):
         )
         mock_dialog.return_value.notification.assert_not_called()
 
+    @patch("service_loop_toast.xbmc.getCondVisibility", return_value=False)
+    @patch("service_loop_toast.xbmcgui.Dialog")
+    @patch("service_loop_toast.is_deferred_remote_probe_pending", return_value=True)
+    def test_missing_toast_suppressed_while_probe_running(
+        self, _pending, mock_dialog, _paused
+    ):
+        from service_loop_toast import try_show_missing_segments_toast
+
+        monitor = MagicMock()
+        monitor.playback_ready = True
+        monitor.shown_missing_file_toast = False
+        monitor.playback_ready_time = 0
+        monitor.segment_file_found = False
+        ctx = MagicMock()
+        ctx.monitor = monitor
+        ctx.player.isPlayingVideo.return_value = True
+        ctx.both_segment_sources_disabled_for_playback.return_value = False
+        try_show_missing_segments_toast(
+            ctx,
+            video="/v.mkv",
+            playback_type="episode",
+            toast_movies=False,
+            toast_episodes=True,
+            current_time=10.0,
+        )
+        mock_dialog.return_value.notification.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
