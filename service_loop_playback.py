@@ -11,10 +11,10 @@ import xbmc
 
 from playback_segment_cache import publish_parse_cache
 from segment_item import segment_is_active_lenient
-from service_playback_context import invalidate_playback_context_cache
 from service_segment_processed_cache import clear_segment_processed_cache
 from service_segment_prefetch import clear_tv_prefetch_thread_state
 from service_sidecar_probe_cache import clear_sidecar_probe_cache
+from service_skip_seek_property import clear_skippy_skipping
 from settings_utils import log, log_playback_settings_snapshot
 
 
@@ -43,8 +43,12 @@ def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     monitor._home_window = None
     clear_tv_prefetch_thread_state(monitor)
     ctx.clear_deferred_remote_probe_state(monitor)
-    invalidate_playback_context_cache(monitor)
+    # Keep playback-context cache when the path is unchanged. refresh_playback_context
+    # already refetches Player.GetItem when the video path differs; invalidating here
+    # (right after a successful refresh on new-video ticks) forced a second GetItem
+    # and delayed the next skip dialog by ~1s.
     clear_sidecar_probe_cache(monitor)
+    clear_skippy_skipping(monitor)
     log("%s state cleared - recently_dismissed now has %d items" % (log_prefix, len(monitor.recently_dismissed)))
 
 

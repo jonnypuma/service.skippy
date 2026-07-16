@@ -329,7 +329,11 @@ def refresh_playback_context(
 
     try:
         current_time = player.getTime()
-        log_if_changed("playback_time", "⏱️ Playback time: %.2fs" % current_time)
+        # Avoid logging every tick (time always changes); note second boundaries only.
+        log_if_changed(
+            "playback_time_sec",
+            "⏱️ Playback time: %ds" % int(current_time),
+        )
     except RuntimeError:
         log("⚠ player.getTime() failed — no media playing")
         return None

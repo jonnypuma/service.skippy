@@ -1,5 +1,56 @@
 # Changelog
 
+## [5.2.8] - 2026-07-16
+
+### Fixed
+- **Intro dialog after recap skip**: After a confirmed ask/auto seek, Skippy immediately chains skip processing at the landing time (no wait for the next 1s monitor tick), skips ask debounce on the chained prompt, and allows the ask dialog while `Skippy.Skipping` is held even if Kodi briefly reports Paused.
+- **Post-new-video GetItem delay**: New-video/replay reset no longer clears the playback-context cache that was just populated by `refresh_playback_context` (that forced a redundant `Player.GetItem` on the next tick and delayed the following skip dialog).
+
+### Changed
+- **Log spam during `main` (never)**: Never-skip segments are marked prompted so skip mode is not re-resolved every tick; skip-mode match lines are detail-only; warm cache-hit / path fallback / per-tick playback-time lines are quieter.
+
+## [5.2.7] - 2026-07-16
+
+### Fixed
+- **Hide OSD during skip**: Hold `Skippy.Skipping` for **~5s** and until `Player.HasPerformedSeek(3)` / caching settle (was ~2s / seek(2)), so the seek bar does not flash right after the skip toast.
+- **Intro dialog after recap skip**: Run skip processing **before** deferred online probe/sync when segments are already loaded, and do not treat brief post-seek **Paused** as a full processing stop while `Skippy.Skipping` is active (Kodi often reports paused for several seconds after seek).
+
+## [5.2.6] - 2026-07-16
+
+### Added
+- **Hide OSD display during skip** setting (`signal_skipping_for_skins`, default **off**) under **Playback and Skip Dialog → Global options**. When on, Skippy sets Home property `Skippy.Skipping` around auto-skip / confirmed ask-skip **seeks** (not while the ask dialog is open). Help text notes this **requires a per-skin `DialogSeekBar.xml` edit** (or a patching add-on); turn off to keep the normal seek OSD after skips.
+
+## [5.2.5] - 2026-07-16
+
+### Added
+- **`Skippy.Skipping` Home window property**: Set immediately before auto-skip / confirmed ask-skip `seekTime`, cleared after seek+caching settle (min ~2s) or on stop/new video. Stock skins ignore it; cooperative skins (or DialogSeekBar patches) can hide seek OSD while the property is set. See README **Skin: hide seek OSD during Skippy skips**.
+
+## [5.2.4] - 2026-07-14
+
+### Removed
+- **Suppress seek OSD after skip (experimental)**: Removed — `Dialog.Close(seekbar)` only flashed against skin-driven seek OSD; not useful in practice.
+
+## [5.2.3] - 2026-07-14
+
+### Changed
+- **Suppress seek OSD after skip (experimental)**: Now keeps calling `Dialog.Close(seekbar|fullscreeninfo,true)` for **~5 seconds** (every 0.3s) instead of a single flash close. Extends the window if another skip happens while suppression is active.
+
+## [5.2.2] - 2026-07-14
+
+### Added
+- **Suppress seek OSD after skip (experimental)**: New setting under **Playback and Skip Dialog → Global options** (`suppress_seek_osd_after_skip`, default off). After auto-skip or confirmed ask-skip seeks, Skippy calls `Dialog.Close(seekbar,true)` (and `fullscreeninfo`) — skin-dependent; remove if it proves unreliable.
+
+## [5.2.1] - 2026-07-13
+
+### Changed
+- **Chapter XML default write name**: New sidecars are written as **`_chapters.xml`** (Segment Marker, Segment Editor, online save). Existing **`-chapters.xml`**, **`_chapters.xml`**, and **`.chapters.xml`** files are still discovered and updated when present.
+
+## [5.2.0] - 2026-07-13
+
+### Added
+- **Upload history backup / restore (merge)**: Backup & Restore settings category has separate actions for `online_upload_submissions.json` (TheIntroDB / IntroDB.app upload dedupe fingerprints). Restore **merges** fingerprints into the local profile file; duplicates are skipped. Implemented in **`upload_history_backup.py`** via `RunScript(service.skippy,backup_upload_history|restore_upload_history)`.
+- **Pause during online lookup**: New setting pauses playback while Skippy runs a **blocking** online segment fetch (**Online first**, or **Local first** when no local sidecar exists). With the setting off, Local first without a sidecar still uses the background deferred probe. Does not pause when a local sidecar is present (background probe for save/sync only).
+
 ## [5.1.5] - 2026-07-12
 
 ### Fixed

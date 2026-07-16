@@ -22,7 +22,12 @@ from settings_utils import (
     log,
     log_service_detail,
 )
+from service_skip_seek_property import mark_skippy_skipping
 from skipdialog import SkipDialog
+
+
+# Max chained seeks in one tick (recap→intro→…); prevents runaway auto-skip loops.
+_MAX_SKIP_CHAIN_DEPTH = 8
 
 
 def process_segment_skips(
@@ -33,6 +38,8 @@ def process_segment_skips(
     show_dialogs: bool,
     current_time: float,
     major_rewind_detected: bool,
+    _chain_depth: int = 0,
+    _skip_ask_debounce: bool = False,
 ) -> None:
     monitor = ctx.monitor
     addon = get_addon()
@@ -64,6 +71,8 @@ def process_segment_skips(
         (int(round(s.start_seconds)), int(round(s.end_seconds)))
         for s in active_for_playback
     }
+
+    land_time = None
 
     for segment in segments_to_process:
         seg_id = (
@@ -118,16 +127,20 @@ def process_segment_skips(
             if seg_id not in monitor.recently_dismissed and seg_id in monitor.prompted:
                 monitor.prompted.remove(seg_id)
 
-        log(
+        ctx.log_if_changed(
+            "active_seg_%s" % (seg_id,),
             "🔎 Processing active segment: '%s' [%s-%s]"
             % (
                 segment.segment_type_label,
                 segment.start_seconds,
                 segment.end_seconds,
-            )
+            ),
         )
         behavior = get_user_skip_mode(segment.segment_type_label)
-        log("🧪 Segment behavior: %s" % behavior)
+        ctx.log_if_changed(
+            "behavior_%s" % (seg_id,),
+            "🧪 Segment behavior: %s" % behavior,
+        )
 
         if not show_dialogs:
             ctx.log_if_changed(
@@ -141,16 +154,19 @@ def process_segment_skips(
                 "never_%s" % (seg_id,),
                 "🚫 Skipping dialog for '%s' (never)" % segment.segment_type_label,
             )
+            # Mark prompted so we do not re-resolve skip mode every monitor tick.
+            monitor.prompted.add(seg_id)
             continue
 
-        log(
+        ctx.log_if_changed(
+            "active_behavior_%s" % (seg_id,),
             "🕒 Active segment: %s [%s-%s] → %s"
             % (
                 segment.segment_type_label,
                 segment.start_seconds,
                 segment.end_seconds,
                 behavior,
-            )
+            ),
         )
 
         if not is_skip_enabled(playback_type):
@@ -161,9 +177,43 @@ def process_segment_skips(
         jump_to = compute_skip_seek_destination_seconds(segment, addon)
 
         if behavior == "auto":
-            _handle_auto_skip(ctx, segment, seg_id, jump_to, addon)
+            landed = _handle_auto_skip(ctx, segment, seg_id, jump_to, addon)
+            if landed is not None:
+                land_time = landed
+                break
         elif behavior == "ask":
-            _handle_ask_skip(ctx, segment, seg_id, jump_to, addon)
+            landed = _handle_ask_skip(
+                ctx,
+                segment,
+                seg_id,
+                jump_to,
+                addon,
+                skip_debounce=_skip_ask_debounce,
+            )
+            if landed is not None:
+                land_time = landed
+                break
+
+    if (
+        land_time is not None
+        and _chain_depth < _MAX_SKIP_CHAIN_DEPTH
+        and monitor.playback_ready
+    ):
+        log_service_detail(
+            "⛓️ Chaining skip processing at %.2fs (depth %d)"
+            % (land_time, _chain_depth + 1),
+            tag="playback",
+        )
+        process_segment_skips(
+            ctx,
+            video=video,
+            playback_type=playback_type,
+            show_dialogs=show_dialogs,
+            current_time=float(land_time),
+            major_rewind_detected=False,
+            _chain_depth=_chain_depth + 1,
+            _skip_ask_debounce=True,
+        )
 
 
 def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
@@ -190,7 +240,7 @@ def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
             monitor.cleared_parent_dismissals.add(clearance_key)
 
 
-def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
+def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None:
     monitor = ctx.monitor
     log(
         "⚙ Auto-skip behavior triggered for segment ID %s (%s)"
@@ -198,6 +248,7 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
     )
     _track_skip_to_nested(ctx, segment, seg_id)
     log_service_detail("🎯 Auto-skip: Issuing seekTime(%s) now..." % jump_to, tag="playback")
+    mark_skippy_skipping(monitor, addon)
     ctx.player.seekTime(jump_to)
     try:
         actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
@@ -207,14 +258,24 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         "🎯 Auto-skip: After seek: requested=%s, actual=%s" % (jump_to, actual_time),
         tag="playback",
     )
-    monitor.last_time = jump_to
+    land = float(jump_to)
+    monitor.last_time = land
     if seg_id not in monitor.prompted:
         monitor.prompted.add(seg_id)
     _maybe_show_skip_toast(ctx, addon, segment, "auto")
     log("⚡ Auto-skipped to %s" % jump_to)
+    return land
 
 
-def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
+def _handle_ask_skip(
+    ctx: Any,
+    segment,
+    seg_id,
+    jump_to,
+    addon,
+    *,
+    skip_debounce: bool = False,
+) -> float | None:
     monitor = ctx.monitor
     log(
         "🧠 Ask-skip behavior triggered for segment ID %s (%s)"
@@ -228,9 +289,12 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         dialog_is_playing = False
         dialog_is_paused = True
 
-    if dialog_is_paused or not dialog_is_playing:
+    # After seekTime, Kodi often reports Paused briefly; allow ask while we hold
+    # Skippy.Skipping so chained intro/recap dialogs are not deferred a full tick.
+    post_skip_grace = getattr(monitor, "skippy_skipping_since", None) is not None
+    if (dialog_is_paused or not dialog_is_playing) and not post_skip_grace:
         log("⏸️ Video paused/stopped right before dialog — skipping segment %s" % (seg_id,))
-        return
+        return None
 
     try:
         home = get_home_window(ctx.monitor)
@@ -245,7 +309,7 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
             "skip_dlg_segment_editor_open",
             "⏸️ Skip dialog suppressed — Segment Editor is open",
         )
-        return
+        return None
 
     if monitor.skip_dialog_modal_active:
         ctx.log_if_changed(
@@ -253,12 +317,12 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
             "⏳ Skip dialog already active — skipping duplicate ask for segment %s"
             % (seg_id,),
         )
-        return
+        return None
 
     monitor.skip_dialog_modal_active = True
     try:
         debounce_ms = addon_get_int(addon, "ask_dialog_debounce_ms", 300, minimum=0, maximum=500)
-        if debounce_ms > 0:
+        if debounce_ms > 0 and not skip_debounce:
             log("🛑 Debouncing skip dialog for %dms" % debounce_ms)
             xbmc.sleep(debounce_ms)
 
@@ -285,7 +349,7 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         except Exception as e:
             log("❌ Failed to create skip dialog: %s" % e)
             monitor.prompted.add(seg_id)
-            return
+            return None
 
         confirmed = None
         try:
@@ -293,7 +357,7 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         except Exception as e:
             log("❌ Dialog doModal() failed: %s" % e)
             monitor.prompted.add(seg_id)
-            return
+            return None
 
         response = getattr(dialog, "_skippy_dialog_result", None)
         if response is None:
@@ -315,10 +379,11 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
                 monitor.prompted.add(seg_id)
             log_service_detail("🎯 Issuing seekTime(%s) now..." % jump_to, tag="playback")
             try:
+                mark_skippy_skipping(monitor, addon)
                 ctx.player.seekTime(float(jump_to))
             except (TypeError, ValueError, RuntimeError) as exc:
                 log("❌ seekTime(%s) failed: %s" % (jump_to, exc))
-                return
+                return None
             try:
                 actual_time = ctx.player.getTime() if ctx.player.isPlaying() else -1
             except RuntimeError:
@@ -327,9 +392,11 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
                 "🎯 After seek: requested=%s, actual=%s" % (jump_to, actual_time),
                 tag="playback",
             )
-            monitor.last_time = float(jump_to)
+            land = float(jump_to)
+            monitor.last_time = land
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
+            return land
         elif response is False:
             log("🙅 User dismissed skip dialog for segment ID %s" % (seg_id,))
             monitor.recently_dismissed.add(seg_id)
@@ -350,6 +417,7 @@ def _handle_ask_skip(ctx: Any, segment, seg_id, jump_to, addon) -> None:
         monitor.prompted.add(seg_id)
     finally:
         monitor.skip_dialog_modal_active = False
+    return None
 
 
 def _maybe_show_skip_toast(ctx: Any, addon, segment, reason: str) -> None:

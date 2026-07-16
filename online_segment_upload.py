@@ -280,6 +280,41 @@ def _save_history(data: dict) -> None:
         _up_log_err("online upload: could not save history: %s" % exc)
 
 
+def load_upload_submission_history() -> dict:
+    """Return upload dedupe history from the addon profile (empty buckets if missing)."""
+    return _load_history()
+
+
+def merge_upload_submission_history(incoming: dict) -> tuple[int, int]:
+    """Union fingerprint lists into profile history. Returns (added, already_present)."""
+    data = _load_history()
+    added = 0
+    already = 0
+    for bucket in ("theintrodb", "introdb"):
+        inc = (incoming or {}).get(bucket) or []
+        if not isinstance(inc, list):
+            continue
+        lst = data.setdefault(bucket, [])
+        if not isinstance(lst, list):
+            lst = []
+            data[bucket] = lst
+        seen = set(lst)
+        for fp in inc:
+            if not isinstance(fp, str):
+                continue
+            fp = fp.strip()
+            if not fp:
+                continue
+            if fp in seen:
+                already += 1
+                continue
+            lst.append(fp)
+            seen.add(fp)
+            added += 1
+    _save_history(data)
+    return added, already
+
+
 def _history_contains(api_bucket: str, fp: str) -> bool:
     data = _load_history()
     lst = data.get(api_bucket) or []

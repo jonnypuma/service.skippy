@@ -587,7 +587,7 @@ def is_skip_dialog_enabled(playback_type):
 
 def get_user_skip_mode(label):
     title = normalize_label(label)
-    log(f"🔍 Determining skip mode for: '{title}'")
+    log_service_detail(f"🔍 Determining skip mode for: '{title}'")
 
     addon = get_addon()
     if not addon:
@@ -596,7 +596,7 @@ def get_user_skip_mode(label):
     def parse_setting(key):
         raw = addon_get_setting_text(addon, key, "") or ""
         if not raw.strip():
-            log(f"⚠ Setting '{key}' is empty")
+            log_service_detail(f"⚠ Setting '{key}' is empty")
         return set(normalize_label(x) for x in raw.split(",") if x.strip())
 
     always = parse_setting("segment_always_skip")
@@ -607,16 +607,16 @@ def get_user_skip_mode(label):
         log("⚠️ All skip mode lists are empty — using default behavior: ask")
 
     if title in always:
-        log(f"⚡ Matched in 'always' list: {title}")
+        log_service_detail(f"⚡ Matched in 'always' list: {title}")
         return "auto"
     if title in ask:
-        log(f"❓ Matched in 'ask' list: {title}")
+        log_service_detail(f"❓ Matched in 'ask' list: {title}")
         return "ask"
     if title in never:
-        log(f"🚫 Matched in 'never' list: {title}")
+        log_service_detail(f"🚫 Matched in 'never' list: {title}")
         return "never"
 
-    log(f"🕳️ No skip mode match found for: {title} → using default: ask")
+    log_service_detail(f"🕳️ No skip mode match found for: {title} → using default: ask")
     return "ask"
 
 # Must stay in sync with ``resources/settings.xml`` default for ``edl_action_mapping``.

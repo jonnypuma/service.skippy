@@ -223,11 +223,19 @@ def parse_and_process_segments(
     try:
         is_playing_parse = segment_player.isPlayingVideo()
         is_paused_parse = xbmc.getCondVisibility("Player.Paused")
-        if is_paused_parse or not is_playing_parse:
+        post_skip_grace = (
+            getattr(segment_monitor, "skippy_skipping_since", None) is not None
+        )
+        if (is_paused_parse or not is_playing_parse) and not post_skip_grace:
             log(
                 f"🔕 parse_and_process_segments called while paused — returning empty list to prevent toast spamming (is_playing={is_playing_parse}, is_paused={is_paused_parse})"
             )
             return []
+        if post_skip_grace and (is_paused_parse or not is_playing_parse):
+            log(
+                "⏸️ parse_and_process_segments continuing while paused "
+                "(Skippy.Skipping active after seek)"
+            )
     except RuntimeError:
         log(
             "🔕 parse_and_process_segments called but player state unavailable — returning empty list"

@@ -90,6 +90,34 @@ def main():
                     segment_marker.log,
                 )
             return
+        if command == "backup_upload_history":
+            from upload_history_backup import run_backup_ui
+            from settings_utils import skippy_notification_icon
+
+            import segment_marker
+
+            addon = segment_marker.get_addon()
+            if addon:
+                run_backup_ui(
+                    addon,
+                    skippy_notification_icon(addon) or "",
+                    segment_marker.log,
+                )
+            return
+        if command == "restore_upload_history":
+            from upload_history_backup import run_restore_ui
+            from settings_utils import skippy_notification_icon
+
+            import segment_marker
+
+            addon = segment_marker.get_addon()
+            if addon:
+                run_restore_ui(
+                    addon,
+                    skippy_notification_icon(addon) or "",
+                    segment_marker.log,
+                )
+            return
 
     import segment_marker
 

@@ -13,14 +13,14 @@ from settings_utils import get_edl_label_to_action_map, get_edl_type_map
 
 # Matroska-style chapter sidecars next to ``video.mkv`` (also used by ``service`` / Segment Marker).
 CHAPTER_XML_SIDECAR_SUFFIXES = (
-    "-chapters.xml",
     "_chapters.xml",
+    "-chapters.xml",
     ".chapters.xml",
     "-chapter.xml",
     "_chapter.xml",
     ".chapter.xml",
 )
-DEFAULT_NEW_CHAPTER_XML_SUFFIX = "-chapters.xml"
+DEFAULT_NEW_CHAPTER_XML_SUFFIX = "_chapters.xml"
 
 
 def normalize_matroska_chapter_xml_text(xml_data):

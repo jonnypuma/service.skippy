@@ -588,8 +588,8 @@ msgid "Edit .edl and chapters.xml sidecars during playback (add, change, remove 
 msgstr "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
 
 msgctxt "#37002"
-msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and -chapters.xml. EDL only or Chapters XML only: a single format."
-msgstr "Which sidecar file(s) the editor writes when you save. Both: .edl and -chapters.xml. EDL only or Chapters XML only: a single format."
+msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and _chapters.xml. EDL only or Chapters XML only: a single format."
+msgstr "Which sidecar file(s) the editor writes when you save. Both: .edl and _chapters.xml. EDL only or Chapters XML only: a single format."
 
 msgctxt "#37004"
 msgid "Keyboard editor shortcut"
@@ -674,6 +674,46 @@ msgstr "This file is not a valid Skippy backup."
 msgctxt "#38008"
 msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
 msgstr "Applied %s settings; %s entries were skipped (unknown key or error)."
+
+msgctxt "#38009"
+msgid "Back up upload history to JSON…"
+msgstr "Back up upload history to JSON…"
+
+msgctxt "#38010"
+msgid "Export online segment upload fingerprints (TheIntroDB / IntroDB.app dedupe history) from this device. Pick a writable folder; a timestamped skippy-upload-history-backup-*.json file is created."
+msgstr "Export online segment upload fingerprints (TheIntroDB / IntroDB.app dedupe history) from this device. Pick a writable folder; a timestamped skippy-upload-history-backup-*.json file is created."
+
+msgctxt "#38011"
+msgid "Restore upload history from JSON (merge)…"
+msgstr "Restore upload history from JSON (merge)…"
+
+msgctxt "#38012"
+msgid "Select a Skippy upload history backup .json file. Fingerprints already on this device are kept; new entries from the file are merged in."
+msgstr "Select a Skippy upload history backup .json file. Fingerprints already on this device are kept; new entries from the file are merged in."
+
+msgctxt "#38013"
+msgid "Merge upload history from this backup? Existing fingerprints on this device are kept; new fingerprints from the file are added."
+msgstr "Merge upload history from this backup? Existing fingerprints on this device are kept; new fingerprints from the file are added."
+
+msgctxt "#38014"
+msgid "Merged upload history: %s new fingerprint(s); %s already present."
+msgstr "Merged upload history: %s new fingerprint(s); %s already present."
+
+msgctxt "#38015"
+msgid "Pause during online lookup"
+msgstr "Pause during online lookup"
+
+msgctxt "#38016"
+msgid "Pause video while Skippy fetches online segments (Online first, or Local first when no local sidecar exists). Playback resumes when the lookup finishes. Does not pause background lookup when a local sidecar is already in use."
+msgstr "Pause video while Skippy fetches online segments (Online first, or Local first when no local sidecar exists). Playback resumes when the lookup finishes. Does not pause background lookup when a local sidecar is already in use."
+
+msgctxt "#38017"
+msgid "Hide OSD display during skip"
+msgstr "Hide OSD display during skip"
+
+msgctxt "#38018"
+msgid "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
+msgstr "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
 
 msgctxt "#39000"
 msgid "Upload to online sources"
@@ -946,8 +986,8 @@ msgid "Save format"
 msgstr "Save format"
 
 msgctxt "#36018"
-msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and -chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to -chapters.xml file."
-msgstr "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and -chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to -chapters.xml file."
+msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and _chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to _chapters.xml file."
+msgstr "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and _chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to _chapters.xml file."
 
 msgctxt "#36019"
 msgid "Keyboard marker shortcut"

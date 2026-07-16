@@ -20,6 +20,10 @@ from service_deferred_remote_probe import (
     pop_deferred_remote_for_playback,
     schedule_deferred_remote_probe,
 )
+from service_online_lookup_pause import (
+    pause_during_online_lookup_enabled,
+    run_blocking_online_lookup,
+)
 from service_player_snapshot import get_player_snapshot
 from service_segment_prefetch import schedule_tv_successor_prefetch
 from service_sidecar_paths import (
@@ -46,6 +50,32 @@ def _log_seg_detail(msg):
 def _embedded_player_id(segment_monitor):
     snap = get_player_snapshot(segment_monitor)
     return snap.player_id if snap is not None else None
+
+
+def _fetch_tv_remote_segments(segment_player, segment_monitor):
+    def _do_fetch():
+        try:
+            total_time = segment_player.getTotalTime()
+        except RuntimeError:
+            total_time = 0
+        return fetch_remote_tv_segments(
+            total_time, segment_monitor.remote_segment_cache
+        ) or []
+
+    return run_blocking_online_lookup(segment_player, _do_fetch)
+
+
+def _fetch_movie_remote_segments(segment_player, segment_monitor):
+    def _do_fetch():
+        try:
+            total_time = segment_player.getTotalTime()
+        except RuntimeError:
+            total_time = 0
+        return fetch_remote_movie_segments(
+            total_time, segment_monitor.remote_segment_cache
+        ) or []
+
+    return run_blocking_online_lookup(segment_player, _do_fetch)
 
 
 def _invoke_local_to_online_sync(
@@ -519,28 +549,32 @@ def _parse_source_segments_uncached(
                 segment_monitor, path, playback_type
             ) or []
         if tv_online and not defer_remote:
-            try:
-                total_time = segment_player.getTotalTime()
-            except RuntimeError:
-                total_time = 0
-            remote_list = fetch_remote_tv_segments(
-                total_time, segment_monitor.remote_segment_cache
-            )
+            remote_list = _fetch_tv_remote_segments(segment_player, segment_monitor)
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-        elif tv_online and defer_remote and not remote_list:
-            log(
-                "📺 LocalFirst — deferring online segment lookup to background"
-            )
-            schedule_deferred_remote_probe(
-                segment_monitor,
-                path,
-                playback_type,
-                local_list,
-                local_file_found,
-                segment_player,
-            )
-        elif tv_online and defer_remote and local_list:
+        elif tv_online and defer_remote and not remote_list and not local_list:
+            if pause_during_online_lookup_enabled(addon):
+                log(
+                    "📺 LocalFirst — synchronous online lookup (pause during lookup enabled)"
+                )
+                remote_list = _fetch_tv_remote_segments(
+                    segment_player, segment_monitor
+                )
+                if remote_list:
+                    on_remote_segments_saved(path, remote_list)
+            else:
+                log(
+                    "📺 LocalFirst — deferring online segment lookup to background"
+                )
+                schedule_deferred_remote_probe(
+                    segment_monitor,
+                    path,
+                    playback_type,
+                    local_list,
+                    local_file_found,
+                    segment_player,
+                )
+        elif tv_online and defer_remote and not remote_list and local_list:
             log(
                 "📺 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
@@ -651,28 +685,34 @@ def _parse_source_segments_uncached(
                 segment_monitor, path, playback_type
             ) or []
         if movie_online and not movie_defer_remote:
-            try:
-                total_time = segment_player.getTotalTime()
-            except RuntimeError:
-                total_time = 0
-            remote_list = fetch_remote_movie_segments(
-                total_time, segment_monitor.remote_segment_cache
+            remote_list = _fetch_movie_remote_segments(
+                segment_player, segment_monitor
             )
             if remote_list:
                 on_remote_segments_saved(path, remote_list)
-        elif movie_online and movie_defer_remote and not remote_list:
-            log(
-                "🎬 LocalFirst — deferring online segment lookup to background"
-            )
-            schedule_deferred_remote_probe(
-                segment_monitor,
-                path,
-                playback_type,
-                local_list,
-                local_file_found,
-                segment_player,
-            )
-        elif movie_online and movie_defer_remote and local_list:
+        elif movie_online and movie_defer_remote and not remote_list and not local_list:
+            if pause_during_online_lookup_enabled(addon):
+                log(
+                    "🎬 LocalFirst — synchronous online lookup (pause during lookup enabled)"
+                )
+                remote_list = _fetch_movie_remote_segments(
+                    segment_player, segment_monitor
+                )
+                if remote_list:
+                    on_remote_segments_saved(path, remote_list)
+            else:
+                log(
+                    "🎬 LocalFirst — deferring online segment lookup to background"
+                )
+                schedule_deferred_remote_probe(
+                    segment_monitor,
+                    path,
+                    playback_type,
+                    local_list,
+                    local_file_found,
+                    segment_player,
+                )
+        elif movie_online and movie_defer_remote and not remote_list and local_list:
             log(
                 "🎬 LocalFirst with local sidecar — deferring online segment lookup (dialog path)"
             )
@@ -790,16 +830,12 @@ def get_cached_source_segments(
         last_check = cache.get("last_sidecar_check", 0)
         if now - last_check < sidecar_mtime_check_interval:
             segment_monitor.segment_file_found = cache.get("segment_file_found", False)
-            _log_seg_detail(
-                "♻ Using cached source segments (sidecar check interval not reached)"
-            )
             return _clone_segments(cache.get("segments", []))
 
         sidecar_sig = _sidecar_signature(path, segment_monitor)
         cache["last_sidecar_check"] = now
         if sidecar_sig == cache.get("sidecar_signature"):
             segment_monitor.segment_file_found = cache.get("segment_file_found", False)
-            _log_seg_detail("♻ Using cached source segments (sidecars unchanged)")
             return _clone_segments(cache.get("segments", []))
 
         log("🔄 Sidecar file change detected — reparsing segments")

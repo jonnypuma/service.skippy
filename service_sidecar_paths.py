@@ -6,15 +6,29 @@ import xml.etree.ElementTree as ET
 import xbmc
 import xbmcvfs
 
-from segment_editor_parser import CHAPTER_XML_SIDECAR_SUFFIXES, normalize_matroska_chapter_xml_text
+from segment_editor_parser import (
+    CHAPTER_XML_SIDECAR_SUFFIXES,
+    DEFAULT_NEW_CHAPTER_XML_SUFFIX,
+    normalize_matroska_chapter_xml_text,
+)
 from settings_utils import get_addon, log, log_service_detail
 
 # Jellyfin Kodi plugin (chapters/edl exporter) may place exports under this folder beside the video.
 _JF_CHAPTERS_SUBDIR = ".chapters"
 
+# Deduplicate high-frequency path detail lines (sidecar checks every few seconds).
+_last_paths_detail = {}
+
 
 def _log_paths_detail(msg):
     log_service_detail(msg, tag="paths")
+
+
+def _log_paths_detail_once(key, msg):
+    if _last_paths_detail.get(key) == msg:
+        return
+    _last_paths_detail[key] = msg
+    _log_paths_detail(msg)
 
 
 def _dedupe_paths(paths):
@@ -50,7 +64,7 @@ def _unique_trimmed_basenames(video_path):
 
 def _chapter_xml_paths_to_try(video_path):
     ext = os.path.splitext(video_path)[1].lower()
-    _log_paths_detail(f"🎬 Video container extension: {ext}")
+    _log_paths_detail_once("ext:%s" % video_path, f"🎬 Video container extension: {ext}")
     suffixes = list(CHAPTER_XML_SIDECAR_SUFFIXES)
 
     bases = _unique_trimmed_basenames(video_path)
@@ -59,7 +73,10 @@ def _chapter_xml_paths_to_try(video_path):
         player = xbmc.Player()
         if player.isPlayingVideo():
             fb = player.getPlayingFile().rsplit(".", 1)[0]
-            _log_paths_detail(f"🔄 Fallback base path from player: {fb}")
+            _log_paths_detail_once(
+                "fallback:%s" % video_path,
+                f"🔄 Fallback base path from player: {fb}",
+            )
     except RuntimeError:
         log("⚠️ getPlayingFile() failed inside chapter path resolution")
 
@@ -118,12 +135,16 @@ def _log_parent_dir_contents(video_path, ext):
 
 def _edl_paths_to_try(video_path):
     ext = ("." + video_path.rsplit(".", 1)[1]).lower() if "." in video_path else ""
-    _log_paths_detail(f"🎬 Video container extension (EDL path): {ext}")
+    _log_paths_detail_once(
+        "edl_ext:%s" % video_path,
+        f"🎬 Video container extension (EDL path): {ext}",
+    )
     try:
         player = xbmc.Player()
         if player.isPlayingVideo():
-            _log_paths_detail(
-                f"🔄 Fallback base path from player: {player.getPlayingFile().rsplit('.', 1)[0]}"
+            _log_paths_detail_once(
+                "edl_fallback:%s" % video_path,
+                f"🔄 Fallback base path from player: {player.getPlayingFile().rsplit('.', 1)[0]}",
             )
     except RuntimeError:
         log("⚠️ getPlayingFile() failed inside EDL path resolution")
@@ -303,4 +324,4 @@ def _find_existing_sidecar_chapter_xml_path(video_path):
 
 
 def _default_new_sidecar_chapter_xml_path(video_path):
-    return os.path.splitext(video_path)[0] + "-chapters.xml"
+    return os.path.splitext(video_path)[0] + DEFAULT_NEW_CHAPTER_XML_SUFFIX

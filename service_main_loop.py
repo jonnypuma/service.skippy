@@ -19,6 +19,7 @@ from service_loop_toast import (
     try_show_online_segments_applied_toast,
 )
 from service_playback_context import refresh_playback_context
+from service_skip_seek_property import tick_skippy_skipping_property
 from settings_utils import log, log_service_detail
 
 
@@ -65,9 +66,10 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
         ctx.parse_and_process_segments(video, current_time, playback_type) or []
     )
     parse_elapsed_ms = int((time.time() - parse_started) * 1000)
-    log(
+    ctx.log_if_changed(
+        "parsed_segments",
         "📦 Parsed %d segments for playback_type: %s"
-        % (len(ctx.monitor.current_segments), playback_type)
+        % (len(ctx.monitor.current_segments), playback_type),
     )
 
     try:
@@ -78,7 +80,10 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
                 % (current_time, refreshed_time, parse_elapsed_ms)
             )
         current_time = refreshed_time
-        ctx.log_if_changed("playback_time", "⏱️ Playback time: %.2fs" % current_time)
+        ctx.log_if_changed(
+            "playback_time_sec",
+            "⏱️ Playback time: %ds" % int(current_time),
+        )
     except RuntimeError:
         pass
 
@@ -126,7 +131,8 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
                         )
                     current_time = refreshed_time
                     ctx.log_if_changed(
-                        "playback_time", "⏱️ Playback time: %.2fs" % current_time
+                        "playback_time_sec",
+                        "⏱️ Playback time: %ds" % int(current_time),
                     )
                 except RuntimeError:
                     pass
@@ -146,6 +152,15 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     """Monitor playback and orchestrate segment skip UI."""
 
     while not ctx.monitor.abortRequested():
+        try:
+            playing_video = bool(
+                ctx.player.isPlayingVideo()
+                or xbmc.getCondVisibility("Player.HasVideo")
+            )
+        except RuntimeError:
+            playing_video = False
+        tick_skippy_skipping_property(ctx.monitor, playing=playing_video)
+
         try:
             win = get_home_window(ctx.monitor)
             if win is None:
@@ -188,24 +203,48 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
         show_dialogs = playback.show_dialogs
 
         if playback.is_paused or not playback.is_playing:
-            ctx.log_if_changed(
-                "paused_all",
-                "⏸️ Video paused or not playing — skipping ALL segment processing "
-                "(is_playing=%s, is_paused=%s, fast_path=%s)"
-                % (
-                    playback.is_playing,
-                    playback.is_paused,
-                    playback.used_pause_fast_path,
-                ),
+            # After Skippy seekTime, Kodi often reports Paused briefly; keep skip
+            # processing alive while Skippy.Skipping is set so the next segment
+            # dialog (e.g. intro after recap) is not delayed until unpause.
+            post_skip_grace = (
+                getattr(ctx.monitor, "skippy_skipping_since", None) is not None
             )
-            if ctx.monitor.last_time == 0:
-                ctx.monitor.last_time = current_time
-            if ctx.monitor.waitForAbort(ctx.check_interval):
-                log("🛑 Abort requested — exiting monitor loop")
-            continue
+            if not post_skip_grace:
+                ctx.log_if_changed(
+                    "paused_all",
+                    "⏸️ Video paused or not playing — skipping ALL segment processing "
+                    "(is_playing=%s, is_paused=%s, fast_path=%s)"
+                    % (
+                        playback.is_playing,
+                        playback.is_paused,
+                        playback.used_pause_fast_path,
+                    ),
+                )
+                if ctx.monitor.last_time == 0:
+                    ctx.monitor.last_time = current_time
+                if ctx.monitor.waitForAbort(ctx.check_interval):
+                    log("🛑 Abort requested — exiting monitor loop")
+                continue
+            ctx.log_if_changed(
+                "paused_post_skip",
+                "⏸️ Player paused after Skippy seek — continuing skip processing "
+                "(Skippy.Skipping active)",
+            )
 
         handle_replay_detection(ctx, video, current_time)
         handle_video_change(ctx, video)
+
+        # Prefer skip dialogs before deferred online probe/sync (can take seconds).
+        if ctx.monitor.current_segments and ctx.monitor.playback_ready:
+            early_rewind = handle_rewind_and_nested_segments(ctx, current_time)
+            process_segment_skips(
+                ctx,
+                video=video,
+                playback_type=playback_type,
+                show_dialogs=show_dialogs,
+                current_time=current_time,
+                major_rewind_detected=early_rewind,
+            )
 
         current_time = _parse_segments_with_deferred_probe(
             ctx, video, current_time, playback_type

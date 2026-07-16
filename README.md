@@ -113,6 +113,7 @@ Third-party skins—and sometimes **individual themes or colour schemes** within
 - **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied in Python on dialog open (see **Skip dialog modes**). **May be overridden by the active Kodi skin or theme** — see **Supported Kodi versions and platforms** above.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
+- **Skin-cooperative seek OSD hide** (opt-in setting **Hide OSD display during skip**): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
@@ -147,6 +148,22 @@ With **Local first** and online lookup enabled, TheIntroDB / IntroDB are always 
 **Sync local → online** (Expert → **Upload**): when enabled (**Ask**), Skippy compares your local sidecar to online data during playback and can prompt once per title to upload segment types that exist locally but not online (requires upload API keys and **Enable upload**). With **Local first**, online data is fetched in the background so this comparison uses real remote results without delaying skip dialogs.
 
 **Prefetch next episode** (Advanced, **Online segments sidecar**): when **Segment source priority** is **Online first** and TV online lookup is on, Skippy pre-fetches merged online segments for the **library** successor episode (next in season, or first episode of the next season) so the next file can start with data ready. Requires a matching path and IDs on handoff — not used with **Local first**.
+
+---
+
+## Skin: hide seek OSD during Skippy skips
+
+Skippy cannot suppress Kodi’s seek bar by itself (seeking always sets `Player.HasPerformedSeek`). Instead, when **Hide OSD display during skip** is enabled (**Playback and Skip Dialog → Global options**, default **off**), Skippy sets Home window property **`Skippy.Skipping`** to `true` before each auto-skip or confirmed ask-skip **seek**, and clears it after seek + caching settle (at least **~5 seconds**, and while `Player.HasPerformedSeek(3)` / caching is active) or when playback stops / a new title starts. The property is **not** set while the ask dialog is on screen — only around the seek itself.
+
+**This only hides the seek OSD if your skin (or a DialogSeekBar patching add-on) checks the property.** Stock skins ignore it — no behavior change until you add a per-skin edit. Turn the setting **off** if you use a patched skin but still want the normal seek OSD after Skippy skips.
+
+Add this as an **extra** `<visible>` on the seek bar window/control in `DialogSeekBar.xml` (Kodi ANDs multiple `<visible>` tags):
+
+```xml
+<visible>String.IsEmpty(Window(Home).Property(Skippy.Skipping))</visible>
+```
+
+Manual seeks and non-Skippy seeks are unaffected (property is empty). Skin patches / add-ons that already rewrite `DialogSeekBar.xml` can insert the same line.
 
 ---
 

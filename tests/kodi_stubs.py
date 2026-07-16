@@ -23,6 +23,7 @@ def install_kodi_stubs(*, addon=None):
     xbmc = types.ModuleType("xbmc")
     xbmc.getCondVisibility = lambda _cond: False
     xbmc.executeJSONRPC = lambda _payload: '{"jsonrpc":"2.0","id":1,"result":[]}'
+    xbmc.executebuiltin = lambda _cmd: None
     xbmc.sleep = lambda _ms: None
     xbmc.LOGINFO = 1
     xbmc.LOGWARNING = 2

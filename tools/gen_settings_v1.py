@@ -303,6 +303,14 @@ def main():
         step=10,
         slider=True,
     )
+    bool_setting(
+        g,
+        "signal_skipping_for_skins",
+        2,
+        "38017",
+        "38018",
+        False,
+    )
     bool_setting(g, "enable_skip_movies", 0, "32010", "32087", True)
     bool_setting(
         g,
@@ -535,6 +543,7 @@ def main():
         minimum=0,
         maximum=3600,
     )
+    bool_setting(g, "pause_during_online_lookup", 1, "38015", "38016", False)
     g = ET.SubElement(cat, "group", id="g_tv1", label="32059")
     bool_setting(g, "tv_use_local_chapter_edl", 0, "32028", "32061", True)
     bool_setting(g, "tv_use_online_segment_lookup", 0, "32029", "32062", False)
@@ -900,6 +909,22 @@ def main():
         "38002",
         "38003",
         "RunScript(service.skippy,restore_settings)",
+    )
+    action_setting(
+        g,
+        "settings_action_backup_upload_history",
+        2,
+        "38009",
+        "38010",
+        "RunScript(service.skippy,backup_upload_history)",
+    )
+    action_setting(
+        g,
+        "settings_action_restore_upload_history",
+        2,
+        "38011",
+        "38012",
+        "RunScript(service.skippy,restore_upload_history)",
     )
 
     # ---- 30003 debug ----

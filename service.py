@@ -92,6 +92,7 @@ class PlayerMonitor(xbmc.Monitor):
         self.online_segments_toast_shown_for_path = None
         self._home_window = None
         self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
+        self.skippy_skipping_since = None  # monotonic time when Skippy.Skipping was set
         # Once per file: auto-open editor when overlaps present (open_segment_editor_on_overlap).
         self.overlap_editor_opened_for_path = None
         # Overwrite/update ask was answered (Yes or No) for this file — no re-prompt until next title.
