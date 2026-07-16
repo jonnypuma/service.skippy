@@ -100,6 +100,55 @@ Third-party skins—and sometimes **individual themes or colour schemes** within
 
 ---
 
+## Recommended starting presets
+
+Skippy ships with many Expert options. These three starting points cover most libraries — change only what you need.
+
+### 1. Local TV / movies (sidecars only — simplest)
+
+Use when you already have `.edl` / `_chapters.xml` next to files (or plan to mark/edit yourself).
+
+| Setting | Suggested value |
+| ------- | --------------- |
+| Enable skip (movies / episodes) | On |
+| Prefer when both local and online are enabled | **Local first** |
+| Use online segment lookup (TV / Movies) | **Off** |
+| Save online segments | Off |
+| Segment always skip | `commercial, commercials, sponsor, sponsors, ad, ads` |
+| Segment ask skip | `intro, recap, segment, preview, …` (defaults are fine) |
+| Skip dialog mode | **Full** or **Minimal** (preference) |
+
+### 2. Local first + online fill-in (recommended for TV)
+
+Use when most shows have local sidecars, but you want TheIntroDB / IntroDB.app when a file has none.
+
+| Setting | Suggested value |
+| ------- | --------------- |
+| TV: Use local chapter/EDL | On |
+| TV: Use online segment lookup | **On** |
+| Prefer when both… | **Local first** |
+| Movies: online lookup | Off unless you rely on TheIntroDB for films |
+| Online APIs (TMDB) | Paste a TMDB v3 key **or** enable Use TheMovieDB Helper key |
+| Save online segments | On if you want fetched windows written to disk |
+| If matching sidecar already exists | **Skip if exists** (safe) or **Update All (ask)** once you trust the data |
+| Pause during online lookup | Optional; only affects blocking Online-first / no-sidecar fetches |
+
+### 3. Online first (API-driven TV)
+
+Use when you rarely keep local sidecars and want remote intro/recap data before the first skip prompt.
+
+| Setting | Suggested value |
+| ------- | --------------- |
+| Prefer when both… | **Online first** |
+| TV: Use online segment lookup | **On** |
+| Prefetch next episode | On (helps season binge handoff) |
+| Pause during online lookup | On if you prefer a short pause over a late dialog |
+| Save online segments | On + backup before overwrite if you want a local copy |
+
+**Tip:** Raise the add-on **settings level** (Basic → Expert) in Kodi’s settings UI to reveal online, backup, and logging options. After changing TMDB or online toggles, play one known library episode and filter `kodi.log` for `service.skippy - remote`.
+
+---
+
 ## Key Features
 
 - User-configurable skip behavior: Auto-skip, prompt, or ignore segments based on per-label rules.

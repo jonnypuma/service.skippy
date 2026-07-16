@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.2.9] - 2026-07-16
+
+### Changed
+- **Dead WindowDialog skip UI removed**: ``skip_dialog_window_ui.py`` no longer contains the unused programmatic skip-dialog builder (skip UI is WindowXML only). The module now exports only **``_argb_to_kodi``** for colour conversion shared by ``skipdialog.py``.
+
+### Added
+- **README — Recommended starting presets**: Three quick-start tables (local only, Local first + online fill-in, Online first) so new users need not dig through Expert settings first.
+- **Tests**: ``test_online_sidecar_policy.py`` (policy normalize, merge, update / update-all), ``test_marker_save_helpers.py`` (marker policy, overlap, EDL trim), ``test_editor_save_helpers.py`` (editor save format, dedupe, chronological order).
+
 ## [5.2.8] - 2026-07-16
 
 ### Fixed
