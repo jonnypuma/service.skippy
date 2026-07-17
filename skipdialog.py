@@ -424,13 +424,16 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             self._apply_full_skip_layout(addon)
 
         self._apply_dialog_text_colors()
-        self._apply_skip_dialog_focus(hide_close, hide_skip_icon)
+        # Focus after reveal — Kodi rejects setFocusId while the panel group is still hidden.
 
         try:
             log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
             threading.Thread(target=self._monitor_segment_end, daemon=True).start()
-            # Reveal panel only after labels, layout, progress seed, and focus are done.
+            # Reveal panel only after labels, layout, and progress seed are done.
             self.setProperty(_DIALOG_READY_PROP, "true")
+            # Let the GUI apply the visible condition before focusing (else "can't" focus).
+            xbmc.sleep(50)
+            self._apply_skip_dialog_focus(hide_close, hide_skip_icon)
             log("✅ Dialog onInit completed successfully")
         except Exception as e:
             log_always(f"❌ Error during dialog onInit completion (possible Kodi/device limitation): {e}")
@@ -562,7 +565,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log(f"⚠️ Full skip vertical layout failed: {e}")
 
     def _apply_skip_dialog_focus(self, hide_close, hide_skip_icon):
-        """Set button focus so texturefocus appears with the dialog (not after layout lag)."""
+        """Set button focus so texturefocus / OK work (call only after skippy_dialog_ready=true)."""
         try:
             if self._minimal_mode:
                 focus_id = 3012

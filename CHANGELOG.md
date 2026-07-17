@@ -1,9 +1,14 @@
 # Changelog
 
+## [5.2.12] - 2026-07-17
+
+### Fixed
+- **Skip dialog focus / OK after atomic open**: Focus was applied while the panel group was still hidden (`skippy_dialog_ready=false`), so Kodi rejected `setFocusId` (“Control … can't”) — no focus texture and Enter/OK did nothing. Reveal first, then focus.
+
 ## [5.2.11] - 2026-07-17
 
 ### Changed
-- **Skip dialog atomic open**: Full and Minimal panels stay hidden (`skippy_dialog_ready=false`) until labels, layout, progress seed, and focus finish in ``onInit``, then reveal with the slide/fade **Visible** animation. Avoids the piecemeal paint while ``WindowOpen`` used to run over an unfinished panel. Window-level open animation removed; close animation unchanged. Top placements slide in from above; bottom from below.
+- **Skip dialog atomic open**: Full and Minimal panels stay hidden (`skippy_dialog_ready=false`) until labels, layout, and progress seed finish in ``onInit``, then reveal with the slide/fade **Visible** animation. Avoids the piecemeal paint while ``WindowOpen`` used to run over an unfinished panel. Window-level open animation removed; close animation unchanged. Top placements slide in from above; bottom from below.
 
 ## [5.2.10] - 2026-07-17
 
