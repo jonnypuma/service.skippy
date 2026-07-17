@@ -37,8 +37,9 @@ class SkippySkippingPropertyTests(unittest.TestCase):
         monitor._home_window = home
         monitor.skippy_skipping_since = None
         mark_skippy_skipping(monitor, MagicMock())
+        # Skin property stays off; internal seek grace still stamps.
         home.setProperty.assert_not_called()
-        self.assertIsNone(monitor.skippy_skipping_since)
+        self.assertIsNotNone(monitor.skippy_skipping_since)
 
     def test_maybe_clear_waits_for_min_duration(self):
         from service_skip_seek_property import maybe_clear_skippy_skipping

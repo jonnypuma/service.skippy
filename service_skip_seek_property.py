@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Home-window Skippy.Skipping property for cooperative skin seek-OSD hiding."""
+"""Home-window Skippy.Skipping property for cooperative skin seek-OSD hiding.
+
+Also tracks an internal post-seek grace timestamp (``monitor.skippy_skipping_since``)
+on every Skippy-initiated seek — even when the skin Home property is disabled —
+so rewind detection and pause handling do not mis-fire while ``getTime()`` lags.
+"""
 
 from __future__ import annotations
 
@@ -20,11 +25,17 @@ _SKIPPING_MIN_SECONDS = 5.0
 _SKIPPING_SEEK_INFOBOOL = "Player.HasPerformedSeek(3) | Player.Caching"
 
 
+def skippy_seek_grace_active(monitor) -> bool:
+    """True while a Skippy seek is in flight / recently completed (playhead may lag)."""
+    return getattr(monitor, "skippy_skipping_since", None) is not None
+
+
 def mark_skippy_skipping(monitor, addon=None) -> None:
-    """Set Skippy.Skipping immediately before a Skippy-initiated seekTime."""
+    """Record post-seek grace; optionally set Skippy.Skipping for cooperative skins."""
+    # Always stamp grace so rewind/pause logic works even if skin signaling is off.
+    monitor.skippy_skipping_since = time.monotonic()
     if not addon_get_bool(addon, "signal_skipping_for_skins", False):
         return
-    monitor.skippy_skipping_since = time.monotonic()
     home = get_home_window(monitor)
     if home is None:
         return

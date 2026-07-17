@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.2.11] - 2026-07-17
+
+### Changed
+- **Skip dialog atomic open**: Full and Minimal panels stay hidden (`skippy_dialog_ready=false`) until labels, layout, progress seed, and focus finish in ``onInit``, then reveal with the slide/fade **Visible** animation. Avoids the piecemeal paint while ``WindowOpen`` used to run over an unfinished panel. Window-level open animation removed; close animation unchanged. Top placements slide in from above; bottom from below.
+
+## [5.2.10] - 2026-07-17
+
+### Fixed
+- **Skip dialog flash after confirmed skip**: After `seekTime`, Skippy set `last_time` to the seek target while Kodi’s `getTime()` still lagged inside the old segment. The next rewind check treated that lag as a major rewind, cleared `prompted`, and briefly reopened the ask dialog (then auto-declined). Post-seek grace now suppresses that false rewind; grace is stamped on every Skippy seek even when **Hide OSD during skip** is off; the main loop also syncs its playhead clock to the seek target after an early skip in the same tick.
+
+### Added
+- **`tests/test_post_seek_rewind_grace.py`**: Regression for rewind suppression while Skippy seek grace is active.
+
 ## [5.2.9] - 2026-07-16
 
 ### Changed

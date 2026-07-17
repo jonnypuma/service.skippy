@@ -10,6 +10,7 @@ import xbmc
 from segment_item import segments_active_for_playback
 from settings_utils import addon_get_int, get_addon, log
 from service_segment_processed_cache import clear_segment_processed_cache
+from service_skip_seek_property import skippy_seek_grace_active
 
 
 def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
@@ -40,6 +41,18 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
                     monitor.last_time - current_time,
                 )
             )
+
+    # After Skippy seekTime, last_time is the seek target but getTime() often
+    # lags for hundreds of ms. That looks like a huge rewind and would clear
+    # prompted + reopen the just-skipped ask dialog (flash). Suppress while
+    # post-seek grace is active.
+    if rewind_detected and skippy_seek_grace_active(monitor):
+        log(
+            "⏪ Apparent rewind during Skippy seek grace "
+            "(last=%.2f → current=%.2f) — NOT clearing prompted/dismissed"
+            % (monitor.last_time, current_time)
+        )
+        rewind_detected = False
 
     if rewind_detected:
         try:

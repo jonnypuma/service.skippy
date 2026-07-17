@@ -31,6 +31,8 @@ _SMOOTH_PROGRESS_BG_ID = 3030
 _SMOOTH_PROGRESS_FILL_ID = 3031
 # Skin <visible> on 3030/3031 reads this; Python setVisible on images is unreliable vs XML.
 _SMOOTH_BAR_WINDOW_PROP = "skippy_smooth_bar"
+# Panel stays hidden until onInit finishes layout/labels/progress, then Visible anim plays.
+_DIALOG_READY_PROP = "skippy_dialog_ready"
 
 
 def _ascii_log_text(msg):
@@ -302,9 +304,11 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log_always(f"❌ Dialog initialization failed with args: {args}, kwargs: {kwargs}")
             raise
         # Default until onInit resolves skip_dialog_font_color (XML uses $INFO[Window.Property(...)]).
+        # Keep panel hidden until layout/progress are ready (Visible animation on group).
         try:
             self.setProperty("skip_dialog_text_color", "FFFFFFFF")
             self.setProperty("skippy_progress_ready", "false")
+            self.setProperty(_DIALOG_READY_PROP, "false")
         except Exception:
             pass
 
@@ -425,6 +429,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         try:
             log(f"🟦 Dialog initialized: segment='{self.segment.segment_type_label}', duration={duration_str}")
             threading.Thread(target=self._monitor_segment_end, daemon=True).start()
+            # Reveal panel only after labels, layout, progress seed, and focus are done.
+            self.setProperty(_DIALOG_READY_PROP, "true")
             log("✅ Dialog onInit completed successfully")
         except Exception as e:
             log_always(f"❌ Error during dialog onInit completion (possible Kodi/device limitation): {e}")

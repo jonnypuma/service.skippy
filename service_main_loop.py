@@ -19,7 +19,10 @@ from service_loop_toast import (
     try_show_online_segments_applied_toast,
 )
 from service_playback_context import refresh_playback_context
-from service_skip_seek_property import tick_skippy_skipping_property
+from service_skip_seek_property import (
+    skippy_seek_grace_active,
+    tick_skippy_skipping_property,
+)
 from settings_utils import log, log_service_detail
 
 
@@ -206,9 +209,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             # After Skippy seekTime, Kodi often reports Paused briefly; keep skip
             # processing alive while Skippy.Skipping is set so the next segment
             # dialog (e.g. intro after recap) is not delayed until unpause.
-            post_skip_grace = (
-                getattr(ctx.monitor, "skippy_skipping_since", None) is not None
-            )
+            post_skip_grace = skippy_seek_grace_active(ctx.monitor)
             if not post_skip_grace:
                 ctx.log_if_changed(
                     "paused_all",
@@ -245,6 +246,14 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                 current_time=current_time,
                 major_rewind_detected=early_rewind,
             )
+            # Ask/auto seek updates monitor.last_time to the target; sync the
+            # loop clock so later rewind/parse steps do not use the pre-dialog
+            # playhead while getTime() is still catching up.
+            try:
+                if getattr(ctx.monitor, "skippy_skipping_since", None) is not None:
+                    current_time = float(ctx.monitor.last_time)
+            except (TypeError, ValueError):
+                pass
 
         current_time = _parse_segments_with_deferred_probe(
             ctx, video, current_time, playback_type

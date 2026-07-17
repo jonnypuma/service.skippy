@@ -10,10 +10,6 @@
   <zorder>1</zorder>
 
   <defaultcontrol>3012</defaultcontrol>
-  <animation type="WindowOpen">
-    <effect type="slide" start="0,150" end="0,0" time="300" tween="quadratic" easing="out" />
-    <effect type="fade" start="0" end="100" time="400" />
-  </animation>
   <animation type="WindowClose">
     <effect type="slide" start="0,0" end="0,150" time="300" tween="quadratic" easing="in" />
     <effect type="fade" start="100" end="0" time="300" />
@@ -24,6 +20,11 @@
       <posy>930</posy>
       <width>645</width>
       <height>150</height>
+      <visible>String.IsEqual(Window.Property(skippy_dialog_ready),true)</visible>
+      <animation type="Visible">
+        <effect type="slide" start="0,150" end="0,0" time="300" tween="quadratic" easing="out" />
+        <effect type="fade" start="0" end="100" time="400" />
+      </animation>
       <control type="image" id="3081">
         <left>0</left>
         <top>0</top>

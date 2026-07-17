@@ -282,6 +282,8 @@ Before creating the ask dialog, the service waits **`ask_dialog_debounce_ms`** o
 
 Choose **Skip dialog mode** under **Customize Skip Dialog Look and Behavior** — **Full** or **Minimal**. Each mode has its own **dialog placement** setting (bottom/top × left/right).
 
+Both modes open **atomically**: the panel stays hidden until `onInit` finishes labels, layout, progress seed (Full), and focus (`skippy_dialog_ready`), then reveals with one slide/fade so it does not paint piecemeal.
+
 ### Full mode
 
 Classic panel: optional skip/close icons, **Skip** and **Close** buttons, optional progress bar, optional **Segment ending in:** countdown, and optional **next jump** hint line. **Hide Close Button** and related toggles apply here only (not Minimal).
