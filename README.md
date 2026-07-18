@@ -30,60 +30,37 @@ When **Save online segments** is enabled, fetched lookup ranges can be written n
 
 service.skippy/
 ├── addon.xml
-├── README.md
-├── service.py                                 # Kodi service entry + monitor helpers
-├── service_main_loop.py                       # Playback monitor loop (single source of truth)
-├── service_segment_processing.py              # Parse, filter, link segments for playback
-├── segment_marker.py                          # Segment Marker (RunScript entry + marker UX)
-├── skipdialog.py
-├── segment_item.py
-├── settings_utils.py
-├── icon.png
-├── fanart.jpg
-├── screenshot01.png
-├── screenshot02.png
-├── screenshot03.png
-├── service.skippy - Copy.code-workspace
+├── README.md / CHANGELOG.md
+├── service.py                      # Kodi service entry
+├── skippy_runscript_entry.py       # RunScript router (marker, editor, backup, keymaps, …)
+├── service_main_loop.py            # Playback monitor loop
+├── service_loop_*.py               # Skip / nested / playback / toast tick helpers
+├── service_segment_*.py            # Parse, sources, prefetch, caches
+├── service_online_*.py             # Online lookup pause, sidecar save, policy
+├── service_playback_context.py     # Player path / metadata snapshot for the loop
+├── remote_segments.py              # TheIntroDB / IntroDB.app / TMDB client
+├── online_segment_upload.py        # Editor / sync uploads
+├── skipdialog.py                   # Full / Minimal ask dialog (WindowXML)
+├── segment_marker.py               # Segment Marker UX
+├── segment_editor*.py              # Segment Editor (dialog, parser, session, …)
+├── settings_utils.py / settings_backup.py / upload_history_backup.py
+├── keymap_utils.py
+├── icon.png / fanart.png / screenshot0{1,2,3}.png
 ├── resources/
 │   ├── settings.xml
 │   ├── language/
-│   │   └── English/
-│   │       └── strings.po                      # Localization strings for addon settings
-│   └── skins/
-│       └── default/
-│           ├── colors/
-│           │   └── defaults.xml                # Named colours for bundled skins (Segment Editor buttons, …)
-│           ├── 720p/
-│           │   ├── SkipDialog.xml              # Default fallback skip dialog (Full mode)
-│           │   ├── SkipDialog_TopRight.xml     # Full skip dialog — top right
-│           │   ├── SkipDialog_TopLeft.xml      # Full skip dialog — top left
-│           │   ├── SkipDialog_BottomRight.xml  # Full skip dialog — bottom right
-│           │   ├── SkipDialog_BottomLeft.xml   # Full skip dialog — bottom left
-│           │   ├── Minimal_Skip_Dialog_TopRight.xml    # Minimal chip — top right
-│           │   ├── Minimal_Skip_Dialog_TopLeft.xml     # Minimal chip — top left
-│           │   ├── Minimal_Skip_Dialog_BottomRight.xml # Minimal chip — bottom right
-│           │   └── Minimal_Skip_Dialog_BottomLeft.xml  # Minimal chip — bottom left
-│           └── media/
-│               ├── icon_skip.png               # Skip button icon
-│               ├── icon_close.png              # Close button icon
-│               ├── progress_left.png           # Progress bar left segment
-│               ├── progress_right.png          # Progress bar right segment
-│               ├── progress_background.png     # Progress bar background texture
-│               ├── progress_mid.png            # Default progress fill (full-width if using reveal)
-│               ├── progress_mid_blue_purple.png # Optional progress fill variants (`progress_bar_style`)
-│               ├── button_nofocus.png          # Skip dialog button background texture when not highlighted
-│               ├── button_focus.png            # Skip dialog button background texture when highlighted (default)
-│               ├── button_focus_aqua.png       # Aqua style button focus texture
-│               ├── button_focus_aqua_bevel.png # Aqua bevel style button focus texture
-│               ├── button_focus_aqua_dark.png  # Aqua dark style button focus texture
-│               ├── button_focus_aqua_vignette.png # Aqua vignette style button focus texture
-│               ├── button_focus_aqua_rounded.png # Aqua rounded style button focus texture
-│               ├── button_focus_blue.png       # Blue style button focus texture
-│               └── white.png                   # Dialog background (credit: im85288, Up Next)
-└── tools/
-    ├── edl-updater.bat                         # (Optional) EDL action type batch normalizer
-    └── ed-updater_all_but_4.bat               # (Optional) EDL updater for all action types except 4
+│   │   ├── English/strings.po
+│   │   ├── German/ / Dutch/ / French/ / Spanish/
+│   │   ├── Norwegian/ / Swedish/ / Danish/ / Italian/
+│   └── skins/default/
+│       ├── Font.xml / colors/defaults.xml
+│       ├── 720p/ + 1080i/          # SkipDialog*, Minimal_Skip_*, SegmentEditor*, Marker pickers
+│       └── media/                  # Button / progress / minimal plate textures
+├── tests/                          # Offline unit tests (omitted from install ZIP via export-ignore)
+└── tools/                          # Dev helpers only (omitted from install ZIP)
 ```
+
+Install ZIPs from GitHub **Download ZIP** / `git archive` omit `tests/`, `tools/`, workspaces, OpenAPI specs, and similar via `.gitattributes` `export-ignore` — keep those for local development only.
 
 ## Supported Kodi versions and platforms
 Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
@@ -93,6 +70,8 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 | Android (Nvidia Shield) | Tested |
 | Linux (CoreELEC) | Tested |
 | Windows 11 | Tested |
+
+**Languages:** Settings UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, and Italian** (`resources/language/*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
 
 Third-party skins—and sometimes **individual themes or colour schemes** within those skins—can **override** Skippy’s **Skip dialogue font colour** on add-on dialogs. Skippy resolves your setting and applies it in bundled WindowXML plus Python `setLabel`, but Kodi still renders those controls in the **active skin’s** font and button context (fonts are not loaded from Skippy’s bundled `Font.xml`). **Estuary** generally matches expectations. Heavily customised skins may restyle label and button text globally regardless of Skippy’s setting.
 

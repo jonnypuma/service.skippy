@@ -1,0 +1,1062 @@
+# Kodi language file
+# Addon: service.skippy
+msgid ""
+msgstr ""
+"Language: nb\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# Categories
+msgctxt "#30000"
+msgid "Segment Settings"
+msgstr "Segmentinnstillinger"
+
+msgctxt "#30001"
+msgid "Playback & Skip Dialog"
+msgstr "Avspilling og hopp-dialog"
+
+msgctxt "#30004"
+msgid "Segment Sources"
+msgstr "Segmentkilder"
+
+msgctxt "#30002"
+msgid "Toast Notifications"
+msgstr "Varslingsmeldinger"
+
+msgctxt "#30003"
+msgid "Debug Logging"
+msgstr "Feilsøkingslogging"
+
+# Segment Settings
+msgctxt "#31000"
+msgid "Segment Keywords to Watch For"
+msgstr "Segmentnøkkelord å se etter"
+
+msgctxt "#31001"
+msgid "Skip Behavior Preferences"
+msgstr "Innstillinger for hoppeatferd"
+
+msgctxt "#31002"
+msgid "Always Skip These"
+msgstr "Hopp alltid over disse"
+
+msgctxt "#31003"
+msgid "Ask to Skip These"
+msgstr "Spør om å hoppe over disse"
+
+msgctxt "#31004"
+msgid "Never Skip These"
+msgstr "Hopp aldri over disse"
+
+msgctxt "#31005"
+msgid "Ignore unmapped EDL actions"
+msgstr "Ignorer umappede EDL-handlinger"
+
+msgctxt "#31006"
+msgid "EDL Action Type Mapping"
+msgstr "EDL-handlingstype-kartlegging"
+
+msgctxt "#31007"
+msgid "Ignore overlapping segments"
+msgstr "Ignorer overlappende segmenter"
+
+msgctxt "#31011"
+msgid "Open Segment Editor when overlaps are detected"
+msgstr "Åpne segmentredigering når overlapping oppdages"
+
+msgctxt "#31012"
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgstr "Etter analyse av sidecar-filen, hvis overlappende eller nestede segmenter fortsatt er til stede mens \"Ignorer overlappende segmenter\" er av, åpne segmentredigeringen én gang per avspillingsfil slik at du kan rette opp listen. Krever at segmentredigeringen er aktivert. Bruker samme deteksjon som varsling om overlappende segmenter."
+
+msgctxt "#31008"
+msgid "Use embedded chapters as fallback"
+msgstr "Bruk innebygde kapitler som reserveløsning"
+
+msgctxt "#31009"
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
+msgstr "Når ingen sidecar-filer (chapters.xml / .edl) eller nettsegmenter finnes, analyser kapitler innebygd i videofilen (MKV, MP4). Kun kapitler som samsvarer med dine egendefinerte segmentnøkkelord brukes."
+
+msgctxt "#31010"
+msgid "Segment Keywords"
+msgstr "Segmentnøkkelord"
+
+msgctxt "#31013"
+msgid "Prefetch next episode"
+msgstr "Forhåndslast neste episode"
+
+msgctxt "#31014"
+msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
+msgstr "Når TV-segmentprioritet er Online først og TV-nettoppslag er på, løser Skippy neste bibliotekepisode (samme program: neste episode i sesongen, eller første episode i neste sesong) og laster ned sammenslåtte intro/sammendrag-segmenter på nett i bakgrunnen. Segmenter gjelder bare når du starter den nøyaktige filen (sti + ID-er må samsvare). Detaljert logging (Alle detaljer) logger forhåndslasting, lagring og overlevering. Brukes ikke for Lokal først. Forhåndslaster aldri lokale sidecar-filer."
+
+# Dialog Settings
+msgctxt "#32000"
+msgid "Button Focus Style"
+msgstr "Knappefokusstil"
+
+msgctxt "#32001"
+msgid "Default"
+msgstr "Standard"
+
+msgctxt "#32002"
+msgid "Aqua"
+msgstr "Aqua"
+
+msgctxt "#32003"
+msgid "Aqua Bevel"
+msgstr "Aqua Bevel"
+
+msgctxt "#32004"
+msgid "Aqua Dark"
+msgstr "Aqua Dark"
+
+msgctxt "#32005"
+msgid "Aqua Vignette"
+msgstr "Aqua Vignette"
+
+msgctxt "#32012"
+msgid "Aqua Rounded"
+msgstr "Aqua Rounded"
+
+msgctxt "#32006"
+msgid "Blue"
+msgstr "Blue"
+
+msgctxt "#32007"
+msgid "Show Progress Bar in Skip Dialog"
+msgstr "Vis fremdriftslinje i hopp-dialog"
+
+msgctxt "#32008"
+msgid "Major Rewind Threshold (Seconds)"
+msgstr "Terskel for større tilbakespoling (sekunder)"
+
+msgctxt "#32009"
+msgid "Skip Dialog Position"
+msgstr "Posisjon for hopp-dialog"
+
+msgctxt "#32010"
+msgid "Enable Skip for Movies"
+msgstr "Aktiver hopp for filmer"
+
+msgctxt "#32011"
+msgid "Enable Skip for Episodes"
+msgstr "Aktiver hopp for episoder"
+
+msgctxt "#32017"
+msgid "Show Skip Dialog for Movies"
+msgstr "Vis hopp-dialog for filmer"
+
+msgctxt "#32018"
+msgid "Show Skip Dialog for Episodes"
+msgstr "Vis hopp-dialog for episoder"
+
+msgctxt "#32013"
+msgid "Skip Button Format"
+msgstr "Format på hopp-knapp"
+
+msgctxt "#32014"
+msgid "Hide Close Button"
+msgstr "Skjul lukk-knapp"
+
+msgctxt "#32015"
+msgid "Hide Skip and Close Icons"
+msgstr "Skjul hopp- og lukk-ikoner"
+
+msgctxt "#32016"
+msgid "Hide segment ending in text"
+msgstr "Skjul segmentslutt i tekst"
+
+msgctxt "#32019"
+msgid "Global options"
+msgstr "Globale alternativer"
+
+msgctxt "#32020"
+msgid "Skip dialog mode"
+msgstr "Hopp-dialogmodus"
+
+msgctxt "#32021"
+msgid "Full mode"
+msgstr "Fullstendig modus"
+
+msgctxt "#32022"
+msgid "Minimal mode"
+msgstr "Minimal modus"
+
+msgctxt "#32023"
+msgid "Minimal plate style"
+msgstr "Minimal platestil"
+
+msgctxt "#32024"
+msgid "Minimal skip dialog position"
+msgstr "Minimal hopp-dialogposisjon"
+
+msgctxt "#32025"
+msgid "Minimal skip label format"
+msgstr "Minimalt hopp-etikettformat"
+
+msgctxt "#32026"
+msgid "Skip dialog font color"
+msgstr "Skriftfarge for hopp-dialog"
+
+msgctxt "#32027"
+msgid "Progress bar shows remaining (countdown)"
+msgstr "Fremdriftslinje viser gjenstående (nedtelling)"
+
+msgctxt "#32079"
+msgid "Progress bar style"
+msgstr "Fremdriftslinjestil"
+
+msgctxt "#32080"
+msgid "Progress bar height (pixels)"
+msgstr "Høyde på fremdriftslinje (piksler)"
+
+msgctxt "#32081"
+msgid "Show skip button focus frame"
+msgstr "Vis fokuramme for hopp-knapp"
+
+msgctxt "#32082"
+msgid "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
+msgstr "Fullstendig modus: når lukk-knappen er skjult, tegn valgt fokustekstur på hopp-knappen. Slå av for å skjule fokusrammen når bare Hopp vises."
+
+msgctxt "#32083"
+msgid "Smooth progress bar updates"
+msgstr "Jevne oppdateringer av fremdriftslinje"
+
+msgctxt "#32084"
+msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
+msgstr "Fullstendig modus: oppdater fremdriftslinjen oftere og glatteut mellom verdier. Slå av hvis avspillingen hakker på tregere enheter (standard av)."
+
+msgctxt "#32085"
+msgid "Progress bar updates per second"
+msgstr "Oppdateringer av fremdriftslinje per sekund"
+
+msgctxt "#32086"
+msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
+msgstr "Kun jevn modus: hvor mange ganger per sekund linjen skal oppdateres (2–120). Standard 4 er bra for de fleste skjermer; øk bare hvis linjen ser hakkete ut på et panel med høy oppdateringsfrekvens (60–120 Hz) – og reduser igjen hvis avspillingen hakker."
+
+msgctxt "#32087"
+msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
+msgstr "Hovedbryter for filmer: når av, hopper ikke Skippy over eller spør. Mens den er av, skjuler Kodi underinnstillingen \"Vis hopp-dialog for filmer\"."
+
+msgctxt "#32088"
+msgid "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
+msgstr "Hovedbryter for TV-episoder: når av, hopper ikke Skippy over eller spør. Mens den er av, skjuler Kodi underinnstillingen \"Vis hopp-dialog for episoder\"."
+
+msgctxt "#32089"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
+msgstr "For segmenter satt til Spør, vis fullstendig eller minimal hopp-dialog. Når av, hoppes ikke disse segmentene over. Krever Aktiver hopp for filmer (denne raden vises bare når det er på)."
+
+msgctxt "#32090"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
+msgstr "For segmenter satt til Spør, vis fullstendig eller minimal hopp-dialog. Når av, hoppes ikke disse segmentene over. Krever Aktiver hopp for episoder (denne raden vises bare når det er på)."
+
+msgctxt "#32091"
+msgid "Jump offset"
+msgstr "Hoppforskyvning"
+
+msgctxt "#32092"
+msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
+msgstr "Sekunder lagt til eller trukket fra ved hopp over segment (automatisk eller etter at du bekrefter Spør). Negative verdier lander før det normale hoppmålet (f.eks. -5 starter 5 s tidligere); positive verdier lander etter. Søketiden er aldri under null."
+
+msgctxt "#32097"
+msgid "Ask dialog debounce (ms)"
+msgstr "Spør-dialog debounce (ms)"
+
+msgctxt "#32098"
+msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
+msgstr "Millisekunder å vente før åpning av en Spør-hopp-dialog (0–500, standard 300). Reduserer dupliserte dialoger fra ~1 s tjenesteløkke; sett til 0 for raskeste forespørsel på trege enheter."
+
+msgctxt "#32028"
+msgid "Use local chapter / EDL files"
+msgstr "Bruk lokale kapittel- / EDL-filer"
+
+msgctxt "#32029"
+msgid "Use online segment lookup (TheIntroDB / IntroDB.app)"
+msgstr "Bruk nettbasert segmentoppslag (TheIntroDB / IntroDB.app)"
+
+msgctxt "#32030"
+msgid "Prefer when both local and online are enabled"
+msgstr "Foretrekk når både lokal og nett er aktivert"
+
+msgctxt "#32036"
+msgid "Online APIs (TMDB)"
+msgstr "Nett-API-er (TMDB)"
+
+msgctxt "#32031"
+msgid "Resolve missing TMDB / IMDb via TMDB API"
+msgstr "Løs manglende TMDB / IMDb via TMDB API"
+
+msgctxt "#32032"
+msgid "TMDB API key (optional)"
+msgstr "TMDB API-nøkkel (valgfritt)"
+
+msgctxt "#32033"
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+msgstr "Gratis nøkkel fra themoviedb.org (Settings → API). Brukes når TV- eller filmoppslag på nett må løse manglende TMDB/IMDb-ID-er. La stå tom for å bruke TheMovieDB Helper-nøkkelen nedenfor (samme nøkkel for episoder og filmer)."
+
+msgctxt "#32034"
+msgid "Use TheMovieDB Helper addon API key when empty"
+msgstr "Bruk TheMovieDB Helper-tillegg API-nøkkel når tom"
+
+msgctxt "#32035"
+msgid "When TV or movie online lookup is enabled and Kodi has no TMDB/IMDb in uniqueid, call api.themoviedb.org to fill gaps (same IDs TheIntroDB / IntroDB.app need). Applies to both episodes and movies. Disable to use only library scraper metadata."
+msgstr "Når TV- eller filmoppslag på nett er aktivert og Kodi ikke har TMDB/IMDb i uniqueid, ring api.themoviedb.org for å fylle hull (samme ID-er som TheIntroDB / IntroDB.app trenger). Gjelder både episoder og filmer. Deaktiver for å bruke kun bibliotekskraper-metadata."
+
+msgctxt "#32037"
+msgid "If the TMDB API key field above is empty, read the key from plugin.video.themoviedb.helper when installed. One key for both TV episodes and movies."
+msgstr "Hvis TMDB API-nøkkelfeltet ovenfor er tomt, les nøkkelen fra plugin.video.themoviedb.helper når installert. Én nøkkel for både TV-episoder og filmer."
+
+msgctxt "#32059"
+msgid "TV episodes"
+msgstr "TV-episoder"
+
+msgctxt "#32060"
+msgid "Movies"
+msgstr "Filmer"
+
+msgctxt "#32061"
+msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Når aktivert, laster TV-episoder hoppsegmenter fra sidecar chapters.xml eller .edl ved siden av videoen."
+
+msgctxt "#32062"
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgstr "Når aktivert, kan TV-episoder laste intro/sammendrag-timing fra TheIntroDB og IntroDB.app. Krever sesong/episode og TMDB/IMDb-stil ID-er fra Kodi-biblioteket (scraper uniqueid). SxxExx i filnavnet er kun en reserveløsning når elementet ikke er i biblioteket."
+
+msgctxt "#32063"
+msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Når både lokale filer og nettoppslag er aktivert for TV-episoder: foretrekk segmenter fra den valgte kilden når den har data; ellers bruk den andre. Online først venter på nettverksoppslag før første hopp-dialog kan vises (typisk noen få sekunder, opptil ca. 10 sekunder ved kaldstart eller tregt nettverk). Lokal først bruker sidecar-data umiddelbart når tilgjengelig."
+
+msgctxt "#32064"
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgstr "Når aktivert, kan filmer laste intro/sammendrag-timing kun fra TheIntroDB (ikke IntroDB.app). Krever TMDB- og/eller IMDb-film-ID-er fra Kodi-biblioteket (uniqueid), eller globale TMDB API-innstillinger ovenfor når ID-er mangler."
+
+msgctxt "#32065"
+msgid "TV episodes: online API priority"
+msgstr "TV-episoder: nett-API-prioritet"
+
+msgctxt "#32066"
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgstr "Når både TheIntroDB og IntroDB.app returnerer et segment for samme tidsperiode, vinner API-en du lister først for det vinduet; den andres overlappende oppføring utelates. Den andre API-en kan fortsatt legge til segmenter som ikke overlapper det vinduet."
+
+msgctxt "#32067"
+msgid "Movies: online API priority"
+msgstr "Filmer: nett-API-prioritet"
+
+msgctxt "#32068"
+msgid "Same rule as for TV episodes. For movies, only TheIntroDB is used today (IntroDB.app has no movie segments); this setting stays for consistency if that changes later."
+msgstr "Samme regel som for TV-episoder. For filmer brukes kun TheIntroDB i dag (IntroDB.app har ingen filmsegmenter); denne innstillingen beholdes for konsistens hvis det endres senere."
+
+msgctxt "#32073"
+msgid "Seconds to pause remote API calls after errors"
+msgstr "Sekunder å pause eksterne API-kall etter feil"
+
+msgctxt "#32074"
+msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
+msgstr "Basissekunder for tilbaketrekking etter feil (hver vert separat). Hver ny feil dobler ventetiden opptil 3600 s inntil en forespørsel lykkes (eksponentiell tilbaketrekking). HTTP 429 kan inkludere Retry-After; når til stede, bruker Skippy minst så mange sekunder (fortsatt begrenset til 3600). HTTP 404 utløser ikke tilbaketrekking. Sett til 0 for å deaktivere."
+
+msgctxt "#32045"
+msgid "Online segments sidecar"
+msgstr "Nettsegmenter sidecar"
+
+msgctxt "#32077"
+msgid "Save format (online segments)"
+msgstr "Lagringsformat (nettsegmenter)"
+
+msgctxt "#32078"
+msgid "Write fetched online segments to `.edl` next to the video, to Matroska-style `-chapters.xml` / `_chapters.xml`, or both. Separate from Segment Marker save format."
+msgstr "Skriv hentede nettsegmenter til `.edl` ved siden av videoen, til Matroska-stil `-chapters.xml` / `_chapters.xml`, eller begge. Separat fra Segment Marker-lagringsformat."
+
+msgctxt "#32046"
+msgid "Save online segments"
+msgstr "Lagre nettsegmenter"
+
+msgctxt "#32047"
+msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / update / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgstr "Når nettoppslag returnerer segmentvinduer og dette er på, skriver Skippy dem til disk ved å bruke lagringsformatet og retningslinjene nedenfor (hopp over / overskriv / slå sammen / oppdater / sikkerhetskopi). Gjelder ikke for plugin-avspilling, .strm-filer eller vanlige strømme-URL-er."
+
+msgctxt "#32069"
+msgid "If matching sidecar already exists"
+msgstr "Hvis matchende sidecar allerede finnes"
+
+msgctxt "#32070"
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range (neighbor snap settings are ignored). Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); optional neighbor snap trims overlaps from those new times; optional prompt. Update All: same as Update, plus append online segments whose type had no local row, with snap again per insert if enabled. Neighbor snap only affects Update and Update All, not Merge or Overwrite."
+msgstr "Gjelder separat for hver sidecar-type du lagrer (.edl og/eller chapters.xml). Hopp over: gjør ingenting når filen allerede finnes. Overskriv: erstatt den kun med nettsegmenter (valgfri forespørsel). Slå sammen: behold eksisterende oppføringer og legg til nettsegmenter som ikke overlapper et eksisterende tidsintervall (nabo-snap-innstillinger ignoreres). Oppdater: juster start/slutt på lokale segmenter som matcher nett (intro/sammendrag/credits/preview; IntroDB outro matcher credits); valgfri nabo-snap trimmer overlapping fra de nye tidene; valgfri forespørsel. Oppdater alle: samme som Oppdater, pluss tilføy nettsegmenter hvis type ikke hadde lokal rad, med snap igjen per innsetting hvis aktivert. Nabo-snap påvirker kun Oppdater og Oppdater alle, ikke Slå sammen eller Overskriv."
+
+msgctxt "#32071"
+msgid "Back up sidecar files before overwrite, merge, or update"
+msgstr "Sikkerhetskopier sidecar-filer før overskriving, sammenslåing eller oppdatering"
+
+msgctxt "#32072"
+msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced, merged, or updated."
+msgstr "Når aktivert, kopieres en eksisterende `.edl`- eller kapittel-XML-fil til samme sti med en ekstra `.bck`-utvidelse umiddelbart før den erstattes, slås sammen eller oppdateres."
+
+msgctxt "#35000"
+msgid "Replace local files with online segment data?"
+msgstr "Erstatt lokale filer med nettsegmentdata?"
+
+msgctxt "#35001"
+msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgstr "En sidecar-fil finnes allerede for denne videoen. Erstatt den kun med nettsegmenter? (Eksisterende innhold vil gå tapt med mindre du aktiverte sikkerhetskopi eller valgte Slå sammen i innstillingene)."
+
+msgctxt "#35002"
+msgid "Replace local chapter XML and EDL with online data?"
+msgstr "Erstatt lokal kapittel-XML og EDL med nettdata?"
+
+msgctxt "#35003"
+msgid "Both a chapter XML file and an `.edl` already exist beside this video. Replace both with segments from online lookup? (Existing content will be lost unless backup is enabled in settings or you use Merge policy.)"
+msgstr "Både en kapittel-XML-fil og en `.edl` finnes allerede ved siden av denne videoen. Erstatt begge med segmenter fra nettoppslag? (Eksisterende innhold vil gå tapt med mindre sikkerhetskopi er aktivert i innstillingene eller du bruker Slå sammen-policy)."
+
+msgctxt "#35004"
+msgid "Existing chapter XML will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Eksisterende kapittel-XML vil bli erstattet med segmenter fra nettoppslag. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert. Bruk Slå sammen i innstillingene for å kombinere i stedet)."
+
+msgctxt "#35005"
+msgid "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Eksisterende `.edl` vil bli erstattet med segmenter fra nettoppslag. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert. Bruk Slå sammen i innstillingene for å kombinere i stedet)."
+
+msgctxt "#35012"
+msgid "Update chapter XML from online?"
+msgstr "Oppdater kapittel-XML fra nett?"
+
+msgctxt "#35013"
+msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. A preview at the bottom lists all chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matchede lokale kapitler (intro / sammendrag / credits / preview — IntroDB outro matcher credits) vil få nye start/slutt-tider fra nettoppslag. Andre kapitler er uendret; ingen fjernes. En forhåndsvisning nederst lister alle kapitler etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35014"
+msgid "Update EDL from online?"
+msgstr "Oppdater EDL fra nett?"
+
+msgctxt "#35015"
+msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. A preview at the bottom lists all rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matchede lokale segmentrader vil få nye tider fra nettoppslag (samme regler som kapittel-XML-oppdatering). Umatchede rader forblir som de er. En forhåndsvisning nederst lister alle rader etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35016"
+msgid "Update chapter XML and EDL from online?"
+msgstr "Oppdater kapittel-XML og EDL fra nett?"
+
+msgctxt "#35017"
+msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Previews at the bottom show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Begge sidecar-filene finnes: Skippy vil kun oppdatere matchede lokale segmenter med netttider (se hjelp for oppdateringspolicy). Umatchede oppføringer forblir; ingen fjernes. Forhåndsvisninger nederst viser hver fil etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35018"
+msgid "Yes"
+msgstr "Ja"
+
+msgctxt "#35019"
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgctxt "#32093"
+msgid "Snap neighbor start"
+msgstr "Snap nabostart"
+
+msgctxt "#32094"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Når Oppdater eller Oppdater alle endrer segmenttider eller Oppdater alle setter inn et segment: trim starten på en nabo som strekker seg forbi ankerslutten slik at den begynner ved ankerslutten (f.eks. main starter etter intro; epilog starter etter credits). Krever Snap nabostart. Oppretter ikke ekstra rader – hver eksisterende naborad trimmes maksimalt én gang. Brukes kun med Oppdater / Oppdater alle, ikke Slå sammen eller Overskriv. Ekspertnivå."
+
+msgctxt "#32095"
+msgid "Snap neighbor end"
+msgstr "Snap naboslutt"
+
+msgctxt "#32096"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Når Oppdater eller Oppdater alle endrer segmenttider eller Oppdater alle setter inn et segment: trim slutten på en nabo som overlapper inn i ankeret fra venstre slik at den slutter ved ankerstart (f.eks. prolog slutter der intro starter; main slutter der credits starter). Krever Snap naboslutt. Deler ikke én rad i to. Brukes kun med Oppdater / Oppdater alle, ikke Slå sammen eller Overskriv. Ekspertnivå."
+
+msgctxt "#35020"
+msgid "Update chapter XML from online (merge missing)?"
+msgstr "Oppdater kapittel-XML fra nett (slå sammen manglende)?"
+
+msgctxt "#35021"
+msgid "Matched local chapters get new times from online. Online segments with no same-type local chapter are added. If Expert snap options are on, overlapping neighbors may be trimmed. The preview below lists the chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matchede lokale kapitler får nye tider fra nett. Nettsegmenter uten lokalt kapittel av samme type legges til. Hvis ekspert-snap-alternativer er på, kan overlappende naboer trimmes. Forhåndsvisningen nedenfor lister kapitlene etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35022"
+msgid "Update EDL from online (merge missing)?"
+msgstr "Oppdater EDL fra nett (slå sammen manglende)?"
+
+msgctxt "#35023"
+msgid "Matched local EDL rows get new times from online. Missing online types are added as new rows; optional neighbor snap applies as for chapter XML. The preview lists rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Matchede lokale EDL-rader får nye tider fra nett. Manglende netttyper legges til som nye rader; valgfri nabo-snap gjelder som for kapittel-XML. Forhåndsvisningen lister rader etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35024"
+msgid "Update chapter XML and EDL from online (merge missing)?"
+msgstr "Oppdater kapittel-XML og EDL fra nett (slå sammen manglende)?"
+
+msgctxt "#35025"
+msgid "Both sidecars: Update All rules (matched times + append missing types; optional neighbor snap). Previews below show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Begge sidecar-filer: Oppdater alle-regler (matchede tider + tilføy manglende typer; valgfri nabo-snap). Forhåndsvisninger nedenfor viser hver fil etter anvendelse. Fortsette? (Kopierer til `.bck` først hvis sikkerhetskopi er aktivert)."
+
+msgctxt "#35026"
+msgid "[Neighbor snap]"
+msgstr "[Nabo-snap]"
+
+msgctxt "#35027"
+msgid "Snap neighbor start: %s"
+msgstr "Snap nabostart: %s"
+
+msgctxt "#35028"
+msgid "Snap neighbor end: %s"
+msgstr "Snap naboslutt: %s"
+
+msgctxt "#35029"
+msgid "On"
+msgstr "På"
+
+msgctxt "#35030"
+msgid "Off"
+msgstr "Av"
+
+msgctxt "#35031"
+msgid "If you accept, this sidecar will contain:"
+msgstr "Hvis du godtar, vil denne sidecar-filen inneholde:"
+
+msgctxt "#32052"
+msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Når aktivert, laster filmer hoppsegmenter fra sidecar chapters.xml eller .edl ved siden av videoen."
+
+msgctxt "#32054"
+msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Når både lokale filer og nettoppslag er aktivert for filmer: foretrekk segmenter fra den valgte kilden når den har data; ellers bruk den andre. Online først venter på nettverksoppslag før første hopp-dialog kan vises (typisk noen få sekunder, opptil ca. 10 sekunder ved kaldstart eller tregt nettverk). Lokal først bruker sidecar-data umiddelbart når tilgjengelig."
+
+# Toast Settings
+msgctxt "#33000"
+msgid "Enable missing segment file toast for TV Episodes"
+msgstr "Aktiver varsel for manglende segmentfil for TV-episoder"
+
+msgctxt "#33001"
+msgid "Enable missing segment file toast for movies"
+msgstr "Aktiver varsel for manglende segmentfil for filmer"
+
+msgctxt "#33002"
+msgid "Enable overlapping segment toast if found in segment file"
+msgstr "Aktiver varsel for overlappende segment hvis funnet i segmentfil"
+
+msgctxt "#33003"
+msgid "Enable toast notification for skipped segment"
+msgstr "Aktiver varslingsmelding for hoppet segment"
+
+msgctxt "#33004"
+msgid "Enable toast notifications for segment marker"
+msgstr "Aktiver varslingsmeldinger for segmentmarkør"
+
+msgctxt "#33005"
+msgid "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
+msgstr "Når aktivert, viser segmentmarkør Kodi-varsler når du markerer start- og slutt-tider, og når du avbryter før lagring (f.eks. Tilbake fra policy, segmenttype eller lagringsbekreftelse)."
+
+msgctxt "#33006"
+msgid "Toast when online segments are applied"
+msgstr "Varsel når nettsegmenter anvendes"
+
+msgctxt "#33007"
+msgid "Show a one-shot notification when deferred online segment lookup updates the playback timeline (e.g. Local first with no local sidecar)."
+msgstr "Vis et engangsvarsel når utsatt nettsegmentoppslag oppdaterer avspillingstidslinjen (f.eks. Lokal først uten lokal sidecar)."
+
+# Debug Settings
+msgctxt "#34000"
+msgid "Enable Verbose Logging"
+msgstr "Aktiver detaljert logging"
+
+msgctxt "#34001"
+msgid "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
+msgstr "Detaljerte linjer i kodi.log for Skippy. For nettsegmentoppslag (TheIntroDB / IntroDB.app for TV; TheIntroDB for filmer), filtrer logger for taggen: service.skippy - remote"
+
+msgctxt "#34002"
+msgid "Log detail level"
+msgstr "Loggdetaljnivå"
+
+msgctxt "#34003"
+msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
+msgstr "Kun feil: Skippy sender ingen rutinemessig INFO (service, eksternt oppslag, SkipDialog, SegmentItem). Normal: hovedtjenesteflyt uten støy per løkke. Alle detaljer: legger til SegmentItem-tick-spor (is_active, debounce) pluss detaljerte tjenesteinternaler (JSON-RPC for manglende-fil-varsel, stisøk, hver XML/EDL-linje). Skippy LOGERROR-linjer vises fortsatt når brukt."
+
+# Segment Marker Settings
+msgctxt "#30005"
+msgid "Segment Marker"
+msgstr "Segmentmarkør"
+
+msgctxt "#30006"
+msgid "Segment Editor"
+msgstr "Segmentredigering"
+
+msgctxt "#30007"
+msgid "Backup & Restore"
+msgstr "Sikkerhetskopi og gjenoppretting"
+
+msgctxt "#37000"
+msgid "Enable Segment Editor"
+msgstr "Aktiver segmentredigering"
+
+msgctxt "#37001"
+msgid "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
+msgstr "Rediger .edl- og chapters.xml-sidecar-filer under avspilling (legg til, endre, fjern segmenter). Bruker segmentnøkkelord og EDL-handlingskartlegging fra segmentinnstillinger. Standard hurtigtast CTRL+SHIFT+E er separat fra segmentmarkør."
+
+msgctxt "#37002"
+msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and _chapters.xml. EDL only or Chapters XML only: a single format."
+msgstr "Hvilke sidecar-fil(er) redigeringen skriver når du lagrer. Begge: .edl og _chapters.xml. Kun EDL eller Kun kapittel-XML: ett enkelt format."
+
+msgctxt "#37004"
+msgid "Keyboard editor shortcut"
+msgstr "Tastatur-redigeringssnarvei"
+
+msgctxt "#37005"
+msgid "Free-form shortcut written to userdata/keymaps/skippy_editor.xml (separate from the marker keymap). Examples: ctrl+shift+e, f8. Use Keyboard press type below for normal vs long press."
+msgstr "Friform-snarvei skrevet til userdata/keymaps/skippy_editor.xml (separat fra markør-keymap). Eksempler: ctrl+shift+e, f8. Bruk tastaturtrykk-type nedenfor for normalt vs. langt trykk."
+
+msgctxt "#37006"
+msgid "Remote editor button"
+msgstr "Fjernkontroll-redigeringsknapp"
+
+msgctxt "#37007"
+msgid "Optional remote button for opening Segment Editor only (independent of Segment Marker). Same format as marker: button name (e.g. info) or discovered key:<code>."
+msgstr "Valgfri fjernkontrollknapp for å åpne kun segmentredigering (uavhengig av segmentmarkør). Samme format som markør: knappenavn (f.eks. info) eller oppdaget key:<kode>."
+
+msgctxt "#37008"
+msgid "Remote editor press type"
+msgstr "Fjernkontroll-redigeringstrykk-type"
+
+msgctxt "#37009"
+msgid "Choose whether the configured editor remote button uses a normal press or long press in the keymap."
+msgstr "Velg om konfigurert redigeringsfjernkontrollknapp bruker et normalt trykk eller langt trykk i keymap."
+
+msgctxt "#37010"
+msgid "Full-screen dark overlay"
+msgstr "Fullskjerm mørk overlegg"
+
+msgctxt "#37011"
+msgid "When enabled, darkens the video behind the editor. When disabled, the video stays fully visible while editing."
+msgstr "Når aktivert, mørklegges videoen bak redigeringen. Når deaktivert, forblir videoen fullt synlig under redigering."
+
+msgctxt "#37014"
+msgid "Discover remote button (editor)"
+msgstr "Oppdag fjernkontrollknapp (redigering)"
+
+msgctxt "#37015"
+msgid "Capture the next remote press and store it in Remote editor button, then refresh skippy_editor.xml."
+msgstr "Fang opp neste fjernkontrolltrykk og lagre det i fjernkontroll-redigeringsknapp, deretter oppdater skippy_editor.xml."
+
+msgctxt "#37016"
+msgid "Update editor keymap now"
+msgstr "Oppdater redigerings-keymap nå"
+
+msgctxt "#37017"
+msgid "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+msgstr "Skriver gjeldende segmentredigerings-tastatur- og fjernkontrollinnstillinger til userdata/keymaps/skippy_editor.xml og laster inn keymaps på nytt."
+
+msgctxt "#38000"
+msgid "Back up settings to JSON…"
+msgstr "Sikkerhetskopier innstillinger til JSON…"
+
+msgctxt "#38001"
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Eksporter alle Skippy-alternativer fra denne enheten (alle ikke-handlingsrader i tilleggsinnstillingene, inkludert eventuelle API-nøkler). Velg en skrivbar mappe; en tidsstemplet skippy-settings-backup-*.json-fil opprettes."
+
+msgctxt "#38002"
+msgid "Restore settings from JSON…"
+msgstr "Gjenopprett innstillinger fra JSON…"
+
+msgctxt "#38003"
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
+msgstr "Velg en Skippy-sikkerhetskopi .json-fil. Kun nøkler som finnes i filen endres; andre alternativer forblir som på denne enheten. Nøkler fra nyere tilleggsversjoner som ikke finnes her hoppes over."
+
+msgctxt "#38004"
+msgid "The operation could not be completed."
+msgstr "Operasjonen kunne ikke fullføres."
+
+msgctxt "#38005"
+msgid "Saved %s"
+msgstr "Lagret %s"
+
+msgctxt "#38006"
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
+msgstr "Gjenopprett innstillinger fra denne sikkerhetskopien? Verdier i filen overskriver matchende Skippy-alternativer på denne enheten. Alternativer som ikke er oppført i filen forblir uendret."
+
+msgctxt "#38007"
+msgid "This file is not a valid Skippy backup."
+msgstr "Denne filen er ikke en gyldig Skippy-sikkerhetskopi."
+
+msgctxt "#38008"
+msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
+msgstr "Anvendt %s innstillinger; %s oppføringer ble hoppet over (ukjent nøkkel eller feil)."
+
+msgctxt "#38009"
+msgid "Back up upload history to JSON…"
+msgstr "Sikkerhetskopier opplastingshistorikk til JSON…"
+
+msgctxt "#38010"
+msgid "Export online segment upload fingerprints (TheIntroDB / IntroDB.app dedupe history) from this device. Pick a writable folder; a timestamped skippy-upload-history-backup-*.json file is created."
+msgstr "Eksporter nettsegment-opplastingsfingeravtrykk (TheIntroDB / IntroDB.app dedupliseringshistorikk) fra denne enheten. Velg en skrivbar mappe; en tidsstemplet skippy-upload-history-backup-*.json-fil opprettes."
+
+msgctxt "#38011"
+msgid "Restore upload history from JSON (merge)…"
+msgstr "Gjenopprett opplastingshistorikk fra JSON (slå sammen)…"
+
+msgctxt "#38012"
+msgid "Select a Skippy upload history backup .json file. Fingerprints already on this device are kept; new entries from the file are merged in."
+msgstr "Velg en Skippy-opplastingshistorikk-sikkerhetskopi .json-fil. Fingeravtrykk som allerede finnes på denne enheten beholdes; nye oppføringer fra filen slås sammen."
+
+msgctxt "#38013"
+msgid "Merge upload history from this backup? Existing fingerprints on this device are kept; new fingerprints from the file are added."
+msgstr "Slå sammen opplastingshistorikk fra denne sikkerhetskopien? Eksisterende fingeravtrykk på denne enheten beholdes; nye fingeravtrykk fra filen legges til."
+
+msgctxt "#38014"
+msgid "Merged upload history: %s new fingerprint(s); %s already present."
+msgstr "Sammenslått opplastingshistorikk: %s nye fingeravtrykk; %s allerede til stede."
+
+msgctxt "#38015"
+msgid "Pause during online lookup"
+msgstr "Pause under nettoppslag"
+
+msgctxt "#38016"
+msgid "Pause video while Skippy fetches online segments (Online first, or Local first when no local sidecar exists). Playback resumes when the lookup finishes. Does not pause background lookup when a local sidecar is already in use."
+msgstr "Pause video mens Skippy henter nettsegmenter (Online først, eller Lokal først når ingen lokal sidecar finnes). Avspillingen gjenopptas når oppslaget er ferdig. Pauser ikke bakgrunnsoppslag når en lokal sidecar allerede er i bruk."
+
+msgctxt "#38017"
+msgid "Hide OSD display during skip"
+msgstr "Skjul OSD-visning under hopp"
+
+msgctxt "#38018"
+msgid "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
+msgstr "Når aktivert, setter Skippy Home-egenskapen Skippy.Skipping under autohopp og bekreftede spør-hopp-søk slik at et samarbeidende skinn kan skjule søkelinjen. Gjelder ikke mens spør-dialogen er på skjermen – bare rundt selve søket. Krever en per-skinn DialogSeekBar.xml-redigering (eller et tillegg som patcher den). Standard-skinn ignorerer dette – ingen effekt før skinnet sjekker egenskapen. Slå av hvis du vil ha normal søke-OSD etter at Skippy hopper."
+
+msgctxt "#39000"
+msgid "Upload to online sources"
+msgstr "Last opp til nettkilder"
+
+msgctxt "#39001"
+msgid "Default upload target"
+msgstr "Standard opplastingsmål"
+
+msgctxt "#39002"
+msgid "Pre-selects the destination in the Segment Editor upload dialog. You can still pick another option each time."
+msgstr "Forhåndsvelger destinasjonen i segmentredigeringens opplastingsdialog. Du kan fortsatt velge et annet alternativ hver gang."
+
+msgctxt "#39003"
+msgid "TheIntroDB.org API key"
+msgstr "TheIntroDB.org API-nøkkel"
+
+msgctxt "#39004"
+msgid "Bearer token from your TheIntroDB account. Required to POST segment timestamps to api.theintrodb.org."
+msgstr "Bearer-token fra din TheIntroDB-konto. Påkrevd for å POST-e segmenttidsstempler til api.theintrodb.org."
+
+msgctxt "#39005"
+msgid "IntroDB.app API key"
+msgstr "IntroDB.app API-nøkkel"
+
+msgctxt "#39006"
+msgid "API key from IntroDB.app (typically idb_…). Required for API-key submits."
+msgstr "API-nøkkel fra IntroDB.app (typisk idb_…). Påkrevd for API-nøkkel-innsendinger."
+
+msgctxt "#39009"
+msgid "Upload segments to"
+msgstr "Last opp segmenter til"
+
+msgctxt "#39010"
+msgid "Both"
+msgstr "Begge"
+
+msgctxt "#39011"
+msgid "TheIntroDB.org only"
+msgstr "Kun TheIntroDB.org"
+
+msgctxt "#39012"
+msgid "IntroDB.app only"
+msgstr "Kun IntroDB.app"
+
+msgctxt "#39013"
+msgid "Segment upload"
+msgstr "Segmentopplasting"
+
+msgctxt "#39014"
+msgid "No segments are defined for this video."
+msgstr "Ingen segmenter er definert for denne videoen."
+
+msgctxt "#39015"
+msgid "No API key for the chosen destination. Turn on Enable upload to online sources and paste the required key(s) under Expert → Upload to online sources."
+msgstr "Ingen API-nøkkel for valgt destinasjon. Slå på Aktiver opplasting til nettkilder og lim inn påkrevd(e) nøkkel(er) under Ekspert → Last opp til nettkilder."
+
+msgctxt "#39016"
+msgid "Could not resolve TMDB/IMDb for this file. Is it in the Kodi library with proper unique IDs?"
+msgstr "Kunne ikke løse TMDB/IMDb for denne filen. Er den i Kodi-biblioteket med riktige unike ID-er?"
+
+msgctxt "#39018"
+msgid "Upload"
+msgstr "Last opp"
+
+msgctxt "#39020"
+msgid "not uploaded (excluded types: ads, prologue, epilogue, main body, unknown keywords, etc.)"
+msgstr "ikke lastet opp (ekskluderte typer: annonser, prolog, epilog, hovedinnhold, ukjente nøkkelord, osv.)"
+
+msgctxt "#39021"
+msgid "already submitted from this device (stored fingerprint)"
+msgstr "allerede sendt inn fra denne enheten (lagret fingeravtrykk)"
+
+msgctxt "#39022"
+msgid "Successful submissions"
+msgstr "Vellykkede innsendinger"
+
+msgctxt "#39023"
+msgid "Skipped"
+msgstr "Hoppet over"
+
+msgctxt "#39024"
+msgid "Errors"
+msgstr "Feil"
+
+msgctxt "#39025"
+msgid "Enable upload to online sources"
+msgstr "Aktiver opplasting til nettkilder"
+
+msgctxt "#39026"
+msgid "When enabled, the Segment Editor shows Upload so you can submit segments to TheIntroDB.org and/or IntroDB.app. You still need valid API keys below."
+msgstr "Når aktivert, viser segmentredigeringen Last opp slik at du kan sende inn segmenter til TheIntroDB.org og/eller IntroDB.app. Du trenger fortsatt gyldige API-nøkler nedenfor."
+
+msgctxt "#39028"
+msgid "Paste your TheIntroDB.org API key under Settings → Expert → Upload to online sources (Bearer token from your account)."
+msgstr "Lim inn din TheIntroDB.org API-nøkkel under Innstillinger → Ekspert → Last opp til nettkilder (Bearer-token fra din konto)."
+
+msgctxt "#39029"
+msgid "Paste your IntroDB.app API key under Settings → Expert → Upload to online sources (typically idb_…)."
+msgstr "Lim inn din IntroDB.app API-nøkkel under Innstillinger → Ekspert → Last opp til nettkilder (typisk idb_…)."
+
+msgctxt "#39030"
+msgid "TheIntroDB.org denied access (unauthorized or forbidden). Your API key may be wrong, expired, or not allowed to submit. Copy a fresh key from your TheIntroDB account."
+msgstr "TheIntroDB.org nektet tilgang (uautorisert eller forbudt). Din API-nøkkel kan være feil, utløpt eller ikke tillatt å sende inn. Kopier en ny nøkkel fra din TheIntroDB-konto."
+
+msgctxt "#39031"
+msgid "IntroDB.app denied access (unauthorized or forbidden). Check that your API key is correct and still active in IntroDB.app."
+msgstr "IntroDB.app nektet tilgang (uautorisert eller forbudt). Sjekk at din API-nøkkel er korrekt og fortsatt aktiv i IntroDB.app."
+
+msgctxt "#39032"
+msgid "The service is rate-limiting this device. Wait several minutes before trying again."
+msgstr "Tjenesten begrenser hastigheten for denne enheten. Vent flere minutter før du prøver igjen."
+
+msgctxt "#39033"
+msgid "Could not reach the server. Check your internet connection, DNS, and whether the API is reachable from this network."
+msgstr "Kunne ikke nå serveren. Sjekk internettforbindelsen, DNS, og om API-en er tilgjengelig fra dette nettverket."
+
+msgctxt "#39034"
+msgid "Unexpected server response (HTTP %s). If it persists, try again later or check the service status."
+msgstr "Uventet serversvar (HTTP %s). Hvis det vedvarer, prøv igjen senere eller sjekk tjenestestatus."
+
+msgctxt "#39037"
+msgid "Cannot upload"
+msgstr "Kan ikke laste opp"
+
+msgctxt "#39040"
+msgid "Turn on Enable upload to online sources under Settings → Expert, then open the editor again."
+msgstr "Slå på Aktiver opplasting til nettkilder under Innstillinger → Ekspert, deretter åpne redigeringen på nytt."
+
+msgctxt "#39041"
+msgid "TheIntroDB.org rejected this submission (validation or business rules). Check segment durations and their documentation."
+msgstr "TheIntroDB.org avviste denne innsendingen (validering eller forretningsregler). Sjekk segmentvarigheter og deres dokumentasjon."
+
+msgctxt "#39042"
+msgid "IntroDB.app rejected this submission. Check segment times and their API rules."
+msgstr "IntroDB.app avviste denne innsendingen. Sjekk segmenttider og deres API-regler."
+
+msgctxt "#39043"
+msgid "These times may not meet TheIntroDB.org limits (duration and 0–6 hour window). Technical detail:"
+msgstr "Disse tidene oppfyller kanskje ikke TheIntroDB.org-grensene (varighet og 0–6 timers vindu). Teknisk detalj:"
+
+msgctxt "#39044"
+msgid "TheIntroDB.org requires a valid TMDB id for this title. Ensure library metadata includes TMDB (or enable TMDB resolution with an API key under Segment sources)."
+msgstr "TheIntroDB.org krever en gyldig TMDB-ID for denne tittelen. Sørg for at bibliotekmetadata inkluderer TMDB (eller aktiver TMDB-løsning med en API-nøkkel under Segmentkilder)."
+
+msgctxt "#39045"
+msgid "IntroDB.app needs an IMDb id (show-level IMDb for TV). Fix Kodi library metadata or rescrape with IMDb."
+msgstr "IntroDB.app trenger en IMDb-ID (programnivå IMDb for TV). Reparer Kodi-bibliotekmetadata eller skrap på nytt med IMDb."
+
+msgctxt "#39046"
+msgid "Internal error: unsupported segment type for IntroDB.app."
+msgstr "Intern feil: ikke-støttet segmenttype for IntroDB.app."
+
+msgctxt "#39047"
+msgid "Internal error: unsupported segment type for TheIntroDB.org."
+msgstr "Intern feil: ikke-støttet segmenttype for TheIntroDB.org."
+
+msgctxt "#39048"
+msgid "… and %d more (not shown)."
+msgstr "… og %d til (ikke vist)."
+
+msgctxt "#39049"
+msgid "(none)"
+msgstr "(ingen)"
+
+msgctxt "#39054"
+msgid "TheIntroDB.org"
+msgstr "TheIntroDB.org"
+
+msgctxt "#39055"
+msgid "IntroDB.app"
+msgstr "IntroDB.app"
+
+msgctxt "#39056"
+msgid "not sent to IntroDB.app (preview segments not accepted)"
+msgstr "ikke sendt til IntroDB.app (forhåndsvisningssegmenter ikke akseptert)"
+
+msgctxt "#39057"
+msgid "Sync local to online"
+msgstr "Synkroniser lokal til nett"
+
+msgctxt "#39058"
+msgid "During playback, compare local sidecar segments with online databases. When local has segment types missing online (e.g. recap or credits), ask to upload them. May query APIs even when online lookup is off for playback. Requires API keys below."
+msgstr "Under avspilling, sammenlign lokale sidecar-segmenter med nettdatabaser. Når lokal har segmenttyper som mangler på nett (f.eks. sammendrag eller credits), spør om å laste dem opp. Kan forespørre API-er selv når nettoppslag er av for avspilling. Krever API-nøkler nedenfor."
+
+msgctxt "#39059"
+msgid "Sync local segments to online?"
+msgstr "Synkroniser lokale segmenter til nett?"
+
+msgctxt "#39060"
+msgid "No online segment data was found for this title."
+msgstr "Ingen nettsegmentdata ble funnet for denne tittelen."
+
+msgctxt "#39061"
+msgid "Some segment types from your local sidecar are not online yet."
+msgstr "Noen segmenttyper fra din lokale sidecar er ikke på nett ennå."
+
+msgctxt "#39062"
+msgid "Local sidecar has segments not found online:"
+msgstr "Lokal sidecar har segmenter ikke funnet på nett:"
+
+msgctxt "#39063"
+msgid "Upload these using your default upload target?"
+msgstr "Last opp disse ved å bruke ditt standard opplastingsmål?"
+
+msgctxt "#36000"
+msgid "Enable Segment Marker"
+msgstr "Aktiver segmentmarkør"
+
+msgctxt "#36001"
+msgid "Mark segment start/end times during playback with a configurable hotkey (default: CTRL+E) or remote button. After marking start and end, choose a segment type and save to sidecar files."
+msgstr "Marker segmentstart/slutt-tider under avspilling med en konfigurerbar hurtigtast (standard: CTRL+E) eller fjernkontrollknapp. Etter å ha markert start og slutt, velg en segmenttype og lagre til sidecar-filer."
+
+msgctxt "#36002"
+msgid "Auto-save marked segments"
+msgstr "Autolagre markerte segmenter"
+
+msgctxt "#36003"
+msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
+msgstr "Når aktivert, lagres segmenter umiddelbart etter å ha valgt segmenttype uten en bekreftelsesforespørsel."
+
+
+
+msgctxt "#36006"
+msgid "Saved file permissions"
+msgstr "Lagrede filtillatelser"
+
+msgctxt "#36007"
+msgid "Permissions applied after saving EDL/chapters files. Leave unchanged: Skippy does not call chmod; the file keeps whatever mode the OS or Kodi created (umask / platform default). 644: owner read/write, group and others read only. 666: all users read/write (use sparingly; sometimes used on shared folders)."
+msgstr "Tillatelser anvendt etter lagring av EDL/kapittel-filer. La være uendret: Skippy kaller ikke chmod; filen beholder hvilken modus som helst OS eller Kodi opprettet (umask / plattform standard). 644: eier lese/skrive, gruppe og andre kun lese. 666: alle brukere lese/skrive (bruk sparsomt; noen ganger brukt på delte mapper)."
+
+msgctxt "#36008"
+msgid "Start time set"
+msgstr "Starttid satt"
+
+msgctxt "#36009"
+msgid "End time set"
+msgstr "Slutttid satt"
+
+msgctxt "#36010"
+msgid "Choose segment type"
+msgstr "Velg segmenttype"
+
+msgctxt "#36011"
+msgid "Save segment?"
+msgstr "Lagre segment?"
+
+msgctxt "#36012"
+msgid "Segment saved"
+msgstr "Segment lagret"
+
+msgctxt "#36013"
+msgid "Error saving segment"
+msgstr "Feil ved lagring av segment"
+
+msgctxt "#36014"
+msgid "Cancelled"
+msgstr "Avbrutt"
+
+msgctxt "#36015"
+msgid "No video playing"
+msgstr "Ingen video spilles av"
+
+msgctxt "#36016"
+msgid "Segment Marker disabled"
+msgstr "Segmentmarkør deaktivert"
+
+msgctxt "#36017"
+msgid "Save format"
+msgstr "Lagringsformat"
+
+msgctxt "#36018"
+msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and _chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to _chapters.xml file."
+msgstr "Velg hvilke sidecar-filformat markerte segmenter skal lagres til. Begge: lagrer til .edl og _chapters.xml. Kun EDL: lagrer til .edl-fil. Kun kapittel-XML: lagrer til _chapters.xml-fil."
+
+msgctxt "#36019"
+msgid "Keyboard marker shortcut"
+msgstr "Tastatur-markørsnarvei"
+
+msgctxt "#36020"
+msgid "Type the Kodi keyboard shortcut to write to userdata/keymaps/skippy_marker.xml. Examples: ctrl+e, e, f9, ctrl+shift+m. Use Keyboard marker press type below for normal press vs long press. The keymap is refreshed automatically when settings change."
+msgstr "Skriv inn Kodi-tastatursnarvei for å skrive til userdata/keymaps/skippy_marker.xml. Eksempler: ctrl+e, e, f9, ctrl+shift+m. Bruk tastaturmarkørtrykk-type nedenfor for normalt trykk vs. langt trykk. Keymap oppdateres automatisk når innstillingene endres."
+
+msgctxt "#36021"
+msgid "Remote marker button"
+msgstr "Fjernkontroll-markørknapp"
+
+msgctxt "#36022"
+msgid "Optional Kodi remote button name (red, green, blue, yellow, record, select, info, etc.) or discovered raw key code (for example key:61505). CEC remotes usually save as button names; Bluetooth/remotes with raw codes usually save as key:<code>. Leave empty when only using the keyboard hotkey."
+msgstr "Valgfritt Kodi-fjernkontrollknappnavn (red, green, blue, yellow, record, select, info, osv.) eller oppdaget rå tastekode (for eksempel key:61505). CEC-fjernkontroller lagrer vanligvis som knappnavn; Bluetooth/fjernkontroller med råkoder lagrer vanligvis som key:<kode>. La stå tom når kun tastatur-hurtigtast brukes."
+
+msgctxt "#36023"
+msgid "Discover remote button code"
+msgstr "Oppdag fjernkontrollknappkode"
+
+msgctxt "#36024"
+msgid "Opens a small capture dialog. Press the remote button you want to use; Skippy stores the button code in the Remote marker button setting and updates the keymap. Use Remote marker press type to choose normal press or long press."
+msgstr "Åpner en liten fangstdialog. Trykk på fjernkontrollknappen du vil bruke; Skippy lagrer knappkoden i fjernkontroll-markørknapp-innstillingen og oppdaterer keymap. Bruk fjernkontroll-markørtrykk-type for å velge normalt trykk eller langt trykk."
+
+msgctxt "#36025"
+msgid "Update marker keymap now"
+msgstr "Oppdater markør-keymap nå"
+
+msgctxt "#36026"
+msgid "Writes the current keyboard and remote marker settings to Kodi's userdata keymap and reloads keymaps."
+msgstr "Skriver gjeldende tastatur- og fjernkontroll-markørinnstillinger til Kodis userdata-keymap og laster inn keymaps på nytt."
+
+msgctxt "#36027"
+msgid "Remote marker press type"
+msgstr "Fjernkontroll-markørtrykk-type"
+
+msgctxt "#36028"
+msgid "Choose whether the configured remote marker button triggers on a normal press or long press. For discovered raw key codes, Skippy writes this as a keymap longpress modifier."
+msgstr "Velg om konfigurert fjernkontroll-markørknapp utløses ved et normalt trykk eller langt trykk. For oppdagede råtastekoder skriver Skippy dette som en keymap-langtrykkmodifikator."
+
+msgctxt "#36029"
+msgid "Keyboard marker press type"
+msgstr "Tastaturmarkørtrykk-type"
+
+msgctxt "#36030"
+msgid "Choose whether the configured keyboard shortcut triggers on a normal press or long press. Default is normal press."
+msgstr "Velg om konfigurert tastatursnarvei utløses ved et normalt trykk eller langt trykk. Standard er normalt trykk."
+
+msgctxt "#36031"
+msgid "How to save marked segments"
+msgstr "Hvordan lagre markerte segmenter"
+
+msgctxt "#36032"
+msgid "Controls how Segment Marker combines a new marked range with existing EDL/XML sidecar entries. Merge non-overlapping: add the marker only when it does not overlap existing entries. Keep both (old starts after new): add the new segment and shorten any overlapping existing segment so it starts where the new one ends (drops the old entry if the new range fully covers it). Overwrite overlapping: remove overlapping entries and add the new one. Append always: add the new entry even if it overlaps. Replace file: write only the newly marked segment. Ask each time: choose during marker save, before selecting the segment type."
+msgstr "Kontrollerer hvordan segmentmarkør kombinerer et nytt markert område med eksisterende EDL/XML-sidecar-oppføringer. Slå sammen ikke-overlappende: legg til markøren bare når den ikke overlapper eksisterende oppføringer. Behold begge (gammel starter etter ny): legg til det nye segmentet og forkort eventuelt overlappende eksisterende segment slik at det starter der det nye slutter (dropper den gamle oppføringen hvis det nye området dekker den helt). Overskriv overlappende: fjern overlappende oppføringer og legg til den nye. Tilføy alltid: legg til den nye oppføringen selv om den overlapper. Erstatt fil: skriv kun det nylig markerte segmentet. Spør hver gang: velg under markørlagring, før valg av segmenttype."
+
+msgctxt "#36033"
+msgid "Back up files before marker save"
+msgstr "Sikkerhetskopier filer før markørlagring"
+
+msgctxt "#36034"
+msgid "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
+msgstr "Før lagring, sikkerhetskopier eksisterende sidecar-filer valgt av Lagringsformat. Kun EDL sikkerhetskopierer .edl, Kun kapittel-XML sikkerhetskopierer kapittel-XML, Begge sikkerhetskopierer begge når de finnes. Sikkerhetskopier bruker samme sti med en .bck-utvidelse."
+
+msgctxt "#36035"
+msgid "Press the segment marker key again to set the end time."
+msgstr "Trykk segmentmarkørtasten igjen for å sette slutttiden."
+
+msgctxt "#36036"
+msgid "Segment marker cancelled."
+msgstr "Segmentmarkør avbrutt."

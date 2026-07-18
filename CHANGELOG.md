@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.2.13] - 2026-07-18
+
+### Added
+- **European settings localizations**: German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, and Italian (`resources/language/*/strings.po`), matching the English catalog (262 strings).
+
+### Changed
+- **Install packaging**: `.gitattributes` `export-ignore` now also omits `tools/`, `__pycache__/`, `*.code-workspace`, `openapi_theintrodb_v3.yaml`, and the gitignore/gitattributes files from GitHub Download ZIP / `git archive` (in addition to `tests/`).
+- **README folder tree**: Updated for the modular `service_*.py` layout, 720p/1080i skins, multi-language folders, and note that `tests/` / `tools/` stay out of install ZIPs.
+
 ## [5.2.12] - 2026-07-17
 
 ### Fixed

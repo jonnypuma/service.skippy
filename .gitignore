@@ -1,0 +1,11 @@
+# Local / generated — keep out of commits (does not affect Kodi ZIP contents by itself)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+Thumbs.db
