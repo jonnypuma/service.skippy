@@ -1,0 +1,1502 @@
+# Kodi language file
+# Addon: service.skippy
+msgid ""
+msgstr ""
+"Language: el\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# Categories
+msgctxt "#30000"
+msgid "Segment Settings"
+msgstr "Ρυθμίσεις Τμημάτων"
+
+msgctxt "#30001"
+msgid "Playback & Skip Dialog"
+msgstr "Αναπαραγωγή & Διάλογος Παράλειψης"
+
+msgctxt "#30004"
+msgid "Segment Sources"
+msgstr "Πηγές Τμημάτων"
+
+msgctxt "#30002"
+msgid "Toast Notifications"
+msgstr "Ειδοποιήσεις Toast"
+
+msgctxt "#30003"
+msgid "Debug Logging"
+msgstr "Καταγραφή Αποσφαλμάτωσης"
+
+# Segment Settings
+msgctxt "#31000"
+msgid "Segment Keywords to Watch For"
+msgstr "Λέξεις-Κλειδιά Τμημάτων προς Παρακολούθηση"
+
+msgctxt "#31001"
+msgid "Skip Behavior Preferences"
+msgstr "Προτιμήσεις Συμπεριφοράς Παράλειψης"
+
+msgctxt "#31002"
+msgid "Always Skip These"
+msgstr "Πάντα Παράλειψη Αυτών"
+
+msgctxt "#31003"
+msgid "Ask to Skip These"
+msgstr "Ερώτηση για Παράλειψη Αυτών"
+
+msgctxt "#31004"
+msgid "Never Skip These"
+msgstr "Ποτέ Παράλειψη Αυτών"
+
+msgctxt "#31005"
+msgid "Ignore unmapped EDL actions"
+msgstr "Αγνόηση μη αντιστοιχισμένων ενεργειών EDL"
+
+msgctxt "#31006"
+msgid "EDL Action Type Mapping"
+msgstr "Αντιστοίχιση Τύπου Ενέργειας EDL"
+
+msgctxt "#31007"
+msgid "Ignore overlapping segments"
+msgstr "Αγνόηση επικαλυπτόμενων τμημάτων"
+
+msgctxt "#31011"
+msgid "Open Segment Editor when overlaps are detected"
+msgstr "Άνοιγμα Segment Editor όταν ανιχνεύονται επικαλύψεις"
+
+msgctxt "#31012"
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgstr "Μετά την ανάλυση του sidecar σας, αν εξακολουθούν να υπάρχουν επικαλυπτόμενα ή ένθετα τμήματα ενώ η "Αγνόηση επικαλυπτόμενων τμημάτων" είναι απενεργοποιημένη, άνοιγμα του Segment Editor μία φορά ανά αρχείο αναπαραγωγής ώστε να μπορείτε να διορθώσετε τη λίστα. Απαιτεί ενεργοποίηση του Segment Editor. Χρησιμοποιεί την ίδια ανίχνευση με την ειδοποίηση επικαλυπτόμενων τμημάτων."
+
+msgctxt "#31008"
+msgid "Use embedded chapters as fallback"
+msgstr "Χρήση ενσωματωμένων κεφαλαίων ως εναλλακτική"
+
+msgctxt "#31009"
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
+msgstr "Όταν δεν βρεθεί sidecar (chapters.xml / .edl) ή διαδικτυακά τμήματα, ανάλυση κεφαλαίων ενσωματωμένων στο αρχείο βίντεο (MKV, MP4). Μόνο κεφάλαια που ταιριάζουν με τις προσαρμοσμένες λέξεις-κλειδιά τμημάτων χρησιμοποιούνται."
+
+msgctxt "#31010"
+msgid "Segment Keywords"
+msgstr "Λέξεις-Κλειδιά Τμημάτων"
+
+msgctxt "#31013"
+msgid "Prefetch next episode"
+msgstr "Προφόρτωση επόμενου επεισοδίου"
+
+msgctxt "#31014"
+msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
+msgstr "Όταν η προτεραιότητα τμημάτων TV είναι Online first και η διαδικτυακή αναζήτηση TV είναι ενεργή, το Skippy επιλύει το επόμενο επεισόδιο βιβλιοθήκης (ίδια σειρά: επόμενο επεισόδιο στη σεζόν ή πρώτο επεισόδιο της επόμενης σεζόν) και κατεβάζει συγχωνευμένα διαδικτυακά τμήματα intro/recap στο παρασκήνιο. Τα τμήματα εφαρμόζονται μόνο όταν ξεκινάτε ακριβώς αυτό το αρχείο (διαδρομή + αναγνωριστικά πρέπει να ταιριάζουν). Η λεπτομερής καταγραφή (Όλες οι λεπτομέρειες) καταγράφει το πρόγραμμα προφόρτωσης, αποθήκευση και μετάδοση. Δεν χρησιμοποιείται για Local first. Δεν προφορτώνει ποτέ τοπικά sidecars."
+
+# Dialog Settings
+msgctxt "#32000"
+msgid "Button Focus Style"
+msgstr "Στυλ Εστίασης Κουμπιού"
+
+msgctxt "#32001"
+msgid "Default"
+msgstr "Προεπιλογή"
+
+msgctxt "#32002"
+msgid "Aqua"
+msgstr "Aqua"
+
+msgctxt "#32003"
+msgid "Aqua Bevel"
+msgstr "Aqua Bevel"
+
+msgctxt "#32004"
+msgid "Aqua Dark"
+msgstr "Aqua Dark"
+
+msgctxt "#32005"
+msgid "Aqua Vignette"
+msgstr "Aqua Vignette"
+
+msgctxt "#32012"
+msgid "Aqua Rounded"
+msgstr "Aqua Rounded"
+
+msgctxt "#32006"
+msgid "Blue"
+msgstr "Blue"
+
+msgctxt "#32007"
+msgid "Show Progress Bar in Skip Dialog"
+msgstr "Εμφάνιση Γραμμής Προόδου στον Διάλογο Παράλειψης"
+
+msgctxt "#32008"
+msgid "Major Rewind Threshold (Seconds)"
+msgstr "Όριο Μεγάλης Επιστροφής (Δευτερόλεπτα)"
+
+msgctxt "#32009"
+msgid "Skip Dialog Position"
+msgstr "Θέση Διαλόγου Παράλειψης"
+
+msgctxt "#32010"
+msgid "Enable Skip for Movies"
+msgstr "Ενεργοποίηση Παράλειψης για Ταινίες"
+
+msgctxt "#32011"
+msgid "Enable Skip for Episodes"
+msgstr "Ενεργοποίηση Παράλειψης για Επεισόδια"
+
+msgctxt "#32017"
+msgid "Show Skip Dialog for Movies"
+msgstr "Εμφάνιση Διαλόγου Παράλειψης για Ταινίες"
+
+msgctxt "#32018"
+msgid "Show Skip Dialog for Episodes"
+msgstr "Εμφάνιση Διαλόγου Παράλειψης για Επεισόδια"
+
+msgctxt "#32013"
+msgid "Skip Button Format"
+msgstr "Μορφή Κουμπιού Παράλειψης"
+
+msgctxt "#32014"
+msgid "Hide Close Button"
+msgstr "Απόκρυψη Κουμπιού Κλεισίματος"
+
+msgctxt "#32015"
+msgid "Hide Skip and Close Icons"
+msgstr "Απόκρυψη Εικονιδίων Παράλειψης και Κλεισίματος"
+
+msgctxt "#32016"
+msgid "Hide segment ending in text"
+msgstr "Απόκρυψη κειμένου λήξης τμήματος"
+
+msgctxt "#32019"
+msgid "Global options"
+msgstr "Γενικές επιλογές"
+
+msgctxt "#32020"
+msgid "Skip dialog mode"
+msgstr "Λειτουργία διαλόγου παράλειψης"
+
+msgctxt "#32021"
+msgid "Full mode"
+msgstr "Πλήρης λειτουργία"
+
+msgctxt "#32022"
+msgid "Minimal mode"
+msgstr "Ελάχιστη λειτουργία"
+
+msgctxt "#32023"
+msgid "Minimal plate style"
+msgstr "Στυλ πλάκας ελάχιστης λειτουργίας"
+
+msgctxt "#32024"
+msgid "Minimal skip dialog position"
+msgstr "Θέση διαλόγου παράλειψης ελάχιστης λειτουργίας"
+
+msgctxt "#32025"
+msgid "Minimal skip label format"
+msgstr "Μορφή ετικέτας παράλειψης ελάχιστης λειτουργίας"
+
+msgctxt "#32026"
+msgid "Skip dialog font color"
+msgstr "Χρώμα γραμματοσειράς διαλόγου παράλειψης"
+
+msgctxt "#32027"
+msgid "Progress bar shows remaining (countdown)"
+msgstr "Η γραμμή προόδου εμφανίζει το υπόλοιπο (αντίστροφη μέτρηση)"
+
+msgctxt "#32079"
+msgid "Progress bar style"
+msgstr "Στυλ γραμμής προόδου"
+
+msgctxt "#32080"
+msgid "Progress bar height (pixels)"
+msgstr "Ύψος γραμμής προόδου (εικονοστοιχεία)"
+
+msgctxt "#32081"
+msgid "Show skip button focus frame"
+msgstr "Εμφάνιση πλαισίου εστίασης κουμπιού παράλειψης"
+
+msgctxt "#32082"
+msgid "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
+msgstr "Πλήρης λειτουργία: όταν το κουμπί Κλείσιμο είναι κρυφό, σχεδίαση της επιλεγμένης υφής εστίασης στο κουμπί Παράλειψη. Απενεργοποιήστε για απόκρυψη του πλαισίου εστίασης όταν εμφανίζεται μόνο η Παράλειψη."
+
+msgctxt "#32083"
+msgid "Smooth progress bar updates"
+msgstr "Ομαλές ενημερώσεις γραμμής προόδου"
+
+msgctxt "#32084"
+msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
+msgstr "Πλήρης λειτουργία: ανανέωση της γραμμής προόδου πιο συχνά και ομαλή μετάβαση μεταξύ τιμών. Απενεργοποιήστε αν η αναπαραγωγή τραυλίζει σε πιο αργές συσκευές (προεπιλογή απενεργοποιημένη)."
+
+msgctxt "#32085"
+msgid "Progress bar updates per second"
+msgstr "Ενημερώσεις γραμμής προόδου ανά δευτερόλεπτο"
+
+msgctxt "#32086"
+msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
+msgstr "Μόνο ομαλή λειτουργία: πόσες φορές το δευτερόλεπτο να ανανεώνεται η γραμμή (2–120). Η προεπιλογή 4 είναι εντάξει για τις περισσότερες οθόνες· αυξήστε μόνο αν η γραμμή φαίνεται κοφτή σε πάνελ υψηλής ανανέωσης (60–120 Hz)—και μειώστε ξανά αν η αναπαραγωγή τραυλίζει."
+
+msgctxt "#32087"
+msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
+msgstr "Κύριος διακόπτης για ταινίες: όταν είναι απενεργοποιημένος, το Skippy δεν παραλείπει ή προτρέπει. Ενόσω είναι απενεργοποιημένο, το Kodi κρύβει τη θυγατρική ρύθμιση "Εμφάνιση διαλόγου παράλειψης για ταινίες"."
+
+msgctxt "#32088"
+msgid "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
+msgstr "Κύριος διακόπτης για επεισόδια TV: όταν είναι απενεργοποιημένος, το Skippy δεν παραλείπει ή προτρέπει. Ενόσω είναι απενεργοποιημένο, το Kodi κρύβει τη θυγατρική ρύθμιση "Εμφάνιση διαλόγου παράλειψης για επεισόδια"."
+
+msgctxt "#32089"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
+msgstr "Για τμήματα ρυθμισμένα σε Ερώτηση, εμφάνιση του διαλόγου παράλειψης Πλήρης ή Ελάχιστος. Όταν είναι απενεργοποιημένο, αυτά τα τμήματα δεν προχωρούν. Απαιτεί Ενεργοποίηση παράλειψης για ταινίες (αυτή η σειρά εμφανίζεται μόνο όταν αυτό είναι ενεργό)."
+
+msgctxt "#32090"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
+msgstr "Για τμήματα ρυθμισμένα σε Ερώτηση, εμφάνιση του διαλόγου παράλειψης Πλήρης ή Ελάχιστος. Όταν είναι απενεργοποιημένο, αυτά τα τμήματα δεν προχωρούν. Απαιτεί Ενεργοποίηση παράλειψης για επεισόδια (αυτή η σειρά εμφανίζεται μόνο όταν αυτό είναι ενεργό)."
+
+msgctxt "#32091"
+msgid "Jump offset"
+msgstr "Μετατόπιση άλματος"
+
+msgctxt "#32092"
+msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
+msgstr "Δευτερόλεπτα που προστίθενται ή αφαιρούνται κατά την παράλειψη ενός τμήματος (αυτόματα ή αφού επιβεβαιώσετε Ερώτηση). Αρνητικές τιμές προσγειώνονται πριν από τον κανονικό στόχο παράλειψης (π.χ. -5 ξεκινά 5 δευτ. νωρίτερα)· θετικές τιμές προσγειώνονται μετά από αυτόν. Ο χρόνος αναζήτησης δεν είναι ποτέ κάτω από το μηδέν."
+
+msgctxt "#32097"
+msgid "Ask dialog debounce (ms)"
+msgstr "Αντίκρουση διαλόγου Ερώτησης (ms)"
+
+msgctxt "#32098"
+msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
+msgstr "Χιλιοστά δευτερολέπτου αναμονής πριν το άνοιγμα ενός διαλόγου παράλειψης Ερώτηση (0–500, προεπιλογή 300). Μειώνει τους διπλούς διαλόγους από τον βρόχο υπηρεσίας ~1 δευτ.· ορίστε σε 0 για ταχύτερη προτροπή σε αργές συσκευές."
+
+msgctxt "#32028"
+msgid "Use local chapter / EDL files"
+msgstr "Χρήση τοπικών αρχείων κεφαλαίου / EDL"
+
+msgctxt "#32029"
+msgid "Use online segment lookup (TheIntroDB / IntroDB.app)"
+msgstr "Χρήση διαδικτυακής αναζήτησης τμημάτων (TheIntroDB / IntroDB.app)"
+
+msgctxt "#32030"
+msgid "Prefer when both local and online are enabled"
+msgstr "Προτίμηση όταν και τα τοπικά και τα διαδικτυακά είναι ενεργοποιημένα"
+
+msgctxt "#32036"
+msgid "Online APIs (TMDB)"
+msgstr "Διαδικτυακά APIs (TMDB)"
+
+msgctxt "#32031"
+msgid "Resolve missing TMDB / IMDb via TMDB API"
+msgstr "Επίλυση ελλειπόντων TMDB / IMDb μέσω TMDB API"
+
+msgctxt "#32032"
+msgid "TMDB API key (optional)"
+msgstr "Κλειδί TMDB API (προαιρετικό)"
+
+msgctxt "#32033"
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+msgstr "Δωρεάν κλειδί από themoviedb.org (Settings → API). Χρησιμοποιείται όταν η διαδικτυακή αναζήτηση TV ή ταινιών χρειάζεται να επιλύσει ελλείποντα αναγνωριστικά TMDB/IMDb. Αφήστε κενό για χρήση του κλειδιού plugin.video.themoviedb.helper παρακάτω (ίδιο κλειδί για επεισόδια και ταινίες)."
+
+msgctxt "#32034"
+msgid "Use TheMovieDB Helper addon API key when empty"
+msgstr "Χρήση κλειδιού API πρόσθετου TheMovieDB Helper όταν είναι κενό"
+
+msgctxt "#32035"
+msgid "When TV or movie online lookup is enabled and Kodi has no TMDB/IMDb in uniqueid, call api.themoviedb.org to fill gaps (same IDs TheIntroDB / IntroDB.app need). Applies to both episodes and movies. Disable to use only library scraper metadata."
+msgstr "Όταν η διαδικτυακή αναζήτηση TV ή ταινιών είναι ενεργοποιημένη και το Kodi δεν έχει TMDB/IMDb στο uniqueid, κλήση στο api.themoviedb.org για συμπλήρωση κενών (ίδια IDs που χρειάζονται το TheIntroDB / IntroDB.app). Ισχύει τόσο για επεισόδια όσο και για ταινίες. Απενεργοποιήστε για χρήση μόνο μεταδεδομένων βιβλιοθήκης scraper."
+
+msgctxt "#32037"
+msgid "If the TMDB API key field above is empty, read the key from plugin.video.themoviedb.helper when installed. One key for both TV episodes and movies."
+msgstr "Αν το πεδίο κλειδιού TMDB API παραπάνω είναι κενό, ανάγνωση του κλειδιού από plugin.video.themoviedb.helper όταν είναι εγκατεστημένο. Ένα κλειδί για επεισόδια TV και ταινίες."
+
+msgctxt "#32059"
+msgid "TV episodes"
+msgstr "Επεισόδια TV"
+
+msgctxt "#32060"
+msgid "Movies"
+msgstr "Ταινίες"
+
+msgctxt "#32061"
+msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Όταν ενεργοποιηθεί, τα επεισόδια TV φορτώνουν τμήματα παράλειψης από sidecar chapters.xml ή .edl δίπλα στο βίντεο."
+
+msgctxt "#32062"
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgstr "Όταν ενεργοποιηθεί, τα επεισόδια TV μπορούν να φορτώσουν χρονισμό intro/recap από TheIntroDB και IntroDB.app. Απαιτεί season/episode και αναγνωριστικά τύπου TMDB/IMDb από τη βιβλιοθήκη του Kodi (scraper uniqueid). Το SxxExx στο όνομα αρχείου είναι μόνο εναλλακτική όταν το στοιχείο δεν είναι στη βιβλιοθήκη."
+
+msgctxt "#32063"
+msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Όταν και τα τοπικά αρχεία και η διαδικτυακή αναζήτηση είναι ενεργοποιημένα για επεισόδια TV: προτίμηση τμημάτων από την επιλεγμένη πηγή όταν έχει δεδομένα· διαφορετικά χρήση της άλλης. Το Online first περιμένει τη διαδικτυακή αναζήτηση πριν εμφανιστεί ο πρώτος διάλογος παράλειψης (συνήθως μερικά δευτερόλεπτα, έως περίπου 10 δευτερόλεπτα σε κρύα εκκίνηση ή αργό δίκτυο). Το Local first χρησιμοποιεί δεδομένα sidecar άμεσα όταν υπάρχουν."
+
+msgctxt "#32064"
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgstr "Όταν ενεργοποιηθεί, οι ταινίες μπορούν να φορτώσουν χρονισμό intro/recap μόνο από TheIntroDB (όχι IntroDB.app). Απαιτεί αναγνωριστικά ταινιών TMDB και/ή IMDb από τη βιβλιοθήκη του Kodi (uniqueid), ή τις παγκόσμιες ρυθμίσεις TMDB API παραπάνω όταν λείπουν τα αναγνωριστικά."
+
+msgctxt "#32065"
+msgid "TV episodes: online API priority"
+msgstr "Επεισόδια TV: προτεραιότητα διαδικτυακού API"
+
+msgctxt "#32066"
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgstr "Όταν και το TheIntroDB και το IntroDB.app επιστρέφουν ένα τμήμα για το ίδιο εύρος χρόνου, το API που αναφέρετε πρώτο κερδίζει για αυτό το παράθυρο· η επικαλυπτόμενη καταχώρηση του άλλου παραλείπεται. Το άλλο API μπορεί ακόμα να προσθέσει τμήματα που δεν επικαλύπτονται σε αυτό το παράθυρο."
+
+msgctxt "#32067"
+msgid "Movies: online API priority"
+msgstr "Ταινίες: προτεραιότητα διαδικτυακού API"
+
+msgctxt "#32068"
+msgid "Same rule as for TV episodes. For movies, only TheIntroDB is used today (IntroDB.app has no movie segments); this setting stays for consistency if that changes later."
+msgstr "Ίδιος κανόνας όπως για επεισόδια TV. Για ταινίες, μόνο το TheIntroDB χρησιμοποιείται σήμερα (το IntroDB.app δεν έχει τμήματα ταινιών)· αυτή η ρύθμιση παραμένει για συνέπεια αν αυτό αλλάξει αργότερα."
+
+msgctxt "#32073"
+msgid "Seconds to pause remote API calls after errors"
+msgstr "Δευτερόλεπτα παύσης κλήσεων απομακρυσμένου API μετά από σφάλματα"
+
+msgctxt "#32074"
+msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
+msgstr "Βασικά δευτερόλεπτα για backoff μετά από σφάλματα (κάθε host ξεχωριστά). Κάθε νέα αποτυχία διπλασιάζει τον χρόνο αναμονής έως 3600 δευτ. μέχρι μια αίτηση να πετύχει (εκθετικό backoff). Το HTTP 429 μπορεί να περιλαμβάνει Retry-After· όταν υπάρχει, το Skippy χρησιμοποιεί τουλάχιστον τόσα δευτερόλεπτα (ακόμα περιορισμένο στα 3600). Το HTTP 404 δεν ενεργοποιεί backoff. Ορίστε σε 0 για απενεργοποίηση."
+
+msgctxt "#32045"
+msgid "Online segments sidecar"
+msgstr "Sidecar διαδικτυακών τμημάτων"
+
+msgctxt "#32077"
+msgid "Save format (online segments)"
+msgstr "Μορφή αποθήκευσης (διαδικτυακά τμήματα)"
+
+msgctxt "#32078"
+msgid "Write fetched online segments to `.edl` next to the video, to Matroska-style `-chapters.xml` / `_chapters.xml`, or both. Separate from Segment Marker save format."
+msgstr "Εγγραφή ληφθέντων διαδικτυακών τμημάτων σε `.edl` δίπλα στο βίντεο, σε Matroska-style `-chapters.xml` / `_chapters.xml`, ή και στα δύο. Ξεχωριστό από τη μορφή αποθήκευσης Segment Marker."
+
+msgctxt "#32046"
+msgid "Save online segments"
+msgstr "Αποθήκευση διαδικτυακών τμημάτων"
+
+msgctxt "#32047"
+msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / update / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgstr "Όταν η διαδικτυακή αναζήτηση επιστρέφει παράθυρα τμημάτων και αυτό είναι ενεργό, το Skippy τα γράφει στο δίσκο χρησιμοποιώντας τη μορφή αποθήκευσης και τις πολιτικές παρακάτω (skip / overwrite / merge / update / backup). Δεν ισχύει για αναπαραγωγή plugin, αρχεία .strm ή κοινά URLs ροής."
+
+msgctxt "#32069"
+msgid "If matching sidecar already exists"
+msgstr "Αν υπάρχει ήδη αντίστοιχο sidecar"
+
+msgctxt "#32070"
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range (neighbor snap settings are ignored). Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); optional neighbor snap trims overlaps from those new times; optional prompt. Update All: same as Update, plus append online segments whose type had no local row, with snap again per insert if enabled. Neighbor snap only affects Update and Update All, not Merge or Overwrite."
+msgstr "Εφαρμόζεται ξεχωριστά σε κάθε τύπο sidecar που αποθηκεύετε (.edl και/ή chapters.xml). Skip: μην κάνετε τίποτα όταν αυτό το αρχείο υπάρχει ήδη. Overwrite: αντικαταστήστε το με διαδικτυακά τμήματα μόνο (προαιρετική προτροπή). Merge: διατήρηση υπαρχουσών καταχωρήσεων και προσθήκη διαδικτυακών τμημάτων που δεν επικαλύπτονται σε υπάρχον εύρος χρόνου (οι ρυθμίσεις neighbor snap αγνοούνται). Update: προσαρμογή start/end σε τοπικά τμήματα που ταιριάζουν με διαδικτυακά (intro/recap/credits/preview· το outro του IntroDB ταιριάζει με credits)· προαιρετικό neighbor snap περικόπτει επικαλύψεις από αυτούς τους νέους χρόνους· προαιρετική προτροπή. Update All: ίδιο με Update, συν προσθήκη διαδικτυακών τμημάτων των οποίων ο τύπος δεν είχε τοπική σειρά, με snap πάλι ανά εισαγωγή αν ενεργοποιηθεί. Το Neighbor snap επηρεάζει μόνο Update και Update All, όχι Merge ή Overwrite."
+
+msgctxt "#32071"
+msgid "Back up sidecar files before overwrite, merge, or update"
+msgstr "Αντίγραφο ασφαλείας αρχείων sidecar πριν από overwrite, merge ή update"
+
+msgctxt "#32072"
+msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced, merged, or updated."
+msgstr "Όταν ενεργοποιηθεί, ένα υπάρχον αρχείο `.edl` ή chapter XML αντιγράφεται στην ίδια διαδρομή με επιπλέον επέκταση `.bck` αμέσως πριν αντικατασταθεί, συγχωνευθεί ή ενημερωθεί."
+
+msgctxt "#35000"
+msgid "Replace local files with online segment data?"
+msgstr "Αντικατάσταση τοπικών αρχείων με διαδικτυακά δεδομένα τμημάτων;"
+
+msgctxt "#35001"
+msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgstr "Υπάρχει ήδη αρχείο sidecar για αυτό το βίντεο. Να αντικατασταθεί με διαδικτυακά τμήματα μόνο; (Το υπάρχον περιεχόμενο θα χαθεί εκτός αν ενεργοποιήσατε αντίγραφο ασφαλείας ή επιλέξατε Merge στις ρυθμίσεις.)"
+
+msgctxt "#35002"
+msgid "Replace local chapter XML and EDL with online data?"
+msgstr "Αντικατάσταση τοπικού chapter XML και EDL με διαδικτυακά δεδομένα;"
+
+msgctxt "#35003"
+msgid "Both a chapter XML file and an `.edl` already exist beside this video. Replace both with segments from online lookup? (Existing content will be lost unless backup is enabled in settings or you use Merge policy.)"
+msgstr "Υπάρχουν ήδη τόσο αρχείο chapter XML όσο και `.edl` δίπλα σε αυτό το βίντεο. Να αντικατασταθούν και τα δύο με τμήματα από διαδικτυακή αναζήτηση; (Το υπάρχον περιεχόμενο θα χαθεί εκτός αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο στις ρυθμίσεις ή χρησιμοποιείτε πολιτική Merge.)"
+
+msgctxt "#35004"
+msgid "Existing chapter XML will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Το υπάρχον chapter XML θα αντικατασταθεί από τμήματα από διαδικτυακή αναζήτηση. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο. Χρησιμοποιήστε Merge στις ρυθμίσεις για συνδυασμό αντ' αυτού.)"
+
+msgctxt "#35005"
+msgid "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "Το υπάρχον `.edl` θα αντικατασταθεί από τμήματα από διαδικτυακή αναζήτηση. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο. Χρησιμοποιήστε Merge στις ρυθμίσεις για συνδυασμό αντ' αυτού.)"
+
+msgctxt "#35012"
+msgid "Update chapter XML from online?"
+msgstr "Ενημέρωση chapter XML από διαδικτυακά;"
+
+msgctxt "#35013"
+msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. A preview at the bottom lists all chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Τα αντιστοιχισμένα τοπικά κεφάλαια (intro / recap / credits / preview — το outro του IntroDB ταιριάζει με credits) θα λάβουν νέους χρόνους start/end από διαδικτυακή αναζήτηση. Άλλα κεφάλαια παραμένουν αμετάβλητα· κανένα δεν αφαιρείται. Μια προεπισκόπηση στο κάτω μέρος παραθέτει όλα τα κεφάλαια μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35014"
+msgid "Update EDL from online?"
+msgstr "Ενημέρωση EDL από διαδικτυακά;"
+
+msgctxt "#35015"
+msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. A preview at the bottom lists all rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Οι αντιστοιχισμένες τοπικές σειρές τμημάτων θα λάβουν νέους χρόνους από διαδικτυακή αναζήτηση (ίδιοι κανόνες με ενημέρωση chapter XML). Οι μη αντιστοιχισμένες σειρές παραμένουν ως έχουν. Μια προεπισκόπηση στο κάτω μέρος παραθέτει όλες τις σειρές μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35016"
+msgid "Update chapter XML and EDL from online?"
+msgstr "Ενημέρωση chapter XML και EDL από διαδικτυακά;"
+
+msgctxt "#35017"
+msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Previews at the bottom show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Υπάρχουν και τα δύο sidecars: Το Skippy θα ενημερώσει μόνο αντιστοιχισμένα τοπικά τμήματα με διαδικτυακούς χρόνους (δείτε τη βοήθεια πολιτικής Update). Οι μη αντιστοιχισμένες καταχωρήσεις παραμένουν· καμία δεν αφαιρείται. Οι προεπισκοπήσεις στο κάτω μέρος δείχνουν κάθε αρχείο μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35018"
+msgid "Yes"
+msgstr "Ναι"
+
+msgctxt "#35019"
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgctxt "#32093"
+msgid "Snap neighbor start"
+msgstr "Snap neighbor start"
+
+msgctxt "#32094"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Όταν το Update ή Update All αλλάζει χρόνους τμημάτων ή το Update All εισάγει ένα τμήμα: περικοπή της αρχής ενός γείτονα που εκτείνεται πέρα από το τέλος της άγκυρας ώστε να αρχίζει στο τέλος της άγκυρας (π.χ. το main αρχίζει μετά το intro· το epilogue αρχίζει μετά τα credits). Απαιτεί Snap neighbor start. Δεν δημιουργεί επιπλέον σειρές—κάθε υπάρχουσα σειρά γείτονα περικόπτεται το πολύ μία φορά. Χρησιμοποιείται μόνο με Update / Update All, όχι Merge ή Overwrite. Επίπεδο ειδικού."
+
+msgctxt "#32095"
+msgid "Snap neighbor end"
+msgstr "Snap neighbor end"
+
+msgctxt "#32096"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Όταν το Update ή Update All αλλάζει χρόνους τμημάτων ή το Update All εισάγει ένα τμήμα: περικοπή του τέλους ενός γείτονα που επικαλύπτεται στην άγκυρα από αριστερά ώστε να τελειώνει στην αρχή της άγκυρας (π.χ. το prologue τελειώνει όπου αρχίζει το intro· το main τελειώνει όπου αρχίζουν τα credits). Απαιτεί Snap neighbor end. Δεν χωρίζει μία σειρά σε δύο. Χρησιμοποιείται μόνο με Update / Update All, όχι Merge ή Overwrite. Επίπεδο ειδικού."
+
+msgctxt "#35020"
+msgid "Update chapter XML from online (merge missing)?"
+msgstr "Ενημέρωση chapter XML από διαδικτυακά (συγχώνευση ελλειπόντων);"
+
+msgctxt "#35021"
+msgid "Matched local chapters get new times from online. Online segments with no same-type local chapter are added. If Expert snap options are on, overlapping neighbors may be trimmed. The preview below lists the chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Τα αντιστοιχισμένα τοπικά κεφάλαια λαμβάνουν νέους χρόνους από διαδικτυακά. Διαδικτυακά τμήματα χωρίς τοπικό κεφάλαιο ίδιου τύπου προστίθενται. Αν οι επιλογές Ειδικού snap είναι ενεργές, οι επικαλυπτόμενοι γείτονες μπορεί να περικοπούν. Η προεπισκόπηση παρακάτω παραθέτει τα κεφάλαια μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35022"
+msgid "Update EDL from online (merge missing)?"
+msgstr "Ενημέρωση EDL από διαδικτυακά (συγχώνευση ελλειπόντων);"
+
+msgctxt "#35023"
+msgid "Matched local EDL rows get new times from online. Missing online types are added as new rows; optional neighbor snap applies as for chapter XML. The preview lists rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Οι αντιστοιχισμένες τοπικές σειρές EDL λαμβάνουν νέους χρόνους από διαδικτυακά. Ελλείποντες διαδικτυακοί τύποι προστίθενται ως νέες σειρές· προαιρετικό neighbor snap εφαρμόζεται όπως για chapter XML. Η προεπισκόπηση παραθέτει σειρές μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35024"
+msgid "Update chapter XML and EDL from online (merge missing)?"
+msgstr "Ενημέρωση chapter XML και EDL από διαδικτυακά (συγχώνευση ελλειπόντων);"
+
+msgctxt "#35025"
+msgid "Both sidecars: Update All rules (matched times + append missing types; optional neighbor snap). Previews below show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Και τα δύο sidecars: Κανόνες Update All (αντιστοιχισμένοι χρόνοι + προσθήκη ελλειπόντων τύπων· προαιρετικό neighbor snap). Οι προεπισκοπήσεις παρακάτω δείχνουν κάθε αρχείο μετά την εφαρμογή. Συνέχεια; (Αντιγράφεται σε `.bck` πρώτα αν το αντίγραφο ασφαλείας είναι ενεργοποιημένο.)"
+
+msgctxt "#35026"
+msgid "[Neighbor snap]"
+msgstr "[Neighbor snap]"
+
+msgctxt "#35027"
+msgid "Snap neighbor start: %s"
+msgstr "Snap neighbor start: %s"
+
+msgctxt "#35028"
+msgid "Snap neighbor end: %s"
+msgstr "Snap neighbor end: %s"
+
+msgctxt "#35029"
+msgid "On"
+msgstr "Ενεργό"
+
+msgctxt "#35030"
+msgid "Off"
+msgstr "Ανενεργό"
+
+msgctxt "#35031"
+msgid "If you accept, this sidecar will contain:"
+msgstr "Αν αποδεχτείτε, αυτό το sidecar θα περιέχει:"
+
+msgctxt "#32052"
+msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Όταν ενεργοποιηθεί, οι ταινίες φορτώνουν τμήματα παράλειψης από sidecar chapters.xml ή .edl δίπλα στο βίντεο."
+
+msgctxt "#32054"
+msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Όταν και τα τοπικά αρχεία και η διαδικτυακή αναζήτηση είναι ενεργοποιημένα για ταινίες: προτίμηση τμημάτων από την επιλεγμένη πηγή όταν έχει δεδομένα· διαφορετικά χρήση της άλλης. Το Online first περιμένει τη διαδικτυακή αναζήτηση πριν εμφανιστεί ο πρώτος διάλογος παράλειψης (συνήθως μερικά δευτερόλεπτα, έως περίπου 10 δευτερόλεπτα σε κρύα εκκίνηση ή αργό δίκτυο). Το Local first χρησιμοποιεί δεδομένα sidecar άμεσα όταν υπάρχουν."
+
+# Toast Settings
+msgctxt "#33000"
+msgid "Enable missing segment file toast for TV Episodes"
+msgstr "Ενεργοποίηση toast αρχείου τμήματος που λείπει για Επεισόδια TV"
+
+msgctxt "#33001"
+msgid "Enable missing segment file toast for movies"
+msgstr "Ενεργοποίηση toast αρχείου τμήματος που λείπει για ταινίες"
+
+msgctxt "#33002"
+msgid "Enable overlapping segment toast if found in segment file"
+msgstr "Ενεργοποίηση toast επικαλυπτόμενου τμήματος αν βρεθεί στο αρχείο τμήματος"
+
+msgctxt "#33003"
+msgid "Enable toast notification for skipped segment"
+msgstr "Ενεργοποίηση ειδοποίησης toast για παραλειφθέν τμήμα"
+
+msgctxt "#33004"
+msgid "Enable toast notifications for segment marker"
+msgstr "Ενεργοποίηση ειδοποιήσεων toast για segment marker"
+
+msgctxt "#33005"
+msgid "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
+msgstr "Όταν ενεργοποιηθεί, ο Segment Marker εμφανίζει ειδοποιήσεις Kodi όταν σημειώνετε χρόνους έναρξης και λήξης, και όταν ακυρώνετε πριν την αποθήκευση (π.χ. Back από πολιτική, τύπο τμήματος ή επιβεβαίωση αποθήκευσης)."
+
+msgctxt "#33006"
+msgid "Toast when online segments are applied"
+msgstr "Toast όταν εφαρμόζονται διαδικτυακά τμήματα"
+
+msgctxt "#33007"
+msgid "Show a one-shot notification when deferred online segment lookup updates the playback timeline (e.g. Local first with no local sidecar)."
+msgstr "Εμφάνιση μίας ειδοποίησης όταν η αναβληθείσα διαδικτυακή αναζήτηση τμήματος ενημερώνει τη χρονολογία αναπαραγωγής (π.χ. Local first χωρίς τοπικό sidecar)."
+
+# Debug Settings
+msgctxt "#34000"
+msgid "Enable Verbose Logging"
+msgstr "Ενεργοποίηση Λεπτομερούς Καταγραφής"
+
+msgctxt "#34001"
+msgid "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
+msgstr "Λεπτομερείς γραμμές στο kodi.log για το Skippy. Για διαδικτυακή αναζήτηση τμημάτων (TheIntroDB / IntroDB.app για TV· TheIntroDB για ταινίες), φιλτράρετε τα logs για την ετικέτα: service.skippy - remote"
+
+msgctxt "#34002"
+msgid "Log detail level"
+msgstr "Επίπεδο λεπτομέρειας καταγραφής"
+
+msgctxt "#34003"
+msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
+msgstr "Μόνο σφάλματα: Το Skippy δεν εκπέμπει συνηθισμένα INFO (service, remote lookup, SkipDialog, SegmentItem). Κανονικό: κύρια ροή υπηρεσίας χωρίς θόρυβο ανά βρόχο. Όλες οι λεπτομέρειες: προσθέτει ίχνη tick του SegmentItem (is_active, debounce) συν λεπτομερή εσωτερικά υπηρεσίας (JSON-RPC για toast αρχείου που λείπει, έλεγχοι διαδρομής, κάθε γραμμή XML/EDL). Οι γραμμές LOGERROR του Skippy εμφανίζονται ακόμα όταν χρησιμοποιούνται."
+
+# Segment Marker Settings
+msgctxt "#30005"
+msgid "Segment Marker"
+msgstr "Segment Marker"
+
+msgctxt "#30006"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#30007"
+msgid "Backup & Restore"
+msgstr "Αντίγραφα Ασφαλείας & Επαναφορά"
+
+msgctxt "#37000"
+msgid "Enable Segment Editor"
+msgstr "Ενεργοποίηση Segment Editor"
+
+msgctxt "#37001"
+msgid "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
+msgstr "Επεξεργασία sidecars .edl και chapters.xml κατά την αναπαραγωγή (προσθήκη, αλλαγή, αφαίρεση τμημάτων). Χρησιμοποιεί λέξεις-κλειδιά τμημάτων και αντιστοίχιση ενέργειας EDL από Ρυθμίσεις Τμημάτων. Προεπιλεγμένο πλήκτρο CTRL+SHIFT+E είναι ξεχωριστό από Segment Marker."
+
+msgctxt "#37002"
+msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and _chapters.xml. EDL only or Chapters XML only: a single format."
+msgstr "Ποια αρχεία sidecar γράφει ο επεξεργαστής όταν αποθηκεύετε. Και τα δύο: .edl και _chapters.xml. Μόνο EDL ή Μόνο Chapters XML: μία μορφή."
+
+msgctxt "#37004"
+msgid "Keyboard editor shortcut"
+msgstr "Συντόμευση πληκτρολογίου επεξεργαστή"
+
+msgctxt "#37005"
+msgid "Free-form shortcut written to userdata/keymaps/skippy_editor.xml (separate from the marker keymap). Examples: ctrl+shift+e, f8. Use Keyboard press type below for normal vs long press."
+msgstr "Συντόμευση ελεύθερης μορφής γραμμένη στο userdata/keymaps/skippy_editor.xml (ξεχωριστό από το keymap marker). Παραδείγματα: ctrl+shift+e, f8. Χρησιμοποιήστε τον τύπο πατήματος πληκτρολογίου παρακάτω για κανονικό vs μακρύ πάτημα."
+
+msgctxt "#37006"
+msgid "Remote editor button"
+msgstr "Κουμπί τηλεχειριστηρίου επεξεργαστή"
+
+msgctxt "#37007"
+msgid "Optional remote button for opening Segment Editor only (independent of Segment Marker). Same format as marker: button name (e.g. info) or discovered key:<code>."
+msgstr "Προαιρετικό κουμπί τηλεχειριστηρίου για άνοιγμα μόνο Segment Editor (ανεξάρτητο από Segment Marker). Ίδια μορφή με marker: όνομα κουμπιού (π.χ. info) ή ανακαλυφθέν key:<code>."
+
+msgctxt "#37008"
+msgid "Remote editor press type"
+msgstr "Τύπος πατήματος τηλεχειριστηρίου επεξεργαστή"
+
+msgctxt "#37009"
+msgid "Choose whether the configured editor remote button uses a normal press or long press in the keymap."
+msgstr "Επιλέξτε αν το διαμορφωμένο κουμπί τηλεχειριστηρίου επεξεργαστή χρησιμοποιεί κανονικό πάτημα ή μακρύ πάτημα στο keymap."
+
+msgctxt "#37010"
+msgid "Full-screen dark overlay"
+msgstr "Σκούρο επικάλυμμα πλήρους οθόνης"
+
+msgctxt "#37011"
+msgid "When enabled, darkens the video behind the editor. When disabled, the video stays fully visible while editing."
+msgstr "Όταν ενεργοποιηθεί, σκουραίνει το βίντεο πίσω από τον επεξεργαστή. Όταν απενεργοποιηθεί, το βίντεο παραμένει πλήρως ορατό κατά την επεξεργασία."
+
+msgctxt "#37014"
+msgid "Discover remote button (editor)"
+msgstr "Ανακάλυψη κουμπιού τηλεχειριστηρίου (επεξεργαστής)"
+
+msgctxt "#37015"
+msgid "Capture the next remote press and store it in Remote editor button, then refresh skippy_editor.xml."
+msgstr "Καταγραφή του επόμενου πατήματος τηλεχειριστηρίου και αποθήκευσή του στο κουμπί τηλεχειριστηρίου επεξεργαστή, στη συνέχεια ανανέωση του skippy_editor.xml."
+
+msgctxt "#37016"
+msgid "Update editor keymap now"
+msgstr "Ενημέρωση keymap επεξεργαστή τώρα"
+
+msgctxt "#37017"
+msgid "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+msgstr "Γράφει τις τρέχουσες ρυθμίσεις πληκτρολογίου και τηλεχειριστηρίου Segment Editor στο userdata/keymaps/skippy_editor.xml και επαναφορτώνει τα keymaps."
+
+msgctxt "#38000"
+msgid "Back up settings to JSON…"
+msgstr "Αντίγραφο ασφαλείας ρυθμίσεων σε JSON…"
+
+msgctxt "#38001"
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Εξαγωγή κάθε επιλογής Skippy από αυτή τη συσκευή (όλες οι μη ενεργές σειρές στις ρυθμίσεις πρόσθετου, συμπεριλαμβανομένων τυχόν κλειδιών API). Επιλέξτε έναν φάκελο εγγράψιμο· δημιουργείται ένα αρχείο skippy-settings-backup-*.json με χρονοσήμανση."
+
+msgctxt "#38002"
+msgid "Restore settings from JSON…"
+msgstr "Επαναφορά ρυθμίσεων από JSON…"
+
+msgctxt "#38003"
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
+msgstr "Επιλέξτε ένα αρχείο αντιγράφου ασφαλείας .json του Skippy. Μόνο κλειδιά παρόντα στο αρχείο αλλάζουν· άλλες επιλογές παραμένουν ως στη συσκευή αυτή. Κλειδιά από νεότερες εκδόσεις πρόσθετου που δεν υπάρχουν εδώ παραλείπονται."
+
+msgctxt "#38004"
+msgid "The operation could not be completed."
+msgstr "Η λειτουργία δεν μπόρεσε να ολοκληρωθεί."
+
+msgctxt "#38005"
+msgid "Saved %s"
+msgstr "Αποθηκεύτηκε %s"
+
+msgctxt "#38006"
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
+msgstr "Επαναφορά ρυθμίσεων από αυτό το αντίγραφο ασφαλείας; Οι τιμές στο αρχείο αντικαθιστούν τις αντίστοιχες επιλογές Skippy σε αυτή τη συσκευή. Οι επιλογές που δεν αναφέρονται στο αρχείο παραμένουν αμετάβλητες."
+
+msgctxt "#38007"
+msgid "This file is not a valid Skippy backup."
+msgstr "Αυτό το αρχείο δεν είναι έγκυρο αντίγραφο ασφαλείας Skippy."
+
+msgctxt "#38008"
+msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
+msgstr "Εφαρμόστηκαν %s ρυθμίσεις· %s καταχωρήσεις παραλείφθηκαν (άγνωστο κλειδί ή σφάλμα)."
+
+msgctxt "#38009"
+msgid "Back up upload history to JSON…"
+msgstr "Αντίγραφο ασφαλείας ιστορικού ανεβάσματος σε JSON…"
+
+msgctxt "#38010"
+msgid "Export online segment upload fingerprints (TheIntroDB / IntroDB.app dedupe history) from this device. Pick a writable folder; a timestamped skippy-upload-history-backup-*.json file is created."
+msgstr "Εξαγωγή δακτυλικών αποτυπωμάτων ανεβάσματος διαδικτυακών τμημάτων (ιστορικό dedupe TheIntroDB / IntroDB.app) από αυτή τη συσκευή. Επιλέξτε έναν φάκελο εγγράψιμο· δημιουργείται ένα αρχείο skippy-upload-history-backup-*.json με χρονοσήμανση."
+
+msgctxt "#38011"
+msgid "Restore upload history from JSON (merge)…"
+msgstr "Επαναφορά ιστορικού ανεβάσματος από JSON (συγχώνευση)…"
+
+msgctxt "#38012"
+msgid "Select a Skippy upload history backup .json file. Fingerprints already on this device are kept; new entries from the file are merged in."
+msgstr "Επιλέξτε ένα αρχείο αντιγράφου ασφαλείας ιστορικού ανεβάσματος .json του Skippy. Τα δακτυλικά αποτυπώματα που υπάρχουν ήδη σε αυτή τη συσκευή διατηρούνται· νέες καταχωρήσεις από το αρχείο συγχωνεύονται."
+
+msgctxt "#38013"
+msgid "Merge upload history from this backup? Existing fingerprints on this device are kept; new fingerprints from the file are added."
+msgstr "Συγχώνευση ιστορικού ανεβάσματος από αυτό το αντίγραφο ασφαλείας; Τα υπάρχοντα δακτυλικά αποτυπώματα σε αυτή τη συσκευή διατηρούνται· νέα δακτυλικά αποτυπώματα από το αρχείο προστίθενται."
+
+msgctxt "#38014"
+msgid "Merged upload history: %s new fingerprint(s); %s already present."
+msgstr "Συγχωνεύθηκε ιστορικό ανεβάσματος: %s νέο δακτυλικό(ά) αποτύπωμα(τα)· %s ήδη παρόντα."
+
+msgctxt "#38015"
+msgid "Pause during online lookup"
+msgstr "Παύση κατά τη διάρκεια διαδικτυακής αναζήτησης"
+
+msgctxt "#38016"
+msgid "Pause video while Skippy fetches online segments (Online first, or Local first when no local sidecar exists). Playback resumes when the lookup finishes. Does not pause background lookup when a local sidecar is already in use."
+msgstr "Παύση βίντεο ενώ το Skippy ανακτά διαδικτυακά τμήματα (Online first, ή Local first όταν δεν υπάρχει τοπικό sidecar). Η αναπαραγωγή συνεχίζεται όταν ολοκληρωθεί η αναζήτηση. Δεν παύει την αναζήτηση παρασκηνίου όταν χρησιμοποιείται ήδη τοπικό sidecar."
+
+msgctxt "#38017"
+msgid "Hide OSD display during skip"
+msgstr "Απόκρυψη OSD κατά την παράλειψη"
+
+msgctxt "#38018"
+msgid "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
+msgstr "Όταν ενεργοποιηθεί, το Skippy ορίζει την ιδιότητα Home Skippy.Skipping κατά τη διάρκεια αναζήτησης αυτόματης παράλειψης και επιβεβαιωμένης παράλειψης-ερώτησης ώστε ένα συνεργατικό skin να μπορεί να κρύψει τη γραμμή αναζήτησης. Δεν ισχύει ενόσω ο διάλογος ερώτησης είναι στην οθόνη — μόνο γύρω από την ίδια την αναζήτηση. Απαιτεί επεξεργασία DialogSeekBar.xml ανά skin (ή πρόσθετο που το επιδιορθώνει). Τα stock skins το αγνοούν — χωρίς εφέ μέχρι το skin να ελέγξει την ιδιότητα. Απενεργοποιήστε αν θέλετε το κανονικό OSD αναζήτησης μετά την παράλειψη του Skippy."
+
+msgctxt "#39000"
+msgid "Upload to online sources"
+msgstr "Ανέβασμα σε διαδικτυακές πηγές"
+
+msgctxt "#39001"
+msgid "Default upload target"
+msgstr "Προεπιλεγμένος στόχος ανεβάσματος"
+
+msgctxt "#39002"
+msgid "Pre-selects the destination in the Segment Editor upload dialog. You can still pick another option each time."
+msgstr "Προεπιλέγει τον προορισμό στον διάλογο ανεβάσματος Segment Editor. Μπορείτε ακόμα να επιλέξετε άλλη επιλογή κάθε φορά."
+
+msgctxt "#39003"
+msgid "TheIntroDB.org API key"
+msgstr "Κλειδί API TheIntroDB.org"
+
+msgctxt "#39004"
+msgid "Bearer token from your TheIntroDB account. Required to POST segment timestamps to api.theintrodb.org."
+msgstr "Bearer token από τον λογαριασμό TheIntroDB σας. Απαιτείται για POST χρονοσημάνσεων τμημάτων στο api.theintrodb.org."
+
+msgctxt "#39005"
+msgid "IntroDB.app API key"
+msgstr "Κλειδί API IntroDB.app"
+
+msgctxt "#39006"
+msgid "API key from IntroDB.app (typically idb_…). Required for API-key submits."
+msgstr "Κλειδί API από IntroDB.app (συνήθως idb_…). Απαιτείται για υποβολές API-key."
+
+msgctxt "#39009"
+msgid "Upload segments to"
+msgstr "Ανέβασμα τμημάτων σε"
+
+msgctxt "#39010"
+msgid "Both"
+msgstr "Και τα δύο"
+
+msgctxt "#39011"
+msgid "TheIntroDB.org only"
+msgstr "Μόνο TheIntroDB.org"
+
+msgctxt "#39012"
+msgid "IntroDB.app only"
+msgstr "Μόνο IntroDB.app"
+
+msgctxt "#39013"
+msgid "Segment upload"
+msgstr "Ανέβασμα τμήματος"
+
+msgctxt "#39014"
+msgid "No segments are defined for this video."
+msgstr "Δεν ορίζονται τμήματα για αυτό το βίντεο."
+
+msgctxt "#39015"
+msgid "No API key for the chosen destination. Turn on Enable upload to online sources and paste the required key(s) under Expert → Upload to online sources."
+msgstr "Κανένα κλειδί API για τον επιλεγμένο προορισμό. Ενεργοποιήστε Ενεργοποίηση ανεβάσματος σε διαδικτυακές πηγές και επικολλήστε τα απαιτούμενα κλειδιά στο Ειδικού → Ανέβασμα σε διαδικτυακές πηγές."
+
+msgctxt "#39016"
+msgid "Could not resolve TMDB/IMDb for this file. Is it in the Kodi library with proper unique IDs?"
+msgstr "Δεν ήταν δυνατή η επίλυση TMDB/IMDb για αυτό το αρχείο. Είναι στη βιβλιοθήκη Kodi με κατάλληλα μοναδικά IDs;"
+
+msgctxt "#39018"
+msgid "Upload"
+msgstr "Ανέβασμα"
+
+msgctxt "#39020"
+msgid "not uploaded (excluded types: ads, prologue, epilogue, main body, unknown keywords, etc.)"
+msgstr "δεν ανέβηκε (εξαιρούμενοι τύποι: ads, prologue, epilogue, main body, άγνωστες λέξεις-κλειδιά, κλπ.)"
+
+msgctxt "#39021"
+msgid "already submitted from this device (stored fingerprint)"
+msgstr "ήδη υποβλήθηκε από αυτή τη συσκευή (αποθηκευμένο δακτυλικό αποτύπωμα)"
+
+msgctxt "#39022"
+msgid "Successful submissions"
+msgstr "Επιτυχημένες υποβολές"
+
+msgctxt "#39023"
+msgid "Skipped"
+msgstr "Παραλείφθηκαν"
+
+msgctxt "#39024"
+msgid "Errors"
+msgstr "Σφάλματα"
+
+msgctxt "#39025"
+msgid "Enable upload to online sources"
+msgstr "Ενεργοποίηση ανεβάσματος σε διαδικτυακές πηγές"
+
+msgctxt "#39026"
+msgid "When enabled, the Segment Editor shows Upload so you can submit segments to TheIntroDB.org and/or IntroDB.app. You still need valid API keys below."
+msgstr "Όταν ενεργοποιηθεί, ο Segment Editor εμφανίζει Ανέβασμα ώστε να μπορείτε να υποβάλετε τμήματα στο TheIntroDB.org και/ή IntroDB.app. Χρειάζεστε ακόμα έγκυρα κλειδιά API παρακάτω."
+
+msgctxt "#39028"
+msgid "Paste your TheIntroDB.org API key under Settings → Expert → Upload to online sources (Bearer token from your account)."
+msgstr "Επικολλήστε το κλειδί API TheIntroDB.org στο Settings → Ειδικού → Ανέβασμα σε διαδικτυακές πηγές (Bearer token από τον λογαριασμό σας)."
+
+msgctxt "#39029"
+msgid "Paste your IntroDB.app API key under Settings → Expert → Upload to online sources (typically idb_…)."
+msgstr "Επικολλήστε το κλειδί API IntroDB.app στο Settings → Ειδικού → Ανέβασμα σε διαδικτυακές πηγές (συνήθως idb_…)."
+
+msgctxt "#39030"
+msgid "TheIntroDB.org denied access (unauthorized or forbidden). Your API key may be wrong, expired, or not allowed to submit. Copy a fresh key from your TheIntroDB account."
+msgstr "Το TheIntroDB.org αρνήθηκε την πρόσβαση (unauthorized ή forbidden). Το κλειδί API σας μπορεί να είναι λάθος, να έχει λήξει ή να μην επιτρέπεται να υποβάλει. Αντιγράψτε ένα νέο κλειδί από τον λογαριασμό TheIntroDB σας."
+
+msgctxt "#39031"
+msgid "IntroDB.app denied access (unauthorized or forbidden). Check that your API key is correct and still active in IntroDB.app."
+msgstr "Το IntroDB.app αρνήθηκε την πρόσβαση (unauthorized ή forbidden). Ελέγξτε ότι το κλειδί API σας είναι σωστό και ακόμα ενεργό στο IntroDB.app."
+
+msgctxt "#39032"
+msgid "The service is rate-limiting this device. Wait several minutes before trying again."
+msgstr "Η υπηρεσία περιορίζει το ρυθμό αυτής της συσκευής. Περιμένετε μερικά λεπτά πριν δοκιμάσετε ξανά."
+
+msgctxt "#39033"
+msgid "Could not reach the server. Check your internet connection, DNS, and whether the API is reachable from this network."
+msgstr "Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο, το DNS και αν το API είναι προσβάσιμο από αυτό το δίκτυο."
+
+msgctxt "#39034"
+msgid "Unexpected server response (HTTP %s). If it persists, try again later or check the service status."
+msgstr "Απροσδόκητη απάντηση διακομιστή (HTTP %s). Αν επιμένει, δοκιμάστε ξανά αργότερα ή ελέγξτε την κατάσταση της υπηρεσίας."
+
+msgctxt "#39037"
+msgid "Cannot upload"
+msgstr "Δεν είναι δυνατό το ανέβασμα"
+
+msgctxt "#39040"
+msgid "Turn on Enable upload to online sources under Settings → Expert, then open the editor again."
+msgstr "Ενεργοποιήστε Ενεργοποίηση ανεβάσματος σε διαδικτυακές πηγές στο Settings → Ειδικού, στη συνέχεια ανοίξτε ξανά τον επεξεργαστή."
+
+msgctxt "#39041"
+msgid "TheIntroDB.org rejected this submission (validation or business rules). Check segment durations and their documentation."
+msgstr "Το TheIntroDB.org απέρριψε αυτήν την υποβολή (επικύρωση ή επιχειρηματικοί κανόνες). Ελέγξτε τις διάρκειες τμημάτων και την τεκμηρίωσή τους."
+
+msgctxt "#39042"
+msgid "IntroDB.app rejected this submission. Check segment times and their API rules."
+msgstr "Το IntroDB.app απέρριψε αυτήν την υποβολή. Ελέγξτε τους χρόνους τμημάτων και τους κανόνες API τους."
+
+msgctxt "#39043"
+msgid "These times may not meet TheIntroDB.org limits (duration and 0–6 hour window). Technical detail:"
+msgstr "Αυτοί οι χρόνοι μπορεί να μην πληρούν τα όρια TheIntroDB.org (διάρκεια και παράθυρο 0–6 ωρών). Τεχνική λεπτομέρεια:"
+
+msgctxt "#39044"
+msgid "TheIntroDB.org requires a valid TMDB id for this title. Ensure library metadata includes TMDB (or enable TMDB resolution with an API key under Segment sources)."
+msgstr "Το TheIntroDB.org απαιτεί έγκυρο αναγνωριστικό TMDB για αυτόν τον τίτλο. Βεβαιωθείτε ότι τα μεταδεδομένα βιβλιοθήκης περιλαμβάνουν TMDB (ή ενεργοποιήστε επίλυση TMDB με κλειδί API στις Πηγές τμημάτων)."
+
+msgctxt "#39045"
+msgid "IntroDB.app needs an IMDb id (show-level IMDb for TV). Fix Kodi library metadata or rescrape with IMDb."
+msgstr "Το IntroDB.app χρειάζεται αναγνωριστικό IMDb (IMDb επιπέδου σειράς για TV). Διορθώστε τα μεταδεδομένα βιβλιοθήκης Kodi ή κάντε επανασάρωση με IMDb."
+
+msgctxt "#39046"
+msgid "Internal error: unsupported segment type for IntroDB.app."
+msgstr "Εσωτερικό σφάλμα: μη υποστηριζόμενος τύπος τμήματος για IntroDB.app."
+
+msgctxt "#39047"
+msgid "Internal error: unsupported segment type for TheIntroDB.org."
+msgstr "Εσωτερικό σφάλμα: μη υποστηριζόμενος τύπος τμήματος για TheIntroDB.org."
+
+msgctxt "#39048"
+msgid "… and %d more (not shown)."
+msgstr "… και %d ακόμα (δεν εμφανίζονται)."
+
+msgctxt "#39049"
+msgid "(none)"
+msgstr "(κανένα)"
+
+msgctxt "#39054"
+msgid "TheIntroDB.org"
+msgstr "TheIntroDB.org"
+
+msgctxt "#39055"
+msgid "IntroDB.app"
+msgstr "IntroDB.app"
+
+msgctxt "#39056"
+msgid "not sent to IntroDB.app (preview segments not accepted)"
+msgstr "δεν στάλθηκε στο IntroDB.app (τα τμήματα preview δεν γίνονται δεκτά)"
+
+msgctxt "#39057"
+msgid "Sync local to online"
+msgstr "Συγχρονισμός τοπικού σε διαδικτυακό"
+
+msgctxt "#39058"
+msgid "During playback, compare local sidecar segments with online databases. When local has segment types missing online (e.g. recap or credits), ask to upload them. May query APIs even when online lookup is off for playback. Requires API keys below."
+msgstr "Κατά την αναπαραγωγή, σύγκριση τοπικών τμημάτων sidecar με διαδικτυακές βάσεις δεδομένων. Όταν το τοπικό έχει τύπους τμημάτων που λείπουν διαδικτυακά (π.χ. recap ή credits), ερώτηση για ανέβασμά τους. Μπορεί να υποβάλει ερωτήματα σε APIs ακόμα και όταν η διαδικτυακή αναζήτηση είναι απενεργοποιημένη για αναπαραγωγή. Απαιτεί κλειδιά API παρακάτω."
+
+msgctxt "#39059"
+msgid "Sync local segments to online?"
+msgstr "Συγχρονισμός τοπικών τμημάτων σε διαδικτυακά;"
+
+msgctxt "#39060"
+msgid "No online segment data was found for this title."
+msgstr "Δεν βρέθηκαν διαδικτυακά δεδομένα τμήματος για αυτόν τον τίτλο."
+
+msgctxt "#39061"
+msgid "Some segment types from your local sidecar are not online yet."
+msgstr "Ορισμένοι τύποι τμημάτων από το τοπικό σας sidecar δεν είναι ακόμα διαδικτυακά."
+
+msgctxt "#39062"
+msgid "Local sidecar has segments not found online:"
+msgstr "Το τοπικό sidecar έχει τμήματα που δεν βρέθηκαν διαδικτυακά:"
+
+msgctxt "#39063"
+msgid "Upload these using your default upload target?"
+msgstr "Να ανέβουν αυτά χρησιμοποιώντας τον προεπιλεγμένο στόχο ανεβάσματός σας;"
+
+msgctxt "#36000"
+msgid "Enable Segment Marker"
+msgstr "Ενεργοποίηση Segment Marker"
+
+msgctxt "#36001"
+msgid "Mark segment start/end times during playback with a configurable hotkey (default: CTRL+E) or remote button. After marking start and end, choose a segment type and save to sidecar files."
+msgstr "Σημείωση χρόνων έναρξης/λήξης τμήματος κατά την αναπαραγωγή με διαμορφώσιμο hotkey (προεπιλογή: CTRL+E) ή κουμπί τηλεχειριστηρίου. Μετά τη σημείωση έναρξης και λήξης, επιλέξτε έναν τύπο τμήματος και αποθηκεύστε σε αρχεία sidecar."
+
+msgctxt "#36002"
+msgid "Auto-save marked segments"
+msgstr "Αυτόματη αποθήκευση σημειωμένων τμημάτων"
+
+msgctxt "#36003"
+msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
+msgstr "Όταν ενεργοποιηθεί, τα τμήματα αποθηκεύονται αμέσως μετά την επιλογή του τύπου τμήματος χωρίς προτροπή επιβεβαίωσης."
+
+
+
+msgctxt "#36006"
+msgid "Saved file permissions"
+msgstr "Δικαιώματα αποθηκευμένου αρχείου"
+
+msgctxt "#36007"
+msgid "Permissions applied after saving EDL/chapters files. Leave unchanged: Skippy does not call chmod; the file keeps whatever mode the OS or Kodi created (umask / platform default). 644: owner read/write, group and others read only. 666: all users read/write (use sparingly; sometimes used on shared folders)."
+msgstr "Δικαιώματα που εφαρμόζονται μετά την αποθήκευση αρχείων EDL/chapters. Αφήστε αμετάβλητα: Το Skippy δεν καλεί chmod· το αρχείο διατηρεί όποιο mode δημιούργησε το OS ή το Kodi (umask / προεπιλογή πλατφόρμας). 644: ιδιοκτήτης read/write, group και άλλοι μόνο read. 666: όλοι οι χρήστες read/write (χρησιμοποιήστε περιορισμένα· μερικές φορές χρησιμοποιείται σε κοινόχρηστους φακέλους)."
+
+msgctxt "#36008"
+msgid "Start time set"
+msgstr "Ορίστηκε χρόνος έναρξης"
+
+msgctxt "#36009"
+msgid "End time set"
+msgstr "Ορίστηκε χρόνος λήξης"
+
+msgctxt "#36010"
+msgid "Choose segment type"
+msgstr "Επιλέξτε τύπο τμήματος"
+
+msgctxt "#36011"
+msgid "Save segment?"
+msgstr "Αποθήκευση τμήματος;"
+
+msgctxt "#36012"
+msgid "Segment saved"
+msgstr "Το τμήμα αποθηκεύτηκε"
+
+msgctxt "#36013"
+msgid "Error saving segment"
+msgstr "Σφάλμα αποθήκευσης τμήματος"
+
+msgctxt "#36014"
+msgid "Cancelled"
+msgstr "Ακυρώθηκε"
+
+msgctxt "#36015"
+msgid "No video playing"
+msgstr "Δεν αναπαράγεται βίντεο"
+
+msgctxt "#36016"
+msgid "Segment Marker disabled"
+msgstr "Ο Segment Marker είναι απενεργοποιημένος"
+
+msgctxt "#36017"
+msgid "Save format"
+msgstr "Μορφή αποθήκευσης"
+
+msgctxt "#36018"
+msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and _chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to _chapters.xml file."
+msgstr "Επιλέξτε σε ποιες μορφές αρχείου sidecar να αποθηκεύονται τα σημειωμένα τμήματα. Και τα δύο: αποθηκεύει σε .edl και _chapters.xml. Μόνο EDL: αποθηκεύει σε αρχείο .edl. Μόνο Chapters XML: αποθηκεύει σε αρχείο _chapters.xml."
+
+msgctxt "#36019"
+msgid "Keyboard marker shortcut"
+msgstr "Συντόμευση πληκτρολογίου marker"
+
+msgctxt "#36020"
+msgid "Type the Kodi keyboard shortcut to write to userdata/keymaps/skippy_marker.xml. Examples: ctrl+e, e, f9, ctrl+shift+m. Use Keyboard marker press type below for normal press vs long press. The keymap is refreshed automatically when settings change."
+msgstr "Πληκτρολογήστε τη συντόμευση πληκτρολογίου Kodi για εγγραφή στο userdata/keymaps/skippy_marker.xml. Παραδείγματα: ctrl+e, e, f9, ctrl+shift+m. Χρησιμοποιήστε τον τύπο πατήματος πληκτρολογίου marker παρακάτω για κανονικό πάτημα vs μακρύ πάτημα. Το keymap ανανεώνεται αυτόματα όταν αλλάζουν οι ρυθμίσεις."
+
+msgctxt "#36021"
+msgid "Remote marker button"
+msgstr "Κουμπί τηλεχειριστηρίου marker"
+
+msgctxt "#36022"
+msgid "Optional Kodi remote button name (red, green, blue, yellow, record, select, info, etc.) or discovered raw key code (for example key:61505). CEC remotes usually save as button names; Bluetooth/remotes with raw codes usually save as key:<code>. Leave empty when only using the keyboard hotkey."
+msgstr "Προαιρετικό όνομα κουμπιού τηλεχειριστηρίου Kodi (red, green, blue, yellow, record, select, info, κλπ.) ή ανακαλυφθέν raw key code (για παράδειγμα key:61505). Τα τηλεχειριστήρια CEC συνήθως αποθηκεύονται ως ονόματα κουμπιών· Bluetooth/τηλεχειριστήρια με raw codes συνήθως αποθηκεύονται ως key:<code>. Αφήστε κενό όταν χρησιμοποιείτε μόνο το πλήκτρο πληκτρολογίου."
+
+msgctxt "#36023"
+msgid "Discover remote button code"
+msgstr "Ανακάλυψη κωδικού κουμπιού τηλεχειριστηρίου"
+
+msgctxt "#36024"
+msgid "Opens a small capture dialog. Press the remote button you want to use; Skippy stores the button code in the Remote marker button setting and updates the keymap. Use Remote marker press type to choose normal press or long press."
+msgstr "Ανοίγει έναν μικρό διάλογο καταγραφής. Πατήστε το κουμπί τηλεχειριστηρίου που θέλετε να χρησιμοποιήσετε· το Skippy αποθηκεύει τον κωδικό κουμπιού στη ρύθμιση κουμπιού τηλεχειριστηρίου marker και ενημερώνει το keymap. Χρησιμοποιήστε τον τύπο πατήματος τηλεχειριστηρίου marker για επιλογή κανονικού πατήματος ή μακρού πατήματος."
+
+msgctxt "#36025"
+msgid "Update marker keymap now"
+msgstr "Ενημέρωση keymap marker τώρα"
+
+msgctxt "#36026"
+msgid "Writes the current keyboard and remote marker settings to Kodi's userdata keymap and reloads keymaps."
+msgstr "Γράφει τις τρέχουσες ρυθμίσεις πληκτρολογίου και τηλεχειριστηρίου marker στο keymap userdata του Kodi και επαναφορτώνει τα keymaps."
+
+msgctxt "#36027"
+msgid "Remote marker press type"
+msgstr "Τύπος πατήματος τηλεχειριστηρίου marker"
+
+msgctxt "#36028"
+msgid "Choose whether the configured remote marker button triggers on a normal press or long press. For discovered raw key codes, Skippy writes this as a keymap longpress modifier."
+msgstr "Επιλέξτε αν το διαμορφωμένο κουμπί τηλεχειριστηρίου marker ενεργοποιείται με κανονικό πάτημα ή μακρύ πάτημα. Για ανακαλυφθέντα raw key codes, το Skippy το γράφει ως τροποποιητή longpress keymap."
+
+msgctxt "#36029"
+msgid "Keyboard marker press type"
+msgstr "Τύπος πατήματος πληκτρολογίου marker"
+
+msgctxt "#36030"
+msgid "Choose whether the configured keyboard shortcut triggers on a normal press or long press. Default is normal press."
+msgstr "Επιλέξτε αν η διαμορφωμένη συντόμευση πληκτρολογίου ενεργοποιείται με κανονικό πάτημα ή μακρύ πάτημα. Η προεπιλογή είναι κανονικό πάτημα."
+
+msgctxt "#36031"
+msgid "How to save marked segments"
+msgstr "Πώς να αποθηκεύονται τα σημειωμένα τμήματα"
+
+msgctxt "#36032"
+msgid "Controls how Segment Marker combines a new marked range with existing EDL/XML sidecar entries. Merge non-overlapping: add the marker only when it does not overlap existing entries. Keep both (old starts after new): add the new segment and shorten any overlapping existing segment so it starts where the new one ends (drops the old entry if the new range fully covers it). Overwrite overlapping: remove overlapping entries and add the new one. Append always: add the new entry even if it overlaps. Replace file: write only the newly marked segment. Ask each time: choose during marker save, before selecting the segment type."
+msgstr "Ελέγχει πώς ο Segment Marker συνδυάζει ένα νέο σημειωμένο εύρος με υπάρχουσες καταχωρήσεις sidecar EDL/XML. Merge non-overlapping: προσθήκη του marker μόνο όταν δεν επικαλύπτεται με υπάρχουσες καταχωρήσεις. Keep both (old starts after new): προσθήκη του νέου τμήματος και συρρίκνωση τυχόν επικαλυπτόμενου υπάρχοντος τμήματος ώστε να αρχίζει εκεί που τελειώνει το νέο (απορρίπτεται η παλιά καταχώρηση αν το νέο εύρος την καλύπτει πλήρως). Overwrite overlapping: αφαίρεση επικαλυπτόμενων καταχωρήσεων και προσθήκη της νέας. Append always: προσθήκη της νέας καταχώρησης ακόμα και αν επικαλύπτεται. Replace file: εγγραφή μόνο του νέου σημειωμένου τμήματος. Ask each time: επιλογή κατά τη διάρκεια αποθήκευσης marker, πριν την επιλογή του τύπου τμήματος."
+
+msgctxt "#36033"
+msgid "Back up files before marker save"
+msgstr "Αντίγραφο ασφαλείας αρχείων πριν την αποθήκευση marker"
+
+msgctxt "#36034"
+msgid "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
+msgstr "Πριν την αποθήκευση, αντίγραφο ασφαλείας των υπαρχόντων αρχείων sidecar που επιλέγονται από τη Μορφή αποθήκευσης. Μόνο EDL κάνει αντίγραφο ασφαλείας .edl, Μόνο Chapters XML κάνει αντίγραφο ασφαλείας chapter XML, Και τα δύο κάνει αντίγραφο ασφαλείας και τα δύο όταν υπάρχουν. Τα αντίγραφα ασφαλείας χρησιμοποιούν την ίδια διαδρομή με επέκταση .bck."
+
+msgctxt "#36035"
+msgid "Press the segment marker key again to set the end time."
+msgstr "Πατήστε ξανά το πλήκτρο segment marker για ορισμό του χρόνου λήξης."
+
+msgctxt "#36036"
+msgid "Segment marker cancelled."
+msgstr "Ο segment marker ακυρώθηκε."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Παράλειψη"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Κλείσιμο"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "Παράλειψη %s"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "Παράλειψη %s (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s λήγει σε:"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Παράλειψη σε %s στο %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Παράλειψη στο επόμενο τμήμα στο %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Κλείστε τον Segment Editor πριν χρησιμοποιήσετε τον Segment Marker."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Φορτώθηκαν διαδικτυακά τμήματα"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Ανιχνεύθηκαν επικαλυπτόμενα/Ένθετα τμήματα."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Παραλείφθηκε"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s παραλείφθηκε"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Δεν βρέθηκαν τμήματα παράλειψης για αυτό το βίντεο."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Δεν βρέθηκαν τμήματα τοπικά ή διαδικτυακά για αυτό το %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Δεν βρέθηκαν τμήματα παράλειψης για αυτό το %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "επεισόδιο"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "ταινία"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Δεν βρέθηκαν διαδικτυακά δεδομένα τμήματος· υπάρχουν διαθέσιμα τοπικά δεδομένα τμήματος για αυτό το %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Δεν βρέθηκαν διαδικτυακά δεδομένα τμήματος για αυτό το %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Δεν βρέθηκαν τοπικά δεδομένα τμήματος για αυτό το %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Παύση"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Συνέχεια"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Έλεγχος"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Εισαγωγή"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Δεν βρέθηκε αρχείο τμήματος sidecar.\n\nΝα ελεγχθεί αυτό το βίντεο για ενσωματωμένα κεφάλαια Matroska; Αυτό μπορεί να πάρει μερικά δευτερόλεπτα."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Δεν βρέθηκαν ενσωματωμένα κεφάλαια"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Αυτό το βίντεο περιέχει %d ενσωματωμένο(α) κεφάλαιο(α).\n\nΝα εισαχθούν ως τμήματα;"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Τμήμα %d - %s - %s έως %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Διάρκεια: %.1fs | Πηγή: %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Ένθετο"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Επικαλυπτόμενο"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Τρέχων Χρόνος: %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [ΠΑΥΜΕΝΟ]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Έναρξη: %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Λήξη: %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Λήξη: %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [ΑΚΥΡΟ: Η Λήξη πρέπει να είναι μετά την Έναρξη]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Συγχώνευση τμήματος"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Συγχώνευση με προηγούμενο τμήμα"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Συγχώνευση με επόμενο τμήμα"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Δεν υπάρχουν διαθέσιμα τμήματα."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Δεν είναι δυνατή η συγχώνευση με προηγούμενο τμήμα — δεν υπάρχει προηγούμενο τμήμα."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Δεν είναι δυνατή η συγχώνευση με επόμενο τμήμα — δεν υπάρχει επόμενο τμήμα."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Δεν είναι δυνατή η συγχώνευση τμημάτων: %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Παρακαλώ επιλέξτε πρώτα ένα τμήμα."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Δεν είναι δυνατός ο διαχωρισμός — το βίντεο δεν αναπαράγεται."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "Η κεφαλή αναπαραγωγής πρέπει να είναι αυστηρά μέσα στο επιλεγμένο τμήμα.\n\nΤμήμα: %s έως %s\nΚεφαλή αναπαραγωγής: %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Δεν είναι δυνατός ο διαχωρισμός τμήματος: %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "Η διόρθωση επικάλυψης δεν ισχύει για ένθετα τμήματα.\nΧρησιμοποιήστε συγχώνευση ή χειροκίνητη επεξεργασία αντ' αυτού."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "Το επιλεγμένο τμήμα δεν έχει σημανθεί ως επικαλυπτόμενο."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Δεν ήταν δυνατή η αυτόματη διόρθωση επικάλυψης για αυτό το τμήμα."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Η διόρθωση επικάλυψης θα αφαιρούσε το τμήμα εντελώς.\nΧρησιμοποιήστε συγχώνευση ή διαγραφή αντ' αυτού."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Δεν υπάρχει διαθέσιμος τρέχων χρόνος αναπαραγωγής."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Διάρκεια Τμήματος (δευτερόλεπτα)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "Η διάρκεια πρέπει να είναι μεγαλύτερη από μηδέν."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Μη έγκυρη τιμή διάρκειας."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "Έχετε σημειώσει χρόνους έναρξης και λήξης.\n\nΝα χρησιμοποιηθεί 'Προσθήκη με Σημειωμένους Χρόνους' αντ' αυτού;"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Χρόνος Έναρξης (HH:MM:SS.mmm ή δευτερόλεπτα)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Χρόνος Λήξης (HH:MM:SS.mmm ή δευτερόλεπτα)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "Ο χρόνος λήξης πρέπει να είναι μετά τον χρόνο έναρξης."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Μη έγκυρη είσοδος: %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Παρακαλώ επιλέξτε ένα τμήμα για επεξεργασία."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "Έχετε σημειώσει χρόνους έναρξης και λήξης.\n\nΝα χρησιμοποιηθούν σημειωμένοι χρόνοι για αυτό το τμήμα;"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Δεν είναι δυνατό το snap: η έναρξη δεν θα ήταν πριν από τον χρόνο λήξης του τμήματος.\n\nΛήξη: %s\nΣτόχος snap: %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Δεν είναι δυνατό το snap λήξης στο μήκος βίντεο: η διάρκεια δεν είναι διαθέσιμη. Βεβαιωθείτε ότι το βίντεο αναπαράγεται."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Δεν είναι δυνατό το snap: η λήξη δεν θα ήταν μετά τον χρόνο έναρξης του τμήματος.\n\nΈναρξη: %s\nΣτόχος snap: %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Δεν είναι δυνατός ο ορισμός έναρξης στον τρέχοντα χρόνο: το βίντεο δεν αναπαράγεται."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός έναρξης στον τρέχοντα χρόνο: η κεφαλή αναπαραγωγής δεν είναι πριν από τη λήξη του τμήματος.\n\nΛήξη: %s\nΤρέχων: %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Δεν είναι δυνατός ο ορισμός λήξης στον τρέχοντα χρόνο: το βίντεο δεν αναπαράγεται."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός λήξης στον τρέχοντα χρόνο: η κεφαλή αναπαραγωγής δεν είναι μετά από την έναρξη του τμήματος.\n\nΈναρξη: %s\nΤρέχων: %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Παρακαλώ επιλέξτε ένα τμήμα για διαγραφή."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Διαγραφή τμήματος '%s';"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Δεν υπάρχουν τμήματα προς διαγραφή."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Διαγραφή όλων των %d τμημάτων;"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Διαγραφή Όλων"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "Έχετε μη αποθηκευμένες αλλαγές.\nΈξοδος χωρίς αποθήκευση;"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Δεν είναι δυνατό το άλμα - το βίντεο δεν αναπαράγεται."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Άλμα Στον Χρόνο (HH:MM:SS.mmm ή δευτερόλεπτα)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "Ο χρόνος δεν μπορεί να είναι αρνητικός."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Άλμα στο %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Μη έγκυρη μορφή χρόνου. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Ο χρόνος έναρξης καθαρίστηκε"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός χρόνου έναρξης μετά τον χρόνο λήξης.\n\nΈναρξη: %s\nΛήξη: %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Έναρξη σημειώθηκε: %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Ο χρόνος λήξης καθαρίστηκε"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός χρόνου λήξης πριν τον χρόνο έναρξης.\n\nΈναρξη: %s\nΛήξη: %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Λήξη σημειώθηκε: %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Δεν υπάρχουν διαθέσιμα τμήματα για επιλογή."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Τμήμα %d: %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Επιλογή Τμήματος (Έναρξη στη Λήξη)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Επιλογή Τμήματος (Λήξη στην Έναρξη)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός χρόνου έναρξης μετά τον χρόνο λήξης.\n\nΣημειωμένη λήξη: %s\nΕπιλεγμένη έναρξη: %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Δεν είναι δυνατός ο ορισμός χρόνου λήξης πριν τον χρόνο έναρξης.\n\nΣημειωμένη έναρξη: %s\nΕπιλεγμένη λήξη: %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Προσαρμοσμένη..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Επιλογή Ετικέτας Τμήματος"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Εισαγωγή Προσαρμοσμένης Ετικέτας"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Παρακαλώ σημειώστε πρώτα και τους δύο χρόνους έναρξης και λήξης."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Το τμήμα προστέθηκε επιτυχώς"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Δεν υπάρχει διαθέσιμη διαδρομή βίντεο για αποθήκευση."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Δεν υπάρχουν τμήματα προς αποθήκευση."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Σφάλμα αποθήκευσης τμημάτων: %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Τα τμήματα αποθηκεύτηκαν και στις δύο μορφές"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Τα τμήματα αποθηκεύτηκαν σε EDL (το XML απέτυχε)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Τα τμήματα αποθηκεύτηκαν σε XML (το EDL απέτυχε)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Τα τμήματα αποθηκεύτηκαν επιτυχώς"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Αποτυχία αποθήκευσης τμημάτων. Ελέγξτε τα δικαιώματα αρχείου."

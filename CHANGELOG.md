@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.3.1] - 2026-07-20
+
+### Added
+- **Greek localization**: Full settings + runtime UI catalog (`resources/language/Greek/strings.po`, `Language: el`).
+
+## [5.3.0] - 2026-07-20
+
+### Added
+- **Runtime UI localization**: Skip dialog labels (Skip / Close / formats / ending / next-jump), playback toasts (skipped, missing segments, online loaded, overlapping), Segment Editor dialogs/notifications/list chrome (Pause/Resume, etc.), and the marker “close editor first” toast now use ``strings.po`` via ``settings_utils.get_localized`` (IDs ``#40000+``, ``#41000+``, ``#42000``, ``#43000+``). English plus the eight European language packs from 5.3.0’s predecessors include the new strings.
+- **``tests/test_get_localized.py``**: Fallback and ``%``-format coverage for the shared helper.
+
+## [5.2.14] - 2026-07-20
+
+### Fixed
+- **Segment Editor Pause/Resume label**: Opening the editor while playback was running sometimes labelled the button **Resume** because initial pause was inferred from two close ``getTime()`` samples (playhead often stalls briefly during WindowXML open). Now uses Kodi’s ``Player.Paused`` condition (same as the service loop) and resyncs after the player listener registers.
+
 ## [5.2.13] - 2026-07-18
 
 ### Added

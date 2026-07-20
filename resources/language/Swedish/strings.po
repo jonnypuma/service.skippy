@@ -33,7 +33,7 @@ msgstr "Segmentnyckelord att bevaka"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
-msgstr "Hoppa över-beteende"
+msgstr "Hoppa-över beteende"
 
 msgctxt "#31002"
 msgid "Always Skip These"
@@ -64,7 +64,7 @@ msgid "Open Segment Editor when overlaps are detected"
 msgstr "Öppna segmentredigeraren när överlappningar upptäcks"
 
 msgctxt "#31012"
-msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while "Ignore overlapping segments" is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
 msgstr "Efter tolkning av din sidecar-fil, om överlappande eller nästlade segment fortfarande finns när "Ignorera överlappande segment" är av, öppnas segmentredigeraren en gång per uppspelningsfil så att du kan fixa listan. Kräver att segmentredigeraren är aktiverad. Använder samma upptäckt som aviseringen för överlappande segment."
 
 msgctxt "#31008"
@@ -289,7 +289,7 @@ msgid "TMDB API key (optional)"
 msgstr "TMDB API-nyckel (valfritt)"
 
 msgctxt "#32033"
-msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper's key below (same key for episodes and movies)."
 msgstr "Gratis nyckel från themoviedb.org (Settings → API). Används när TV- eller filmonlineuppslagning behöver lösa saknade TMDB/IMDb-ID:n. Lämna tomt för att använda TheMovieDB Helpers nyckel nedan (samma nyckel för avsnitt och filmer)."
 
 msgctxt "#32034"
@@ -317,7 +317,7 @@ msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or
 msgstr "När aktiverad, laddar TV-avsnitt hoppsegment från sidecar chapters.xml eller .edl bredvid videon."
 
 msgctxt "#32062"
-msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi's library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
 msgstr "När aktiverad, kan TV-avsnitt ladda intro/sammanfattningstiming från TheIntroDB och IntroDB.app. Kräver säsong/avsnitt och TMDB/IMDb-stil ID:n från Kodis bibliotek (scraper uniqueid). SxxExx i filnamnet är endast en reserv när objektet inte finns i biblioteket."
 
 msgctxt "#32063"
@@ -325,7 +325,7 @@ msgid "When both local files and online lookup are enabled for TV episodes: pref
 msgstr "När både lokala filer och onlineuppslagning är aktiverade för TV-avsnitt: föredra segment från den valda källan när den har data; annars använd den andra. Online först väntar på nätverksuppslagning innan den första hoppdialogen kan visas (typiskt några sekunder, upp till cirka 10 sekunder vid kallstart eller långsamt nätverk). Lokalt först använder sidecar-data omedelbart när den finns."
 
 msgctxt "#32064"
-msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi's library (uniqueid), or the global TMDB API settings above when ids are missing."
 msgstr "När aktiverad, kan filmer ladda intro/sammanfattningstiming från TheIntroDB endast (inte IntroDB.app). Kräver TMDB och/eller IMDb film-ID:n från Kodis bibliotek (uniqueid), eller de globala TMDB API-inställningarna ovan när ID:n saknas."
 
 msgctxt "#32065"
@@ -333,7 +333,7 @@ msgid "TV episodes: online API priority"
 msgstr "TV-avsnitt: online API-prioritet"
 
 msgctxt "#32066"
-msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other's overlapping entry is omitted. The other API can still add segments that do not overlap that window."
 msgstr "När TheIntroDB och IntroDB.app båda returnerar ett segment för samma tidsintervall, vinner API:et du listar först för det fönstret; den andras överlappande post utelämnas. Det andra API:et kan fortfarande lägga till segment som inte överlappar det fönstret."
 
 msgctxt "#32067"
@@ -1058,3 +1058,443 @@ msgstr "Tryck på segmentmarkörknappen igen för att ställa in sluttiden."
 msgctxt "#36036"
 msgid "Segment marker cancelled."
 msgstr "Segmentmarkör avbruten."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Hoppa över"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Stäng"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "Hoppa över %s"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "Hoppa över %s (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s slutar om:"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Hoppa till %s vid %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Hoppa till nästa segment vid %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Stäng Segment Editor innan du använder Segment Marker."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Online-segment laddade"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Överlappande/nästlade segment upptäckta."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Hoppade över"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s hoppade över"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Inga hoppöver-segment hittades för denna video."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Inga segment hittades lokalt eller online för denna %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Inga hoppöver-segment hittades för denna %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "avsnitt"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "film"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Ingen online-segmentdata hittades; lokal segmentdata finns tillgänglig för denna %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Ingen online-segmentdata hittades för denna %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Ingen lokal segmentdata hittades för denna %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Pausa"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Återuppta"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Kontrollera"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Importera"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Ingen sidecar-segmentfil hittades.\n\nKontrollera denna video för inbäddade Matroska-kapitel? Detta kan ta några sekunder."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Inga inbäddade kapitel hittades"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Denna video innehåller %d inbäddat/-de kapitel.\n\nImportera dem som segment?"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Segment %d - %s - %s till %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Varaktighet: %.1fs | Källa: %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Nästlad"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Överlappande"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Aktuell tid: %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [PAUSAD]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Start: %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Slut: %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Slut: %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [OGILTIG: Slut måste vara efter Start]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Slå samman segment"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Slå samman med föregående segment"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Slå samman med nästa segment"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Inga segment tillgängliga."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Kan inte slå samman med föregående segment — det finns inget tidigare segment."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Kan inte slå samman med nästa segment — det finns inget följande segment."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Kan inte slå samman segment: %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Vänligen välj ett segment först."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Kan inte dela — videon spelas inte upp."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "Uppspelningshuvud måste vara strikt inuti det valda segmentet.\n\nSegment: %s till %s\nUppspelningshuvud: %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Kan inte dela segment: %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "Fixa överlappning gäller inte för nästlade segment.\nAnvänd sammanslagning eller manuell redigering istället."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "Det valda segmentet är inte markerat som överlappande."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Kunde inte fixa överlappning automatiskt för detta segment."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Fixa överlappning skulle ta bort segmentet helt.\nAnvänd sammanslagning eller radering istället."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Ingen aktuell uppspelningstid tillgänglig."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Segmentvaraktighet (sekunder)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "Varaktigheten måste vara större än noll."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Ogiltigt varaktighetsvärde."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "Du har markerat start- och sluttider.\n\nAnvänd 'Lägg till med markerade tider' istället?"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Starttid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Sluttid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "Sluttid måste vara efter starttid."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Ogiltig inmatning: %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Vänligen välj ett segment att redigera."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "Du har markerat start- och sluttider.\n\nAnvända markerade tider för detta segment?"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Kan inte fästa: start skulle inte vara före segmentets sluttid.\n\nSlut: %s\nFästmål: %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Kan inte fästa slut till videolängd: varaktighet är inte tillgänglig. Se till att videon spelas upp."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Kan inte fästa: slut skulle inte vara efter segmentets starttid.\n\nStart: %s\nFästmål: %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Kan inte ställa in start till aktuell tid: videon spelas inte upp."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Kan inte ställa in start till aktuell tid: uppspelningshuvud är inte före segmentets slut.\n\nSlut: %s\nAktuell: %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Kan inte ställa in slut till aktuell tid: videon spelas inte upp."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Kan inte ställa in slut till aktuell tid: uppspelningshuvud är inte efter segmentets start.\n\nStart: %s\nAktuell: %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Vänligen välj ett segment att radera."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Radera segment '%s'?"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Det finns inga segment att radera."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Radera alla %d segment?"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Radera alla"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "Du har osparade ändringar.\nAvsluta utan att spara?"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Kan inte hoppa - videon spelas inte upp."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Hoppa till tid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "Tid kan inte vara negativ."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Hoppade till %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Ogiltigt tidsformat. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Starttid rensad"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan inte ställa in starttid efter sluttid.\n\nStart: %s\nSlut: %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Start markerad: %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Sluttid rensad"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan inte ställa in sluttid före starttid.\n\nStart: %s\nSlut: %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Slut markerad: %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Inga segment tillgängliga att välja."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Segment %d: %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Välj segment (start vid slut)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Välj segment (slut vid start)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Kan inte ställa in starttid efter sluttid.\n\nMarkerat slut: %s\nVald start: %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Kan inte ställa in sluttid före starttid.\n\nMarkerad start: %s\nValt slut: %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Anpassad..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Välj segmentetikett"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Ange anpassad etikett"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Vänligen markera både start- och sluttider först."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Segment tillagt framgångsrikt"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Ingen videosökväg tillgänglig för sparande."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Inga segment att spara."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Fel vid sparande av segment: %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Segment sparade i båda formaten"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Segment sparade till EDL (XML misslyckades)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Segment sparade till XML (EDL misslyckades)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Segment sparade framgångsrikt"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Misslyckades med att spara segment. Kontrollera filbehörigheter."

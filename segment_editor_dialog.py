@@ -43,7 +43,7 @@ from segment_editor_utils import (
     set_editor_modal_open,
 )
 from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord, SKIN_RES_720P
-from settings_utils import get_custom_segment_keyword_labels, normalize_label
+from settings_utils import get_custom_segment_keyword_labels, normalize_label, get_localized
 
 
 def _select_segment_label_from_list(options):
@@ -183,6 +183,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         log(f"SegmentEditorDialog initialized with {len(self.segments)} segments")
 
+    def _T(self, string_id, default="", *args):
+        """Localized UI string with English fallback."""
+        return get_localized(get_addon(), string_id, default, *args)
+
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
@@ -250,6 +254,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 log(f"Could not register player listener: {e}")
                 self._player_listener = None
 
+            # Listener may miss the already-current state; resync after register.
+            try:
+                self._sync_pause_button_from_player()
+            except Exception as e:
+                log(f"Error resyncing pause button: {e}")
+
             try:
                 self.setFocusId(5018)
                 log_always("Set initial focus to Pause/Resume button (5018)")
@@ -288,14 +298,16 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     # ------------------------------------------------------------------
 
     def _detect_initial_pause_state(self):
-        """Sample getTime() twice to infer initial pause state (cold start)."""
+        """Read Kodi's Player.Paused flag (same as the service loop).
+
+        Avoid sampling ``getTime()``: playhead often does not advance for a
+        short window while WindowXML opens, which falsely reported paused and
+        left the button labelled Resume while video was still playing.
+        """
         try:
             if not self.player.isPlayingVideo():
                 return False
-            t1 = self.player.getTime()
-            time.sleep(0.15)
-            t2 = self.player.getTime()
-            return abs(t2 - t1) < 0.05
+            return bool(xbmc.getCondVisibility("Player.Paused"))
         except Exception as e:
             log(f"Error detecting initial pause state: {e}")
             return False
@@ -305,6 +317,17 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             return
         self.is_paused = paused
         log(f"Pause state changed via Player callback: paused={paused}")
+        self._update_pause_button_label()
+
+    def _sync_pause_button_from_player(self):
+        """Force label to match Player.Paused (used after listener register)."""
+        try:
+            paused = bool(xbmc.getCondVisibility("Player.Paused")) if self.player.isPlayingVideo() else False
+        except Exception:
+            paused = False
+        if self.is_paused != paused:
+            self.is_paused = paused
+            log(f"Pause state resynced from Player.Paused: paused={paused}")
         self._update_pause_button_label()
 
     def _set_button_label_font(self, btn, label=None):
@@ -355,7 +378,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             if pause_button:
                 self._set_button_label_font(
                     pause_button,
-                    "Pause" if not self.is_paused else "Resume",
+                    self._T(41001, "Pause") if not self.is_paused else self._T(41002, "Resume"),
                 )
         except Exception:
             pass
@@ -399,23 +422,23 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                     try:
                         time_label = self.getControl(5001)
                         if time_label:
-                            pause_indicator = " [PAUSED]" if self.is_paused else ""
-                            time_label.setLabel(f"Current Time: {hms}{pause_indicator}")
+                            pause_indicator = self._T(41013, " [PAUSED]") if self.is_paused else ""
+                            time_label.setLabel(self._T(41012, "Current Time: %s", hms) + pause_indicator)
                     except Exception:
                         pass
 
                     status_text = ""
                     if self.pending_start_time is not None:
-                        status_text = f"Start: {seconds_to_hms(self.pending_start_time)}"
+                        status_text = self._T(41014, "Start: %s", seconds_to_hms(self.pending_start_time))
                     if self.pending_end_time is not None:
                         if status_text:
-                            status_text += f" | End: {seconds_to_hms(self.pending_end_time)}"
+                            status_text += self._T(41016, " | End: %s", seconds_to_hms(self.pending_end_time))
                         else:
-                            status_text = f"End: {seconds_to_hms(self.pending_end_time)}"
+                            status_text = self._T(41015, "End: %s", seconds_to_hms(self.pending_end_time))
                     if (self.pending_start_time is not None
                             and self.pending_end_time is not None
                             and self.pending_end_time <= self.pending_start_time):
-                        status_text += " [INVALID: End must be after Start]"
+                        status_text += self._T(41017, " [INVALID: End must be after Start]")
 
                     try:
                         status_label = self.getControl(5008)
@@ -435,12 +458,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def _maybe_import_embedded_chapters(self):
         try:
             should_check = xbmcgui.Dialog().yesno(
-                "Segment Editor",
-                "No sidecar segment file was found.\n\n"
-                "Check this video for embedded Matroska chapters? "
-                "This may take a few seconds.",
-                yeslabel="Check",
-                nolabel="Skip",
+                self._T(41000, "Segment Editor"),
+                self._T(41005, "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."),
+                yeslabel=self._T(41003, "Check"),
+                nolabel=self._T(40000, "Skip"),
             )
         except Exception as err:
             log(f"Embedded chapter preflight prompt failed: {err}")
@@ -458,8 +479,8 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         if not embedded:
             xbmcgui.Dialog().notification(
-                "Segment Editor",
-                "No embedded chapters found",
+                self._T(41000, "Segment Editor"),
+                self._T(41006, "No embedded chapters found"),
                 icon=self.icon_path,
                 time=2000,
             )
@@ -467,11 +488,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         try:
             proceed = xbmcgui.Dialog().yesno(
-                "Segment Editor",
-                f"This video contains {len(embedded)} embedded chapter(s).\n\n"
-                "Import them as segments?",
-                yeslabel="Import",
-                nolabel="Skip",
+                self._T(41000, "Segment Editor"),
+                self._T(41007, "This video contains %d embedded chapter(s).\n\nImport them as segments?", len(embedded)),
+                yeslabel=self._T(41004, "Import"),
+                nolabel=self._T(40000, "Skip"),
             )
         except Exception as err:
             log(f"Embedded chapter prompt failed: {err}")
@@ -517,12 +537,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 is_nested = i in nested_indices
                 is_overlapping = i in overlapping_indices
 
-                line1 = f"Segment {segment_num} - {list_label} - {start_hms} to {end_hms}"
-                line2 = f"Duration: {duration:.1f}s | Source: {seg.source}"
+                line1 = self._T(41008, "Segment %d - %s - %s to %s", segment_num, list_label, start_hms, end_hms)
+                line2 = self._T(41009, "Duration: %.1fs | Source: %s", duration, seg.source)
                 if is_nested:
-                    line2 += " | Nested"
+                    line2 += self._T(41010, " | Nested")
                 elif is_overlapping:
-                    line2 += " | Overlapping"
+                    line2 += self._T(41011, " | Overlapping")
 
                 item = xbmcgui.ListItem(line1, line2)
                 item.setProperty("index", str(i))
@@ -846,14 +866,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         self._refresh_selected_index()
         options = [
-            "Merge with previous segment",
-            "Merge with next segment",
+            self._T(41019, "Merge with previous segment"),
+            self._T(41020, "Merge with next segment"),
         ]
         try:
-            picked = show_editor_list_pick("Merge segment", options)
+            picked = show_editor_list_pick(self._T(41018, "Merge segment"), options)
         except Exception:
             try:
-                picked = xbmcgui.Dialog().select("Merge segment", options)
+                picked = xbmcgui.Dialog().select(self._T(41018, "Merge segment"), options)
             except Exception as exc:
                 log_error(f"Merge picker failed: {exc}")
                 return
@@ -868,12 +888,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._refresh_selected_index()
         idx = self.selected_index
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41021, "No segments available."))
             return
         if idx <= 0:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot merge with previous segment — there is no prior segment.",
+                self._T(41000, "Segment Editor"),
+                self._T(41022, "Cannot merge with previous segment — there is no prior segment."),
             )
             return
         self._merge_adjacent_segments(idx - 1, idx)
@@ -882,12 +902,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._refresh_selected_index()
         idx = self.selected_index
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41021, "No segments available."))
             return
         if idx < 0 or idx >= len(self.segments) - 1:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot merge with next segment — there is no following segment.",
+                self._T(41000, "Segment Editor"),
+                self._T(41023, "Cannot merge with next segment — there is no following segment."),
             )
             return
         self._merge_adjacent_segments(idx, idx + 1)
@@ -921,7 +941,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 new_start, new_end, label, source=source, action_type=action_type
             )
         except ValueError as exc:
-            xbmcgui.Dialog().ok("Segment Editor", f"Cannot merge segments: {exc}")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41024, "Cannot merge segments: %s", exc))
             return
 
         self._push_undo()
@@ -937,12 +957,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         if not self.player.isPlayingVideo():
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot split — video is not playing.",
+                self._T(41000, "Segment Editor"),
+                self._T(41026, "Cannot split — video is not playing."),
             )
             return
         idx = self.selected_index
@@ -950,11 +970,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         split_at = float(self.player.getTime())
         if split_at <= seg.start_seconds or split_at >= seg.end_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Playhead must be strictly inside the selected segment.\n\n"
-                f"Segment: {seconds_to_hms(seg.start_seconds)} to "
-                f"{seconds_to_hms(seg.end_seconds)}\n"
-                f"Playhead: {seconds_to_hms(split_at)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41027, "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s",
+                    seconds_to_hms(seg.start_seconds), seconds_to_hms(seg.end_seconds), seconds_to_hms(split_at)),
             )
             return
 
@@ -977,7 +995,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 action_type=action_type,
             )
         except ValueError as exc:
-            xbmcgui.Dialog().ok("Segment Editor", f"Cannot split segment: {exc}")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41028, "Cannot split segment: %s", exc))
             return
 
         self._push_undo()
@@ -997,21 +1015,20 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         idx = self.selected_index
         nested_indices, overlapping_indices = self._compute_segment_overlap_sets()
         if idx in nested_indices:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Fix overlap does not apply to nested segments.\n"
-                "Use merge or manual edit instead.",
+                self._T(41000, "Segment Editor"),
+                self._T(41029, "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."),
             )
             return
         if idx not in overlapping_indices:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "The selected segment is not flagged as overlapping.",
+                self._T(41000, "Segment Editor"),
+                self._T(41030, "The selected segment is not flagged as overlapping."),
             )
             return
 
@@ -1033,15 +1050,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         if new_start == seg.start_seconds and new_end == seg.end_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Could not fix overlap automatically for this segment.",
+                self._T(41000, "Segment Editor"),
+                self._T(41031, "Could not fix overlap automatically for this segment."),
             )
             return
         if new_end <= new_start:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Fix overlap would remove the segment entirely.\n"
-                "Use merge or delete instead.",
+                self._T(41000, "Segment Editor"),
+                self._T(41032, "Fix overlap would remove the segment entirely.\nUse merge or delete instead."),
             )
             return
 
@@ -1120,11 +1136,11 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def add_at_current_time(self):
         if not self.current_time or self.current_time <= 0:
-            xbmcgui.Dialog().ok("Segment Editor", "No current playback time available.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41033, "No current playback time available."))
             return
 
         duration_str = xbmcgui.Dialog().input(
-            "Segment Duration (seconds)",
+            self._T(41034, "Segment Duration (seconds)"),
             defaultt="30",
         )
         if not duration_str:
@@ -1133,7 +1149,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         try:
             duration = float(duration_str)
             if duration <= 0:
-                xbmcgui.Dialog().ok("Segment Editor", "Duration must be greater than zero.")
+                xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41035, "Duration must be greater than zero."))
                 return
             start = self.current_time
             end = start + duration
@@ -1153,15 +1169,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self.refresh_list()
             log(f"Added segment at current time: {new_seg}")
         except ValueError:
-            xbmcgui.Dialog().ok("Segment Editor", "Invalid duration value.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41036, "Invalid duration value."))
 
     def add_segment(self):
         """Add a new segment via manual start/end entry."""
         if self.pending_start_time is not None and self.pending_end_time is not None:
             if xbmcgui.Dialog().yesno(
-                "Segment Editor",
-                "You have marked start and end times.\n\n"
-                "Use 'Add with Marked Times' instead?",
+                self._T(41000, "Segment Editor"),
+                self._T(41037, "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"),
             ):
                 self.add_with_marked_times()
                 return
@@ -1173,7 +1188,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             default_start = seconds_to_hms(self.current_time)
 
         start_str = xbmcgui.Dialog().input(
-            "Start Time (HH:MM:SS.mmm or seconds)",
+            self._T(41038, "Start Time (HH:MM:SS.mmm or seconds)"),
             defaultt=default_start,
         )
         if not start_str:
@@ -1186,7 +1201,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             default_end = seconds_to_hms(self.current_time + 30)
 
         end_str = xbmcgui.Dialog().input(
-            "End Time (HH:MM:SS.mmm or seconds)",
+            self._T(41039, "End Time (HH:MM:SS.mmm or seconds)"),
             defaultt=default_end,
         )
         if not end_str:
@@ -1201,7 +1216,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             end = hms_to_seconds(end_str)
 
             if end <= start:
-                xbmcgui.Dialog().ok("Segment Editor", "End time must be after start time.")
+                xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41040, "End time must be after start time."))
                 return
 
             source = "edl"
@@ -1215,21 +1230,20 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self.refresh_list()
             log(f"Added segment: {new_seg}")
         except ValueError as e:
-            xbmcgui.Dialog().ok("Segment Editor", f"Invalid input: {e}")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41041, "Invalid input: %s", e))
 
     def edit_segment(self):
         self._refresh_selected_index()
         if self.selected_index < 0 or self.selected_index >= len(self.segments):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment to edit.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41042, "Please select a segment to edit."))
             return
 
         seg = self.segments[self.selected_index]
 
         if self.pending_start_time is not None and self.pending_end_time is not None:
             if xbmcgui.Dialog().yesno(
-                "Segment Editor",
-                "You have marked start and end times.\n\n"
-                "Use marked times for this segment?",
+                self._T(41000, "Segment Editor"),
+                self._T(41043, "You have marked start and end times.\n\nUse marked times for this segment?"),
             ):
                 if self.pending_end_time > self.pending_start_time:
                     self._push_undo()
@@ -1241,14 +1255,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                     self.refresh_list()
                     log(f"Edited segment with marked times: {seg}")
                     return
-                xbmcgui.Dialog().ok("Segment Editor", "End time must be after start time.")
+                xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41040, "End time must be after start time."))
                 return
 
         default_start = seconds_to_hms(seg.start_seconds)
         if self.pending_start_time is not None:
             default_start = seconds_to_hms(self.pending_start_time)
         start_str = xbmcgui.Dialog().input(
-            "Start Time (HH:MM:SS.mmm or seconds)",
+            self._T(41038, "Start Time (HH:MM:SS.mmm or seconds)"),
             defaultt=default_start,
         )
         if not start_str:
@@ -1258,7 +1272,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if self.pending_end_time is not None:
             default_end = seconds_to_hms(self.pending_end_time)
         end_str = xbmcgui.Dialog().input(
-            "End Time (HH:MM:SS.mmm or seconds)",
+            self._T(41039, "End Time (HH:MM:SS.mmm or seconds)"),
             defaultt=default_end,
         )
         if not end_str:
@@ -1274,7 +1288,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             end = hms_to_seconds(end_str)
 
             if end <= start:
-                xbmcgui.Dialog().ok("Segment Editor", "End time must be after start time.")
+                xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41040, "End time must be after start time."))
                 return
 
             self._push_undo()
@@ -1292,7 +1306,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self.refresh_list()
             log(f"Edited segment: {seg}")
         except ValueError as e:
-            xbmcgui.Dialog().ok("Segment Editor", f"Invalid input: {e}")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41041, "Invalid input: %s", e))
 
     def snap_segment_start(self):
         """Move segment start to 0 (first) or previous segment's end (timeline order)."""
@@ -1300,7 +1314,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         idx = self.selected_index
         seg = self.segments[idx]
@@ -1310,10 +1324,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             new_start = float(self.segments[idx - 1].end_seconds)
         if new_start >= seg.end_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot snap: start would not be before the segment end time.\n\n"
-                f"End: {seconds_to_hms(seg.end_seconds)}\n"
-                f"Snap target: {seconds_to_hms(new_start)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41044, "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s",
+                    seconds_to_hms(seg.end_seconds), seconds_to_hms(new_start)),
             )
             return
         self._push_undo()
@@ -1328,7 +1341,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         idx = self.selected_index
         n = len(self.segments)
@@ -1337,19 +1350,17 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             new_end = self._get_playback_duration_seconds()
             if new_end <= 0:
                 xbmcgui.Dialog().ok(
-                    "Segment Editor",
-                    "Cannot snap end to video length: duration is not available. "
-                    "Ensure the video is playing.",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41045, "Cannot snap end to video length: duration is not available. Ensure the video is playing."),
                 )
                 return
         else:
             new_end = float(self.segments[idx + 1].start_seconds)
         if new_end <= seg.start_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot snap: end would not be after the segment start time.\n\n"
-                f"Start: {seconds_to_hms(seg.start_seconds)}\n"
-                f"Snap target: {seconds_to_hms(new_end)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41046, "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s",
+                    seconds_to_hms(seg.start_seconds), seconds_to_hms(new_end)),
             )
             return
         self._push_undo()
@@ -1364,12 +1375,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         if not self.player.isPlayingVideo():
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot set start to current time: video is not playing.",
+                self._T(41000, "Segment Editor"),
+                self._T(41047, "Cannot set start to current time: video is not playing."),
             )
             return
         idx = self.selected_index
@@ -1377,10 +1388,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         new_start = float(self.player.getTime())
         if new_start >= seg.end_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot set start to current time: playhead is not before the segment end.\n\n"
-                f"End: {seconds_to_hms(seg.end_seconds)}\n"
-                f"Current: {seconds_to_hms(new_start)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41048, "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s",
+                    seconds_to_hms(seg.end_seconds), seconds_to_hms(new_start)),
             )
             return
         self._push_undo()
@@ -1395,12 +1405,12 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if not self.segments or self.selected_index < 0 or self.selected_index >= len(
             self.segments
         ):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment first.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41025, "Please select a segment first."))
             return
         if not self.player.isPlayingVideo():
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot set end to current time: video is not playing.",
+                self._T(41000, "Segment Editor"),
+                self._T(41049, "Cannot set end to current time: video is not playing."),
             )
             return
         idx = self.selected_index
@@ -1408,10 +1418,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         new_end = float(self.player.getTime())
         if new_end <= seg.start_seconds:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Cannot set end to current time: playhead is not after the segment start.\n\n"
-                f"Start: {seconds_to_hms(seg.start_seconds)}\n"
-                f"Current: {seconds_to_hms(new_end)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41050, "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s",
+                    seconds_to_hms(seg.start_seconds), seconds_to_hms(new_end)),
             )
             return
         self._push_undo()
@@ -1423,13 +1432,13 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def delete_segment(self):
         self._refresh_selected_index()
         if self.selected_index < 0 or self.selected_index >= len(self.segments):
-            xbmcgui.Dialog().ok("Segment Editor", "Please select a segment to delete.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41051, "Please select a segment to delete."))
             return
 
         seg = self.segments[self.selected_index]
         label = seg.raw_label if hasattr(seg, 'raw_label') else seg.segment_type_label
 
-        if xbmcgui.Dialog().yesno("Segment Editor", f"Delete segment '{label}'?"):
+        if xbmcgui.Dialog().yesno(self._T(41000, "Segment Editor"), self._T(41052, "Delete segment '%s'?", label)):
             self._push_undo()
             del self.segments[self.selected_index]
             self.segments_modified = True
@@ -1438,13 +1447,13 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def delete_all_segments(self):
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "There are no segments to delete.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41053, "There are no segments to delete."))
             return
         if xbmcgui.Dialog().yesno(
-            "Segment Editor",
-            f"Delete all {len(self.segments)} segments?",
-            yeslabel="Delete All",
-            nolabel="Cancel",
+            self._T(41000, "Segment Editor"),
+            self._T(41054, "Delete all %d segments?", len(self.segments)),
+            yeslabel=self._T(41055, "Delete All"),
+            nolabel=self._T(35019, "Cancel"),
         ):
             self._push_undo()
             self.segments = []
@@ -1463,10 +1472,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         log("Unsaved changes detected - showing warning dialog")
         result = xbmcgui.Dialog().yesno(
-            "Segment Editor",
-            "You have unsaved changes.\nExit without saving?",
-            yeslabel="Yes",
-            nolabel="Cancel",
+            self._T(41000, "Segment Editor"),
+            self._T(41056, "You have unsaved changes.\nExit without saving?"),
+            yeslabel=self._T(35018, "Yes"),
+            nolabel=self._T(35019, "Cancel"),
         )
         if result:
             log("User confirmed exit without saving")
@@ -1509,14 +1518,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def jump_to_time(self):
         try:
             if not self.player.isPlayingVideo():
-                xbmcgui.Dialog().ok("Segment Editor", "Cannot jump - video is not playing.")
+                xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41057, "Cannot jump - video is not playing."))
                 return
 
             current = self.player.getTime()
             current_hms = seconds_to_hms(current)
 
             time_str = xbmcgui.Dialog().input(
-                "Jump To Time (HH:MM:SS.mmm or seconds)",
+                self._T(41058, "Jump To Time (HH:MM:SS.mmm or seconds)"),
                 defaultt=current_hms,
             )
             if not time_str:
@@ -1525,20 +1534,20 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             try:
                 target_time = hms_to_seconds(time_str)
                 if target_time < 0:
-                    xbmcgui.Dialog().ok("Segment Editor", "Time cannot be negative.")
+                    xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41059, "Time cannot be negative."))
                     return
                 self.player.seekTime(target_time)
                 log(f"Jumped to time: {target_time:.2f}s")
                 xbmcgui.Dialog().notification(
-                    "Segment Editor",
-                    f"Jumped to {seconds_to_hms(target_time)}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41060, "Jumped to %s", seconds_to_hms(target_time)),
                     icon=self.icon_path,
                     time=2000,
                 )
             except ValueError as e:
                 xbmcgui.Dialog().ok(
-                    "Segment Editor",
-                    f"Invalid time format. {e}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41061, "Invalid time format. %s", e),
                 )
         except Exception as e:
             log_error(f"Error in jump_to_time: {e}")
@@ -1566,7 +1575,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 log("Start time already marked - clearing it")
                 self.pending_start_time = None
                 xbmcgui.Dialog().notification(
-                    "Segment Editor", "Start time cleared",
+                    self._T(41000, "Segment Editor"), self._T(41062, "Start time cleared"),
                     icon=self.icon_path, time=2000,
                 )
                 return
@@ -1576,17 +1585,16 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 if (self.pending_end_time is not None
                         and new_start >= self.pending_end_time):
                     xbmcgui.Dialog().ok(
-                        "Segment Editor",
-                        f"Cannot set start time after end time.\n\n"
-                        f"Current end: {seconds_to_hms(self.pending_end_time)}\n"
-                        f"Attempted start: {seconds_to_hms(new_start)}",
+                        self._T(41000, "Segment Editor"),
+                        self._T(41063, "Cannot set start time after end time.\n\nStart: %s\nEnd: %s",
+                            seconds_to_hms(new_start), seconds_to_hms(self.pending_end_time)),
                     )
                     return
                 self.pending_start_time = new_start
                 log(f"Marked start time: {self.pending_start_time:.2f}")
                 xbmcgui.Dialog().notification(
-                    "Segment Editor",
-                    f"Start marked: {seconds_to_hms(self.pending_start_time)}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41064, "Start marked: %s", seconds_to_hms(self.pending_start_time)),
                     icon=self.icon_path, time=2000,
                 )
         except Exception as e:
@@ -1598,7 +1606,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 log("End time already marked - clearing it")
                 self.pending_end_time = None
                 xbmcgui.Dialog().notification(
-                    "Segment Editor", "End time cleared",
+                    self._T(41000, "Segment Editor"), self._T(41065, "End time cleared"),
                     icon=self.icon_path, time=2000,
                 )
                 return
@@ -1608,17 +1616,16 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 if (self.pending_start_time is not None
                         and new_end <= self.pending_start_time):
                     xbmcgui.Dialog().ok(
-                        "Segment Editor",
-                        f"Cannot set end time before start time.\n\n"
-                        f"Current start: {seconds_to_hms(self.pending_start_time)}\n"
-                        f"Attempted end: {seconds_to_hms(new_end)}",
+                        self._T(41000, "Segment Editor"),
+                        self._T(41066, "Cannot set end time before start time.\n\nStart: %s\nEnd: %s",
+                            seconds_to_hms(self.pending_start_time), seconds_to_hms(new_end)),
                     )
                     return
                 self.pending_end_time = new_end
                 log(f"Marked end time: {self.pending_end_time:.2f}")
                 xbmcgui.Dialog().notification(
-                    "Segment Editor",
-                    f"End marked: {seconds_to_hms(self.pending_end_time)}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41067, "End marked: %s", seconds_to_hms(self.pending_end_time)),
                     icon=self.icon_path, time=2000,
                 )
         except Exception as e:
@@ -1630,17 +1637,16 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             if (self.pending_end_time is not None
                     and 0.0 >= self.pending_end_time):
                 xbmcgui.Dialog().ok(
-                    "Segment Editor",
-                    f"Cannot set start time after end time.\n\n"
-                    f"Current end: {seconds_to_hms(self.pending_end_time)}\n"
-                    f"Attempted start: {seconds_to_hms(0.0)}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41063, "Cannot set start time after end time.\n\nStart: %s\nEnd: %s",
+                        seconds_to_hms(0.0), seconds_to_hms(self.pending_end_time)),
                 )
                 return
             self.pending_start_time = 0.0
             log("Marked start time at SOF (0.0)")
             xbmcgui.Dialog().notification(
-                "Segment Editor",
-                f"Start marked: {seconds_to_hms(self.pending_start_time)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41064, "Start marked: %s", seconds_to_hms(self.pending_start_time)),
                 icon=self.icon_path, time=2000,
             )
         except Exception as e:
@@ -1652,24 +1658,23 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             duration = self._get_playback_duration_seconds()
             if duration <= 0:
                 xbmcgui.Dialog().ok(
-                    "Segment Editor",
-                    "Cannot set end to EOF — video duration is not available.",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41045, "Cannot snap end to video length: duration is not available. Ensure the video is playing."),
                 )
                 return
             if (self.pending_start_time is not None
                     and duration <= self.pending_start_time):
                 xbmcgui.Dialog().ok(
-                    "Segment Editor",
-                    f"Cannot set end time before start time.\n\n"
-                    f"Current start: {seconds_to_hms(self.pending_start_time)}\n"
-                    f"Attempted end: {seconds_to_hms(duration)}",
+                    self._T(41000, "Segment Editor"),
+                    self._T(41066, "Cannot set end time before start time.\n\nStart: %s\nEnd: %s",
+                        seconds_to_hms(self.pending_start_time), seconds_to_hms(duration)),
                 )
                 return
             self.pending_end_time = duration
             log(f"Marked end time at EOF ({duration:.2f})")
             xbmcgui.Dialog().notification(
-                "Segment Editor",
-                f"End marked: {seconds_to_hms(self.pending_end_time)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41067, "End marked: %s", seconds_to_hms(self.pending_end_time)),
                 icon=self.icon_path, time=2000,
             )
         except Exception as e:
@@ -1677,15 +1682,15 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def select_segment_from_list(self, title):
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments available to select.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41068, "No segments available to select."))
             return None
 
         options = []
         for i, seg in enumerate(self.segments):
             label = seg.raw_label if hasattr(seg, 'raw_label') else seg.segment_type_label
             options.append(
-                f"Segment {i+1}: {label} "
-                f"({seconds_to_hms(seg.start_seconds)} -> {seconds_to_hms(seg.end_seconds)})"
+                self._T(41069, "Segment %d: %s (%s -> %s)", i+1, label,
+                    seconds_to_hms(seg.start_seconds), seconds_to_hms(seg.end_seconds))
             )
 
         selected = xbmcgui.Dialog().select(title, options)
@@ -1693,9 +1698,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def start_at_end_of_segment(self):
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41021, "No segments available."))
             return
-        seg_index = self.select_segment_from_list("Select Segment (Start at End)")
+        seg_index = self.select_segment_from_list(self._T(41070, "Select Segment (Start at End)"))
         if seg_index is None:
             return
 
@@ -1704,24 +1709,23 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if (self.pending_end_time is not None
                 and new_start >= self.pending_end_time):
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                f"Cannot set start time after end time.\n\n"
-                f"Current end: {seconds_to_hms(self.pending_end_time)}\n"
-                f"Selected start: {seconds_to_hms(new_start)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41072, "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s",
+                    seconds_to_hms(self.pending_end_time), seconds_to_hms(new_start)),
             )
             return
         self.pending_start_time = new_start
         xbmcgui.Dialog().notification(
-            "Segment Editor",
-            f"Start marked: {seconds_to_hms(self.pending_start_time)}",
+            self._T(41000, "Segment Editor"),
+            self._T(41064, "Start marked: %s", seconds_to_hms(self.pending_start_time)),
             icon=self.icon_path, time=2000,
         )
 
     def end_at_start_of_segment(self):
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments available.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41021, "No segments available."))
             return
-        seg_index = self.select_segment_from_list("Select Segment (End at Start)")
+        seg_index = self.select_segment_from_list(self._T(41071, "Select Segment (End at Start)"))
         if seg_index is None:
             return
 
@@ -1730,16 +1734,15 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if (self.pending_start_time is not None
                 and new_end <= self.pending_start_time):
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                f"Cannot set end time before start time.\n\n"
-                f"Current start: {seconds_to_hms(self.pending_start_time)}\n"
-                f"Selected end: {seconds_to_hms(new_end)}",
+                self._T(41000, "Segment Editor"),
+                self._T(41073, "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s",
+                    seconds_to_hms(self.pending_start_time), seconds_to_hms(new_end)),
             )
             return
         self.pending_end_time = new_end
         xbmcgui.Dialog().notification(
-            "Segment Editor",
-            f"End marked: {seconds_to_hms(self.pending_end_time)}",
+            self._T(41000, "Segment Editor"),
+            self._T(41067, "End marked: %s", seconds_to_hms(self.pending_end_time)),
             icon=self.icon_path, time=2000,
         )
 
@@ -1751,14 +1754,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def get_label_from_user(self, default=""):
         predefined = self.get_predefined_labels()
-        options = ["Custom..."] + predefined
+        options = [self._T(41074, "Custom...")] + predefined
         selected = _select_segment_label_from_list(options)
         if selected is None:
-            selected = xbmcgui.Dialog().select("Select Segment Label", options)
+            selected = xbmcgui.Dialog().select(self._T(41075, "Select Segment Label"), options)
 
         if selected == 0:
             label = xbmcgui.Dialog().input(
-                "Enter Custom Label",
+                self._T(41076, "Enter Custom Label"),
                 defaultt=default or "segment",
             )
             return label if label else (default or "segment")
@@ -1769,14 +1772,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def add_with_marked_times(self):
         if self.pending_start_time is None or self.pending_end_time is None:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Please mark both start and end times first.",
+                self._T(41000, "Segment Editor"),
+                self._T(41077, "Please mark both start and end times first."),
             )
             return
         if self.pending_end_time <= self.pending_start_time:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "End time must be after start time.",
+                self._T(41000, "Segment Editor"),
+                self._T(41040, "End time must be after start time."),
             )
             return
 
@@ -1804,7 +1807,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self.refresh_list()
         log(f"Added segment with marked times: {new_seg}")
         xbmcgui.Dialog().notification(
-            "Segment Editor", "Segment added successfully",
+            self._T(41000, "Segment Editor"), self._T(41078, "Segment added successfully"),
             icon=self.icon_path, time=2000,
         )
 
@@ -1812,10 +1815,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         """Save the current segments via the shared save-format dispatcher."""
         log(f"save_current_segments() called with {len(self.segments)} segments")
         if not self.video_path:
-            xbmcgui.Dialog().ok("Segment Editor", "No video path available for saving.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41079, "No video path available for saving."))
             return
         if not self.segments:
-            xbmcgui.Dialog().ok("Segment Editor", "No segments to save.")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41080, "No segments to save."))
             return
 
         save_format = get_save_format()
@@ -1825,7 +1828,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             log_error(f"Error saving segments: {e}")
             import traceback
             log_error(f"Traceback: {traceback.format_exc()}")
-            xbmcgui.Dialog().ok("Segment Editor", f"Error saving segments: {e}")
+            xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41081, "Error saving segments: %s", e))
             return
 
         if edl_ok or xml_ok:
@@ -1834,21 +1837,21 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self._update_undo_button()
             if save_format == SAVE_FORMAT_BOTH:
                 if edl_ok and xml_ok:
-                    msg = "Segments saved to both formats"
+                    msg = self._T(41082, "Segments saved to both formats")
                 elif edl_ok:
-                    msg = "Segments saved to EDL (XML failed)"
+                    msg = self._T(41083, "Segments saved to EDL (XML failed)")
                 else:
-                    msg = "Segments saved to XML (EDL failed)"
+                    msg = self._T(41084, "Segments saved to XML (EDL failed)")
             else:
-                msg = "Segments saved successfully"
+                msg = self._T(41085, "Segments saved successfully")
             xbmcgui.Dialog().notification(
-                "Segment Editor", msg,
+                self._T(41000, "Segment Editor"), msg,
                 icon=self.icon_path, time=2000,
             )
         else:
             xbmcgui.Dialog().ok(
-                "Segment Editor",
-                "Failed to save segments. Check file permissions.",
+                self._T(41000, "Segment Editor"),
+                self._T(41086, "Failed to save segments. Check file permissions."),
             )
 
     def upload_segments_online(self):

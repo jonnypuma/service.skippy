@@ -109,12 +109,10 @@ def log(msg):
     xbmc.log(f"[{ADDON_ID} - SegmentMarker] {safe_msg}", xbmc.LOGINFO)
 
 
-def get_localized(addon, string_id):
-    try:
-        s = addon.getLocalizedString(string_id)
-        return s if s else str(string_id)
-    except Exception:
-        return str(string_id)
+def get_localized(addon, string_id, default="", *args):
+    from settings_utils import get_localized as _gl
+
+    return _gl(addon, string_id, default, *args)
 
 
 def format_time(seconds):
@@ -186,10 +184,12 @@ def get_pending_path():
 def show_toast(msg, time_ms=3000):
     """Marker toasts use the built-in ``Notification`` path so they still show under fullscreen XML."""
     addon = get_addon()
+    from settings_utils import get_localized
+
     notify_skippy(
         addon,
         msg,
-        title="Skippy",
+        title=get_localized(addon, 43000, "Skippy"),
         time_ms=time_ms,
         prefer_builtin=True,
     )
@@ -1036,7 +1036,11 @@ def main():
     if segment_editor_modal_is_open():
         notify_skippy(
             addon,
-            "Close the Segment Editor before using the Segment Marker.",
+            get_localized(
+                addon,
+                42000,
+                "Close the Segment Editor before using the Segment Marker.",
+            ),
             prefer_builtin=True,
         )
         log("Segment Marker ignored — Segment Editor is open")

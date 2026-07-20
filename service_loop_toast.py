@@ -10,7 +10,7 @@ import xbmc
 import xbmcgui
 
 from service_deferred_remote_probe import is_deferred_remote_probe_pending
-from settings_utils import addon_get_bool, get_addon, log
+from settings_utils import addon_get_bool, get_addon, get_localized, log
 
 
 def try_show_online_segments_applied_toast(
@@ -33,8 +33,8 @@ def try_show_online_segments_applied_toast(
         return
     try:
         xbmcgui.Dialog().notification(
-            heading="Skippy",
-            message="Online segments loaded",
+            heading=get_localized(addon, 43000, "Skippy"),
+            message=get_localized(addon, 43001, "Online segments loaded"),
             icon=ctx.icon_path,
             time=3000,
             sound=False,
@@ -126,7 +126,7 @@ def try_show_missing_segments_toast(
         try:
             toast_msg = ctx.missing_segments_toast_message(playback_type, video)
             xbmcgui.Dialog().notification(
-                heading="Skippy",
+                heading=get_localized(get_addon(), 43000, "Skippy"),
                 message=toast_msg,
                 icon=ctx.icon_path,
                 time=3000,

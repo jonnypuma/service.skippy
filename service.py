@@ -13,6 +13,7 @@ import xbmcaddon
 from settings_utils import (
     addon_get_bool,
     get_addon,
+    get_localized,
     log,
     log_always,
     log_service_detail,
@@ -371,7 +372,7 @@ def _missing_segments_toast_message(playback_type, video_path):
         onl = (
             addon_get_bool(addon, "tv_use_online_segment_lookup", False) if addon else False
         )
-        type_word = "episode"
+        type_word = get_localized(addon, 43008, "episode")
     elif playback_type == "movie":
         loc = addon_get_bool(addon, "movie_use_local_chapter_edl", True) if addon else True
         onl = (
@@ -379,9 +380,9 @@ def _missing_segments_toast_message(playback_type, video_path):
             if addon
             else False
         )
-        type_word = "movie"
+        type_word = get_localized(addon, 43009, "movie")
     else:
-        return "No skip segments found for this video."
+        return get_localized(addon, 43005, "No skip segments found for this video.")
 
     has_sidecar = bool(video_path) and local_sidecar_exists(
         video_path, segment_monitor=monitor
@@ -389,20 +390,32 @@ def _missing_segments_toast_message(playback_type, video_path):
 
     if not loc and onl:
         if has_sidecar:
-            return (
-                "No online segment data found; local segment data is available for this %s."
-                % type_word
+            return get_localized(
+                addon,
+                43010,
+                "No online segment data found; local segment data is available for this %s.",
+                type_word,
             )
-        return "No online segment data found for this %s." % type_word
+        return get_localized(
+            addon, 43011, "No online segment data found for this %s.", type_word
+        )
 
     if loc and not onl:
-        return "No local segment data found for this %s." % type_word
+        return get_localized(
+            addon, 43012, "No local segment data found for this %s.", type_word
+        )
 
     if loc and onl:
-        return "No segments found locally or online for this %s." % type_word
+        return get_localized(
+            addon,
+            43006,
+            "No segments found locally or online for this %s.",
+            type_word,
+        )
 
-    return "No skip segments found for this %s." % type_word
-
+    return get_localized(
+        addon, 43007, "No skip segments found for this %s.", type_word
+    )
 
 def maybe_save_online_segments_to_sidecars(video_path, segments):
     _maybe_save_online_segments_to_sidecars_impl(

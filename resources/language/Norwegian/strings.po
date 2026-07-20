@@ -1060,3 +1060,443 @@ msgstr "Trykk segmentmarkørtasten igjen for å sette slutttiden."
 msgctxt "#36036"
 msgid "Segment marker cancelled."
 msgstr "Segmentmarkør avbrutt."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Hopp over"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Lukk"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "Hopp over %s"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "Hopp over %s (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s slutter om:"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Hopp til %s ved %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Hopp til neste segment ved %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Lukk Segment Editor før du bruker Segment Marker."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Online-segmenter lastet"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Overlappende/nestede segmenter oppdaget."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Hoppet over"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s hoppet over"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Ingen hopp over-segmenter funnet for denne videoen."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Ingen segmenter funnet lokalt eller online for denne %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Ingen hopp over-segmenter funnet for denne %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "episode"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "film"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Ingen online-segmentdata funnet; lokale segmentdata er tilgjengelig for denne %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Ingen online-segmentdata funnet for denne %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Ingen lokale segmentdata funnet for denne %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Pause"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Fortsett"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Sjekk"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Importer"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Ingen sidecar-segmentfil funnet.\n\nSjekke denne videoen for innebygde Matroska-kapitler? Dette kan ta noen sekunder."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Ingen innebygde kapitler funnet"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Denne videoen inneholder %d innebygde kapittel/-ler.\n\nImportere dem som segmenter?"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Segment %d - %s - %s til %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Varighet: %.1fs | Kilde: %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Nestet"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Overlappende"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Nåværende tid: %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [PAUSET]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Start: %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Slutt: %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Slutt: %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [UGYLDIG: Slutt må være etter Start]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Slå sammen segment"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Slå sammen med forrige segment"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Slå sammen med neste segment"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Ingen segmenter tilgjengelig."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Kan ikke slå sammen med forrige segment — det er ingen tidligere segment."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Kan ikke slå sammen med neste segment — det er ingen følgende segment."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Kan ikke slå sammen segmenter: %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Vennligst velg et segment først."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Kan ikke dele — videoen spilles ikke av."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "Avspillingshode må være strengt innenfor det valgte segmentet.\n\nSegment: %s til %s\nAvspillingshode: %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Kan ikke dele segment: %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "Fikse overlapping gjelder ikke for nestede segmenter.\nBruk sammenslåing eller manuell redigering i stedet."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "Det valgte segmentet er ikke merket som overlappende."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Kunne ikke fikse overlapping automatisk for dette segmentet."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Fikse overlapping ville fjernet segmentet fullstendig.\nBruk sammenslåing eller sletting i stedet."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Ingen nåværende avspillingstid tilgjengelig."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Segmentvarighet (sekunder)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "Varigheten må være større enn null."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Ugyldig varighetsverdi."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "Du har merket start- og sluttider.\n\nBruk 'Legg til med merkede tider' i stedet?"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Starttid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Sluttid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "Sluttid må være etter starttid."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Ugyldig inndata: %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Vennligst velg et segment å redigere."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "Du har merket start- og sluttider.\n\nBruke merkede tider for dette segmentet?"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Kan ikke feste: start ville ikke være før segmentets sluttid.\n\nSlutt: %s\nFestemål: %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Kan ikke feste slutt til videolengde: varighet er ikke tilgjengelig. Sørg for at videoen spilles av."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Kan ikke feste: slutt ville ikke være etter segmentets starttid.\n\nStart: %s\nFestemål: %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Kan ikke sette start til nåværende tid: videoen spilles ikke av."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Kan ikke sette start til nåværende tid: avspillingshode er ikke før segmentets slutt.\n\nSlutt: %s\nNåværende: %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Kan ikke sette slutt til nåværende tid: videoen spilles ikke av."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Kan ikke sette slutt til nåværende tid: avspillingshode er ikke etter segmentets start.\n\nStart: %s\nNåværende: %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Vennligst velg et segment å slette."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Slett segment '%s'?"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Det er ingen segmenter å slette."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Slett alle %d segmenter?"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Slett alle"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "Du har ulagrede endringer.\nAvslutte uten å lagre?"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Kan ikke hoppe - videoen spilles ikke av."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Hopp til tid (HH:MM:SS.mmm eller sekunder)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "Tid kan ikke være negativ."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Hoppet til %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Ugyldig tidsformat. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Starttid ryddet"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan ikke sette starttid etter sluttid.\n\nStart: %s\nSlutt: %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Start merket: %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Sluttid ryddet"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan ikke sette sluttid før starttid.\n\nStart: %s\nSlutt: %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Slutt merket: %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Ingen segmenter tilgjengelig for valg."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Segment %d: %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Velg segment (start ved slutt)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Velg segment (slutt ved start)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Kan ikke sette starttid etter sluttid.\n\nMerket slutt: %s\nValgt start: %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Kan ikke sette sluttid før starttid.\n\nMerket start: %s\nValgt slutt: %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Egendefinert..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Velg segmentetikett"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Angi egendefinert etikett"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Vennligst merk både start- og sluttider først."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Segment lagt til vellykket"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Ingen videofilbane tilgjengelig for lagring."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Ingen segmenter å lagre."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Feil ved lagring av segmenter: %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Segmenter lagret i begge formater"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Segmenter lagret til EDL (XML feilet)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Segmenter lagret til XML (EDL feilet)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Segmenter lagret vellykket"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Kunne ikke lagre segmenter. Sjekk filtillatelser."

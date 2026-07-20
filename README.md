@@ -51,7 +51,7 @@ service.skippy/
 │   ├── language/
 │   │   ├── English/strings.po
 │   │   ├── German/ / Dutch/ / French/ / Spanish/
-│   │   ├── Norwegian/ / Swedish/ / Danish/ / Italian/
+│   │   ├── Norwegian/ / Swedish/ / Danish/ / Italian/ / Greek/
 │   └── skins/default/
 │       ├── Font.xml / colors/defaults.xml
 │       ├── 720p/ + 1080i/          # SkipDialog*, Minimal_Skip_*, SegmentEditor*, Marker pickers
@@ -71,7 +71,7 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 | Linux (CoreELEC) | Tested |
 | Windows 11 | Tested |
 
-**Languages:** Settings UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, and Italian** (`resources/language/*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
+**Languages:** Settings and runtime UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, Italian, and Greek** (`resources/language/*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
 
 Third-party skins—and sometimes **individual themes or colour schemes** within those skins—can **override** Skippy’s **Skip dialogue font colour** on add-on dialogs. Skippy resolves your setting and applies it in bundled WindowXML plus Python `setLabel`, but Kodi still renders those controls in the **active skin’s** font and button context (fonts are not loaded from Skippy’s bundled `Font.xml`). **Estuary** generally matches expectations. Heavily customised skins may restyle label and button text globally regardless of Skippy’s setting.
 

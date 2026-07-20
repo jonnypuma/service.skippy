@@ -1058,3 +1058,443 @@ msgstr "Appuyez à nouveau sur la touche du marqueur de segment pour définir l'
 msgctxt "#36036"
 msgid "Segment marker cancelled."
 msgstr "Marqueur de segment annulé."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Ignorer"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Fermer"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "Ignorer %s"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "Ignorer %s (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s se termine dans :"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Passer à %s à %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Passer au segment suivant à %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Fermez le Segment Editor avant d'utiliser le Segment Marker."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Segments en ligne chargés"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Segments superposés/imbriqués détectés."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Ignoré"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s ignoré"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Aucun segment à ignorer trouvé pour cette vidéo."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Aucun segment trouvé localement ou en ligne pour ce %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Aucun segment à ignorer trouvé pour ce %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "épisode"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "film"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Aucune donnée de segment en ligne trouvée ; des données de segment locales sont disponibles pour ce %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Aucune donnée de segment en ligne trouvée pour ce %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Aucune donnée de segment locale trouvée pour ce %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Pause"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Reprendre"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Vérifier"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Importer"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Aucun fichier de segment sidecar trouvé.\n\nVérifier les chapitres Matroska intégrés dans cette vidéo ? Cela peut prendre quelques secondes."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Aucun chapitre intégré trouvé"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Cette vidéo contient %d chapitre(s) intégré(s).\n\nLes importer comme segments ?"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Segment %d - %s - %s à %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Durée : %.1fs | Source : %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Imbriqué"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Superposé"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Temps actuel : %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [EN PAUSE]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Début : %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Fin : %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Fin : %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [INVALIDE : La fin doit être après le début]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Fusionner le segment"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Fusionner avec le segment précédent"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Fusionner avec le segment suivant"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Aucun segment disponible."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Impossible de fusionner avec le segment précédent — il n'y a pas de segment précédent."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Impossible de fusionner avec le segment suivant — il n'y a pas de segment suivant."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Impossible de fusionner les segments : %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Veuillez d'abord sélectionner un segment."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Impossible de diviser — la vidéo n'est pas en cours de lecture."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "La tête de lecture doit être strictement à l'intérieur du segment sélectionné.\n\nSegment : %s à %s\nTête de lecture : %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Impossible de diviser le segment : %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "La correction de chevauchement ne s'applique pas aux segments imbriqués.\nUtilisez plutôt la fusion ou l'édition manuelle."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "Le segment sélectionné n'est pas marqué comme superposé."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Impossible de corriger automatiquement le chevauchement pour ce segment."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Corriger le chevauchement supprimerait entièrement le segment.\nUtilisez plutôt la fusion ou la suppression."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Aucun temps de lecture actuel disponible."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Durée du segment (secondes)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "La durée doit être supérieure à zéro."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Valeur de durée invalide."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "Vous avez marqué les heures de début et de fin.\n\nUtiliser plutôt 'Ajouter avec heures marquées' ?"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Heure de début (HH:MM:SS.mmm ou secondes)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Heure de fin (HH:MM:SS.mmm ou secondes)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "L'heure de fin doit être après l'heure de début."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Entrée invalide : %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Veuillez sélectionner un segment à modifier."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "Vous avez marqué les heures de début et de fin.\n\nUtiliser les heures marquées pour ce segment ?"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Impossible d'aligner : le début ne serait pas avant l'heure de fin du segment.\n\nFin : %s\nCible d'alignement : %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Impossible d'aligner la fin sur la durée de la vidéo : la durée n'est pas disponible. Assurez-vous que la vidéo est en cours de lecture."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Impossible d'aligner : la fin ne serait pas après l'heure de début du segment.\n\nDébut : %s\nCible d'alignement : %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Impossible de définir le début sur l'heure actuelle : la vidéo n'est pas en cours de lecture."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Impossible de définir le début sur l'heure actuelle : la tête de lecture n'est pas avant la fin du segment.\n\nFin : %s\nActuel : %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Impossible de définir la fin sur l'heure actuelle : la vidéo n'est pas en cours de lecture."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Impossible de définir la fin sur l'heure actuelle : la tête de lecture n'est pas après le début du segment.\n\nDébut : %s\nActuel : %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Veuillez sélectionner un segment à supprimer."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Supprimer le segment '%s' ?"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Il n'y a aucun segment à supprimer."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Supprimer tous les %d segments ?"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Tout supprimer"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "Vous avez des modifications non enregistrées.\nQuitter sans enregistrer ?"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Impossible de sauter - la vidéo n'est pas en cours de lecture."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Aller à l'heure (HH:MM:SS.mmm ou secondes)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "Le temps ne peut pas être négatif."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Sauté à %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Format d'heure invalide. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Heure de début effacée"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Impossible de définir l'heure de début après l'heure de fin.\n\nDébut : %s\nFin : %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Début marqué : %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Heure de fin effacée"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Impossible de définir l'heure de fin avant l'heure de début.\n\nDébut : %s\nFin : %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Fin marquée : %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Aucun segment disponible à sélectionner."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Segment %d : %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Sélectionner segment (début à la fin)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Sélectionner segment (fin au début)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Impossible de définir l'heure de début après l'heure de fin.\n\nFin marquée : %s\nDébut choisi : %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Impossible de définir l'heure de fin avant l'heure de début.\n\nDébut marqué : %s\nFin choisie : %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Personnalisé..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Sélectionner l'étiquette du segment"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Entrer une étiquette personnalisée"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Veuillez d'abord marquer les heures de début et de fin."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Segment ajouté avec succès"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Aucun chemin vidéo disponible pour l'enregistrement."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Aucun segment à enregistrer."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Erreur lors de l'enregistrement des segments : %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Segments enregistrés dans les deux formats"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Segments enregistrés en EDL (échec XML)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Segments enregistrés en XML (échec EDL)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Segments enregistrés avec succès"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Échec de l'enregistrement des segments. Vérifiez les permissions de fichier."

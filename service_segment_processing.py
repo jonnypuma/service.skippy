@@ -11,7 +11,7 @@ from service_segment_processed_cache import (
     try_get_processed_cache,
 )
 from service_segment_sources import _clone_segments, _source_settings_signature
-from settings_utils import addon_get_bool, get_addon, log, show_overlapping_toast
+from settings_utils import addon_get_bool, get_addon, get_localized, log, show_overlapping_toast
 
 
 def is_nested_segment(segment_a, segment_b):
@@ -459,8 +459,10 @@ def parse_and_process_segments(
     log("🔔 Attempting to show toast notification for overlapping segments")
     try:
         xbmcgui.Dialog().notification(
-            heading="Skippy",
-            message="Overlapping/Nested segments detected.",
+            heading=get_localized(get_addon(), 43000, "Skippy"),
+            message=get_localized(
+                get_addon(), 43002, "Overlapping/Nested segments detected."
+            ),
             icon=overlap_toast_icon_path,
             time=4000,
         )

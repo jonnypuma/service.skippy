@@ -1058,3 +1058,443 @@ msgstr "Druk de segment-marker-toets opnieuw in om de eindtijd in te stellen."
 msgctxt "#36036"
 msgid "Segment marker cancelled."
 msgstr "Segment-marker geannuleerd."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Overslaan"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Sluiten"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "%s overslaan"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "%s overslaan (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s eindigt over:"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Spring naar %s om %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Spring naar volgend segment om %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Sluit de Segment Editor voordat u de Segment Marker gebruikt."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Online segmenten geladen"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Overlappende/geneste segmenten gedetecteerd."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Overgeslagen"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s overgeslagen"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Geen overslaansegmenten gevonden voor deze video."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Geen segmenten lokaal of online gevonden voor deze %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Geen overslaansegmenten gevonden voor deze %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "aflevering"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "film"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Geen online segmentgegevens gevonden; lokale segmentgegevens zijn beschikbaar voor deze %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Geen online segmentgegevens gevonden voor deze %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Geen lokale segmentgegevens gevonden voor deze %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Segment Editor"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Pauzeren"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Hervatten"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Controleren"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Importeren"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Geen sidecar-segmentbestand gevonden.\n\nDeze video controleren op ingebedde Matroska-hoofdstukken? Dit kan enkele seconden duren."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Geen ingebedde hoofdstukken gevonden"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Deze video bevat %d ingebed(de) hoofdstuk(ken).\n\nImporteren als segmenten?"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Segment %d - %s - %s tot %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Duur: %.1fs | Bron: %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Genest"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Overlappend"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Huidige tijd: %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [GEPAUZEERD]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Start: %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Einde: %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Einde: %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [ONGELDIG: Einde moet na Start zijn]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Segment samenvoegen"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Samenvoegen met vorig segment"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Samenvoegen met volgend segment"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Geen segmenten beschikbaar."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Kan niet samenvoegen met vorig segment — er is geen vorig segment."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Kan niet samenvoegen met volgend segment — er is geen volgend segment."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Kan segmenten niet samenvoegen: %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Selecteer eerst een segment."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Kan niet splitsen — video wordt niet afgespeeld."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "Afspeelkop moet zich binnen het geselecteerde segment bevinden.\n\nSegment: %s tot %s\nAfspeelkop: %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Kan segment niet splitsen: %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "Overlap herstellen geldt niet voor geneste segmenten.\nGebruik in plaats daarvan samenvoegen of handmatig bewerken."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "Het geselecteerde segment is niet gemarkeerd als overlappend."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Kon overlap voor dit segment niet automatisch herstellen."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Overlap herstellen zou het segment volledig verwijderen.\nGebruik in plaats daarvan samenvoegen of verwijderen."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Geen huidige afspeeltijd beschikbaar."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Segmentduur (seconden)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "Duur moet groter zijn dan nul."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Ongeldige duurwaarde."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "U hebt start- en eindtijden gemarkeerd.\n\nIn plaats daarvan 'Toevoegen met gemarkeerde tijden' gebruiken?"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Starttijd (HH:MM:SS.mmm of seconden)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Eindtijd (HH:MM:SS.mmm of seconden)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "Eindtijd moet na starttijd liggen."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Ongeldige invoer: %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Selecteer een segment om te bewerken."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "U hebt start- en eindtijden gemarkeerd.\n\nGemarkeerde tijden gebruiken voor dit segment?"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Kan niet uitlijnen: start zou niet vóór de segment-eindtijd zijn.\n\nEinde: %s\nUitlijndoel: %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Kan einde niet uitlijnen met videolengte: duur is niet beschikbaar. Zorg ervoor dat de video wordt afgespeeld."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Kan niet uitlijnen: einde zou niet na de segment-starttijd zijn.\n\nStart: %s\nUitlijndoel: %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Kan start niet op huidige tijd instellen: video wordt niet afgespeeld."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Kan start niet op huidige tijd instellen: afspeelkop is niet vóór segment-einde.\n\nEinde: %s\nHuidig: %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Kan einde niet op huidige tijd instellen: video wordt niet afgespeeld."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Kan einde niet op huidige tijd instellen: afspeelkop is niet na segment-start.\n\nStart: %s\nHuidig: %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Selecteer een segment om te verwijderen."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Segment '%s' verwijderen?"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Er zijn geen segmenten om te verwijderen."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Alle %d segmenten verwijderen?"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Alles verwijderen"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "U hebt niet-opgeslagen wijzigingen.\nAfsluiten zonder opslaan?"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Kan niet springen - video wordt niet afgespeeld."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Spring naar tijd (HH:MM:SS.mmm of seconden)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "Tijd kan niet negatief zijn."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Gesprongen naar %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Ongeldig tijdsformaat. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Starttijd gewist"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan starttijd niet na eindtijd instellen.\n\nStart: %s\nEinde: %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Start gemarkeerd: %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Eindtijd gewist"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Kan eindtijd niet vóór starttijd instellen.\n\nStart: %s\nEinde: %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Einde gemarkeerd: %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Geen segmenten beschikbaar om te selecteren."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Segment %d: %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Selecteer segment (start bij einde)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Selecteer segment (einde bij start)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Kan starttijd niet na eindtijd instellen.\n\nGemarkeerd einde: %s\nGekozen start: %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Kan eindtijd niet vóór starttijd instellen.\n\nGemarkeerde start: %s\nGekozen einde: %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Aangepast..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Selecteer segmentlabel"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Voer aangepast label in"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Markeer eerst zowel start- als eindtijden."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Segment succesvol toegevoegd"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Geen videopad beschikbaar om op te slaan."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Geen segmenten om op te slaan."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Fout bij opslaan van segmenten: %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Segmenten opgeslagen in beide formaten"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Segmenten opgeslagen in EDL (XML mislukt)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Segmenten opgeslagen in XML (EDL mislukt)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Segmenten succesvol opgeslagen"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Segmenten opslaan mislukt. Controleer bestandsrechten."

@@ -17,6 +17,7 @@ from settings_utils import (
     addon_get_setting_text,
     compute_skip_seek_destination_seconds,
     get_addon,
+    get_localized,
     get_user_skip_mode,
     is_skip_enabled,
     log,
@@ -427,8 +428,10 @@ def _maybe_show_skip_toast(ctx: Any, addon, segment, reason: str) -> None:
     log("🔔 Showing toast notification for %s skip" % reason)
     try:
         xbmcgui.Dialog().notification(
-            heading="Skipped",
-            message="%s skipped" % segment.segment_type_label.title(),
+            heading=get_localized(addon, 43003, "Skipped"),
+            message=get_localized(
+                addon, 43004, "%s skipped", segment.segment_type_label.title()
+            ),
             icon=ctx.icon_path,
             time=2000,
             sound=False,

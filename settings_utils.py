@@ -65,6 +65,28 @@ def get_addon():
         return None
 
 
+def get_localized(addon, string_id, default="", *args):
+    """Resolve ``strings.po`` id; fall back to ``default``; optional ``%`` formatting.
+
+    Empty or numeric-only Kodi returns are treated as missing (common when an
+    id is not in the active language file).
+    """
+    text = ""
+    if addon is not None and string_id is not None:
+        try:
+            text = addon.getLocalizedString(int(string_id)) or ""
+        except Exception:
+            text = ""
+    if not text or text.strip() == str(string_id):
+        text = default if default is not None else ""
+    if args:
+        try:
+            return text % args
+        except Exception:
+            return text
+    return text
+
+
 def skippy_notification_icon(addon):
     """
     Filesystem path for Dialog().notification(..., icon=...).

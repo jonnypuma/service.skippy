@@ -14,6 +14,7 @@ from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    get_localized,
     skippy_log_effective_detail_level,
 )
 
@@ -242,12 +243,13 @@ def log_always(msg):
     else:
         xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
-def _build_skip_button_label(segment, format_setting, duration_str):
+def _build_skip_button_label(segment, format_setting, duration_str, addon=None):
+    typ = segment.segment_type_label.title()
     if format_setting == "Skip":
-        return "Skip"
+        return get_localized(addon, 40000, "Skip")
     if format_setting == "Skip + Type":
-        return f"Skip {segment.segment_type_label.title()}"
-    return f"Skip {segment.segment_type_label.title()} ({duration_str})"
+        return get_localized(addon, 40002, "Skip %s", typ)
+    return get_localized(addon, 40003, "Skip %s (%s)", typ, duration_str)
 
 
 def _elapsed_progress_percent_float(current_time, segment_start, total_duration):
@@ -349,7 +351,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log(f"🖼️ Minimal plate (XML patched in service): {_minimal_plate_filename(addon)}")
         else:
             fmt = addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration") or "Skip + Type + Duration"
-        label = _build_skip_button_label(self.segment, fmt, duration_str)
+        label = _build_skip_button_label(self.segment, fmt, duration_str, addon)
         text_color = self._skip_text_color_argb
         for cid in FULL_SKIP_BUTTON_IDS:
             try:
@@ -363,7 +365,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             segment_type = self.segment.segment_type_label.title()
         else:
             segment_type = "Segment"
-        self.setProperty("ending_text", f"{segment_type} ending in:")
+        self.setProperty(
+            "ending_text",
+            get_localized(addon, 40004, "%s ending in:", segment_type),
+        )
 
         hide_ending_text = addon_get_bool(addon, "hide_ending_text", False) if addon else False
         self.setProperty("hide_ending_text", "true" if hide_ending_text else "false")
@@ -395,7 +400,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         # Enhanced: Set property for next segment jump time with better info
         if self.segment.next_segment_start is not None:
             jump_m, jump_s = divmod(int(self.segment.next_segment_start), 60)
-            
+            time_str = f"{jump_m:02d}:{jump_s:02d}"
+
             # Use the next_segment_info if available, otherwise use generic text
             if hasattr(self.segment, 'next_segment_info') and self.segment.next_segment_info:
                 # Extract segment label from info if it contains one
@@ -405,13 +411,21 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     match = re.search(r"'([^']+)'", self.segment.next_segment_info)
                     if match:
                         segment_label = match.group(1).title()
-                        jump_str = f"Skip to {segment_label} at {jump_m:02d}:{jump_s:02d}"
+                        jump_str = get_localized(
+                            addon, 40005, "Skip to %s at %s", segment_label, time_str
+                        )
                     else:
-                        jump_str = f"Skip to next segment at {jump_m:02d}:{jump_s:02d}"
+                        jump_str = get_localized(
+                            addon, 40006, "Skip to next segment at %s", time_str
+                        )
                 else:
-                    jump_str = f"Skip to next segment at {jump_m:02d}:{jump_s:02d}"
+                    jump_str = get_localized(
+                        addon, 40006, "Skip to next segment at %s", time_str
+                    )
             else:
-                jump_str = f"Skip to next segment at {jump_m:02d}:{jump_s:02d}"
+                jump_str = get_localized(
+                    addon, 40006, "Skip to next segment at %s", time_str
+                )
             
             self.setProperty("next_jump_label", jump_str)
             self.setProperty("show_next_jump", "true")
@@ -703,7 +717,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     pass
             try:
                 c = self.getControl(3013)
-                _set_skip_button_label(c, c.getLabel() or "Close", text_color)
+                close_lbl = get_localized(get_addon(), 40001, "Close")
+                _set_skip_button_label(c, close_lbl, text_color)
             except Exception:
                 pass
             try:
