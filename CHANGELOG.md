@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.3.4] - 2026-07-20
+
+### Changed
+- **IntroDB.app upload**: Round `start_sec` / `end_sec` to 1 decimal place (matches docs examples; still float, not integers).
+
+## [5.3.3] - 2026-07-20
+
+### Changed
+- **TheIntroDB.org upload**: POST `/v3/submit` now includes optional `tvdb_id` when Kodi library metadata has it (same context already used for IntroDB.app). Matches TheIntroDB OpenAPI optional field.
+
+## [5.3.2] - 2026-07-20
+
+### Changed
+- **IntroDB.app upload**: POST `/submit` now sends float `start_sec` / `end_sec` (3 decimal places) instead of rounded integers, and includes optional `tmdb_id` / `tvdb_id` when Kodi library metadata has them (TV show uniqueid, or episode uniqueid). Matches IntroDB.app API docs for improved aggregate accuracy.
+
 ## [5.3.1] - 2026-07-20
 
 ### Added

@@ -1113,7 +1113,12 @@ def build_movie_context(item, force_tmdb_enrichment=False):
     if tmdb_id is None and not imdb_id:
         _rlog("Remote movie segments skipped: no TMDB/IMDb after Kodi and TMDB API")
         return None
-    return {"type": "movie", "tmdb_id": tmdb_id, "imdb_id": imdb_id}
+    return {
+        "type": "movie",
+        "tmdb_id": tmdb_id,
+        "imdb_id": imdb_id,
+        "tvdb_id": normalize_numeric_id(uid.get("tvdb")),
+    }
 
 
 def _resolve_tvshow_id(item):
@@ -1154,6 +1159,17 @@ def _tmdb_from_tvshow_row(tvshow_id):
     td = (det.get("result") or {}).get("tvshowdetails") or {}
     uid = td.get("uniqueid") or {}
     return normalize_numeric_id(uid.get("tmdb"))
+
+
+def _tvdb_from_tvshow_row(tvshow_id):
+    det = jsonrpc(
+        "VideoLibrary.GetTVShowDetails",
+        {"tvshowid": int(tvshow_id), "properties": ["uniqueid"]},
+        log_errors=False,
+    )
+    td = (det.get("result") or {}).get("tvshowdetails") or {}
+    uid = td.get("uniqueid") or {}
+    return normalize_numeric_id(uid.get("tvdb"))
 
 
 def _uniqueid_from_episode_row(episode_id):
@@ -1423,6 +1439,12 @@ def build_tv_episode_context(item, force_tmdb_enrichment=False):
             show_imdb_id, imdb_id, tmdb_id, key
         )
 
+    tvdb_id = normalize_numeric_id(uid.get("tvdb"))
+    if tvdb_id is None:
+        tvshow_id = _resolve_tvshow_id(item)
+        if tvshow_id:
+            tvdb_id = _tvdb_from_tvshow_row(tvshow_id)
+
     if tmdb_id is None and not imdb_id and not show_imdb_id:
         tvdb_raw = uid.get("tvdb")
         if tvdb_raw is not None and str(tvdb_raw).strip() != "":
@@ -1447,10 +1469,11 @@ def build_tv_episode_context(item, force_tmdb_enrichment=False):
         "tmdb_id": tmdb_id,
         "imdb_id": imdb_id,
         "show_imdb_id": show_imdb_id,
+        "tvdb_id": tvdb_id,
     }
     _rlog(
-        "TV context: S%02dE%02d tmdb_id=%s episode_imdb=%s show_imdb=%s"
-        % (season, episode, tmdb_id, imdb_id, show_imdb_id)
+        "TV context: S%02dE%02d tmdb_id=%s tvdb_id=%s episode_imdb=%s show_imdb=%s"
+        % (season, episode, tmdb_id, tvdb_id, imdb_id, show_imdb_id)
     )
     return ctx
 

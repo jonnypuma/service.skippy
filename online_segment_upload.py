@@ -422,6 +422,7 @@ def _submit_theintrodb(
     ``intro``/``recap``/… arrays from GET /media). Sends ``start_ms``/``end_ms`` as integers or
     JSON ``null`` (intro/recap from beginning; credits/preview through end-of-media). Optional
     ``video_duration_ms`` aligns submissions with release cuts when playback/library duration is known.
+    Optional ``imdb_id`` / ``tvdb_id`` when present in context.
     """
     key = (api_key or "").strip()
     if not key:
@@ -485,6 +486,17 @@ def _submit_theintrodb(
     if imdb_opt:
         body["imdb_id"] = imdb_opt
 
+    tvdb_raw = ctx.get("tvdb_id")
+    if tvdb_raw is not None and str(tvdb_raw).strip() != "":
+        try:
+            tvdb_int = int(tvdb_raw)
+            if tvdb_int > 0:
+                body["tvdb_id"] = tvdb_int
+        except (TypeError, ValueError):
+            _up_log_err(
+                "TheIntroDB submit: ignoring invalid tvdb_id %r" % (tvdb_raw,)
+            )
+
     err = _validate_theintrodb_times(
         tidb_segment,
         float(start_sec),
@@ -507,7 +519,7 @@ def _submit_theintrodb(
     if api_type == "tv":
         tv_log = " S=%s E=%s" % (body.get("season"), body.get("episode"))
     _up_log_info(
-        "TheIntroDB v3 submit: POST segment=%s tmdb=%s type=%s%s start_ms=%s end_ms=%s video_duration_ms=%s imdb=%s"
+        "TheIntroDB v3 submit: POST segment=%s tmdb=%s type=%s%s start_ms=%s end_ms=%s video_duration_ms=%s imdb=%s tvdb=%s"
         % (
             tidb_segment,
             tmdb_int,
@@ -517,6 +529,7 @@ def _submit_theintrodb(
             body["end_ms"],
             vd_log,
             "yes" if body.get("imdb_id") else "no",
+            body.get("tvdb_id") if body.get("tvdb_id") is not None else "omit",
         )
     )
 
@@ -576,7 +589,8 @@ def _submit_introdb_app(
     api_key: str,
 ) -> tuple[bool, str]:
     """
-    IntroDB.app POST /submit with X-API-Key: numeric ``start_sec`` / ``end_sec`` (integers).
+    IntroDB.app POST /submit with X-API-Key: float ``start_sec`` / ``end_sec`` (1 decimal place).
+    Optional ``tmdb_id`` / ``tvdb_id`` when present in context (improves accuracy per API docs).
     ``segment_type`` is only intro, recap, or outro (credits → outro; preview is not sent).
     """
     key = (api_key or "").strip()
@@ -602,12 +616,23 @@ def _submit_introdb_app(
     body: dict = {
         "imdb_id": imdb,
         "segment_type": idb_segment,
-        "start_sec": int(round(float(start_sec))),
-        "end_sec": int(round(float(end_sec))),
+        "start_sec": round(float(start_sec), 1),
+        "end_sec": round(float(end_sec), 1),
     }
     if ctx.get("type") == "tv":
         body["season"] = int(ctx.get("season"))
         body["episode"] = int(ctx.get("episode"))
+
+    for id_key in ("tmdb_id", "tvdb_id"):
+        raw = ctx.get(id_key)
+        if raw is None or str(raw).strip() == "":
+            continue
+        try:
+            body[id_key] = int(raw)
+        except (TypeError, ValueError):
+            _up_log_err(
+                "IntroDB.app submit: ignoring invalid %s %r" % (id_key, raw)
+            )
 
     code, parsed, raw_err = _http_post_json(
         INTRODB_SUBMIT_URL,
