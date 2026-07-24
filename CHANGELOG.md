@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.3.5] - 2026-07-24
+
+### Changed
+- **Full skip dialog**: When Close is hidden, the Skip button (3015 / 3016) is the same width as the progress bar (370 / 555). Layout with Close visible is unchanged.
+
 ## [5.3.4] - 2026-07-20
 
 ### Changed

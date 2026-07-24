@@ -70,9 +70,9 @@
         <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
       </control>
       <control type="button" id="3015">
-        <left>45</left>
+        <left>8</left>
         <top>15</top>
-        <width>525</width>
+        <width>555</width>
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
@@ -91,7 +91,7 @@
       <control type="button" id="3016">
         <left>8</left>
         <top>15</top>
-        <width>525</width>
+        <width>555</width>
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>

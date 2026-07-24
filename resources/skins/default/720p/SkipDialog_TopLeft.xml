@@ -69,8 +69,8 @@
       </control>
 
       <control type="button" id="3015">
-        <left>30</left><top>10</top>
-        <width>350</width><height>25</height>
+        <left>5</left><top>10</top>
+        <width>370</width><height>25</height>
         <label>Skip</label>
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
@@ -88,7 +88,7 @@
 
       <control type="button" id="3016">
         <left>5</left><top>10</top>
-        <width>350</width><height>25</height>
+        <width>370</width><height>25</height>
         <label>Skip</label>
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
