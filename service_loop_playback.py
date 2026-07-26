@@ -16,6 +16,7 @@ from service_segment_prefetch import clear_tv_prefetch_thread_state
 from service_sidecar_probe_cache import clear_sidecar_probe_cache
 from service_skip_seek_property import clear_skippy_skipping
 from settings_utils import log, log_playback_settings_snapshot
+from service_loop_skip import clear_last_skipped_segment
 
 
 def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
@@ -33,6 +34,9 @@ def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     monitor.last_time = 0
     monitor.last_toast_time = 0
     monitor.skipped_to_nested_segment.clear()
+    clear_last_skipped_segment(monitor)
+    monitor.last_ask_seg_id = None
+    monitor.last_ask_mono = None
     monitor._last_log_state.clear()
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None

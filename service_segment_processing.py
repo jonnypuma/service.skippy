@@ -200,7 +200,9 @@ def re_evaluate_segment_jump_points(segments, current_time):
                             f"🔧 Fixing nested segment '{current_seg.segment_type_label}': setting jump point to {current_seg.end_seconds}s (end of segment)"
                         )
                         current_seg.next_segment_start = current_seg.end_seconds
-                        current_seg.next_segment_info = f"remaining {parent_seg.segment_type_label}"
+                        current_seg.next_segment_info = (
+                            "remaining '%s'" % parent_seg.segment_type_label
+                        )
                     break
 
 
@@ -346,9 +348,16 @@ def parse_and_process_segments(
                         next_segment_info = None
 
                     next_seg.next_segment_start = next_seg.end_seconds
-                    next_seg.next_segment_info = f"remaining {current_seg.segment_type_label}"
+                    next_seg.next_segment_info = (
+                        "remaining '%s'" % current_seg.segment_type_label
+                    )
                     log(
-                        f"🔗 Setting jump point for nested '{next_seg.segment_type_label}' to {next_seg.end_seconds}s (remaining {current_seg.segment_type_label})"
+                        "🔗 Setting jump point for nested '%s' to %ss (remaining '%s')"
+                        % (
+                            next_seg.segment_type_label,
+                            next_seg.end_seconds,
+                            current_seg.segment_type_label,
+                        )
                     )
 
                 elif is_overlapping_segment(current_seg, next_seg):

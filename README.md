@@ -239,7 +239,7 @@ Start playback of MyMovie.mkv in Kodi. Skippy will:
 While a video is playing, the service polls about **once per second** and compares playback time to the loaded segment list:
 
 - **Auto** behavior: seeks past the segment (or nested jump target) without a prompt.
-- **Ask** behavior: opens the skip dialog when eligible; see **Ask dialog debounce** below.
+- **Ask** behavior: opens the skip dialog when eligible; see **Ask dialog anti-dupe** below.
 - **Never** behavior: plays through with no skip and no dialog.
 
 Segments are marked **prompted** as they are handled so the same interval is not processed repeatedly in the same pass.
@@ -248,12 +248,13 @@ Segments are marked **prompted** as they are handled so the same interval is not
 
 ---
 
-## Ask dialog debounce
+## Ask dialog anti-dupe
 
-Before creating the ask dialog, the service waits **`ask_dialog_debounce_ms`** once (default **300**, range **0–500** under **Playback → Global options**). That debounce soaks up rapid re-entries from the ~1 s loop and overlapping edge cases, and gives Kodi a moment to settle **focus and input**, which reduces stacked or duplicate modals on some skins and devices.
+Duplicate Ask prompts are blocked primarily by **state**, not by sleeping before every dialog:
 
-- **Lowering** the value (including **0**): prompt appears sooner; duplicate-dialog or focus glitches become more likely on some devices.
-- **Raising** it: fewer races, but the user waits slightly longer every time an ask fires.
+- **Just-skipped**: After a Skippy skip (Ask confirm or Auto), that segment’s id is ignored while the playhead is still inside its `[start, end]` (e.g. keyframe snap). Cleared when outside that window, on a new video, or on major rewind. Nested, overlapping, and consecutive abutting segments use different ids and are not blocked.
+- **Same-seg cooldown**: The same `seg_id` will not open Ask again within **300 ms** (hard-coded anti-spam; separate from the debounce setting).
+- **Optional debounce**: **`ask_dialog_debounce_ms`** under **Playback → Global options** (**0–500**, **default 0**). There is **no** fixed 300 ms wait on every Ask. Leave at **0** unless your device still double-opens dialogs; raise it only then.
 
 ---
 
@@ -266,6 +267,12 @@ Both modes open **atomically**: the panel stays hidden until `onInit` finishes l
 ### Full mode
 
 Classic panel: optional skip/close icons, **Skip** and **Close** buttons, optional progress bar, optional **Segment ending in:** countdown, and optional **next jump** hint line. **Hide Close Button** and related toggles apply here only (not Minimal).
+
+The **next jump** line (control **3011**) describes where Skip will land, for example:
+
+- **Skip to Recap at 00:20** — jumping to a nested or overlapping segment
+- **Skip to remaining Intro at 00:40** — skipping a nested segment and landing back inside its parent (Intro, Recap, Preview, …)
+- **Skip to next segment at …** — generic fallback when no named destination is available
 
 Focus textures for skip/close buttons and the progress bar **midtexture** are patched from settings when the dialog opens (`service_skip_dialog_skin.py`), same pattern as **Button focus style** and **Progress bar style**.
 
@@ -364,7 +371,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | enable_skip_movies | Enable skipping for movies. When disabled, no segments will be skipped (auto-skip or dialog) for movies (default: true) |
 | enable_skip_episodes | Enable skipping for TV episodes. When disabled, no segments will be skipped (auto-skip or dialog) for episodes (default: true) |
 | rewind_threshold_seconds | Threshold for detecting rewind and clearing dialog suppression states |
-| ask_dialog_debounce_ms | Milliseconds before opening an Ask skip dialog (**0–500**, default **300**) |
+| ask_dialog_debounce_ms | Optional settle delay before opening an Ask skip dialog (**0–500**, default **0**) |
 | skip_jump_offset_seconds | Seconds added/subtracted when seeking past a segment (Auto or confirmed Ask) |
 | show_skip_dialog_movies | Show skip dialog for movies when behavior is set to ask. Requires 'Enable Skip for Movies' to be enabled (default: true) |
 | show_skip_dialog_episodes | Show skip dialog for TV episodes when behavior is set to ask. Requires 'Enable Skip for Episodes' to be enabled (default: true) |
@@ -786,7 +793,7 @@ If your .edl file contains:
 0.0 90.0 9
 And action code 9 maps to "Recap", and "Recap" is mapped to the "Ask to skip" setting, you'll be prompted to skip it.
 
-Just before the dialog opens, Skippy waits **`ask_dialog_debounce_ms`** (see **Ask dialog debounce** above) so the prompt is not double-fired from rapid loop ticks.
+Ask anti-dupe (just-skipped tracking, 300 ms same-seg cooldown, optional debounce default **0**) is described under **Ask dialog anti-dupe** above.
 
 ### Never skip example
 If your segment label is "Credits" and you've mapped "Credits" to the "Never skip" setting, playback continues uninterrupted with no skip popup.
@@ -848,8 +855,8 @@ Skippy intelligently handles overlapping and nested segments with smart skip beh
 
 ### Nested Segments (One segment fully inside another)
 Example: Intro (0-50s) with Recap (20-40s) nested inside
-- **Intro dialog** appears at 0s: Shows "Skip to Recap at 00:20"
-- **Recap dialog** appears at 20s: Shows "Skip to remaining intro at 00:40"
+- **Intro dialog** appears at 0s: Shows **Skip to Recap at 00:20**
+- **Recap dialog** appears at 20s: Shows **Skip to remaining Intro at 00:40**
 - **Intro dialog** reappears at 40s: Shows normal skip (no nested segments remaining)
 
 ### Partially Overlapping Segments
@@ -904,7 +911,7 @@ Skipping overlapping segment: 50.0–100.0 | label='segment'
 **When disabled:**
 ```
 Detected NESTED segment: 'recap' (20.0-40.0) is nested inside 'intro' (0.0-50.0)
-Setting jump point for nested 'recap' to 40.0s (remaining intro)
+Setting jump point for nested 'recap' to 40.0s (remaining 'intro')
 Setting jump point for 'intro' to 20.0s (nested segment 'recap')
 ```
 

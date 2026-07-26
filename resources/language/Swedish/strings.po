@@ -261,8 +261,8 @@ msgid "Ask dialog debounce (ms)"
 msgstr "Frågedialogs studstolerans (ms)"
 
 msgctxt "#32098"
-msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
-msgstr "Millisekunder att vänta innan en Fråga hoppdialog öppnas (0–500, standard 300). Minskar dubbletter av dialoger från ~1 s tjänsteloopen; sätt till 0 för snabbaste prompt på långsamma enheter."
+msgid "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
+msgstr "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -1091,6 +1091,10 @@ msgstr "Hoppa till %s vid %s"
 msgctxt "#40006"
 msgid "Skip to next segment at %s"
 msgstr "Hoppa till nästa segment vid %s"
+
+msgctxt "#40007"
+msgid "Skip to remaining %s at %s"
+msgstr "Hoppa till resterande %s vid %s"
 
 # Marker extras (#42000–42099)
 msgctxt "#42000"

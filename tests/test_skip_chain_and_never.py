@@ -20,6 +20,10 @@ class NeverPromptedTests(unittest.TestCase):
         monitor.prompted = set()
         monitor.recently_dismissed = set()
         monitor.skipped_to_nested_segment = {}
+        monitor.last_skipped_seg_id = None
+        monitor.last_skipped_seg_bounds = None
+        monitor.last_ask_seg_id = None
+        monitor.last_ask_mono = None
         monitor.current_segments = [
             SegmentItem(0.0, 100.0, "main", source="xml"),
         ]
@@ -65,6 +69,10 @@ class AskChainTests(unittest.TestCase):
         monitor.cleared_parent_dismissals = set()
         monitor.skip_dialog_modal_active = False
         monitor.skippy_skipping_since = 1.0
+        monitor.last_skipped_seg_id = None
+        monitor.last_skipped_seg_bounds = None
+        monitor.last_ask_seg_id = None
+        monitor.last_ask_mono = None
         monitor.current_segments = [recap, intro]
         monitor._last_log_state = {}
 

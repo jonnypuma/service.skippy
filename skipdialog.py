@@ -1,4 +1,5 @@
 import os
+import re
 import threading
 import time
 import unicodedata
@@ -17,6 +18,41 @@ from settings_utils import (
     get_localized,
     skippy_log_effective_detail_level,
 )
+
+
+def format_next_jump_label(addon, next_segment_info, next_segment_start):
+    """Build Ask-dialog subtext for the skip landing (or None if no jump target)."""
+    if next_segment_start is None:
+        return None
+    jump_m, jump_s = divmod(int(next_segment_start), 60)
+    time_str = "%02d:%02d" % (jump_m, jump_s)
+    info = (next_segment_info or "").strip()
+    if not info:
+        return get_localized(addon, 40006, "Skip to next segment at %s", time_str)
+
+    remaining = re.match(r"(?i)^remaining\s+(?:'([^']+)'|(.+))$", info)
+    if remaining:
+        label = (remaining.group(1) or remaining.group(2) or "").strip()
+        if label:
+            return get_localized(
+                addon,
+                40007,
+                "Skip to remaining %s at %s",
+                label.title(),
+                time_str,
+            )
+
+    quoted = re.search(r"'([^']+)'", info)
+    if quoted:
+        return get_localized(
+            addon,
+            40005,
+            "Skip to %s at %s",
+            quoted.group(1).strip().title(),
+            time_str,
+        )
+
+    return get_localized(addon, 40006, "Skip to next segment at %s", time_str)
 
 # Define a global variable to cache the addon object
 _addon = None
@@ -397,39 +433,19 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         self._total_duration = self.segment.end_seconds - self.segment.start_seconds
         self._start_time = time.time()
 
-        # Enhanced: Set property for next segment jump time with better info
-        if self.segment.next_segment_start is not None:
-            jump_m, jump_s = divmod(int(self.segment.next_segment_start), 60)
-            time_str = f"{jump_m:02d}:{jump_s:02d}"
-
-            # Use the next_segment_info if available, otherwise use generic text
-            if hasattr(self.segment, 'next_segment_info') and self.segment.next_segment_info:
-                # Extract segment label from info if it contains one
-                if "'" in self.segment.next_segment_info:
-                    # Extract text between quotes
-                    import re
-                    match = re.search(r"'([^']+)'", self.segment.next_segment_info)
-                    if match:
-                        segment_label = match.group(1).title()
-                        jump_str = get_localized(
-                            addon, 40005, "Skip to %s at %s", segment_label, time_str
-                        )
-                    else:
-                        jump_str = get_localized(
-                            addon, 40006, "Skip to next segment at %s", time_str
-                        )
-                else:
-                    jump_str = get_localized(
-                        addon, 40006, "Skip to next segment at %s", time_str
-                    )
-            else:
-                jump_str = get_localized(
-                    addon, 40006, "Skip to next segment at %s", time_str
-                )
-            
+        # Next-jump subtext: named next segment, or "remaining Intro" after nested skip.
+        jump_str = format_next_jump_label(
+            addon,
+            getattr(self.segment, "next_segment_info", None),
+            getattr(self.segment, "next_segment_start", None),
+        )
+        if jump_str:
             self.setProperty("next_jump_label", jump_str)
             self.setProperty("show_next_jump", "true")
-            log(f"⏭️ Dialog configured for jump to next segment at {self.segment.next_segment_start}s: {jump_str}")
+            log(
+                "⏭️ Dialog configured for jump to next segment at %ss: %s"
+                % (self.segment.next_segment_start, jump_str)
+            )
         else:
             self.setProperty("show_next_jump", "false")
             log("➡️ Dialog configured for normal skip to end of segment")

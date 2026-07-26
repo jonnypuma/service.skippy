@@ -11,6 +11,7 @@ from segment_item import segments_active_for_playback
 from settings_utils import addon_get_int, get_addon, log
 from service_segment_processed_cache import clear_segment_processed_cache
 from service_skip_seek_property import skippy_seek_grace_active
+from service_loop_skip import clear_last_skipped_segment
 
 
 def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
@@ -75,6 +76,9 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
                         monitor.recently_dismissed.clear()
                         monitor.cleared_parent_dismissals.clear()
                         monitor.skipped_to_nested_segment.clear()
+                        clear_last_skipped_segment(monitor)
+                        monitor.last_ask_seg_id = None
+                        monitor.last_ask_mono = None
                         if monitor.current_segments:
                             ctx.re_evaluate_segment_jump_points(
                                 monitor.current_segments, current_time

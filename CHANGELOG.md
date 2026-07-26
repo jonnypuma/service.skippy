@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.3.7] - 2026-07-26
+
+### Fixed
+- **Ask next-jump subtext**: Skipping a nested segment (e.g. Recap inside Intro) now shows **Skip to remaining Intro at …** instead of generic “next segment”. Same for Recap, Preview, and other parent labels.
+
+### Changed
+- **README**: Nested-segment examples and Full-mode next-jump docs match the new subtext; Ask anti-dupe section clarifies debounce default **0** vs the separate 300 ms same-seg cooldown.
+
+## [5.3.6] - 2026-07-26
+
+### Changed
+- **Ask anti-dupe**: After a Skippy skip (Ask or Auto), the same segment id is ignored while the playhead is still inside that segment. Cleared when outside, on new video, or major rewind. Nested / overlapping / consecutive abutting segments (different ids) still process.
+- **Same-seg Ask cooldown**: Refuse re-opening Ask for the same `seg_id` within **300 ms**.
+- **`ask_dialog_debounce_ms`**: Default **0** (optional settle delay only; devices that still need it can raise it).
+
+### Added
+- **`tests/test_ask_guards.py`**: Just-skipped, cooldown, debounce-0, consecutive abutting, nested, and overlapping coverage.
+
 ## [5.3.5] - 2026-07-24
 
 ### Changed

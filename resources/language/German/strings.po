@@ -261,8 +261,8 @@ msgid "Ask dialog debounce (ms)"
 msgstr "Fragen-Dialog-Entprellung (ms)"
 
 msgctxt "#32098"
-msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
-msgstr "Millisekunden, die gewartet werden, bevor ein Fragen-Überspringen-Dialog geöffnet wird (0–500, Standard 300). Reduziert doppelte Dialoge durch die ~1 s Service-Schleife; auf 0 setzen für die schnellste Aufforderung auf langsamen Geräten."
+msgid "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
+msgstr "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -1091,6 +1091,10 @@ msgstr "Zu %s bei %s springen"
 msgctxt "#40006"
 msgid "Skip to next segment at %s"
 msgstr "Zum nächsten Segment bei %s springen"
+
+msgctxt "#40007"
+msgid "Skip to remaining %s at %s"
+msgstr "Zum verbleibenden %s bei %s springen"
 
 # Marker extras (#42000–42099)
 msgctxt "#42000"

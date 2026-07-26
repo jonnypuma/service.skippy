@@ -261,8 +261,8 @@ msgid "Ask dialog debounce (ms)"
 msgstr "Αντίκρουση διαλόγου Ερώτησης (ms)"
 
 msgctxt "#32098"
-msgid "Milliseconds to wait before opening an Ask skip dialog (0–500, default 300). Reduces duplicate dialogs from the ~1 s service loop; set to 0 for the fastest prompt on slow devices."
-msgstr "Χιλιοστά δευτερολέπτου αναμονής πριν το άνοιγμα ενός διαλόγου παράλειψης Ερώτηση (0–500, προεπιλογή 300). Μειώνει τους διπλούς διαλόγους από τον βρόχο υπηρεσίας ~1 δευτ.· ορίστε σε 0 για ταχύτερη προτροπή σε αργές συσκευές."
+msgid "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
+msgstr "Optional settle delay before opening an Ask dialog (0–500 ms, default 0). Duplicate asks are blocked by same-segment cooldown (300 ms) and just-skipped tracking; raise this only if your device still double-opens dialogs."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -1093,6 +1093,10 @@ msgstr "Παράλειψη σε %s στο %s"
 msgctxt "#40006"
 msgid "Skip to next segment at %s"
 msgstr "Παράλειψη στο επόμενο τμήμα στο %s"
+
+msgctxt "#40007"
+msgid "Skip to remaining %s at %s"
+msgstr "Skip to remaining %s at %s"
 
 # Marker extras (#42000–42099)
 msgctxt "#42000"

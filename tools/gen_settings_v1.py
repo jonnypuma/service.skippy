@@ -297,7 +297,7 @@ def main():
         2,
         "32097",
         "32098",
-        300,
+        0,
         minimum=0,
         maximum=500,
         step=10,

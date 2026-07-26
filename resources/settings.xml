@@ -174,7 +174,7 @@
                 </setting>
                 <setting id="ask_dialog_debounce_ms" type="integer" label="32097" help="32098">
                     <level>2</level>
-                    <default>300</default>
+                    <default>0</default>
                     <constraints>
                         <minimum>0</minimum>
                         <maximum>500</maximum>

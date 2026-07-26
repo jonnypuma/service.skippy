@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import time
 import traceback
 from typing import Any
 
@@ -29,6 +30,70 @@ from skipdialog import SkipDialog
 
 # Max chained seeks in one tick (recap→intro→…); prevents runaway auto-skip loops.
 _MAX_SKIP_CHAIN_DEPTH = 8
+# Refuse re-opening ask for the same seg_id within this window (anti-spam).
+ASK_SAME_SEG_COOLDOWN_S = 0.3
+
+
+def clear_last_skipped_segment(monitor) -> None:
+    monitor.last_skipped_seg_id = None
+    monitor.last_skipped_seg_bounds = None
+
+
+def mark_last_skipped_segment(monitor, segment, seg_id) -> None:
+    """Remember a Skippy skip so keyframe snap back into the same window is ignored."""
+    monitor.last_skipped_seg_id = seg_id
+    monitor.last_skipped_seg_bounds = (
+        float(segment.start_seconds),
+        float(segment.end_seconds),
+    )
+
+
+def _skipped_bounds(monitor):
+    bounds = getattr(monitor, "last_skipped_seg_bounds", None)
+    if not isinstance(bounds, (tuple, list)) or len(bounds) != 2:
+        return None
+    try:
+        return float(bounds[0]), float(bounds[1])
+    except (TypeError, ValueError):
+        return None
+
+
+def clear_last_skipped_if_outside(monitor, current_time: float) -> None:
+    bounds = _skipped_bounds(monitor)
+    if not bounds:
+        return
+    start, end = bounds
+    t = float(current_time)
+    if t < start or t > end:
+        clear_last_skipped_segment(monitor)
+
+
+def should_ignore_as_just_skipped(monitor, seg_id, current_time: float) -> bool:
+    """True while playhead is still inside the segment we just Skippy-skipped."""
+    if getattr(monitor, "last_skipped_seg_id", None) != seg_id:
+        return False
+    bounds = _skipped_bounds(monitor)
+    if not bounds:
+        return False
+    start, end = bounds
+    t = float(current_time)
+    return start <= t <= end
+
+
+def ask_same_seg_on_cooldown(monitor, seg_id) -> bool:
+    last_id = getattr(monitor, "last_ask_seg_id", None)
+    last_mono = getattr(monitor, "last_ask_mono", None)
+    if last_id != seg_id or last_mono is None:
+        return False
+    try:
+        return (time.monotonic() - float(last_mono)) < ASK_SAME_SEG_COOLDOWN_S
+    except (TypeError, ValueError):
+        return False
+
+
+def stamp_ask_opened(monitor, seg_id) -> None:
+    monitor.last_ask_seg_id = seg_id
+    monitor.last_ask_mono = time.monotonic()
 
 
 def process_segment_skips(
@@ -51,6 +116,8 @@ def process_segment_skips(
         )
         monitor.last_time = current_time
         return
+
+    clear_last_skipped_if_outside(monitor, current_time)
 
     segments_to_process = monitor.current_segments
     if major_rewind_detected:
@@ -80,6 +147,14 @@ def process_segment_skips(
             int(round(segment.start_seconds)),
             int(round(segment.end_seconds)),
         )
+
+        if should_ignore_as_just_skipped(monitor, seg_id, current_time):
+            ctx.log_if_changed(
+                "just_skipped_%s" % (seg_id,),
+                "🚫 Segment %s (%s) ignored — still inside just-skipped window"
+                % (seg_id, segment.segment_type_label),
+            )
+            continue
 
         if seg_id in monitor.recently_dismissed:
             ctx.log_if_changed(
@@ -261,6 +336,7 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None
     )
     land = float(jump_to)
     monitor.last_time = land
+    mark_last_skipped_segment(monitor, segment, seg_id)
     if seg_id not in monitor.prompted:
         monitor.prompted.add(seg_id)
     _maybe_show_skip_toast(ctx, addon, segment, "auto")
@@ -320,9 +396,18 @@ def _handle_ask_skip(
         )
         return None
 
+    if ask_same_seg_on_cooldown(monitor, seg_id):
+        ctx.log_if_changed(
+            "ask_cooldown_%s" % (seg_id,),
+            "⏳ Ask cooldown — same segment %s refused within %.0fms"
+            % (seg_id, ASK_SAME_SEG_COOLDOWN_S * 1000),
+        )
+        return None
+
     monitor.skip_dialog_modal_active = True
+    stamp_ask_opened(monitor, seg_id)
     try:
-        debounce_ms = addon_get_int(addon, "ask_dialog_debounce_ms", 300, minimum=0, maximum=500)
+        debounce_ms = addon_get_int(addon, "ask_dialog_debounce_ms", 0, minimum=0, maximum=500)
         if debounce_ms > 0 and not skip_debounce:
             log("🛑 Debouncing skip dialog for %dms" % debounce_ms)
             xbmc.sleep(debounce_ms)
@@ -352,7 +437,6 @@ def _handle_ask_skip(
             monitor.prompted.add(seg_id)
             return None
 
-        confirmed = None
         try:
             dialog.doModal()
         except Exception as e:
@@ -395,6 +479,7 @@ def _handle_ask_skip(
             )
             land = float(jump_to)
             monitor.last_time = land
+            mark_last_skipped_segment(monitor, segment, seg_id)
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
             return land
