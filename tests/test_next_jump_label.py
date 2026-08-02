@@ -41,6 +41,22 @@ class FormatNextJumpLabelTests(unittest.TestCase):
             "Skip to remaining Preview at 02:05",
         )
 
+    def test_preserves_configured_label_casing(self):
+        self.assertEqual(
+            format_next_jump_label(_Addon(), "remaining 'TV OVA'", 40.0),
+            "Skip to remaining TV OVA at 00:40",
+        )
+        self.assertEqual(
+            format_next_jump_label(_Addon(), "nested segment 'Behind-the-Scenes'", 20.0),
+            "Skip to Behind-the-Scenes at 00:20",
+        )
+
+    def test_formats_hours_only_when_needed(self):
+        self.assertEqual(
+            format_next_jump_label(_Addon(), "remaining 'Intro'", 3600.0),
+            "Skip to remaining Intro at 01:00:00",
+        )
+
     def test_nested_quoted_destination(self):
         self.assertEqual(
             format_next_jump_label(_Addon(), "nested segment 'recap'", 20.0),

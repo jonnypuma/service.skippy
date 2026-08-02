@@ -64,7 +64,7 @@ msgid "Open Segment Editor when overlaps are detected"
 msgstr "Öppna segmentredigeraren när överlappningar upptäcks"
 
 msgctxt "#31012"
-msgid "After parsing your sidecar, if overlapping or nested segments are still present while "Ignore overlapping segments" is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
 msgstr "Efter tolkning av din sidecar-fil, om överlappande eller nästlade segment fortfarande finns när "Ignorera överlappande segment" är av, öppnas segmentredigeraren en gång per uppspelningsfil så att du kan fixa listan. Kräver att segmentredigeraren är aktiverad. Använder samma upptäckt som aviseringen för överlappande segment."
 
 msgctxt "#31008"
@@ -289,7 +289,7 @@ msgid "TMDB API key (optional)"
 msgstr "TMDB API-nyckel (valfritt)"
 
 msgctxt "#32033"
-msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper's key below (same key for episodes and movies)."
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
 msgstr "Gratis nyckel från themoviedb.org (Settings → API). Används när TV- eller filmonlineuppslagning behöver lösa saknade TMDB/IMDb-ID:n. Lämna tomt för att använda TheMovieDB Helpers nyckel nedan (samma nyckel för avsnitt och filmer)."
 
 msgctxt "#32034"
@@ -317,7 +317,7 @@ msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or
 msgstr "När aktiverad, laddar TV-avsnitt hoppsegment från sidecar chapters.xml eller .edl bredvid videon."
 
 msgctxt "#32062"
-msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi's library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
 msgstr "När aktiverad, kan TV-avsnitt ladda intro/sammanfattningstiming från TheIntroDB och IntroDB.app. Kräver säsong/avsnitt och TMDB/IMDb-stil ID:n från Kodis bibliotek (scraper uniqueid). SxxExx i filnamnet är endast en reserv när objektet inte finns i biblioteket."
 
 msgctxt "#32063"
@@ -325,7 +325,7 @@ msgid "When both local files and online lookup are enabled for TV episodes: pref
 msgstr "När både lokala filer och onlineuppslagning är aktiverade för TV-avsnitt: föredra segment från den valda källan när den har data; annars använd den andra. Online först väntar på nätverksuppslagning innan den första hoppdialogen kan visas (typiskt några sekunder, upp till cirka 10 sekunder vid kallstart eller långsamt nätverk). Lokalt först använder sidecar-data omedelbart när den finns."
 
 msgctxt "#32064"
-msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi's library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
 msgstr "När aktiverad, kan filmer ladda intro/sammanfattningstiming från TheIntroDB endast (inte IntroDB.app). Kräver TMDB och/eller IMDb film-ID:n från Kodis bibliotek (uniqueid), eller de globala TMDB API-inställningarna ovan när ID:n saknas."
 
 msgctxt "#32065"
@@ -333,7 +333,7 @@ msgid "TV episodes: online API priority"
 msgstr "TV-avsnitt: online API-prioritet"
 
 msgctxt "#32066"
-msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other's overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
 msgstr "När TheIntroDB och IntroDB.app båda returnerar ett segment för samma tidsintervall, vinner API:et du listar först för det fönstret; den andras överlappande post utelämnas. Det andra API:et kan fortfarande lägga till segment som inte överlappar det fönstret."
 
 msgctxt "#32067"
@@ -1502,3 +1502,211 @@ msgstr "Segment sparade framgångsrikt"
 msgctxt "#41086"
 msgid "Failed to save segments. Check file permissions."
 msgstr "Misslyckades med att spara segment. Kontrollera filbehörigheter."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Hoppa alltid över det här segmentet?"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Hoppa över %s automatiskt i %s från och med nu?"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Hoppa över %s automatiskt i den här titeln från och med nu?"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Inte nu"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Automatisk överhoppning sparad för den här titeln"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Fråga om automatisk överhoppning per serie eller film"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "När du har bekräftat en överhoppning frågar Skippy om den segmenttypen ska hoppas över automatiskt i den här serien eller filmen från och med nu. Det sparas under titelns TMDB-id och gäller därför även andra versioner av samma film eller avsnitt."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Rensa sparade val per titel"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Glöm alla sparade val för automatisk överhoppning per titel – även de du nekade – så att Skippy kan fråga igen."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "Rensade %d sparade val per titel."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Inga sparade val per titel att rensa."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "CEC-fjärrkontrollknapp för markering inställd: %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Ingen knappkod registrerad"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Fjärrkontrollknapp för markering inställd: %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Statistik"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Sparad tid: %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Överhoppade segment: %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Överhoppningar per segmenttyp:"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Inga överhoppningar registrerade än"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Segment hämtade online: %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Segment uppladdade online: %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Räknar sedan %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Nollställ"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Nollställ statistik"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Nollställa all Skippy-statistik?"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Visar total sparad tid, hur många segment som hoppats över totalt och per typ, och hur många segment som hämtats från eller laddats upp till onlinedatabaserna."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Nollställer alla räknare och börjar räkna från i dag. Frågar först efter en bekräftelse."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Statistiken nollställd"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Skippy — Upptäck fjärrkontrollknapp"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Tryck på fjärrkontrollknappen som ska användas för Segmentmarkören."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Bluetooth-/råa fjärrkontroller sparas som key:<code>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "CEC-fjärrkontroller sparas som Kodi-knapparnamn när det är möjligt."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Tillbaka/Esc avbryter."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Välj etiketten för det markerade segmentet."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Enter/OK väljer. Tillbaka/Esc avbryter."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Hur ska den här markeringen sparas?"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Välj hur Skippy ska spara det här markerade intervallet."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "Slå ihop är säkrast. Tillbaka/Esc avbryter sparningen."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Varning: överlappar befintliga poster %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Titel-autoskip"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Hantera sparade autoskips"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Visar varje serie eller film med en sparad autoskip-regel. Välj en titel för att radera den posten om du har ändrat dig."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Inga titlar med autoskip sparade än."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Välj en titel för att ta bort dess autoskip-regler."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Ta bort autoskip för %s?"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Detta raderar de sparade autoskip-reglerna för den här titeln så att Skippy kan fråga igen."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Autoskip borttagen för %s"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Kunde inte ta bort den titelposten."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Ta bort"

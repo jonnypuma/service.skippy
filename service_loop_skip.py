@@ -12,6 +12,12 @@ import xbmcgui
 
 from segment_item import segments_active_for_playback
 from segment_editor_utils import get_home_window
+from segment_relations import segment_id
+from service_loop_per_show import (
+    apply_per_show_override,
+    maybe_prompt_per_show_override,
+)
+from skippy_stats import record_skip
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
@@ -46,6 +52,22 @@ def mark_last_skipped_segment(monitor, segment, seg_id) -> None:
         float(segment.start_seconds),
         float(segment.end_seconds),
     )
+
+
+def _player_time_or(ctx, fallback):
+    try:
+        return float(ctx.player.getTime())
+    except (RuntimeError, TypeError, ValueError):
+        return float(fallback)
+
+
+def _record_skip_stats(segment, position_before, jump_to) -> None:
+    """Count the skip and the playback time it actually saved."""
+    try:
+        saved = max(0.0, float(jump_to) - float(position_before))
+    except (TypeError, ValueError):
+        saved = 0.0
+    record_skip(getattr(segment, "segment_type_label", ""), saved)
 
 
 def _skipped_bounds(monitor):
@@ -135,18 +157,12 @@ def process_segment_skips(
     )
 
     active_for_playback = segments_active_for_playback(monitor.current_segments, current_time)
-    active_playback_ids = {
-        (int(round(s.start_seconds)), int(round(s.end_seconds)))
-        for s in active_for_playback
-    }
+    active_playback_ids = {segment_id(s) for s in active_for_playback}
 
     land_time = None
 
     for segment in segments_to_process:
-        seg_id = (
-            int(round(segment.start_seconds)),
-            int(round(segment.end_seconds)),
-        )
+        seg_id = segment_id(segment)
 
         if should_ignore_as_just_skipped(monitor, seg_id, current_time):
             ctx.log_if_changed(
@@ -193,10 +209,7 @@ def process_segment_skips(
                     % (seg_id, nested_segment.segment_type_label),
                 )
                 continue
-            nested_seg_id_defensive = (
-                int(round(nested_segment.start_seconds)),
-                int(round(nested_segment.end_seconds)),
-            )
+            nested_seg_id_defensive = segment_id(nested_segment)
             if nested_seg_id_defensive in monitor.recently_dismissed:
                 monitor.recently_dismissed.remove(nested_seg_id_defensive)
             del monitor.skipped_to_nested_segment[seg_id]
@@ -212,7 +225,13 @@ def process_segment_skips(
                 segment.end_seconds,
             ),
         )
-        behavior = get_user_skip_mode(segment.segment_type_label)
+        behavior = apply_per_show_override(
+            monitor,
+            addon,
+            video,
+            segment.segment_type_label,
+            get_user_skip_mode(segment.segment_type_label),
+        )
         ctx.log_if_changed(
             "behavior_%s" % (seg_id,),
             "🧪 Segment behavior: %s" % behavior,
@@ -264,6 +283,7 @@ def process_segment_skips(
                 seg_id,
                 jump_to,
                 addon,
+                video=video,
                 skip_debounce=_skip_ask_debounce,
             )
             if landed is not None:
@@ -306,10 +326,7 @@ def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
     monitor.skipped_to_nested_segment[seg_id] = target_segment
     monitor.prompted.add(seg_id)
     if seg_id in monitor.recently_dismissed:
-        nested_seg_id = (
-            int(round(target_segment.start_seconds)),
-            int(round(target_segment.end_seconds)),
-        )
+        nested_seg_id = segment_id(target_segment)
         clearance_key = (seg_id, nested_seg_id)
         if clearance_key not in monitor.cleared_parent_dismissals:
             monitor.recently_dismissed.remove(seg_id)
@@ -324,6 +341,7 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None
     )
     _track_skip_to_nested(ctx, segment, seg_id)
     log_service_detail("🎯 Auto-skip: Issuing seekTime(%s) now..." % jump_to, tag="playback")
+    position_before = _player_time_or(ctx, segment.start_seconds)
     mark_skippy_skipping(monitor, addon)
     ctx.player.seekTime(jump_to)
     try:
@@ -339,6 +357,7 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None
     mark_last_skipped_segment(monitor, segment, seg_id)
     if seg_id not in monitor.prompted:
         monitor.prompted.add(seg_id)
+    _record_skip_stats(segment, position_before, land)
     _maybe_show_skip_toast(ctx, addon, segment, "auto")
     log("⚡ Auto-skipped to %s" % jump_to)
     return land
@@ -351,6 +370,7 @@ def _handle_ask_skip(
     jump_to,
     addon,
     *,
+    video: str = "",
     skip_debounce: bool = False,
 ) -> float | None:
     monitor = ctx.monitor
@@ -463,6 +483,7 @@ def _handle_ask_skip(
             if seg_id not in monitor.prompted:
                 monitor.prompted.add(seg_id)
             log_service_detail("🎯 Issuing seekTime(%s) now..." % jump_to, tag="playback")
+            position_before = _player_time_or(ctx, segment.start_seconds)
             try:
                 mark_skippy_skipping(monitor, addon)
                 ctx.player.seekTime(float(jump_to))
@@ -480,8 +501,10 @@ def _handle_ask_skip(
             land = float(jump_to)
             monitor.last_time = land
             mark_last_skipped_segment(monitor, segment, seg_id)
+            _record_skip_stats(segment, position_before, land)
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
+            maybe_prompt_per_show_override(ctx, addon, segment, video)
             return land
         elif response is False:
             log("🙅 User dismissed skip dialog for segment ID %s" % (seg_id,))

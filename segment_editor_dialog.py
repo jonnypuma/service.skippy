@@ -29,7 +29,7 @@ from segment_editor_parser import (
     seconds_to_hms,
     hms_to_seconds,
     save_segments,
-    parse_embedded_chapters,
+    parse_embedded_chapters_via_mkvextract,
     get_save_format,
     segments_chronological,
     SAVE_FORMAT_BOTH,
@@ -472,7 +472,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             return
 
         try:
-            embedded = parse_embedded_chapters(self.video_path, timeout=3)
+            embedded = parse_embedded_chapters_via_mkvextract(self.video_path, timeout=3)
         except Exception as err:
             log(f"Embedded chapter probe failed: {err}")
             return

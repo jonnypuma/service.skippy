@@ -24,6 +24,7 @@ from remote_segments import (
 )
 from segment_editor_parser import seconds_to_hms
 from skippy_editor_modal_skin import show_editor_ok
+from skippy_stats import record_online_segment_uploaded
 
 THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v3/submit"
 INTRODB_SUBMIT_URL = "https://api.introdb.app/submit"
@@ -328,6 +329,7 @@ def _history_record(api_bucket: str, fp: str) -> None:
         return
     lst.append(fp)
     _save_history(data)
+    record_online_segment_uploaded()
 
 
 def _validate_theintrodb_times(

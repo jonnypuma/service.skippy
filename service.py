@@ -23,7 +23,6 @@ from settings_utils import (
 from keymap_utils import install_marker_keymap, install_editor_keymap
 from prefetch_segment_cache import clear_prefetch_segment_cache
 from service_online_sidecar_save import (
-    maybe_save_online_segments_to_chapters_xml as _maybe_save_online_segments_to_chapters_xml_impl,
     maybe_save_online_segments_to_sidecars as _maybe_save_online_segments_to_sidecars_impl,
 )
 from service_deferred_remote_probe import (
@@ -91,6 +90,8 @@ class PlayerMonitor(xbmc.Monitor):
         self.segment_processed_cache = None  # Pass 1/2 linked segments; invalidated on source/settings change
         self.nested_parent_map = {}  # child seg id -> parent seg id (built during Pass 2)
         self.online_segments_toast_shown_for_path = None
+        # (video_path, override key, title) resolved once per title for per-show overrides.
+        self.per_show_override_identity = None
         self._home_window = None
         self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
         self.skippy_skipping_since = None  # monotonic time when Skippy.Skipping was set
@@ -425,13 +426,6 @@ def _missing_segments_toast_message(playback_type, video_path):
 
 def maybe_save_online_segments_to_sidecars(video_path, segments):
     _maybe_save_online_segments_to_sidecars_impl(
-        video_path, segments, monitor
-    )
-
-
-def maybe_save_online_segments_to_chapters_xml(video_path, segments):
-    """Backward-compatible name; writes according to save format + policy."""
-    _maybe_save_online_segments_to_chapters_xml_impl(
         video_path, segments, monitor
     )
 

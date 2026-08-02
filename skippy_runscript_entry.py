@@ -61,6 +61,41 @@ def main():
             install_marker_keymap(addon if addon else None, notify=True)
             return
 
+        # --- Statistics / per-title overrides ---
+        if command == "show_statistics":
+            from skippy_statistics_ui import show_statistics_modal
+
+            show_statistics_modal()
+            return
+        if command == "reset_statistics":
+            from skippy_statistics_ui import confirm_and_reset_statistics
+
+            confirm_and_reset_statistics()
+            return
+        if command == "manage_show_overrides":
+            from per_show_overrides_ui import show_manage_title_autoskip_modal
+
+            show_manage_title_autoskip_modal()
+            return
+        if command == "clear_show_overrides":
+            from per_show_overrides import clear_all_overrides
+            from settings_utils import get_localized, notify_skippy
+
+            addon = _addon()
+            removed = clear_all_overrides()
+            if removed:
+                message = get_localized(
+                    addon, 44009, "Cleared %d saved per-title choice(s).", removed
+                )
+            else:
+                message = get_localized(
+                    addon, 44010, "No saved per-title choices to clear."
+                )
+            notify_skippy(
+                addon, message, title=get_localized(addon, 43000, "Skippy")
+            )
+            return
+
         # --- Backup / restore (delegated modules only) ---
         if command == "backup_settings":
             from settings_backup import run_backup_ui

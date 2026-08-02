@@ -43,6 +43,11 @@ service.skippy/
 ├── skipdialog.py                   # Full / Minimal ask dialog (WindowXML)
 ├── segment_marker.py               # Segment Marker UX
 ├── segment_editor*.py              # Segment Editor (dialog, parser, session, …)
+├── segment_relations.py            # Segment ids, nesting / overlap, jump-hint text
+├── time_format.py / edl_format.py  # Shared time conversion and EDL line parsing
+├── per_show_overrides.py / per_show_overrides_ui.py  # Per-title auto-skip store + manage modal
+├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters and the statistics modal
+├── skippy_profile_store.py         # JSON helpers for addon_data files
 ├── settings_utils.py / settings_backup.py / upload_history_backup.py
 ├── keymap_utils.py
 ├── icon.png / fanart.png / screenshot0{1,2,3}.png
@@ -145,6 +150,8 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
+- **Per-title auto-skip** (opt-in, default off): After you confirm an Ask skip, Skippy can remember to auto-skip that segment type for that show or movie, keyed on its **TMDB id** so the choice follows the title across other versions of the same file. See **Per-title auto-skip** below.
+- **Statistics**: Time saved, segments skipped in total and per type, and online segments downloaded / uploaded. See **Statistics** below.
 
 ---
 
@@ -274,6 +281,8 @@ The **next jump** line (control **3011**) describes where Skip will land, for ex
 - **Skip to remaining Intro at 00:40** — skipping a nested segment and landing back inside its parent (Intro, Recap, Preview, …)
 - **Skip to next segment at …** — generic fallback when no named destination is available
 
+Jump targets under one hour use `MM:SS`; targets at or beyond one hour use `HH:MM:SS`.
+
 Focus textures for skip/close buttons and the progress bar **midtexture** are patched from settings when the dialog opens (`service_skip_dialog_skin.py`), same pattern as **Button focus style** and **Progress bar style**.
 
 ### Minimal mode
@@ -304,6 +313,33 @@ Skippy must resolve the on-disk video path before it can load `.edl` / `chapters
 - With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords.
 
 Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing missing sidecars on first play.
+
+---
+
+## Per-title auto-skip
+
+**Ask to auto-skip per show or movie** (**Title autoskip**, default **off**) turns a one-off Ask into a lasting rule. After you confirm a skip, Skippy asks whether that **segment type** should skip automatically for that **show or movie** from now on:
+
+- **Yes** — the segment type becomes **Auto** for that title, no matter what your global **Ask** list says.
+- **Not now** — the decline is remembered too, so you are not asked about that title and segment type again.
+
+Choices are stored per title, not per file: `addon_data/service.skippy/show_overrides/<kind>_tmdb_<id>.json` (for example `tv_tmdb_1396.json`), with the IMDb id as fallback when TMDB is missing. A different release, re-encode, or rename of the same movie or episode reuses the same file. Titles with no TMDB or IMDb id in Kodi's library cannot be keyed, so no prompt appears for them.
+
+The identity is read from Kodi's library metadata only — never from a network call — so the prompt never delays playback.
+
+**Manage saved auto-skips** lists every title that currently has an auto-skip rule (for example `Friends — Intro, Recap`). Select a title and confirm **Delete** to remove that entry so Skippy can ask again. **Clear saved per-title auto-skip choices** forgets every stored decision at once, including declines.
+
+---
+
+## Statistics
+
+The **Statistics** category opens a modal with:
+
+- **Time saved** — sum of the playback time each skip actually jumped over.
+- **Segments skipped** — total, plus a breakdown per segment type (Intro, Recap, Credits, …).
+- **Online segments downloaded / uploaded** — segments received from TheIntroDB / IntroDB.app lookups and accepted by an upload.
+
+Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown at the bottom of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
 
 ---
 
@@ -349,6 +385,12 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | tv_prefetch_next_episode | **Online first** only: prefetch online segments for the library next TV episode |
 | sync_local_to_online | Expert upload: **Ask** to upload local segment types missing online (requires upload keys) |
 
+| Category: | Title autoskip |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| per_show_autoskip_override | After a confirmed skip, ask whether to auto-skip that segment type for this show/movie from now on (default: false) |
+| settings_action_manage_show_overrides | Button: list titles with saved auto-skip rules and delete one entry at a time |
+| settings_action_clear_show_overrides | Button: forget every saved per-title auto-skip choice, including declines |
+
 | Category: | Customize Skip Dialog Look and Behavior |
 | ----------------------------- | ------------------------------------------------------------------------------- |
 | show_progress_bar | Enables visual progress bar during skip dialog |
@@ -383,6 +425,12 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | show_toast_for_overlapping_nested_segments | Enable overlapping segment toast if found in segment file |
 | show_toast_for_skipped_segment | Enable toast notification for skipped segment |
 | show_toast_for_segment_marker | Enable toast notifications for segment marker (start/end times and cancel) |
+| toast_online_segments_applied | Enable toast when online segments are loaded for the current video (default: true) |
+
+| Category: | Statistics |
+| ----------------------------- | ---------------------------------------------------------------- |
+| settings_action_show_statistics | Button: time saved, skips total and per segment type, online segments downloaded / uploaded |
+| settings_action_reset_statistics | Button: set every statistics counter back to zero (asks for confirmation) |
 
 | Category: | Debug Logging |
 | ----------------------------- | ---------------------------------------------------------------- |

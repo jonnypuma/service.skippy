@@ -1,6 +1,5 @@
 import copy
 import os
-import re
 import stat
 import subprocess
 import time
@@ -8,8 +7,12 @@ import xml.etree.ElementTree as ET
 import xbmcvfs
 import unicodedata
 
+from edl_format import EDL_DEFAULT_ACTION, parse_edl_line
 from segment_editor_utils import get_addon, log
 from settings_utils import get_edl_label_to_action_map, get_edl_type_map
+
+# Re-exported: editor/marker/upload modules import these from here.
+from time_format import hms_to_seconds, seconds_to_edl, seconds_to_hms  # noqa: F401
 
 # Matroska-style chapter sidecars next to ``video.mkv`` (also used by ``service`` / Segment Marker).
 CHAPTER_XML_SIDECAR_SUFFIXES = (
@@ -206,64 +209,6 @@ def normalize_label(text):
     return unicodedata.normalize("NFKC", text or "").strip().lower()
 
 
-_NUMERIC_TIME_RE = re.compile(r"^\d+(?:\.\d+)?$")
-
-
-def hms_to_seconds(hms):
-    """Convert HH:MM:SS.mmm, MM:SS, or plain seconds to a non-negative float.
-
-    Raises ValueError on negative, empty, or otherwise malformed input.
-    """
-    if hms is None:
-        raise ValueError("Time input is empty")
-
-    text = str(hms).strip()
-    if not text:
-        raise ValueError("Time input is empty")
-    if text.startswith("-"):
-        raise ValueError(f"Time cannot be negative: {hms!r}")
-    if text.startswith("+"):
-        text = text[1:].strip()
-        if not text:
-            raise ValueError("Time input is empty")
-
-    parts = text.split(":")
-    if len(parts) > 3:
-        raise ValueError(f"Invalid time format: {hms!r}")
-
-    # Each part except possibly the last must be a plain integer, and the last
-    # component may be a decimal number.
-    for segment in parts[:-1]:
-        if not segment or not segment.isdigit():
-            raise ValueError(f"Invalid time component {segment!r} in {hms!r}")
-    last = parts[-1]
-    if not _NUMERIC_TIME_RE.match(last):
-        raise ValueError(f"Invalid seconds component {last!r} in {hms!r}")
-
-    if len(parts) == 3:
-        h, m, s = parts
-        total = int(h) * 3600 + int(m) * 60 + float(s)
-    elif len(parts) == 2:
-        m, s = parts
-        total = int(m) * 60 + float(s)
-    else:
-        total = float(parts[0])
-
-    if total < 0:
-        raise ValueError(f"Time cannot be negative: {hms!r}")
-    return total
-
-
-def seconds_to_hms(seconds):
-    """Convert seconds to HH:MM:SS.mmm format."""
-    if seconds < 0:
-        seconds = 0
-    h = int(seconds // 3600)
-    m = int((seconds % 3600) // 60)
-    s = seconds % 60
-    return f"{h:02d}:{m:02d}:{s:06.3f}"
-
-
 def indent_xml(elem, level=0, indent="  "):
     """Manually indent an ElementTree (Python 3.8 compatible)."""
     i = "\n" + level * indent
@@ -430,26 +375,18 @@ def parse_edl(video_path):
     segments = []
     try:
         for line in edl_data.splitlines():
-            line = line.strip()
-            if not line or line.startswith('#'):
+            parsed = parse_edl_line(line, default_action=EDL_DEFAULT_ACTION)
+            if parsed is None:
+                if line.strip() and not line.strip().startswith("#"):
+                    log(f"Skipped invalid EDL line: {line.strip()}")
                 continue
-
-            parts = line.split()
-            if len(parts) >= 2:
-                try:
-                    s = float(parts[0])
-                    e = float(parts[1])
-                    action = int(parts[2]) if len(parts) > 2 else 4
-                    try:
-                        type_map = get_edl_type_map()
-                        label = type_map.get(action) or "segment"
-                    except Exception:
-                        label = "segment"
-
-                    segments.append(SegmentItem(s, e, label, source="edl", action_type=action))
-                    log(f"Parsed EDL line: {s} -> {e} | action={action} | label='{label}'")
-                except (ValueError, IndexError) as e:
-                    log(f"Skipped invalid EDL line: {line} ({e})")
+            s, e, action = parsed
+            try:
+                label = get_edl_type_map().get(action) or "segment"
+            except Exception:
+                label = "segment"
+            segments.append(SegmentItem(s, e, label, source="edl", action_type=action))
+            log(f"Parsed EDL line: {s} -> {e} | action={action} | label='{label}'")
     except Exception as e:
         log(f"EDL parse failed: {e}")
 
@@ -497,7 +434,7 @@ def _mkvextract_chapters_xml(video_path, timeout=3):
     return data
 
 
-def parse_embedded_chapters(video_path, timeout=3):
+def parse_embedded_chapters_via_mkvextract(video_path, timeout=3):
     """Return a list of SegmentItem from chapters embedded in the video container.
 
     Supports Matroska/WebM via ``mkvextract`` if available. Returns None if the

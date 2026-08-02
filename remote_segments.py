@@ -35,6 +35,7 @@ from settings_utils import (
     log_service_detail,
     parse_kodi_jsonrpc_raw,
 )
+from skippy_stats import record_online_segments_downloaded
 
 ADDON_ID = "service.skippy"
 
@@ -1121,6 +1122,45 @@ def build_movie_context(item, force_tmdb_enrichment=False):
     }
 
 
+def library_title_identity(item):
+    """
+    Title-level identity from Kodi library data only — never calls TMDB.
+
+    Returns ``{"type", "tmdb_id", "imdb_id", "title"}`` where the ids identify the
+    **show** for episodes and the movie for movies, so every copy of a title maps to
+    the same identity. Returns None when the media type is unknown.
+    """
+    if not item:
+        return None
+    itype = (item.get("type") or "").lower()
+    uid = item.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+
+    if itype == "episode":
+        tvshow_id = _resolve_tvshow_id(item)
+        tmdb_id = _tmdb_from_tvshow_row(tvshow_id) if tvshow_id else None
+        return {
+            "type": "episode",
+            "tmdb_id": tmdb_id,
+            "imdb_id": get_show_imdb_id(item),
+            "title": item.get("showtitle") or item.get("title") or "",
+        }
+
+    if itype == "movie":
+        tmdb_id = normalize_numeric_id(uid.get("tmdb"))
+        imdb_id = normalize_imdb_id(uid.get("imdb") or item.get("imdbnumber"))
+        tmdb_id, imdb_id = _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id)
+        return {
+            "type": "movie",
+            "tmdb_id": tmdb_id,
+            "imdb_id": imdb_id,
+            "title": item.get("title") or "",
+        }
+
+    return None
+
+
 def _resolve_tvshow_id(item):
     """tvshowid from item, episode row, or infolabel (service.nextonlibrary-style)."""
     tid = item.get("tvshowid")
@@ -1833,6 +1873,7 @@ def fetch_remote_movie_segments(total_time, cache, snapshot=None):
     cache[key] = merged
     if merged:
         _rlog("TheIntroDB/IntroDB merge (movie): using %d segment(s)" % len(merged))
+        record_online_segments_downloaded(len(merged))
     else:
         _rlog("TheIntroDB/IntroDB merge (movie): empty")
     return list(merged)
@@ -1881,7 +1922,9 @@ def fetch_remote_tv_segments_core(item, total_time, cache):
             % (len(merged), len(the_segs), len(intro_segs))
         )
     cache[key] = merged
-    if not merged:
+    if merged:
+        record_online_segments_downloaded(len(merged))
+    else:
         _rlog(
             "merged remote (TV): empty (TheIntroDB=%d, IntroDB.app=%d segments before merge)"
             % (len(the_segs), len(intro_segs))

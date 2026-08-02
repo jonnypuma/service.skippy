@@ -22,11 +22,11 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
+from edl_format import EDL_DEFAULT_ACTION, parse_edl_line
 from keymap_utils import install_marker_keymap
 from segment_editor_parser import (
     CHAPTER_XML_SIDECAR_SUFFIXES,
     DEFAULT_NEW_CHAPTER_XML_SUFFIX,
-    seconds_to_hms,
 )
 from segment_editor_utils import (
     segment_editor_modal_is_open,
@@ -40,6 +40,7 @@ from settings_utils import (
     get_custom_segment_keyword_labels,
     notify_skippy,
 )
+from time_format import format_clock, hms_to_seconds, seconds_to_edl, seconds_to_hms
 
 ADDON_ID = "service.skippy"
 
@@ -113,17 +114,6 @@ def get_localized(addon, string_id, default="", *args):
     from settings_utils import get_localized as _gl
 
     return _gl(addon, string_id, default, *args)
-
-
-def format_time(seconds):
-    """Format seconds as H:MM:SS or M:SS."""
-    seconds = max(0, float(seconds))
-    h = int(seconds // 3600)
-    m = int((seconds % 3600) // 60)
-    s = int(seconds % 60)
-    if h > 0:
-        return f"{h}:{m:02d}:{s:02d}"
-    return f"{m}:{s:02d}"
 
 
 def get_current_playback_time():
@@ -281,13 +271,16 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
 
         lx = m.disc_lx
         lw = m.disc_lw
+        addon = get_addon()
         self.addControl(
             xbmcgui.ControlLabel(
                 lx,
                 m.disc_title_y,
                 lw,
                 m.disc_title_h,
-                "Skippy Remote Button Discovery",
+                get_localized(
+                    addon, 44040, "Skippy Remote Button Discovery"
+                ),
                 "font30",
                 "FFFFFFFF",
             )
@@ -298,7 +291,11 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
                 m.disc_line2_y,
                 lw,
                 m.disc_line_h,
-                "Press the remote button to use for Segment Marker.",
+                get_localized(
+                    addon,
+                    44041,
+                    "Press the remote button to use for Segment Marker.",
+                ),
                 "font14",
                 "FFB0D4E8",
             )
@@ -309,7 +306,11 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
                 m.disc_line3_y,
                 lw,
                 m.disc_line_h,
-                "Bluetooth/raw remotes save as key:<code>.",
+                get_localized(
+                    addon,
+                    44042,
+                    "Bluetooth/raw remotes save as key:<code>.",
+                ),
                 "font14",
                 "FFFFFFFF",
             )
@@ -320,7 +321,11 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
                 m.disc_line4_y,
                 lw,
                 m.disc_line_h,
-                "CEC remotes save as Kodi remote button names when possible.",
+                get_localized(
+                    addon,
+                    44043,
+                    "CEC remotes save as Kodi remote button names when possible.",
+                ),
                 "font14",
                 "FFFFFFFF",
             )
@@ -331,7 +336,7 @@ class ButtonDiscoveryDialog(xbmcgui.WindowDialog):
                 m.disc_foot_y,
                 lw,
                 m.disc_foot_h,
-                "Back/Esc cancels.",
+                get_localized(addon, 44044, "Back/Esc cancels."),
                 "font12",
                 "FFB0B0B0",
             )
@@ -386,9 +391,22 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
             init_window_xml_dialog(super(SegmentTypePickerDialog, self), args)
         except Exception:
             super().__init__(*args)
-        self.title = kwargs.get("title", "Choose segment type")
-        self.subtitle = kwargs.get("subtitle", "Choose the label for the marked segment.")
-        self.footer = kwargs.get("footer", "Enter/OK selects. Back/Esc cancels.")
+        addon = get_addon()
+        self.title = kwargs.get(
+            "title", get_localized(addon, 36010, "Choose segment type")
+        )
+        self.subtitle = kwargs.get(
+            "subtitle",
+            get_localized(
+                addon, 44045, "Choose the label for the marked segment."
+            ),
+        )
+        self.footer = kwargs.get(
+            "footer",
+            get_localized(
+                addon, 44046, "Enter/OK selects. Back/Esc cancels."
+            ),
+        )
         self.options = kwargs.get("options", [])
         self.selected_index = -1
         # Treat as aborted until OK/list selection confirms (implicit closes stay cancelled).
@@ -474,19 +492,25 @@ def discover_remote_button(addon):
         value = remote_tag
         addon.setSetting("segment_marker_remote_button", value)
         install_marker_keymap(addon, notify=False)
-        show_toast(f"CEC remote marker button set: {value}", time_ms=4500)
+        show_toast(
+            get_localized(addon, 44011, "CEC remote marker button set: %s", value),
+            time_ms=4500,
+        )
         log(f"CEC remote marker button discovered: action_id={action_id}, remote_tag={remote_tag}")
         return
 
     if not button_code:
-        show_toast("No button code captured")
+        show_toast(get_localized(addon, 44012, "No button code captured"))
         log(f"Button discovery did not capture a usable button code; action_id={action_id}")
         return
 
     value = f"key:{button_code}"
     addon.setSetting("segment_marker_remote_button", value)
     install_marker_keymap(addon, notify=False)
-    show_toast(f"Remote marker button set: {value}", time_ms=4500)
+    show_toast(
+        get_localized(addon, 44013, "Remote marker button set: %s", value),
+        time_ms=4500,
+    )
     log(f"Remote marker button discovered: action_id={action_id}, button_code={button_code}")
 
 
@@ -501,12 +525,18 @@ def get_segment_keywords(addon):
 def pick_segment_type(addon):
     """Show dialog to pick segment type. Returns label or None if cancelled."""
     keywords = get_segment_keywords(addon)
-    title = get_localized(addon, 36010)
-    subtitle = "Choose the label for the marked segment."
+    title = get_localized(addon, 36010, "Choose segment type")
+    subtitle = get_localized(
+        addon, 44045, "Choose the label for the marked segment."
+    )
     return pick_marker_option(addon, title, subtitle, keywords)
 
 
-def pick_marker_option(addon, title, subtitle, options, footer="Enter/OK selects. Back/Esc cancels."):
+def pick_marker_option(addon, title, subtitle, options, footer=None):
+    if footer is None:
+        footer = get_localized(
+            addon, 44046, "Enter/OK selects. Back/Esc cancels."
+        )
     set_marker_modal_open(True)
     dialog = None
     idx = -1
@@ -546,8 +576,15 @@ def pick_marker_option(addon, title, subtitle, options, footer="Enter/OK selects
 def ask_marker_existing_policy(addon, overlaps):
     warning = ""
     if overlaps:
-        warning = f"Warning: overlaps existing {', '.join(overlaps)} entries. "
-    subtitle = warning + "Choose how Skippy should save this marked range."
+        warning = get_localized(
+            addon,
+            44050,
+            "Warning: overlaps existing %s entries. ",
+            ", ".join(overlaps),
+        )
+    subtitle = warning + get_localized(
+        addon, 44048, "Choose how Skippy should save this marked range."
+    )
     options = [_MARKER_POLICY_ASK_LABELS[key] for key in (
         _MARKER_POLICY_MERGE,
         _MARKER_POLICY_KEEP_BOTH,
@@ -557,10 +594,14 @@ def ask_marker_existing_policy(addon, overlaps):
     )]
     choice = pick_marker_option(
         addon,
-        "How should this marker be saved?",
+        get_localized(addon, 44047, "How should this marker be saved?"),
         subtitle,
         options,
-        footer="Merge is safest. Back/Esc cancels marker save.",
+        footer=get_localized(
+            addon,
+            44049,
+            "Merge is safest. Back/Esc cancels marker save.",
+        ),
     )
     if choice is None:
         return None
@@ -573,30 +614,12 @@ def ask_marker_existing_policy(addon, overlaps):
 def confirm_save(addon, start, end, label):
     """Show confirmation dialog. Returns True if user confirms."""
     title = get_localized(addon, 36011)
-    msg = f"{label}: {format_time(start)} -> {format_time(end)}"
+    msg = f"{label}: {format_clock(start)} -> {format_clock(end)}"
     set_marker_modal_open(True)
     try:
         return xbmcgui.Dialog().yesno(title, msg)
     finally:
         set_marker_modal_open(False)
-
-
-def seconds_to_hms(sec):
-    """Convert seconds to HH:MM:SS.mmm format for chapters.xml."""
-    h = int(sec // 3600)
-    m = int((sec % 3600) // 60)
-    s = sec % 60
-    return f"{h:02d}:{m:02d}:{s:06.3f}"
-
-
-def seconds_to_edl(sec):
-    """Format seconds for EDL file (plain decimal)."""
-    return f"{sec:.3f}"
-
-
-def hms_to_seconds(hms):
-    h, m, s = hms.strip().split(":")
-    return int(h) * 3600 + int(m) * 60 + float(s)
 
 
 def ranges_overlap(start_a, end_a, start_b, end_b):
@@ -778,13 +801,10 @@ def apply_file_permissions(path, perm_setting):
 
 
 def parse_edl_line_range(line):
-    parts = line.split()
-    if len(parts) < 2:
+    parsed = parse_edl_line(line, default_action=EDL_DEFAULT_ACTION)
+    if parsed is None:
         return None
-    try:
-        return float(parts[0]), float(parts[1])
-    except Exception:
-        return None
+    return parsed[0], parsed[1]
 
 
 def trim_overlapping_edl_line(existing_line, new_segment_end, old_end):

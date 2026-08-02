@@ -8,11 +8,27 @@ import types
 from unittest.mock import MagicMock
 
 
+def _stub_module(name: str):
+    """
+    Reuse the existing stub module object for ``name`` when we own it.
+
+    Modules imported by an earlier test keep a reference to the module object they
+    saw at import time. Creating a fresh one per install would leave those holding
+    a stale stub, so ``patch("xbmc.getCondVisibility")`` would not reach them.
+    """
+    existing = sys.modules.get(name)
+    if isinstance(existing, types.ModuleType) and getattr(existing, "_skippy_stub", False):
+        return existing
+    module = types.ModuleType(name)
+    module._skippy_stub = True
+    return module
+
+
 def install_kodi_stubs(*, addon=None):
     """
     Register stub ``xbmc`` / ``xbmcgui`` / ``xbmcvfs`` / ``xbmcaddon`` modules.
 
-    Safe to call multiple times; refreshes stub modules in ``sys.modules``.
+    Safe to call multiple times; refreshes stub attributes in place.
     """
     if addon is None:
         addon = MagicMock()
@@ -20,7 +36,7 @@ def install_kodi_stubs(*, addon=None):
         addon.getSetting = lambda _key: "false"
         addon.getLocalizedString = lambda _key: ""
 
-    xbmc = types.ModuleType("xbmc")
+    xbmc = _stub_module("xbmc")
     xbmc.getCondVisibility = lambda _cond: False
     xbmc.executeJSONRPC = lambda _payload: '{"jsonrpc":"2.0","id":1,"result":[]}'
     xbmc.executebuiltin = lambda _cmd: None
@@ -60,7 +76,7 @@ def install_kodi_stubs(*, addon=None):
     xbmc.Player = _Player
     sys.modules["xbmc"] = xbmc
 
-    xbmcvfs = types.ModuleType("xbmcvfs")
+    xbmcvfs = _stub_module("xbmcvfs")
     xbmcvfs.exists = lambda _path: False
     xbmcvfs.translatePath = lambda path: path
     xbmcvfs.copy = lambda _src, _dst: True
@@ -82,7 +98,7 @@ def install_kodi_stubs(*, addon=None):
     )
     sys.modules["xbmcvfs"] = xbmcvfs
 
-    xbmcgui = types.ModuleType("xbmcgui")
+    xbmcgui = _stub_module("xbmcgui")
     xbmcgui.Window = type(
         "Window",
         (),
@@ -109,9 +125,14 @@ def install_kodi_stubs(*, addon=None):
     xbmcgui.ListItem = type("ListItem", (), {"setLabel": lambda *a, **k: None})
     sys.modules["xbmcgui"] = xbmcgui
 
-    xbmcaddon = types.ModuleType("xbmcaddon")
+    xbmcaddon = _stub_module("xbmcaddon")
     xbmcaddon.Addon = lambda _addon_id: addon
     sys.modules["xbmcaddon"] = xbmcaddon
+
+    # settings_utils caches the Addon handle briefly; drop it so each stub install
+    # (and each test module) starts from the addon it just registered.
+    if "settings_utils" in sys.modules:
+        sys.modules["settings_utils"].invalidate_settings_cache()
 
     return addon
 

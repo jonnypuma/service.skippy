@@ -49,6 +49,19 @@ class ServiceLoopBindings:
     clear_deferred_remote_probe_state: Callable[..., None]
 
 
+def _skip_input_fingerprint(segments):
+    """Inputs that decide skip handling; unchanged fingerprint means unchanged decisions."""
+    return tuple(
+        (
+            seg.start_seconds,
+            seg.end_seconds,
+            seg.segment_type_label,
+            seg.next_segment_start,
+        )
+        for seg in segments or []
+    )
+
+
 def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current_time, playback_type):
     """Parse segments; apply deferred remote probe and optional re-parse."""
     if video and playback_type:
@@ -236,6 +249,10 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
         handle_video_change(ctx, video)
 
         # Prefer skip dialogs before deferred online probe/sync (can take seconds).
+        early_pass_done = False
+        early_rewind = False
+        early_time = current_time
+        early_skip_inputs = ()
         if ctx.monitor.current_segments and ctx.monitor.playback_ready:
             early_rewind = handle_rewind_and_nested_segments(ctx, current_time)
             process_segment_skips(
@@ -246,6 +263,8 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                 current_time=current_time,
                 major_rewind_detected=early_rewind,
             )
+            early_pass_done = True
+            early_skip_inputs = _skip_input_fingerprint(ctx.monitor.current_segments)
             # Ask/auto seek updates monitor.last_time to the target; sync the
             # loop clock so later rewind/parse steps do not use the pre-dialog
             # playhead while getTime() is still catching up.
@@ -260,12 +279,24 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
         )
 
         if not show_dialogs:
-            log(
+            ctx.log_if_changed(
+                "dialogs_disabled_playback",
                 "🚫 Skip dialogs disabled for %s — segments will not trigger prompts"
-                % playback_type
+                % playback_type,
             )
 
-        major_rewind_detected = handle_rewind_and_nested_segments(ctx, current_time)
+        # The early pass already covered this playhead. Redo the work only when the
+        # playhead moved (skip seek or slow parse) or the parsed segments changed.
+        repeat_needed = (
+            not early_pass_done
+            or abs(current_time - early_time) > 0.05
+            or _skip_input_fingerprint(ctx.monitor.current_segments) != early_skip_inputs
+        )
+        major_rewind_detected = (
+            handle_rewind_and_nested_segments(ctx, current_time)
+            if repeat_needed
+            else early_rewind
+        )
 
         if not ctx.monitor.playback_ready and current_time > 0:
             ctx.monitor.playback_ready = True
@@ -281,14 +312,15 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             current_time=current_time,
         )
 
-        process_segment_skips(
-            ctx,
-            video=video,
-            playback_type=playback_type,
-            show_dialogs=show_dialogs,
-            current_time=current_time,
-            major_rewind_detected=major_rewind_detected,
-        )
+        if repeat_needed:
+            process_segment_skips(
+                ctx,
+                video=video,
+                playback_type=playback_type,
+                show_dialogs=show_dialogs,
+                current_time=current_time,
+                major_rewind_detected=major_rewind_detected,
+            )
 
         try:
             if ctx.player.isPlayingVideo():

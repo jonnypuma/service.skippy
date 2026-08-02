@@ -1,61 +1,63 @@
 import os
-import re
 import threading
 import time
 import unicodedata
 
 import xbmc
-import xbmcaddon
 import xbmcgui
 
 from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
+from segment_relations import (
+    JUMP_KIND_NAMED,
+    JUMP_KIND_REMAINING,
+    parse_jump_info,
+)
 from skip_dialog_window_ui import _argb_to_kodi
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    get_addon,
     get_localized,
     skippy_log_effective_detail_level,
 )
+from time_format import format_jump_clock
+
+
+def _display_segment_label(label):
+    """Humanize normalized labels without destroying intentional capitalization."""
+    label = (label or "").strip()
+    if not label:
+        return label
+    return label if any(char.isupper() for char in label) else label.title()
 
 
 def format_next_jump_label(addon, next_segment_info, next_segment_start):
     """Build Ask-dialog subtext for the skip landing (or None if no jump target)."""
     if next_segment_start is None:
         return None
-    jump_m, jump_s = divmod(int(next_segment_start), 60)
-    time_str = "%02d:%02d" % (jump_m, jump_s)
-    info = (next_segment_info or "").strip()
-    if not info:
-        return get_localized(addon, 40006, "Skip to next segment at %s", time_str)
+    time_str = format_jump_clock(next_segment_start)
+    kind, label = parse_jump_info(next_segment_info)
 
-    remaining = re.match(r"(?i)^remaining\s+(?:'([^']+)'|(.+))$", info)
-    if remaining:
-        label = (remaining.group(1) or remaining.group(2) or "").strip()
-        if label:
-            return get_localized(
-                addon,
-                40007,
-                "Skip to remaining %s at %s",
-                label.title(),
-                time_str,
-            )
-
-    quoted = re.search(r"'([^']+)'", info)
-    if quoted:
+    if kind == JUMP_KIND_REMAINING:
+        return get_localized(
+            addon,
+            40007,
+            "Skip to remaining %s at %s",
+            _display_segment_label(label),
+            time_str,
+        )
+    if kind == JUMP_KIND_NAMED:
         return get_localized(
             addon,
             40005,
             "Skip to %s at %s",
-            quoted.group(1).strip().title(),
+            _display_segment_label(label),
             time_str,
         )
-
     return get_localized(addon, 40006, "Skip to next segment at %s", time_str)
 
-# Define a global variable to cache the addon object
-_addon = None
 
 FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 
@@ -244,15 +246,6 @@ def _minimal_plate_filename(addon):
         return raw
     return "minimal_rounded_gray_640.png"
 
-
-def get_addon():
-    """Returns the xbmcaddon.Addon object for this addon,
-    or None if it fails to load."""
-    # Always create a fresh addon object to avoid caching issues
-    try:
-        return xbmcaddon.Addon("service.skippy")
-    except RuntimeError:
-        return None
 
 def log(msg):
     addon = get_addon()
