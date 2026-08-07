@@ -11,6 +11,7 @@ import xbmc
 
 from playback_segment_cache import publish_parse_cache
 from segment_item import segment_is_active_lenient
+from service_loop_per_show import clear_playback_override_key
 from service_segment_processed_cache import clear_segment_processed_cache
 from service_segment_prefetch import clear_tv_prefetch_thread_state
 from service_sidecar_probe_cache import clear_sidecar_probe_cache
@@ -44,6 +45,7 @@ def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     monitor.prefetch_tv_scheduled_path = None
     monitor.nested_parent_map = {}
     monitor.online_segments_toast_shown_for_path = None
+    clear_playback_override_key(monitor)
     monitor._home_window = None
     clear_tv_prefetch_thread_state(monitor)
     ctx.clear_deferred_remote_probe_state(monitor)

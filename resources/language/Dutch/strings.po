@@ -1502,3 +1502,211 @@ msgstr "Segmenten succesvol opgeslagen"
 msgctxt "#41086"
 msgid "Failed to save segments. Check file permissions."
 msgstr "Segmenten opslaan mislukt. Controleer bestandsrechten."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Dit segment altijd overslaan?"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Vanaf nu %s automatisch overslaan bij %s?"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Vanaf nu %s automatisch overslaan bij deze titel?"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Niet nu"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Automatisch overslaan opgeslagen voor deze titel"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Vragen om automatisch overslaan per serie of film"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "Na een bevestigde overslag vraagt Skippy of dat segmenttype vanaf nu automatisch moet worden overgeslagen voor deze serie of film. Dit wordt opgeslagen onder de TMDB-id van de titel en geldt dus ook voor andere versies van dezelfde film of aflevering."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Opgeslagen keuzes per titel wissen"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Vergeet alle opgeslagen keuzes voor automatisch overslaan per titel, ook de geweigerde vragen, zodat Skippy het opnieuw kan vragen."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "%d opgeslagen keuze(s) per titel gewist."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Geen opgeslagen keuzes per titel om te wissen."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "CEC-afstandsbedieningstoets voor markeren ingesteld: %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Geen toetscode vastgelegd"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Afstandsbedieningstoets voor markeren ingesteld: %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Statistieken"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Tijd bespaard: %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Overgeslagen segmenten: %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Overslaan per segmenttype:"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Nog niets overgeslagen"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Online gedownloade segmenten: %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Online geüploade segmenten: %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Geteld sinds %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Op nul zetten"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Statistieken op nul zetten"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Alle Skippy-statistieken op nul zetten?"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Toont de totaal bespaarde tijd, hoeveel segmenten in totaal en per type zijn overgeslagen, en hoeveel segmenten uit de online databases zijn gedownload of ernaartoe zijn geüpload."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Zet alle tellers terug op nul en begint vandaag opnieuw te tellen. Vraagt eerst om bevestiging."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Statistieken op nul gezet"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Skippy — Afstandsbedieningstoets ontdekken"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Druk op de afstandsbedieningstoets voor de Segmentmarker."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Bluetooth-/ruwe afstandsbedieningen worden opgeslagen als key:<code>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "CEC-afstandsbedieningen worden waar mogelijk opgeslagen als Kodi-knopnamen."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Terug/Esc annuleert."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Kies het label voor het gemarkeerde segment."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Enter/OK selecteert. Terug/Esc annuleert."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Hoe moet deze markering worden opgeslagen?"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Kies hoe Skippy dit gemarkeerde bereik moet opslaan."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "Samenvoegen is het veiligst. Terug/Esc annuleert het opslaan."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Waarschuwing: overlapt bestaande vermeldingen %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Titel-autoskip"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Opgeslagen autoskips beheren"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Toont elke serie of film met een opgeslagen autoskip-regel. Selecteer een titel om die vermelding te verwijderen als je van gedachten bent veranderd."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Nog geen titels met autoskip opgeslagen."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Selecteer een titel om de autoskip-regels ervan te verwijderen."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Autoskip voor %s verwijderen?"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Dit verwijdert de opgeslagen autoskip-regels voor deze titel zodat Skippy opnieuw kan vragen."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Autoskip voor %s verwijderd"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Die titelvermelding kon niet worden verwijderd."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Verwijderen"

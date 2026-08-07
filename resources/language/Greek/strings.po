@@ -1504,3 +1504,211 @@ msgstr "Τα τμήματα αποθηκεύτηκαν επιτυχώς"
 msgctxt "#41086"
 msgid "Failed to save segments. Check file permissions."
 msgstr "Αποτυχία αποθήκευσης τμημάτων. Ελέγξτε τα δικαιώματα αρχείου."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Να παραλείπεται πάντα αυτό το τμήμα;"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Να παραλείπεται αυτόματα το %s για το %s από τώρα;"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Να παραλείπεται αυτόματα το %s για αυτόν τον τίτλο από τώρα;"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Όχι τώρα"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Η αυτόματη παράλειψη αποθηκεύτηκε για αυτόν τον τίτλο"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Ερώτηση για αυτόματη παράλειψη ανά σειρά ή ταινία"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "Μετά από μια επιβεβαιωμένη παράλειψη, το Skippy ρωτά αν αυτός ο τύπος τμήματος θα παραλείπεται αυτόματα για αυτή τη σειρά ή ταινία από τώρα. Αποθηκεύεται με το TMDB id του τίτλου, οπότε ισχύει και για άλλες εκδόσεις της ίδιας ταινίας ή επεισοδίου."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Εκκαθάριση αποθηκευμένων επιλογών ανά τίτλο"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Διαγράφει όλες τις αποθηκευμένες αποφάσεις αυτόματης παράλειψης ανά τίτλο, μαζί με αυτές που απορρίψατε, ώστε το Skippy να ρωτήσει ξανά."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "Εκκαθαρίστηκαν %d αποθηκευμένες επιλογές ανά τίτλο."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Δεν υπάρχουν αποθηκευμένες επιλογές ανά τίτλο."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "Ορίστηκε πλήκτρο CEC τηλεχειριστηρίου για σήμανση: %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Δεν καταγράφηκε κωδικός πλήκτρου"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Ορίστηκε πλήκτρο τηλεχειριστηρίου για σήμανση: %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Στατιστικά"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Χρόνος που κερδήθηκε: %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Τμήματα που παραλείφθηκαν: %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Παραλείψεις ανά τύπο τμήματος:"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Δεν έχουν καταγραφεί παραλείψεις ακόμη"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Τμήματα που λήφθηκαν online: %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Τμήματα που στάλθηκαν online: %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Καταγραφή από %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Επαναφορά"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Επαναφορά στατιστικών"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Επαναφορά όλων των στατιστικών του Skippy στο μηδέν;"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Δείχνει τον συνολικό χρόνο που κερδήθηκε, πόσα τμήματα παραλείφθηκαν συνολικά και ανά τύπο, και πόσα τμήματα λήφθηκαν από ή στάλθηκαν στις online βάσεις δεδομένων."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Μηδενίζει όλους τους μετρητές και ξεκινά την καταγραφή από σήμερα. Ζητά πρώτα επιβεβαίωση."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Τα στατιστικά μηδενίστηκαν"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Skippy — Αναγνώριση πλήκτρου τηλεχειριστηρίου"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Πατήστε το πλήκτρο του τηλεχειριστηρίου για τον Μαρκαδόρο τμημάτων."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Τα Bluetooth/ακατέργαστα τηλεχειριστήρια αποθηκεύονται ως key:<code>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "Τα τηλεχειριστήρια CEC αποθηκεύονται ως ονόματα πλήκτρων του Kodi όταν είναι δυνατό."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Πίσω/Esc ακυρώνει."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Επιλέξτε την ετικέτα για το σημειωμένο τμήμα."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Enter/OK επιλέγει. Πίσω/Esc ακυρώνει."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Πώς να αποθηκευτεί αυτός ο μαρκαδόρος;"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Επιλέξτε πώς το Skippy θα αποθηκεύσει αυτό το σημειωμένο εύρος."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "Η συγχώνευση είναι η ασφαλέστερη. Πίσω/Esc ακυρώνει την αποθήκευση."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Προειδοποίηση: επικαλύπτει υπάρχουσες καταχωρίσεις %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Αυτόματη παράλειψη τίτλου"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Διαχείριση αποθηκευμένων αυτόματων παραλείψεων"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Εμφανίζει κάθε σειρά ή ταινία με αποθηκευμένο κανόνα αυτόματης παράλειψης. Επιλέξτε έναν τίτλο για να διαγράψετε την καταχώριση αν αλλάξατε γνώμη."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Δεν υπάρχουν ακόμη τίτλοι με αποθηκευμένη αυτόματη παράλειψη."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Επιλέξτε έναν τίτλο για να αφαιρέσετε τους κανόνες αυτόματης παράλειψής του."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Αφαίρεση αυτόματης παράλειψης για το %s;"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Αυτό διαγράφει τους αποθηκευμένους κανόνες αυτόματης παράλειψης για αυτόν τον τίτλο ώστε το Skippy να ρωτήσει ξανά."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Η αυτόματη παράλειψη αφαιρέθηκε για το %s"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Δεν ήταν δυνατή η αφαίρεση αυτής της καταχώρισης τίτλου."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Διαγραφή"

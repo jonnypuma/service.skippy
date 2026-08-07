@@ -5,6 +5,17 @@ import xbmcgui
 
 from segment_item import segment_is_active_lenient, segments_active_for_playback
 from segment_editor_utils import set_editor_modal_open
+from segment_relations import (
+    RELATION_NESTED,
+    RELATION_OVERLAPPING,
+    is_nested_segment,
+    is_overlapping_segment,
+    iter_forward_overlaps,
+    jump_info_nested,
+    jump_info_overlapping,
+    jump_info_remaining,
+    segment_id,
+)
 from service_segment_processed_cache import (
     clear_segment_processed_cache,
     store_segment_processed_cache,
@@ -12,31 +23,6 @@ from service_segment_processed_cache import (
 )
 from service_segment_sources import _clone_segments, _source_settings_signature
 from settings_utils import addon_get_bool, get_addon, get_localized, log, show_overlapping_toast
-
-
-def is_nested_segment(segment_a, segment_b):
-    """
-    Check if segment_b is fully nested inside segment_a.
-    Returns True if segment_b is completely contained within segment_a.
-    """
-    return segment_b.start_seconds >= segment_a.start_seconds and segment_b.end_seconds <= segment_a.end_seconds
-
-
-def is_overlapping_segment(segment_a, segment_b):
-    """
-    Check if two segments overlap (but not nested).
-    Returns True if segments overlap but neither is fully contained in the other.
-    """
-    if (
-        segment_a.end_seconds <= segment_b.start_seconds
-        or segment_b.end_seconds <= segment_a.start_seconds
-    ):
-        return False
-
-    if is_nested_segment(segment_a, segment_b) or is_nested_segment(segment_b, segment_a):
-        return False
-
-    return True
 
 
 def should_suppress_segment_dialog(
@@ -64,18 +50,12 @@ def should_suppress_segment_dialog(
     except ValueError:
         return False
 
-    current_seg_id = (
-        int(round(current_segment.start_seconds)),
-        int(round(current_segment.end_seconds)),
-    )
+    current_seg_id = segment_id(current_segment)
 
     if recently_dismissed:
         for i in range(current_index):
             parent_segment = active_segments[i]
-            parent_seg_id = (
-                int(round(parent_segment.start_seconds)),
-                int(round(parent_segment.end_seconds)),
-            )
+            parent_seg_id = segment_id(parent_segment)
             if parent_seg_id in recently_dismissed and is_nested_segment(
                 parent_segment, current_segment
             ):
@@ -111,22 +91,10 @@ def should_suppress_segment_dialog(
 def build_nested_parent_map(filtered_segments):
     """Map child segment id -> parent segment id for nested pairs."""
     parent_map = {}
-    for i in range(len(filtered_segments)):
-        parent = filtered_segments[i]
-        parent_id = (
-            int(round(parent.start_seconds)),
-            int(round(parent.end_seconds)),
-        )
-        for j in range(i + 1, len(filtered_segments)):
-            child = filtered_segments[j]
-            if child.start_seconds >= parent.end_seconds:
-                break
-            if is_nested_segment(parent, child):
-                child_id = (
-                    int(round(child.start_seconds)),
-                    int(round(child.end_seconds)),
-                )
-                parent_map[child_id] = parent_id
+    for i, parent in enumerate(filtered_segments):
+        for child, relation in iter_forward_overlaps(filtered_segments, i):
+            if relation == RELATION_NESTED:
+                parent_map[segment_id(child)] = segment_id(parent)
     return parent_map
 
 
@@ -143,34 +111,28 @@ def re_evaluate_segment_jump_points(segments, current_time):
         next_jump_target = None
         next_segment_info = None
 
-        for j in range(i + 1, len(segments)):
-            next_seg = segments[j]
-
-            if next_seg.start_seconds < current_seg.end_seconds:
-                if is_nested_segment(current_seg, next_seg):
-                    if current_time < next_seg.start_seconds:
-                        log(
-                            f"🔍 Re-evaluating: '{next_seg.segment_type_label}' is nested in '{current_seg.segment_type_label}', current time {current_time:.2f} is before nested segment ({next_seg.start_seconds}-{next_seg.end_seconds})"
-                        )
-                        next_jump_target = next_seg.start_seconds
-                        next_segment_info = f"nested segment '{next_seg.segment_type_label}'"
-                        break
-                    else:
-                        log(
-                            f"🔍 Re-evaluating: '{next_seg.segment_type_label}' is nested in '{current_seg.segment_type_label}', but current time {current_time:.2f} is at or past nested segment ({next_seg.start_seconds}-{next_seg.end_seconds}), will skip to parent end"
-                        )
-                        next_jump_target = None
-                        next_segment_info = None
-                        break
-
-                elif is_overlapping_segment(current_seg, next_seg):
+        for next_seg, relation in iter_forward_overlaps(segments, i):
+            if relation == RELATION_NESTED:
+                if current_time < next_seg.start_seconds:
                     log(
-                        f"🔍 Re-evaluating: '{next_seg.segment_type_label}' overlaps with '{current_seg.segment_type_label}'"
+                        f"🔍 Re-evaluating: '{next_seg.segment_type_label}' is nested in '{current_seg.segment_type_label}', current time {current_time:.2f} is before nested segment ({next_seg.start_seconds}-{next_seg.end_seconds})"
                     )
                     next_jump_target = next_seg.start_seconds
-                    next_segment_info = f"overlapping segment '{next_seg.segment_type_label}'"
-                    break
-            else:
+                    next_segment_info = jump_info_nested(next_seg)
+                else:
+                    log(
+                        f"🔍 Re-evaluating: '{next_seg.segment_type_label}' is nested in '{current_seg.segment_type_label}', but current time {current_time:.2f} is at or past nested segment ({next_seg.start_seconds}-{next_seg.end_seconds}), will skip to parent end"
+                    )
+                    next_jump_target = None
+                    next_segment_info = None
+                break
+
+            if relation == RELATION_OVERLAPPING:
+                log(
+                    f"🔍 Re-evaluating: '{next_seg.segment_type_label}' overlaps with '{current_seg.segment_type_label}'"
+                )
+                next_jump_target = next_seg.start_seconds
+                next_segment_info = jump_info_overlapping(next_seg)
                 break
 
         current_seg.next_segment_start = next_jump_target
@@ -200,9 +162,7 @@ def re_evaluate_segment_jump_points(segments, current_time):
                             f"🔧 Fixing nested segment '{current_seg.segment_type_label}': setting jump point to {current_seg.end_seconds}s (end of segment)"
                         )
                         current_seg.next_segment_start = current_seg.end_seconds
-                        current_seg.next_segment_info = (
-                            "remaining '%s'" % parent_seg.segment_type_label
-                        )
+                        current_seg.next_segment_info = jump_info_remaining(parent_seg)
                     break
 
 
@@ -323,58 +283,51 @@ def parse_and_process_segments(
         next_jump_target = None
         next_segment_info = None
 
-        for j in range(i + 1, len(filtered_segments)):
-            next_seg = filtered_segments[j]
+        for next_seg, relation in iter_forward_overlaps(filtered_segments, i):
+            has_overlap_or_nested = True
 
-            if next_seg.start_seconds < current_seg.end_seconds:
-                has_overlap_or_nested = True
+            if relation == RELATION_NESTED:
+                log(
+                    f"🔍 Detected NESTED segment: '{next_seg.segment_type_label}' ({next_seg.start_seconds}-{next_seg.end_seconds}) is nested inside '{current_seg.segment_type_label}' ({current_seg.start_seconds}-{current_seg.end_seconds})"
+                )
 
-                if is_nested_segment(current_seg, next_seg):
-                    log(
-                        f"🔍 Detected NESTED segment: '{next_seg.segment_type_label}' ({next_seg.start_seconds}-{next_seg.end_seconds}) is nested inside '{current_seg.segment_type_label}' ({current_seg.start_seconds}-{current_seg.end_seconds})"
-                    )
-
-                    if current_time is None or current_time < next_seg.start_seconds:
-                        next_jump_target = next_seg.start_seconds
-                        next_segment_info = f"nested segment '{next_seg.segment_type_label}'"
-                        log(
-                            f"🔗 Setting jump point for '{current_seg.segment_type_label}' to {next_jump_target}s ({next_segment_info})"
-                        )
-                    else:
-                        log(
-                            f"🔗 Context-aware: current time {current_time:.2f} is at or past nested segment, will skip to end of parent"
-                        )
-                        next_jump_target = None
-                        next_segment_info = None
-
-                    next_seg.next_segment_start = next_seg.end_seconds
-                    next_seg.next_segment_info = (
-                        "remaining '%s'" % current_seg.segment_type_label
-                    )
-                    log(
-                        "🔗 Setting jump point for nested '%s' to %ss (remaining '%s')"
-                        % (
-                            next_seg.segment_type_label,
-                            next_seg.end_seconds,
-                            current_seg.segment_type_label,
-                        )
-                    )
-
-                elif is_overlapping_segment(current_seg, next_seg):
-                    log(
-                        f"🔍 Detected OVERLAPPING segment: '{next_seg.segment_type_label}' ({next_seg.start_seconds}-{next_seg.end_seconds}) overlaps with '{current_seg.segment_type_label}' ({current_seg.start_seconds}-{current_seg.end_seconds})"
-                    )
+                if current_time is None or current_time < next_seg.start_seconds:
                     next_jump_target = next_seg.start_seconds
-                    next_segment_info = f"overlapping segment '{next_seg.segment_type_label}'"
-
-                if next_jump_target is not None:
-                    current_seg.next_segment_start = next_jump_target
-                    current_seg.next_segment_info = next_segment_info
+                    next_segment_info = jump_info_nested(next_seg)
                     log(
                         f"🔗 Setting jump point for '{current_seg.segment_type_label}' to {next_jump_target}s ({next_segment_info})"
                     )
-                    break
-            else:
+                else:
+                    log(
+                        f"🔗 Context-aware: current time {current_time:.2f} is at or past nested segment, will skip to end of parent"
+                    )
+                    next_jump_target = None
+                    next_segment_info = None
+
+                next_seg.next_segment_start = next_seg.end_seconds
+                next_seg.next_segment_info = jump_info_remaining(current_seg)
+                log(
+                    "🔗 Setting jump point for nested '%s' to %ss (%s)"
+                    % (
+                        next_seg.segment_type_label,
+                        next_seg.end_seconds,
+                        next_seg.next_segment_info,
+                    )
+                )
+
+            elif relation == RELATION_OVERLAPPING:
+                log(
+                    f"🔍 Detected OVERLAPPING segment: '{next_seg.segment_type_label}' ({next_seg.start_seconds}-{next_seg.end_seconds}) overlaps with '{current_seg.segment_type_label}' ({current_seg.start_seconds}-{current_seg.end_seconds})"
+                )
+                next_jump_target = next_seg.start_seconds
+                next_segment_info = jump_info_overlapping(next_seg)
+
+            if next_jump_target is not None:
+                current_seg.next_segment_start = next_jump_target
+                current_seg.next_segment_info = next_segment_info
+                log(
+                    f"🔗 Setting jump point for '{current_seg.segment_type_label}' to {next_jump_target}s ({next_segment_info})"
+                )
                 break
 
     if (

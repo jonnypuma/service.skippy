@@ -1502,3 +1502,211 @@ msgstr "Segments enregistrés avec succès"
 msgctxt "#41086"
 msgid "Failed to save segments. Check file permissions."
 msgstr "Échec de l'enregistrement des segments. Vérifiez les permissions de fichier."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Toujours passer ce segment ?"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Passer automatiquement %s pour %s à l'avenir ?"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Passer automatiquement %s pour ce titre à l'avenir ?"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Pas maintenant"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Saut automatique enregistré pour ce titre"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Demander le saut automatique par série ou film"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "Après un saut confirmé, Skippy demande si ce type de segment doit être passé automatiquement pour cette série ou ce film à l'avenir. L'information est enregistrée sous l'identifiant TMDB du titre et s'applique donc aussi aux autres versions du même film ou épisode."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Effacer les choix de saut automatique par titre"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Oublier toutes les décisions de saut automatique enregistrées par titre, y compris les demandes refusées, afin que Skippy puisse redemander."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "%d choix par titre effacé(s)."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Aucun choix par titre à effacer."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "Touche CEC du marqueur définie : %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Aucun code de touche capturé"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Touche de télécommande du marqueur définie : %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Statistiques"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Temps gagné : %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Segments passés : %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Sauts par type de segment :"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Aucun saut enregistré pour l'instant"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Segments téléchargés en ligne : %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Segments envoyés en ligne : %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Comptage depuis %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Réinitialiser les statistiques"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Remettre toutes les statistiques Skippy à zéro ?"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Affiche le temps total gagné, le nombre de segments passés au total et par type, et le nombre de segments téléchargés depuis ou envoyés vers les bases de données en ligne."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Remet tous les compteurs à zéro et recommence le comptage à partir d'aujourd'hui. Demande une confirmation au préalable."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Statistiques réinitialisées"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Skippy — Détection de touche de télécommande"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Appuyez sur la touche de télécommande à utiliser pour le marqueur de segment."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Les télécommandes Bluetooth/brutes sont enregistrées en key:<code>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "Les télécommandes CEC sont enregistrées sous les noms de boutons Kodi si possible."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Retour/Échap annule."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Choisissez le libellé du segment marqué."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Entrée/OK sélectionne. Retour/Échap annule."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Comment enregistrer ce marqueur ?"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Choisissez comment Skippy doit enregistrer cette plage marquée."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "La fusion est la plus sûre. Retour/Échap annule l'enregistrement."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Attention : chevauche les entrées existantes %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Saut automatique par titre"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Gérer les sauts automatiques enregistrés"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Affiche chaque série ou film ayant une règle de saut automatique enregistrée. Sélectionnez un titre pour supprimer cette entrée si vous avez changé d'avis."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Aucun titre avec saut automatique enregistré pour l'instant."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Sélectionnez un titre pour supprimer ses règles de saut automatique."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Supprimer le saut automatique pour %s ?"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Cela supprime les règles de saut automatique enregistrées pour ce titre afin que Skippy redemande."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Saut automatique supprimé pour %s"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Impossible de supprimer cette entrée de titre."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Supprimer"

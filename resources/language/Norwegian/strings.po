@@ -1504,3 +1504,211 @@ msgstr "Segmenter lagret vellykket"
 msgctxt "#41086"
 msgid "Failed to save segments. Check file permissions."
 msgstr "Kunne ikke lagre segmenter. Sjekk filtillatelser."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Alltid hoppe over dette segmentet?"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Hoppe automatisk over %s i %s fra nå av?"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Hoppe automatisk over %s i denne tittelen fra nå av?"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Ikke nå"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Automatisk hopping lagret for denne tittelen"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Spør om automatisk hopping per serie eller film"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "Etter at du har bekreftet et hopp, spør Skippy om den segmenttypen skal hoppes over automatisk i denne serien eller filmen fra nå av. Det lagres under tittelens TMDB-id og gjelder derfor også andre versjoner av samme film eller episode."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Tøm lagrede valg per tittel"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Glem alle lagrede valg om automatisk hopping per tittel – også de du avslo – slik at Skippy kan spørre igjen."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "Tømte %d lagrede valg per tittel."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Ingen lagrede valg per tittel å tømme."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "CEC-fjernkontrolltast for markering satt: %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Ingen tastekode registrert"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Fjernkontrolltast for markering satt: %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Statistikk"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Spart tid: %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Segmenter hoppet over: %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Hopp per segmenttype:"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Ingen hopp registrert ennå"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Segmenter lastet ned online: %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Segmenter lastet opp online: %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Teller siden %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Nullstill"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Nullstill statistikk"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Nullstille all Skippy-statistikk?"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Viser total spart tid, hvor mange segmenter som er hoppet over totalt og per type, og hvor mange segmenter som er lastet ned fra eller opp til nettdatabasene."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Setter alle tellere til null og begynner å telle fra i dag. Spør om bekreftelse først."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Statistikk nullstilt"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Skippy — Oppdagelse av fjernkontrolltast"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Trykk på fjernkontrolltasten som skal brukes til Segmentmarkøren."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Bluetooth-/rå fjernkontroller lagres som key:<code>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "CEC-fjernkontroller lagres som Kodi-knappenavn når det er mulig."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Tilbake/Esc avbryter."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Velg etiketten for det markerte segmentet."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Enter/OK velger. Tilbake/Esc avbryter."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Hvordan skal denne markøren lagres?"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Velg hvordan Skippy skal lagre dette markerte området."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "Slå sammen er tryggest. Tilbake/Esc avbryter lagringen."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Advarsel: overlapper eksisterende oppføringer %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Tittel-autoskip"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Administrer lagrede autoskips"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Viser hver serie eller film med en lagret autoskip-regel. Velg en tittel for å slette den oppføringen hvis du har ombestemt deg."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Ingen titler med autoskip lagret ennå."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Velg en tittel for å fjerne autoskip-reglene dens."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Fjerne autoskip for %s?"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Dette sletter de lagrede autoskip-reglene for denne tittelen slik at Skippy kan spørre igjen."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Autoskip fjernet for %s"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Kunne ikke fjerne den titteloppføringen."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Slett"

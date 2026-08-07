@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import unicodedata
 import xbmcaddon
 import xbmc
@@ -11,6 +12,25 @@ import xbmcvfs
 SKIPPY_LOG_ERROR_ONLY = "ErrorOnly"
 SKIPPY_LOG_NORMAL = "Normal"
 SKIPPY_LOG_ALL = "All"
+
+# The ~1s service loop builds an Addon handle ~10x per tick, plus once per log call.
+# Cache both the handle and the resolved log level briefly so settings edits still
+# take effect within a tick without paying for the churn.
+_SETTINGS_CACHE_TTL_S = 1.0
+_addon_cached = None
+_addon_cached_at = 0.0
+_log_level_cached = None
+_log_level_cached_at = 0.0
+
+
+def invalidate_settings_cache():
+    """Drop the cached Addon handle and log level (call after writing settings)."""
+    global _addon_cached, _addon_cached_at, _log_level_cached, _log_level_cached_at
+    _addon_cached = None
+    _addon_cached_at = 0.0
+    _log_level_cached = None
+    _log_level_cached_at = 0.0
+    _skip_mode_lists_cache.clear()
 
 
 def _redact_secrets_for_log(msg):
@@ -56,13 +76,20 @@ def parse_kodi_jsonrpc_raw(raw):
 
 def get_addon():
     """Get the addon object, handling cases where addon is being updated/uninstalled."""
+    global _addon_cached, _addon_cached_at
+    now = time.monotonic()
+    if _addon_cached is not None and (now - _addon_cached_at) < _SETTINGS_CACHE_TTL_S:
+        return _addon_cached
     try:
         # We pass the ID explicitly so Kodi knows exactly what we want
-        return xbmcaddon.Addon('service.skippy')
+        _addon_cached = xbmcaddon.Addon('service.skippy')
     except RuntimeError:
-        # If the addon is currently being uninstalled/updated, 
+        # If the addon is currently being uninstalled/updated,
         # this will return None instead of crashing
+        _addon_cached = None
         return None
+    _addon_cached_at = now
+    return _addon_cached
 
 
 def get_localized(addon, string_id, default="", *args):
@@ -220,12 +247,7 @@ def _addon_read_setting_raw(addon, key):
     return None
 
 
-def skippy_log_effective_detail_level(addon):
-    """
-    Returns 'Off', SKIPPY_LOG_ERROR_ONLY, SKIPPY_LOG_NORMAL, or SKIPPY_LOG_ALL.
-    """
-    if not addon:
-        return "Off"
+def _read_log_detail_level(addon):
     if not addon_get_bool(addon, "enable_verbose_logging", False):
         return "Off"
     lv = addon_get_setting_text(addon, "skippy_log_detail_level", SKIPPY_LOG_NORMAL)
@@ -235,6 +257,27 @@ def skippy_log_effective_detail_level(addon):
     if lv == SKIPPY_LOG_ALL:
         return SKIPPY_LOG_ALL
     return SKIPPY_LOG_NORMAL
+
+
+def skippy_log_effective_detail_level(addon):
+    """
+    Returns 'Off', SKIPPY_LOG_ERROR_ONLY, SKIPPY_LOG_NORMAL, or SKIPPY_LOG_ALL.
+    """
+    if not addon:
+        return "Off"
+    # Only cache for the shared handle; callers passing their own addon read live.
+    if addon is not _addon_cached:
+        return _read_log_detail_level(addon)
+    global _log_level_cached, _log_level_cached_at
+    now = time.monotonic()
+    if (
+        _log_level_cached is not None
+        and (now - _log_level_cached_at) < _SETTINGS_CACHE_TTL_S
+    ):
+        return _log_level_cached
+    _log_level_cached = _read_log_detail_level(addon)
+    _log_level_cached_at = now
+    return _log_level_cached
 
 
 def addon_get_bool(addon, key, default=False):
@@ -607,6 +650,29 @@ def is_skip_dialog_enabled(playback_type):
         return enabled
     return False
 
+_SKIP_MODE_KEYS = ("segment_always_skip", "segment_ask_skip", "segment_never_skip")
+# Parsed keyword sets keyed on the raw setting strings, so edits apply immediately
+# while the service loop stops re-normalizing ~75 keywords per active segment.
+_skip_mode_lists_cache = {}
+
+
+def _skip_mode_keyword_sets(addon):
+    raws = tuple(addon_get_setting_text(addon, key, "") or "" for key in _SKIP_MODE_KEYS)
+    cached = _skip_mode_lists_cache.get(raws)
+    if cached is not None:
+        return cached
+    parsed = tuple(
+        set(normalize_label(x) for x in raw.split(",") if x.strip()) for raw in raws
+    )
+    for key, raw in zip(_SKIP_MODE_KEYS, raws):
+        if not raw.strip():
+            log_service_detail(f"⚠ Setting '{key}' is empty")
+    if len(_skip_mode_lists_cache) > 8:
+        _skip_mode_lists_cache.clear()
+    _skip_mode_lists_cache[raws] = parsed
+    return parsed
+
+
 def get_user_skip_mode(label):
     title = normalize_label(label)
     log_service_detail(f"🔍 Determining skip mode for: '{title}'")
@@ -615,15 +681,7 @@ def get_user_skip_mode(label):
     if not addon:
         return "ask"  # During update/uninstall, default to ask
 
-    def parse_setting(key):
-        raw = addon_get_setting_text(addon, key, "") or ""
-        if not raw.strip():
-            log_service_detail(f"⚠ Setting '{key}' is empty")
-        return set(normalize_label(x) for x in raw.split(",") if x.strip())
-
-    always = parse_setting("segment_always_skip")
-    ask = parse_setting("segment_ask_skip")
-    never = parse_setting("segment_never_skip")
+    always, ask, never = _skip_mode_keyword_sets(addon)
 
     if not always and not ask and not never:
         log("⚠️ All skip mode lists are empty — using default behavior: ask")

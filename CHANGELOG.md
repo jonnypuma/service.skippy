@@ -1,5 +1,39 @@
 # Changelog
 
+## [5.5.1] - 2026-08-02
+
+### Added
+- **Title autoskip** settings category: hosts the per-title auto-skip toggle, **Manage saved auto-skips** (list titles with auto-skip rules and delete one entry at a time), and **Clear saved per-title auto-skip choices**.
+- **`per_show_overrides_ui.py`**: Manage modal with delete confirmation; loops until Close or the list is empty.
+
+### Fixed
+- **Marker remote discovery / picker chrome**: The five on-screen discovery labels and Segment Marker picker title/subtitle/footer strings (`#44040`–`#44050`) are localized in all ten language packs.
+
+## [5.5.0] - 2026-08-01
+
+### Added
+- **Per-title auto-skip (Ask to auto-skip per show or movie, default off)**: After you confirm an Ask skip, Skippy offers to auto-skip that segment type for that show or movie from now on. The choice — including a decline, so you are not asked twice — is stored in `addon_data/service.skippy/show_overrides/<kind>_tmdb_<id>.json` (IMDb id as fallback), so it follows the title across re-encodes, renames, and other versions of the same movie or episode. **Clear saved per-title auto-skip choices** forgets every decision.
+- **Statistics** (new settings category): Total time saved, segments skipped in total and per segment type, and how many segments were downloaded from or uploaded to the online databases. Counters live in `addon_data/service.skippy/statistics.json`; **Reset statistics** zeroes them after a confirmation prompt.
+- **`tests/test_stats_and_overrides.py`**: Counter accumulation, corrupt-file fallback, modal text and reset confirmation, override key derivation, per-title storage, and path-traversal refusal.
+- **`tests/test_main_loop_dedup.py`**: Confirms segment skips are evaluated once per steady tick and re-evaluated when the playhead moves or the segment list changes during parsing.
+
+### Fixed
+- **`sync_local_to_online`**: The Expert setting was documented and read by the code but missing from `settings.xml`, which left local→online upload permanently off. Added, along with **`toast_online_segments_applied`**, which was hardcoded on with no way to disable it.
+- **Marker remote discovery**: The three button-discovery toasts (CEC button set, remote button set, no button code captured) were hardcoded English and now use `strings.po` (`#44011`–`#44013`) in all ten language packs.
+- **Swedish catalog**: Five `msgid` lines used straight quotes where the English source uses typographic quotes.
+
+### Changed
+- **Hot path**: The add-on handle and log-detail level are cached for one second, skip-mode keyword lists are parsed once per settings value, and per-tick segment work no longer runs twice when the playhead has not moved and the segment list is unchanged.
+- **Shared helpers**: Time formatting (`time_format.py`), segment nesting/overlap and jump-hint text (`segment_relations.py`), and EDL line parsing (`edl_format.py`) now have one implementation each instead of near-duplicates in the service, editor, marker, and sidecar modules.
+- **Dead code**: Dropped the unused `maybe_save_online_segments_to_chapters_xml` wrapper and `skipdialog`'s duplicate `get_addon`, and renamed `segment_editor_parser.parse_embedded_chapters` to `parse_embedded_chapters_via_mkvextract` to end the name collision with the service-side parser.
+
+## [5.3.8] - 2026-08-01
+
+### Fixed
+- **Nested jump-label coverage**: Added an end-to-end test for the `0 60 5` / `20 40 9` EDL flow, including the **Skip to remaining Intro at 00:40** result.
+- **Jump-label casing**: Intentional capitalization such as `TV OVA` and `Behind-the-Scenes` is preserved while normalized labels remain human-readable.
+- **Long jump times**: Next-jump text now uses `HH:MM:SS` for targets at or beyond one hour; shorter targets retain `MM:SS`.
+
 ## [5.3.7] - 2026-07-26
 
 ### Fixed

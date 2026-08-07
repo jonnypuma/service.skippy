@@ -8,6 +8,7 @@ from typing import Any
 import xbmc
 
 from segment_item import segments_active_for_playback
+from segment_relations import segment_id
 from settings_utils import addon_get_int, get_addon, log
 from service_segment_processed_cache import clear_segment_processed_cache
 from service_skip_seek_property import skippy_seek_grace_active
@@ -103,16 +104,9 @@ def handle_rewind_and_nested_segments(ctx: Any, current_time: float) -> bool:
     return major_rewind_detected
 
 
-def _seg_id(segment):
-    return (
-        int(round(segment.start_seconds)),
-        int(round(segment.end_seconds)),
-    )
-
-
 def _parent_segment_for_id(monitor, parent_id):
     for seg in monitor.current_segments or []:
-        if _seg_id(seg) == parent_id:
+        if segment_id(seg) == parent_id:
             return seg
     return None
 
@@ -137,7 +131,7 @@ def _clear_parent_dismissals_when_inside_nested(ctx: Any, current_time: float) -
     )
 
     for nested_seg in segments_active_for_playback(monitor.current_segments, current_time):
-        nested_seg_id = _seg_id(nested_seg)
+        nested_seg_id = segment_id(nested_seg)
         parent_seg_id_check = parent_map.get(nested_seg_id)
         if not parent_seg_id_check:
             continue
@@ -184,10 +178,7 @@ def _clear_dismissals_on_nested_exit(ctx: Any, current_time: float) -> None:
     if not monitor.current_segments:
         return
     for nested_seg in monitor.current_segments:
-        nested_seg_id_exit = (
-            int(round(nested_seg.start_seconds)),
-            int(round(nested_seg.end_seconds)),
-        )
+        nested_seg_id_exit = segment_id(nested_seg)
         if current_time > nested_seg.end_seconds:
             if nested_seg_id_exit in monitor.recently_dismissed:
                 monitor.recently_dismissed.remove(nested_seg_id_exit)
@@ -224,10 +215,7 @@ def _cleanup_skipped_to_nested(ctx: Any, current_time: float) -> None:
             continue
 
         segments_to_remove.append(parent_seg_id)
-        nested_seg_id = (
-            int(round(nested_segment.start_seconds)),
-            int(round(nested_segment.end_seconds)),
-        )
+        nested_seg_id = segment_id(nested_segment)
         if nested_seg_id in monitor.recently_dismissed:
             monitor.recently_dismissed.remove(nested_seg_id)
             log(
@@ -243,11 +231,7 @@ def _cleanup_skipped_to_nested(ctx: Any, current_time: float) -> None:
                     % (nested_segment.segment_type_label, parent_seg_id)
                 )
                 for seg in monitor.current_segments:
-                    seg_id_check = (
-                        int(round(seg.start_seconds)),
-                        int(round(seg.end_seconds)),
-                    )
-                    if seg_id_check == parent_seg_id:
+                    if segment_id(seg) == parent_seg_id:
                         seg.next_segment_start = None
                         seg.next_segment_info = None
                         break

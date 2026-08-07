@@ -635,6 +635,14 @@ def main():
         True,
         vis=[("segment_marker_enabled", "true")],
     )
+    bool_setting(
+        g,
+        "toast_online_segments_applied",
+        1,
+        "33006",
+        "33007",
+        True,
+    )
 
     # ---- 30005 marker ----
     cat = ET.SubElement(section, "category", id="marker", label="30005")
@@ -890,6 +898,16 @@ def main():
         default="",
         hidden=True,
     )
+    labelenum_setting(
+        g,
+        "sync_local_to_online",
+        3,
+        "39057",
+        "39058",
+        "Off",
+        enum_a("Off|Ask", "Off|Ask"),
+        en=[("online_upload_enabled", "true")],
+    )
 
     # ---- 30007 backup / restore ----
     cat = ET.SubElement(section, "category", id="backup", label="30007")
@@ -925,6 +943,47 @@ def main():
         "38011",
         "38012",
         "RunScript(service.skippy,restore_upload_history)",
+    )
+
+    # ---- 44060 title autoskip ----
+    cat = ET.SubElement(section, "category", id="title_autoskip", label="44060")
+    g = ET.SubElement(cat, "group", id="g_title_autoskip", label="")
+    bool_setting(g, "per_show_autoskip_override", 0, "44005", "44006", False)
+    action_setting(
+        g,
+        "settings_action_manage_show_overrides",
+        0,
+        "44061",
+        "44062",
+        "RunScript(service.skippy,manage_show_overrides)",
+    )
+    action_setting(
+        g,
+        "settings_action_clear_show_overrides",
+        1,
+        "44007",
+        "44008",
+        "RunScript(service.skippy,clear_show_overrides)",
+    )
+
+    # ---- 44020 statistics ----
+    cat = ET.SubElement(section, "category", id="statistics", label="44020")
+    g = ET.SubElement(cat, "group", id="g_stats", label="")
+    action_setting(
+        g,
+        "settings_action_show_statistics",
+        0,
+        "44020",
+        "44034",
+        "RunScript(service.skippy,show_statistics)",
+    )
+    action_setting(
+        g,
+        "settings_action_reset_statistics",
+        1,
+        "44032",
+        "44035",
+        "RunScript(service.skippy,reset_statistics)",
     )
 
     # ---- 30003 debug ----
