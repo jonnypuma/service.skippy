@@ -6,14 +6,8 @@ from __future__ import annotations
 import copy
 from typing import Any, Optional
 
+from segment_relations import RELATION_NESTED, iter_forward_overlaps
 from settings_utils import addon_get_bool, get_addon
-
-
-def _is_nested_segment(segment_a, segment_b):
-    return (
-        segment_b.start_seconds >= segment_a.start_seconds
-        and segment_b.end_seconds <= segment_a.end_seconds
-    )
 
 
 def clear_segment_processed_cache(segment_monitor) -> None:
@@ -44,12 +38,8 @@ def processed_settings_signature(addon, playback_type, source_settings_sig) -> t
 def compute_link_boundaries(filtered_segments) -> tuple:
     boundaries = []
     for i in range(len(filtered_segments)):
-        parent = filtered_segments[i]
-        for j in range(i + 1, len(filtered_segments)):
-            child = filtered_segments[j]
-            if child.start_seconds >= parent.end_seconds:
-                break
-            if _is_nested_segment(parent, child):
+        for child, relation in iter_forward_overlaps(filtered_segments, i):
+            if relation == RELATION_NESTED:
                 boundaries.append(float(child.start_seconds))
     return tuple(sorted(set(boundaries)))
 

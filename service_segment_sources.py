@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import xbmc
 import xbmcvfs
 
+from edl_format import parse_edl_line
 from playback_segment_cache import publish_parse_cache
 from remote_segments import (
     fetch_remote_movie_segments,
@@ -41,6 +42,7 @@ from settings_utils import (
     log_service_detail,
     normalize_label,
 )
+from time_format import hms_to_seconds
 
 
 def _log_seg_detail(msg):
@@ -111,11 +113,6 @@ def _invoke_local_to_online_sync(
     on_local_to_online_sync_check(
         path, playback_type, local_list, remote_for_sync, segment_monitor
     )
-
-
-def hms_to_seconds(hms):
-    h, m, s = hms.strip().split(":")
-    return int(h) * 3600 + int(m) * 60 + float(s)
 
 
 def safe_file_read(*paths):
@@ -377,25 +374,26 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
 
     try:
         for line in edl_data.splitlines():
-            parts = line.strip().split()
-            if len(parts) == 3:
-                s, e, action = float(parts[0]), float(parts[1]), int(parts[2])
-                label = mapping.get(action)
+            parsed = parse_edl_line(line)
+            if parsed is None:
+                continue
+            s, e, action = parsed
+            label = mapping.get(action)
 
-                if ignore_internal and label is None:
-                    _log_seg_detail(
-                        f"⚠ Unrecognized EDL action type: {action} — not in mapping"
-                    )
-                    _log_seg_detail(
-                        f"🚫 Ignoring unmapped EDL action {action} due to setting"
-                    )
-                    continue
-
-                label = label or "segment"
-                segments.append(SegmentItem(s, e, label, source="edl"))
+            if ignore_internal and label is None:
                 _log_seg_detail(
-                    f"📗 Parsed EDL line: {s} → {e} | action={action} | label='{label}'"
+                    f"⚠ Unrecognized EDL action type: {action} — not in mapping"
                 )
+                _log_seg_detail(
+                    f"🚫 Ignoring unmapped EDL action {action} due to setting"
+                )
+                continue
+
+            label = label or "segment"
+            segments.append(SegmentItem(s, e, label, source="edl"))
+            _log_seg_detail(
+                f"📗 Parsed EDL line: {s} → {e} | action={action} | label='{label}'"
+            )
     except Exception as e:
         log(f"❌ EDL parse failed: {e}")
 

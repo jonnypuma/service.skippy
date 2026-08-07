@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 import xbmcgui
 import xbmcvfs
 
+from settings_utils import invalidate_settings_cache
+
 SCHEMA = "skippy_settings_backup_v1"
 ADDON_ID = "service.skippy"
 
@@ -160,6 +162,7 @@ def apply_imported_settings(addon, settings: dict, allowed: set[str]) -> tuple[i
             applied += 1
         except Exception:
             unknown += 1
+    invalidate_settings_cache()
     return applied, unknown
 
 

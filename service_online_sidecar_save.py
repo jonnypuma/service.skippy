@@ -146,14 +146,6 @@ def _online_sidecar_save_allowed(addon, video_path, segments):
     return True
 
 
-def _seconds_to_chapter_hms(sec):
-    sec = max(0.0, float(sec))
-    h = int(sec // 3600)
-    m = int((sec % 3600) // 60)
-    s = sec - h * 3600 - m * 60
-    return "%02d:%02d:%06.3f" % (h, m, s)
-
-
 def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
     """Keep all existing; add online segments that do not overlap any kept window (by time)."""
     merged = list(existing_items)
@@ -884,12 +876,8 @@ def _build_chapters_xml_tree(segment_items):
     edition = ET.SubElement(root, "EditionEntry")
     for seg in segment_items:
         atom = ET.SubElement(edition, "ChapterAtom")
-        ET.SubElement(atom, "ChapterTimeStart").text = _seconds_to_chapter_hms(
-            seg.start_seconds
-        )
-        ET.SubElement(atom, "ChapterTimeEnd").text = _seconds_to_chapter_hms(
-            seg.end_seconds
-        )
+        ET.SubElement(atom, "ChapterTimeStart").text = seconds_to_hms(seg.start_seconds)
+        ET.SubElement(atom, "ChapterTimeEnd").text = seconds_to_hms(seg.end_seconds)
         disp = ET.SubElement(atom, "ChapterDisplay")
         lab = seg.segment_type_label or "segment"
         ET.SubElement(disp, "ChapterString").text = (
@@ -1495,6 +1483,3 @@ def maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor
         invalidate_segment_parse_cache_if_path(video_path, segment_monitor)
 
 
-def maybe_save_online_segments_to_chapters_xml(video_path, segments, segment_monitor):
-    """Backward-compatible name; writes according to save format + policy."""
-    maybe_save_online_segments_to_sidecars(video_path, segments, segment_monitor)
