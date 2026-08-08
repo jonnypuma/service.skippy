@@ -142,6 +142,55 @@ def record_online_segment_uploaded(count=1) -> None:
         _flush()
 
 
+def merge_statistics_from_backup(incoming) -> bool:
+    """
+    Merge backup counters into local statistics.
+
+    Uses the larger value for each counter (idempotent on re-restore of the same
+    backup) and keeps the earlier ``since_utc`` when both are present.
+    Returns True when anything changed.
+    """
+    incoming_stats = _normalized(incoming)
+    with _lock:
+        load_statistics()
+        changed = False
+
+        local_since = _cache.get("since_utc") or ""
+        incoming_since = incoming_stats.get("since_utc") or ""
+        if incoming_since and (
+            not local_since or incoming_since < local_since
+        ):
+            _cache["since_utc"] = incoming_since
+            changed = True
+
+        local_skips = _cache["skips"]
+        incoming_skips = incoming_stats["skips"]
+        by_type = local_skips["by_type"]
+        for label, count in (incoming_skips.get("by_type") or {}).items():
+            if count > by_type.get(label, 0):
+                by_type[label] = count
+                changed = True
+        type_total = sum(by_type.values())
+        best_total = max(local_skips["total"], incoming_skips["total"], type_total)
+        if best_total != local_skips["total"]:
+            local_skips["total"] = best_total
+            changed = True
+        if incoming_skips["seconds_saved"] > local_skips["seconds_saved"]:
+            local_skips["seconds_saved"] = incoming_skips["seconds_saved"]
+            changed = True
+
+        local_online = _cache["online"]
+        incoming_online = incoming_stats["online"]
+        for field in ("segments_downloaded", "segments_uploaded"):
+            if incoming_online.get(field, 0) > local_online.get(field, 0):
+                local_online[field] = incoming_online[field]
+                changed = True
+
+        if changed:
+            _flush()
+        return changed
+
+
 def reset_statistics() -> None:
     global _cache
     with _lock:

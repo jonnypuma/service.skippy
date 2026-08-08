@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.5.2] - 2026-08-02
+
+### Changed
+- **Profile data backup / restore**: The former upload-history backup now also exports and merges **per-title auto-skip rules** and **statistics**, writing `skippy-profile-data-backup-*.json` (`skippy_profile_data_backup_v1`). Legacy `skippy_upload_history_backup_v1` files still restore (history only). Upload fingerprints union as before; title overrides merge per key; statistics keep the larger counter values (and recompute total from per-type counts).
+
 ## [5.5.1] - 2026-08-02
 
 ### Added

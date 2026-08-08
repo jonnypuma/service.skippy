@@ -188,6 +188,121 @@ def list_title_entries(*, auto_only: bool = True) -> list[dict]:
     return entries
 
 
+def export_all_overrides() -> dict[str, dict]:
+    """
+    Snapshot every stored title override for backup.
+
+    Returns ``{key: payload}`` where payload includes ``schema``, ``key``,
+    ``segments``, and optional ``title``.
+    """
+    out: dict[str, dict] = {}
+    for path in stored_override_files():
+        key = _key_from_filename(os.path.basename(path))
+        if not key:
+            continue
+        payload = read_json(path, default=None)
+        if not isinstance(payload, dict):
+            continue
+        raw = payload.get("segments")
+        if not isinstance(raw, dict):
+            continue
+        segments = {}
+        for label, mode in raw.items():
+            if mode in (MODE_AUTO, MODE_DECLINED):
+                normalized = normalize_label(label)
+                if normalized:
+                    segments[normalized] = mode
+        if not segments:
+            continue
+        entry = {
+            "schema": SCHEMA,
+            "key": key,
+            "segments": segments,
+        }
+        title = (payload.get("title") or "").strip()
+        if title:
+            entry["title"] = title
+        out[key] = entry
+    return out
+
+
+def merge_overrides_from_backup(incoming) -> tuple[int, int, int]:
+    """
+    Merge title override payloads from a backup into the local profile.
+
+    Returns ``(titles_written, segments_added, segments_updated)``.
+    Backup values overwrite the same label on conflict; other local labels stay.
+    """
+    if not isinstance(incoming, dict):
+        return 0, 0, 0
+    titles_written = 0
+    segments_added = 0
+    segments_updated = 0
+    for key, payload in incoming.items():
+        if not isinstance(key, str) or not isinstance(payload, dict):
+            continue
+        store_key = key.strip()
+        if not store_key or any(ch in store_key for ch in "/\\:"):
+            continue
+        path = _store_path(store_key)
+        if not path:
+            continue
+        raw_segments = payload.get("segments")
+        if not isinstance(raw_segments, dict):
+            continue
+        incoming_segments = {}
+        for label, mode in raw_segments.items():
+            if mode in (MODE_AUTO, MODE_DECLINED):
+                normalized = normalize_label(label)
+                if normalized:
+                    incoming_segments[normalized] = mode
+        if not incoming_segments:
+            continue
+
+        existing = read_json(path, default=None)
+        local = existing if isinstance(existing, dict) else {}
+        segments = local.get("segments")
+        if not isinstance(segments, dict):
+            segments = {}
+        local_normalized = {}
+        for label, mode in segments.items():
+            if mode in (MODE_AUTO, MODE_DECLINED):
+                normalized = normalize_label(label)
+                if normalized:
+                    local_normalized[normalized] = mode
+
+        changed = False
+        for label, mode in incoming_segments.items():
+            previous = local_normalized.get(label)
+            if previous is None:
+                local_normalized[label] = mode
+                segments_added += 1
+                changed = True
+            elif previous != mode:
+                local_normalized[label] = mode
+                segments_updated += 1
+                changed = True
+
+        title = (payload.get("title") or local.get("title") or "").strip()
+        title_changed = bool(title) and title != (local.get("title") or "").strip()
+        if not changed and not title_changed and os.path.isfile(path):
+            continue
+
+        out_payload = {
+            "schema": SCHEMA,
+            "key": store_key,
+            "segments": local_normalized,
+        }
+        if title:
+            out_payload["title"] = title
+        if not write_json(path, out_payload):
+            log("⚠️ Per-show override: could not merge backup for %s" % store_key)
+            continue
+        _cache.pop(store_key, None)
+        titles_written += 1
+    return titles_written, segments_added, segments_updated
+
+
 def clear_cache() -> None:
     _cache.clear()
 

@@ -48,7 +48,7 @@ service.skippy/
 ├── per_show_overrides.py / per_show_overrides_ui.py  # Per-title auto-skip store + manage modal
 ├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters and the statistics modal
 ├── skippy_profile_store.py         # JSON helpers for addon_data files
-├── settings_utils.py / settings_backup.py / upload_history_backup.py
+├── settings_utils.py / settings_backup.py / upload_history_backup.py  # Settings + profile-data backup (history, title autoskip, stats)
 ├── keymap_utils.py
 ├── icon.png / fanart.png / screenshot0{1,2,3}.png
 ├── resources/
@@ -340,6 +340,8 @@ The **Statistics** category opens a modal with:
 - **Online segments downloaded / uploaded** — segments received from TheIntroDB / IntroDB.app lookups and accepted by an upload.
 
 Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown at the bottom of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
+
+**Backup & Restore** (Advanced) includes **Back up / Restore profile data**: one JSON file carries upload fingerprints, per-title auto-skip rules, and statistics. Restore **merges** into the local profile (fingerprints union; title rules merge per key; statistics keep the larger counter for each field). Legacy upload-history-only backups still restore.
 
 ---
 
