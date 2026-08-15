@@ -35,10 +35,16 @@ def sub(parent: ET.Element, tag: str, text: str | None = None, **attrib) -> ET.E
     return e
 
 
-def add_deps(root_setting: ET.Element, visible=None, enable=None):
-    if not visible and not enable:
+def add_deps(root_setting: ET.Element, visible=None, enable=None, visible_or=None):
+    if not visible and not enable and not visible_or:
         return
     dr = sub(root_setting, "dependencies")
+    if visible_or:
+        dep = ET.SubElement(dr, "dependency", type="visible")
+        or_el = ET.SubElement(dep, "or")
+        for set_id, val in visible_or:
+            cond = ET.SubElement(or_el, "condition", setting=set_id)
+            cond.text = val
     if visible:
         for set_id, val in visible:
             dep = ET.SubElement(dr, "dependency", type="visible", setting=set_id)
@@ -65,12 +71,12 @@ def string_setting(
     return s
 
 
-def bool_setting(g, sid, level, label, help_s, default: bool, vis=None, en=None):
+def bool_setting(g, sid, level, label, help_s, default: bool, vis=None, en=None, vis_or=None):
     s = ET.SubElement(g, "setting", id=sid, type="boolean", label=str(label), help=help_s)
     sub(s, "level", str(level))
     sub(s, "default", "true" if default else "false")
     sub(s, "control", type="toggle")
-    add_deps(s, vis, en)
+    add_deps(s, vis, en, vis_or)
     return s
 
 
@@ -100,8 +106,9 @@ def int_setting(
     if step is not None:
         sub(co, "step", str(step))
     if slider:
-        ctrl = sub(s, "control", type="slider", format="integer")
-        sub(ctrl, "popup", "false")
+        # Spinner, not slider: Kodi addon sliders often ignore left/right and
+        # cannot represent a negative minimum (jump offset stuck at 0).
+        ctrl = sub(s, "control", type="spinner", format="integer")
     else:
         ctrl = sub(s, "control", type="edit", format="integer")
         sub(ctrl, "heading", str(label))
@@ -269,6 +276,14 @@ def main():
     cat = ET.SubElement(section, "category", id="playback", label="30001")
     # 32019 = Global options
     g = ET.SubElement(cat, "group", id="g_pb", label="32019")
+    action_setting(
+        g,
+        "settings_action_customize_skip_dialog",
+        0,
+        "44100",
+        "44101",
+        "RunScript(service.skippy,customize_skip_dialog)",
+    )
     int_setting(
         g,
         "rewind_threshold_seconds",
@@ -339,7 +354,16 @@ def main():
         "32020",
         "32020",
         "Full",
-        enum_a("Full|Minimal", "Full|Minimal"),
+        enum_a("Full|Compact Full|Minimal", "Full|CompactFull|Minimal"),
+    )
+    bool_setting(
+        g,
+        "compact_full_combined",
+        1,
+        "32101",
+        "32101",
+        False,
+        vis_or=[("skip_dialog_mode", "Full"), ("skip_dialog_mode", "CompactFull")],
     )
     labelenum_setting(
         g,
@@ -353,6 +377,7 @@ def main():
             "FFFFFFFF|FF8E8E8E|FF6E6E6E|FF3D3D3D|FF000000|FF1976D2|FFE5392F|FF43A047|FF00ACC1|FFE91E63|FF8E24AA|FFFF8A65|FFEF6C00|FFF9A825",
         ),
     )
+    bool_setting(g, "skip_dialog_all_caps", 1, "32099", "32099", False)
 
     g = ET.SubElement(cat, "group", id="g_prog", label="32021")
     bool_setting(g, "show_progress_bar", 1, "32007", "32007", True)
@@ -436,8 +461,8 @@ def main():
         "32000",
         "button_focus.png",
         enum_b(
-            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png",
-            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D",
+            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png",
+            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D",
         ),
     )
     labelenum_setting(
@@ -450,6 +475,27 @@ def main():
         enum_a(
             "Skip|Skip + Type|Skip + Type + Duration",
             "Skip|Skip + Type|Skip + Type + Duration",
+        ),
+    )
+    labelenum_setting(
+        g,
+        "skip_duration_format",
+        1,
+        "32102",
+        "32102",
+        "1m30s",
+        enum_a("1m30s|01:30", "1m30s|mm:ss"),
+    )
+    labelenum_setting(
+        g,
+        "skip_duration_content",
+        1,
+        "32103",
+        "32103",
+        "total",
+        enum_a(
+            "Total segment time|Elapsed (count up)|Remaining (count down)|Elapsed / Total",
+            "total|elapsed_up|elapsed_down|elapsed_total",
         ),
     )
     bool_setting(g, "hide_close_button", 1, "32014", "32014", False)

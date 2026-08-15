@@ -149,6 +149,12 @@
         </category>
         <category id="playback" label="30001">
             <group id="g_pb" label="32019">
+                <setting id="settings_action_customize_skip_dialog" type="action" label="44100" help="44101">
+                    <level>0</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,customize_skip_dialog)</data>
+                    </control>
+                </setting>
                 <setting id="rewind_threshold_seconds" type="integer" label="32008" help="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons.">
                     <level>3</level>
                     <default>8</default>
@@ -168,9 +174,7 @@
                         <maximum>5</maximum>
                         <step>1</step>
                     </constraints>
-                    <control type="slider" format="integer">
-                        <popup>false</popup>
-                    </control>
+                    <control type="spinner" format="integer"></control>
                 </setting>
                 <setting id="ask_dialog_debounce_ms" type="integer" label="32097" help="32098">
                     <level>2</level>
@@ -180,9 +184,7 @@
                         <maximum>500</maximum>
                         <step>10</step>
                     </constraints>
-                    <control type="slider" format="integer">
-                        <popup>false</popup>
-                    </control>
+                    <control type="spinner" format="integer"></control>
                 </setting>
                 <setting id="signal_skipping_for_skins" type="boolean" label="38017" help="38018">
                     <level>2</level>
@@ -226,11 +228,25 @@
                     <constraints>
                         <options>
                             <option label="Full">Full</option>
+                            <option label="Compact Full">CompactFull</option>
                             <option label="Minimal">Minimal</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
+                </setting>
+                <setting id="compact_full_combined" type="boolean" label="32101" help="32101">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible">
+                            <or>
+                                <condition setting="skip_dialog_mode">Full</condition>
+                                <condition setting="skip_dialog_mode">CompactFull</condition>
+                            </or>
+                        </dependency>
+                    </dependencies>
                 </setting>
                 <setting id="skip_dialog_font_color" type="string" label="32026" help="32026">
                     <level>1</level>
@@ -255,6 +271,11 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
+                </setting>
+                <setting id="skip_dialog_all_caps" type="boolean" label="32099" help="32099">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
                 </setting>
             </group>
             <group id="g_prog" label="32021">
@@ -303,9 +324,7 @@
                         <maximum>32</maximum>
                         <step>1</step>
                     </constraints>
-                    <control type="slider" format="integer">
-                        <popup>false</popup>
-                    </control>
+                    <control type="spinner" format="integer"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                     </dependencies>
@@ -326,9 +345,7 @@
                         <maximum>120</maximum>
                         <step>1</step>
                     </constraints>
-                    <control type="slider" format="integer">
-                        <popup>false</popup>
-                    </control>
+                    <control type="spinner" format="integer"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                         <dependency type="enable" setting="smooth_progress_bar">true</dependency>
@@ -363,6 +380,9 @@
                             <option label="Blue Rectangular 3D">button_focus_blue_rectangular_3d.png</option>
                             <option label="Blue Rounded 3D">button_focus_blue_rounded_3d.png</option>
                             <option label="Gold Rectangular 3D">button_focus_gold_rectangular_3d.png</option>
+                            <option label="Green 3D">button_focus_3d_green.png</option>
+                            <option label="Pink 3D">button_focus_3d_pink.png</option>
+                            <option label="Light Pink 3D">button_focus_3d_light_pink.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -376,6 +396,32 @@
                             <option label="Skip">Skip</option>
                             <option label="Skip + Type">Skip + Type</option>
                             <option label="Skip + Type + Duration">Skip + Type + Duration</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                </setting>
+                <setting id="skip_duration_format" type="string" label="32102" help="32102">
+                    <level>1</level>
+                    <default>1m30s</default>
+                    <constraints>
+                        <options>
+                            <option label="1m30s">1m30s</option>
+                            <option label="01:30">mm:ss</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                </setting>
+                <setting id="skip_duration_content" type="string" label="32103" help="32103">
+                    <level>1</level>
+                    <default>total</default>
+                    <constraints>
+                        <options>
+                            <option label="Total segment time">total</option>
+                            <option label="Elapsed (count up)">elapsed_up</option>
+                            <option label="Remaining (count down)">elapsed_down</option>
+                            <option label="Elapsed / Total">elapsed_total</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>

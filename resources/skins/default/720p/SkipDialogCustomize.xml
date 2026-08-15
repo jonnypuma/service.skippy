@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>4100</defaultcontrol>
+  <animation type="WindowOpen">
+    <effect type="fade" start="0" end="100" time="200" />
+  </animation>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="200" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top>
+      <width>1280</width><height>720</height>
+      <texture>white.png</texture>
+      <colordiffuse>D0000000</colordiffuse>
+    </control>
+
+    <control type="group" id="4080">
+      <left>16</left><top>16</top>
+      <width>500</width><height>688</height>
+      <control type="image">
+        <left>0</left><top>0</top>
+        <width>500</width><height>688</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0222222</colordiffuse>
+      </control>
+      <control type="label" id="4090">
+        <left>16</left><top>12</top>
+        <width>468</width><height>32</height>
+        <label>Customize skip dialog</label>
+        <font>font16</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <!-- onup/ondown/onleft/onright self-bound: Python owns navigation (avoids double-jump). -->
+      <control type="button" id="4100">
+        <left>16</left><top>52</top><width>468</width><height>34</height>
+        <label>Skip dialog mode</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4100</onup><ondown>4100</ondown><onleft>4100</onleft><onright>4100</onright>
+      </control>
+      <control type="button" id="4101">
+        <left>16</left><top>86</top><width>468</width><height>34</height>
+        <label>Hide ending text</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4101</onup><ondown>4101</ondown><onleft>4101</onleft><onright>4101</onright>
+      </control>
+      <control type="button" id="4102">
+        <left>16</left><top>120</top><width>468</width><height>34</height>
+        <label>Font color</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4102</onup><ondown>4102</ondown><onleft>4102</onleft><onright>4102</onright>
+      </control>
+      <control type="button" id="4104">
+        <left>16</left><top>154</top><width>468</width><height>34</height>
+        <label>Skip dialog text in ALL CAPS</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4104</onup><ondown>4104</ondown><onleft>4104</onleft><onright>4104</onright>
+      </control>
+
+      <control type="button" id="4103">
+        <left>16</left><top>154</top><width>468</width><height>34</height>
+        <label>Ignore overlapping</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4103</onup><ondown>4103</ondown><onleft>4103</onleft><onright>4103</onright>
+      </control>
+      <control type="label" id="4110">
+        <left>16</left><top>194</top><width>468</width><height>24</height>
+        <label>Full mode</label>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+      </control>
+      <control type="button" id="4111">
+        <left>16</left><top>218</top><width>468</width><height>34</height>
+        <label>Show progress bar</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4111</onup><ondown>4111</ondown><onleft>4111</onleft><onright>4111</onright>
+      </control>
+      <control type="button" id="4112">
+        <left>16</left><top>252</top><width>468</width><height>34</height>
+        <label>Progress countdown</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4112</onup><ondown>4112</ondown><onleft>4112</onleft><onright>4112</onright>
+      </control>
+      <control type="button" id="4114">
+        <left>16</left><top>286</top><width>468</width><height>34</height>
+        <label>Progress bar style</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4114</onup><ondown>4114</ondown><onleft>4114</onleft><onright>4114</onright>
+      </control>
+      <control type="button" id="4113">
+        <left>16</left><top>320</top><width>468</width><height>34</height>
+        <label>Progress bar height</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4113</onup><ondown>4113</ondown><onleft>4113</onleft><onright>4113</onright>
+      </control>
+      <control type="button" id="4115">
+        <left>16</left><top>354</top><width>468</width><height>34</height>
+        <label>Skip dialog position</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4115</onup><ondown>4115</ondown><onleft>4115</onleft><onright>4115</onright>
+      </control>
+      <control type="button" id="4116">
+        <left>16</left><top>388</top><width>468</width><height>34</height>
+        <label>Button focus style</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4116</onup><ondown>4116</ondown><onleft>4116</onleft><onright>4116</onright>
+      </control>
+      <control type="button" id="4117">
+        <left>16</left><top>422</top><width>468</width><height>34</height>
+        <label>Skip button format</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4117</onup><ondown>4117</ondown><onleft>4117</onleft><onright>4117</onright>
+      </control>
+      <control type="button" id="4121">
+        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <label>Combined skip and progress</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4121</onup><ondown>4121</ondown><onleft>4121</onleft><onright>4121</onright>
+      </control>
+      <control type="button" id="4122">
+        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <label>Skip duration format</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
+        <onup>4122</onup><ondown>4122</ondown><onleft>4122</onleft><onright>4122</onright>
+      </control>
+      <control type="button" id="4123">
+        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <label>Skip duration content</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
+        <onup>4123</onup><ondown>4123</ondown><onleft>4123</onleft><onright>4123</onright>
+      </control>
+      <control type="button" id="4118">
+        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <label>Hide close button</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4118</onup><ondown>4118</ondown><onleft>4118</onleft><onright>4118</onright>
+      </control>
+      <control type="button" id="4120">
+        <left>16</left><top>490</top><width>468</width><height>34</height>
+        <label>Hide Skip and Close Icons</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4120</onup><ondown>4120</ondown><onleft>4120</onleft><onright>4120</onright>
+      </control>
+      <control type="button" id="4119">
+        <left>16</left><top>524</top><width>468</width><height>34</height>
+        <label>Show skip button focus frame</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + String.IsEqual(Window.Property(skippy_customize_hide_close),true) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4119</onup><ondown>4119</ondown><onleft>4119</onleft><onright>4119</onright>
+      </control>
+      <control type="label" id="4130">
+        <left>16</left><top>194</top><width>468</width><height>24</height>
+        <label>Minimal mode</label>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+      </control>
+      <control type="button" id="4131">
+        <left>16</left><top>218</top><width>468</width><height>34</height>
+        <label>Minimal plate style</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4131</onup><ondown>4131</ondown><onleft>4131</onleft><onright>4131</onright>
+      </control>
+      <control type="button" id="4132">
+        <left>16</left><top>252</top><width>468</width><height>34</height>
+        <label>Minimal skip label format</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4132</onup><ondown>4132</ondown><onleft>4132</onleft><onright>4132</onright>
+      </control>
+      <control type="button" id="4133">
+        <left>16</left><top>286</top><width>468</width><height>34</height>
+        <label>Minimal skip dialog position</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4133</onup><ondown>4133</ondown><onleft>4133</onleft><onright>4133</onright>
+      </control>
+      <control type="button" id="4190">
+        <left>16</left><top>636</top><width>220</width><height>36</height>
+        <label>Save</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>4190</onup><ondown>4190</ondown><onleft>4190</onleft><onright>4190</onright>
+      </control>
+      <control type="button" id="4191">
+        <left>252</left><top>636</top><width>220</width><height>36</height>
+        <label>Cancel</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>4191</onup><ondown>4191</ondown><onleft>4191</onleft><onright>4191</onright>
+      </control>
+    </control>
+
+    <control type="group" id="4072">
+      <left>528</left><top>16</top>
+      <width>736</width><height>688</height>
+      <control type="image" id="4071">
+        <left>0</left><top>0</top>
+        <width>736</width><height>552</height>
+        <texture>white.png</texture>
+        <colordiffuse>FF202020</colordiffuse>
+        <aspectratio>scale</aspectratio>
+      </control>
+
+      <control type="group" id="3080">
+        <posx>298</posx>
+        <posy>444</posy>
+        <width>430</width>
+        <height>100</height>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <control type="image" id="3081">
+          <left>0</left><top>0</top>
+          <width>430</width><height>100</height>
+          <texture>white.png</texture>
+          <colordiffuse>F0000000</colordiffuse>
+        </control>
+        <control type="image">
+          <left>5</left><top>13</top>
+          <width>20</width><height>20</height>
+          <texture>icon_skip.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="image">
+          <left>325</left><top>13</top>
+          <width>20</width><height>20</height>
+          <texture>icon_close.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="image" id="3040">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_narrow),true) + !String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3042">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_narrow),true) + String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3041">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_wide),true) + !String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3043">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_wide),true) + String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3050">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <colordiffuse>66FFFFFF</colordiffuse>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3053">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <colordiffuse>66FFFFFF</colordiffuse>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3051">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3052">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="label" id="3012">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+        </control>
+        <control type="label" id="3015">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="label" id="3016">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>String.IsEqual(Window.Property(hide_close_button),true) + String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="label" id="3013">
+          <left>345</left><top>10</top>
+          <width>80</width><height>25</height>
+          <label>Close</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+        </control>
+        <control type="label" id="3011">
+          <left>5</left><top>41</top>
+          <width>420</width><height>20</height>
+          <label>$INFO[Window.Property(next_jump_label)]</label>
+          <font>font11</font>
+          <textcolor>FFB0D4E8</textcolor>
+          <shadowcolor>FF000000</shadowcolor>
+          <align>left</align>
+          <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+        </control>
+        <control type="label" id="2">
+          <left>5</left><top>66</top>
+          <width>420</width><height>20</height>
+          <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
+          <font>font10</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <visible>!String.IsEqual(Window.Property(hide_ending_text),true)</visible>
+        </control>
+        <control type="progress" id="3014">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <reveal>true</reveal>
+          <texturebg>progress_background.png</texturebg>
+          <midtexture>$INFO[Window.Property(skippy_progress_mid)]</midtexture>
+          <orientation>horizontal</orientation>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + !String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        </control>
+        <control type="image" id="3030">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <texture>progress_background.png</texture>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        </control>
+        <control type="image" id="3031">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <texture>$INFO[Window.Property(skippy_progress_mid)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        </control>
+      </control>
+
+      <control type="group" id="5090">
+        <posx>608</posx>
+        <posy>498</posy>
+        <width>120</width>
+        <height>46</height>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <control type="image" id="5021">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <texture>$INFO[Window.Property(skippy_minimal_plate)]</texture>
+          <aspectratio>stretch</aspectratio>
+        </control>
+        <control type="image" id="5040">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <texture>$INFO[Window.Property(skippy_minimal_plate)]</texture>
+          <aspectratio>stretch</aspectratio>
+        </control>
+        <control type="label" id="5012">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

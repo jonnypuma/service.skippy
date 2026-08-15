@@ -16,7 +16,7 @@
   </animation>
   <controls>
     <control type="group" id="3080">
-      <posx>1342</posx>
+      <posx>1260</posx>
       <posy>0</posy>
       <width>645</width>
       <height>150</height>
@@ -42,25 +42,53 @@
         <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
       <control type="image">
-        <left>420</left>
+        <left>488</left>
         <top>20</top>
         <width>30</width>
         <height>30</height>
         <texture>icon_close.png</texture>
         <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
+      <control type="image" id="3050">
+        <left>8</left><top>15</top>
+        <width>630</width><height>38</height>
+        <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+        <aspectratio>stretch</aspectratio>
+        <colordiffuse>66FFFFFF</colordiffuse>
+        <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+      </control>
+      <control type="image" id="3053">
+        <left>8</left><top>15</top>
+        <width>630</width><height>38</height>
+        <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+        <colordiffuse>66FFFFFF</colordiffuse>
+        <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+      </control>
+      <control type="image" id="3051">
+        <left>8</left><top>15</top>
+        <width>630</width><height>38</height>
+        <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+        <aspectratio>stretch</aspectratio>
+        <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+      </control>
+      <control type="image" id="3052">
+        <left>8</left><top>15</top>
+        <width>630</width><height>38</height>
+        <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+        <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+      </control>
       <control type="button" id="3012">
         <left>52</left>
         <top>15</top>
-        <width>360</width>
+        <width>435</width>
         <height>38</height>
         <label>Skip</label>
         <onright>3013</onright>
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>3</shadowoffsetx>
         <shadowoffsety>3</shadowoffsety>
@@ -72,14 +100,14 @@
       <control type="button" id="3015">
         <left>8</left>
         <top>15</top>
-        <width>555</width>
+        <width>630</width>
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>3</shadowoffsetx>
         <shadowoffsety>3</shadowoffsety>
@@ -91,14 +119,14 @@
       <control type="button" id="3016">
         <left>8</left>
         <top>15</top>
-        <width>555</width>
+        <width>630</width>
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>3</shadowoffsetx>
         <shadowoffsety>3</shadowoffsety>
@@ -108,7 +136,7 @@
         <visible>String.IsEqual(Window.Property(hide_close_button),true) + String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
       </control>
       <control type="button" id="3013">
-        <left>450</left>
+        <left>518</left>
         <top>15</top>
         <width>120</width>
         <height>38</height>
@@ -118,8 +146,8 @@
         <font>font16</font>
         <texturefocus>button_focus.png</texturefocus>
         <texturenofocus>-</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -131,11 +159,11 @@
       <control type="label" id="3011">
         <left>8</left>
         <top>62</top>
-        <width>540</width>
+        <width>630</width>
         <height>30</height>
         <label>$INFO[Window.Property(next_jump_label)]</label>
         <font>font11</font>
-        <textcolor>FFFFFFFF</textcolor>
+        <textcolor>FFB0D4E8</textcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -145,7 +173,7 @@
       <control type="label" id="2">
         <left>8</left>
         <top>99</top>
-        <width>540</width>
+        <width>630</width>
         <height>30</height>
         <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
         <font>font10</font>
@@ -159,13 +187,13 @@
       <control type="progress" id="3014">
         <left>8</left>
         <top>135</top>
-        <width>555</width>
+        <width>630</width>
         <height>24</height>
         <reveal>true</reveal>
         <texturebg>progress_background.png</texturebg>
-        <textureleft>progress_left.png</textureleft>
+        <textureleft>-</textureleft>
         <midtexture>progress_mid.png</midtexture>
-        <textureright>progress_right.png</textureright>
+        <textureright>-</textureright>
         <aspectratio>stretch</aspectratio>
         <orientation>horizontal</orientation>
               <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + !String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
@@ -173,7 +201,7 @@
       <control type="image" id="3030">
         <left>8</left>
         <top>135</top>
-        <width>555</width>
+        <width>630</width>
         <height>24</height>
         <texture>progress_background.png</texture>
         <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
@@ -181,7 +209,7 @@
       <control type="image" id="3031">
         <left>8</left>
         <top>135</top>
-        <width>555</width>
+        <width>630</width>
         <height>24</height>
         <texture>progress_mid.png</texture>
         <aspectratio>stretch</aspectratio>

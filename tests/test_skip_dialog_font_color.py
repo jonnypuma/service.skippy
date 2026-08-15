@@ -49,7 +49,6 @@ class SkipDialogFontColorTests(unittest.TestCase):
         kw = ctrl.setLabel.call_args[1]
         if kw:
             self.assertEqual(kw.get("textColor"), "0xFFFFFFFF")
-            self.assertEqual(kw.get("focusedColor"), "0xFFFFFFFF")
         else:
             args = ctrl.setLabel.call_args[0]
             self.assertEqual(args[0], "Skip Recap")

@@ -1,4 +1,3 @@
-import os
 import threading
 import time
 import unicodedata
@@ -7,12 +6,6 @@ import xbmc
 import xbmcgui
 
 from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
-from segment_relations import (
-    JUMP_KIND_NAMED,
-    JUMP_KIND_REMAINING,
-    parse_jump_info,
-)
-from skip_dialog_window_ui import _argb_to_kodi
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
@@ -22,56 +15,43 @@ from settings_utils import (
     get_localized,
     skippy_log_effective_detail_level,
 )
-from time_format import format_jump_clock
-
-
-def _display_segment_label(label):
-    """Humanize normalized labels without destroying intentional capitalization."""
-    label = (label or "").strip()
-    if not label:
-        return label
-    return label if any(char.isupper() for char in label) else label.title()
-
-
-def format_next_jump_label(addon, next_segment_info, next_segment_start):
-    """Build Ask-dialog subtext for the skip landing (or None if no jump target)."""
-    if next_segment_start is None:
-        return None
-    time_str = format_jump_clock(next_segment_start)
-    kind, label = parse_jump_info(next_segment_info)
-
-    if kind == JUMP_KIND_REMAINING:
-        return get_localized(
-            addon,
-            40007,
-            "Skip to remaining %s at %s",
-            _display_segment_label(label),
-            time_str,
-        )
-    if kind == JUMP_KIND_NAMED:
-        return get_localized(
-            addon,
-            40005,
-            "Skip to %s at %s",
-            _display_segment_label(label),
-            time_str,
-        )
-    return get_localized(addon, 40006, "Skip to next segment at %s", time_str)
-
-
-FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
-
-_FULL_SKIP_PANEL_GROUP_ID = 3080
-_FULL_SKIP_PANEL_BACKDROP_ID = 3081
-
-FULL_SKIP_PROGRESS_BAR_WIDTH = 370  # base width; use _skin_sc() at runtime for 1080i
-
-_SMOOTH_PROGRESS_BG_ID = 3030
-_SMOOTH_PROGRESS_FILL_ID = 3031
-# Skin <visible> on 3030/3031 reads this; Python setVisible on images is unreliable vs XML.
-_SMOOTH_BAR_WINDOW_PROP = "skippy_smooth_bar"
-# Panel stays hidden until onInit finishes layout/labels/progress, then Visible anim plays.
-_DIALOG_READY_PROP = "skippy_dialog_ready"
+from skip_dialog_appearance import (
+    FULL_SKIP_BUTTON_IDS,
+    FULL_SKIP_PROGRESS_BAR_WIDTH,
+    SMOOTH_BAR_WINDOW_PROP as _SMOOTH_BAR_WINDOW_PROP,
+    SMOOTH_PROGRESS_FILL_ID as _SMOOTH_PROGRESS_FILL_ID,
+    AddonSettingsReader,
+    apply_full_skip_layout,
+    apply_jump_properties,
+    build_skip_button_label as _build_skip_button_label,
+    DIALOG_READY_PROP as _DIALOG_READY_PROP,
+    elapsed_progress_percent as _elapsed_progress_percent,
+    elapsed_progress_percent_float as _elapsed_progress_percent_float,
+    ending_text_for_segment,
+    format_next_jump_label,
+    full_skip_focus_id as _full_skip_focus_id,
+    apply_skip_dialog_caps,
+    JUMP_LABEL_ARGB,
+    JUMP_LABEL_FONT,
+    ENDING_TEXT_ARGB,
+    is_compact_combined,
+    is_compact_full_mode,
+    is_minimal_skip_mode,
+    skip_duration_for_playhead,
+    skip_format_includes_duration,
+    COMBINED_FILL_SLICE_ID,
+    COMBINED_FILL_STRETCH_ID,
+    COMBINED_SLICE_MIN_W,
+    DURATION_CONTENT_TOTAL,
+    minimal_plate_filename,
+    progress_display_percent as _progress_display_percent,
+    progress_display_percent_float as _progress_display_percent_float,
+    resolve_font_color_argb,
+    set_skip_button_label as _set_skip_button_label,
+    set_skip_info_label as _set_skip_info_label,
+    shadow_for_text as _shadow_for_text,
+)
+from skip_dialog_window_ui import _argb_to_kodi
 
 
 def _ascii_log_text(msg):
@@ -87,164 +67,16 @@ def _normalize_control_id(control_id):
         return control_id
 
 
-def _full_skip_focus_id(hide_close, hide_skip_icon):
-    """3012 is hidden when the close button is hidden; match Full dialog XML visibility."""
-    if hide_close:
-        return 3016 if hide_skip_icon else 3015
-    return 3012
-
-# Human-readable fallbacks if settings.xml ever omits optionvalues (older installs).
-_SKIP_DIALOG_FONT_COLOR_ARGB = {
-    "white": "FFFFFFFF",
-    "light grey": "FF8E8E8E",
-    "light gray": "FF8E8E8E",
-    "grey": "FF6E6E6E",
-    "gray": "FF6E6E6E",
-    "dark grey": "FF3D3D3D",
-    "dark gray": "FF3D3D3D",
-    "black": "FF000000",
-    "blue": "FF1976D2",
-    "red": "FFE5392F",
-    "green": "FF43A047",
-    "aquamarine": "FF00ACC1",
-    "pink": "FFE91E63",
-    "purple": "FF8E24AA",
-    "peach": "FFFF8A65",
-    "orange": "FFEF6C00",
-    "yellow": "FFF9A825",
-}
-
-# labelenum may store a numeric index string on some Kodi builds.
-_SKIP_DIALOG_FONT_COLOR_INDEXED = (
-    "FFFFFFFF",
-    "FF8E8E8E",
-    "FF6E6E6E",
-    "FF3D3D3D",
-    "FF000000",
-    "FF1976D2",
-    "FFE5392F",
-    "FF43A047",
-    "FF00ACC1",
-    "FFE91E63",
-    "FF8E24AA",
-    "FFFF8A65",
-    "FFEF6C00",
-    "FFF9A825",
-)
-
-
 def _skip_dialog_font_color_argb(addon):
-    """Resolve addon setting to AARRGGBB. Avoid defaulting to white (invisible on light plates)."""
-    # Safe default matches old unfocused-ish tone, visible on white minimal plates.
-    fallback = "FF6E6E6E"
+    """Resolve addon setting to AARRGGBB. Tests patch addon_get_setting_text on this module."""
     if not addon:
-        return fallback
+        return resolve_font_color_argb("")
     raw = (addon_get_setting_text(addon, "skip_dialog_font_color", "FFFFFFFF") or "FFFFFFFF").strip()
-    if not raw:
-        return fallback
-    # Stored hex from optionvalues (preferred).
-    if len(raw) == 8 and all(c in "0123456789ABCDEFabcdef" for c in raw):
-        return raw.upper()
-    if len(raw) == 6 and all(c in "0123456789ABCDEFabcdef" for c in raw):
-        return f"FF{raw.upper()}"
-    key = raw.lower()
-    if key in _SKIP_DIALOG_FONT_COLOR_ARGB:
-        return _SKIP_DIALOG_FONT_COLOR_ARGB[key]
-    if raw.isdigit():
-        idx = int(raw)
-        if 0 <= idx < len(_SKIP_DIALOG_FONT_COLOR_INDEXED):
-            return _SKIP_DIALOG_FONT_COLOR_INDEXED[idx]
-    return fallback
-
-
-def _shadow_for_text(text_argb):
-    """Dark halo on light text; soft light halo on dark text (see CHANGELOG 1.0.18)."""
-    s = (text_argb or "").strip().upper()
-    if len(s) == 8:
-        r, g, b = int(s[2:4], 16), int(s[4:6], 16), int(s[6:8], 16)
-    elif len(s) == 6:
-        r, g, b = int(s[0:2], 16), int(s[2:4], 16), int(s[4:6], 16)
-    else:
-        return "0xFF000000"
-    lum = 0.299 * r + 0.587 * g + 0.114 * b
-    if lum >= 140:
-        return "0xFF000000"
-    return "0x66FFFFFF"
-
-
-def _set_skip_button_label(control, label, text_argb, font="font16"):
-    """WindowXML ignores skin <font>/textcolor; apply label + colours in Python."""
-    if not control:
-        return
-    tc = _argb_to_kodi(text_argb)
-    sc = _shadow_for_text(text_argb)
-    try:
-        control.setLabel(
-            label,
-            font=font,
-            textColor=tc,
-            disabledColor=tc,
-            shadowColor=sc,
-            focusedColor=tc,
-        )
-        return
-    except TypeError:
-        pass
-    try:
-        control.setLabel(label, font, tc, tc, sc, tc)
-        return
-    except TypeError:
-        pass
-    try:
-        control.setDisabledColor(tc)
-    except Exception:
-        pass
-    try:
-        control.setLabel(label, font, tc, sc, tc)
-    except TypeError:
-        try:
-            control.setLabel(label, font)
-        except Exception:
-            try:
-                control.setLabel(label)
-            except Exception:
-                pass
-
-
-def _set_skip_info_label(control, label, text_argb, font="font10"):
-    if not control:
-        return
-    tc = _argb_to_kodi(text_argb)
-    sc = _shadow_for_text(text_argb)
-    try:
-        control.setLabel(
-            label,
-            font=font,
-            textColor=tc,
-            disabledColor=tc,
-            shadowColor=sc,
-            focusedColor=tc,
-        )
-        return
-    except TypeError:
-        pass
-    try:
-        control.setLabel(label, font, tc, tc, sc, tc)
-    except TypeError:
-        try:
-            control.setLabel(label, font, tc)
-        except TypeError:
-            try:
-                control.setLabel(label)
-            except Exception:
-                pass
+    return resolve_font_color_argb(raw)
 
 
 def _minimal_plate_filename(addon):
-    raw = (addon_get_setting_text(addon, "minimal_button_style", "") or "").strip()
-    if raw.endswith(".png"):
-        return raw
-    return "minimal_rounded_gray_640.png"
+    return minimal_plate_filename(AddonSettingsReader(addon))
 
 
 def log(msg):
@@ -272,48 +104,6 @@ def log_always(msg):
     else:
         xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
-def _build_skip_button_label(segment, format_setting, duration_str, addon=None):
-    typ = segment.segment_type_label.title()
-    if format_setting == "Skip":
-        return get_localized(addon, 40000, "Skip")
-    if format_setting == "Skip + Type":
-        return get_localized(addon, 40002, "Skip %s", typ)
-    return get_localized(addon, 40003, "Skip %s (%s)", typ, duration_str)
-
-
-def _elapsed_progress_percent_float(current_time, segment_start, total_duration):
-    if not total_duration or total_duration <= 0:
-        return 0.0
-    elapsed = max(current_time - segment_start, 0)
-    p = (elapsed / float(total_duration)) * 100.0
-    return min(max(p, 0.0), 100.0)
-
-
-def _progress_display_percent_float(elapsed_pct_f, countdown):
-    return 100.0 - elapsed_pct_f if countdown else elapsed_pct_f
-
-
-def _elapsed_progress_percent(current_time, segment_start, total_duration):
-    if not total_duration or total_duration <= 0:
-        return 0
-    elapsed = max(current_time - segment_start, 0)
-    p = int((elapsed / float(total_duration)) * 100)
-    return min(max(p, 0), 100)
-
-
-def _progress_display_percent(elapsed_pct, countdown):
-    return 100 - elapsed_pct if countdown else elapsed_pct
-
-
-def _seed_progress_values(current_time, segment_start, total_duration, countdown, bar_width):
-    """Return (classic_percent, smooth_fill_width) for the current playhead."""
-    elapsed_f = _elapsed_progress_percent_float(current_time, segment_start, total_duration)
-    pct_f = _progress_display_percent_float(elapsed_f, countdown)
-    pct_f = min(max(pct_f, 0.0), 100.0)
-    disp = int(round(pct_f))
-    w = int(round((pct_f / 100.0) * float(bar_width)))
-    return disp, max(0, min(int(bar_width), w))
-
 
 class SkipDialog(xbmcgui.WindowXMLDialog):
     def _skin_sc(self, value):
@@ -327,6 +117,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             self._skin_resolution = init_window_xml_dialog(super(SkipDialog, self), args)
             self.segment = kwargs.get("segment", None)
             self._minimal_mode = False
+            self._compact_mode = False
+            self._combined_mode = False
             log(
                 f"📦 Loaded dialog layout: {args[0]} ({self._skin_resolution})"
             )
@@ -369,18 +161,47 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         ).strip()
         self._skip_text_color_argb = _skip_dialog_font_color_argb(addon)
         self.setProperty("skip_dialog_text_color", self._skip_text_color_argb)
+        self._skip_all_caps = addon_get_bool(addon, "skip_dialog_all_caps", False) if addon else False
         log_always(
             f"Skip dialog font colour: raw={raw_font_color!r} "
             f"resolved={self._skip_text_color_argb} kodi={_argb_to_kodi(self._skip_text_color_argb)}"
         )
-        self._minimal_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip() == "Minimal"
+        dialog_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip()
+        self._minimal_mode = is_minimal_skip_mode(dialog_mode)
+        self._compact_mode = is_compact_full_mode(dialog_mode)
+        self._combined_mode = bool(addon) and is_compact_combined(AddonSettingsReader(addon))
+        self._skip_fmt = (
+            (addon_get_setting_text(addon, "minimal_skip_button_format", "Skip + Type") or "Skip + Type")
+            if self._minimal_mode
+            else (
+                addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration")
+                or "Skip + Type + Duration"
+            )
+        )
+        dur_content = (
+            addon_get_setting_text(addon, "skip_duration_content", DURATION_CONTENT_TOTAL)
+            or DURATION_CONTENT_TOTAL
+        ).strip()
+        self._skip_duration_live = skip_format_includes_duration(self._skip_fmt) and (
+            dur_content != DURATION_CONTENT_TOTAL
+        )
+        self._last_skip_dur_key = None
 
         if self._minimal_mode:
-            fmt = addon_get_setting_text(addon, "minimal_skip_button_format", "Skip + Type") or "Skip + Type"
             log(f"🖼️ Minimal plate (XML patched in service): {_minimal_plate_filename(addon)}")
-        else:
-            fmt = addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration") or "Skip + Type + Duration"
-        label = _build_skip_button_label(self.segment, fmt, duration_str, addon)
+        try:
+            playhead = xbmc.Player().getTime()
+        except Exception:
+            playhead = self.segment.start_seconds
+        duration_str = skip_duration_for_playhead(
+            playhead,
+            self.segment,
+            AddonSettingsReader(addon),
+        ) if addon else duration_str
+        label = apply_skip_dialog_caps(
+            _build_skip_button_label(self.segment, self._skip_fmt, duration_str, addon),
+            self._skip_all_caps,
+        )
         text_color = self._skip_text_color_argb
         for cid in FULL_SKIP_BUTTON_IDS:
             try:
@@ -390,24 +211,27 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         self.setProperty("countdown", "")
 
-        if self.segment.segment_type_label and self.segment.segment_type_label.lower() != "segment":
-            segment_type = self.segment.segment_type_label.title()
-        else:
-            segment_type = "Segment"
         self.setProperty(
             "ending_text",
-            get_localized(addon, 40004, "%s ending in:", segment_type),
+            apply_skip_dialog_caps(ending_text_for_segment(addon, self.segment), self._skip_all_caps),
         )
 
         hide_ending_text = addon_get_bool(addon, "hide_ending_text", False) if addon else False
-        self.setProperty("hide_ending_text", "true" if hide_ending_text else "false")
-
         hide_close = False
         hide_skip_icon = False
+        if self._compact_mode:
+            hide_ending_text = True
+            hide_skip_icon = True
+        self.setProperty("hide_ending_text", "true" if hide_ending_text else "false")
+        self.setProperty("skippy_compact_full", "true" if self._compact_mode else "false")
+
         if not self._minimal_mode:
             hide_close = addon_get_bool(addon, "hide_close_button", False) if addon else False
+            if self._combined_mode:
+                hide_close = True
             self.setProperty("hide_close_button", "true" if hide_close else "false")
-            hide_skip_icon = addon_get_bool(addon, "hide_skip_icon", False) if addon else False
+            if not self._compact_mode:
+                hide_skip_icon = addon_get_bool(addon, "hide_skip_icon", False) if addon else False
             self.setProperty("hide_skip_icon", "true" if hide_skip_icon else "false")
             if hide_close:
                 try:
@@ -426,21 +250,13 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         self._total_duration = self.segment.end_seconds - self.segment.start_seconds
         self._start_time = time.time()
 
-        # Next-jump subtext: named next segment, or "remaining Intro" after nested skip.
-        jump_str = format_next_jump_label(
-            addon,
-            getattr(self.segment, "next_segment_info", None),
-            getattr(self.segment, "next_segment_start", None),
-        )
+        jump_str = apply_jump_properties(self, addon, self.segment, all_caps=self._skip_all_caps)
         if jump_str:
-            self.setProperty("next_jump_label", jump_str)
-            self.setProperty("show_next_jump", "true")
             log(
                 "⏭️ Dialog configured for jump to next segment at %ss: %s"
                 % (self.segment.next_segment_start, jump_str)
             )
         else:
-            self.setProperty("show_next_jump", "false")
             log("➡️ Dialog configured for normal skip to end of segment")
 
         if not self._minimal_mode:
@@ -468,124 +284,18 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
     def _apply_full_skip_layout(self, addon):
         """Stack optional Full rows, set final panel height, seed progress from playhead, then show."""
-        sc = self._skin_sc
-        CONTENT_TOP = sc(41)
-        GAP_AFTER_JUMP = sc(5)
-        GAP_BEFORE_PROGRESS = sc(4)
-        BOTTOM_MARGIN = sc(5)
-        META_LINE_H = sc(20)
-        BTN_BOTTOM = sc(35)
-        UNDER_BTNS_FALLBACK = sc(14)
-        LEFT_MARGIN = sc(5)
-        progress_bar_width = sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
-
-        ad = addon if addon is not None else get_addon()
-        show_jump = self.getProperty("show_next_jump") == "true"
-        hide_end = self.getProperty("hide_ending_text") == "true"
-        show_progress = addon_get_bool(ad, "show_progress_bar", False) if ad else False
-        countdown = addon_get_bool(ad, "progress_bar_countdown", False) if ad else False
-
-        progress_h = sc(
-            addon_get_int(ad, "progress_bar_height", 16, minimum=5, maximum=32)
-            if ad
-            else 16
+        try:
+            current = self.player.getTime()
+        except Exception:
+            current = self.segment.start_seconds
+        apply_full_skip_layout(
+            self,
+            AddonSettingsReader(addon if addon is not None else get_addon()),
+            playhead=current,
+            segment=self.segment,
+            scale_fn=self._skin_sc,
+            log_fn=lambda msg: log("⚠️ %s" % msg) if "fail" in msg.lower() or "error" in msg.lower() else log("📊 %s" % msg),
         )
-        smooth_ui = addon_get_bool(ad, "smooth_progress_bar", False) if ad else False
-
-        bottom = CONTENT_TOP
-        if show_jump:
-            bottom += META_LINE_H
-            if not hide_end or show_progress:
-                bottom += GAP_AFTER_JUMP
-        if not hide_end:
-            bottom += META_LINE_H
-            if show_progress:
-                bottom += GAP_BEFORE_PROGRESS
-        if show_progress:
-            bottom += progress_h
-        has_meta = show_jump or (not hide_end) or show_progress
-        total_h = (bottom + BOTTOM_MARGIN) if has_meta else (BTN_BOTTOM + UNDER_BTNS_FALLBACK)
-        total_h = max(total_h, BTN_BOTTOM + UNDER_BTNS_FALLBACK)
-
-        try:
-            self.getControl(_FULL_SKIP_PANEL_GROUP_ID).setHeight(total_h)
-            self.getControl(_FULL_SKIP_PANEL_BACKDROP_ID).setHeight(total_h)
-        except Exception as e:
-            log(f"⚠️ Full skip panel height: {e}")
-
-        bottom = CONTENT_TOP
-
-        try:
-            if show_jump:
-                label_j = self.getControl(3011)
-                label_j.setPosition(LEFT_MARGIN, bottom)
-                bottom += META_LINE_H
-                if not hide_end or show_progress:
-                    bottom += GAP_AFTER_JUMP
-
-            if not hide_end:
-                label_e = self.getControl(2)
-                label_e.setPosition(LEFT_MARGIN, bottom)
-                bottom += META_LINE_H
-                if show_progress:
-                    bottom += GAP_BEFORE_PROGRESS
-
-            progress = self.getControl(3014)
-            progress.setVisible(False)
-            self._set_smooth_bar_window_visible(False)
-            if show_progress:
-                py = bottom
-                progress.setPosition(LEFT_MARGIN, py)
-                progress.setHeight(progress_h)
-                try:
-                    current = self.player.getTime()
-                except Exception:
-                    current = self.segment.start_seconds
-                init_pct, init_w = _seed_progress_values(
-                    current,
-                    self.segment.start_seconds,
-                    self._total_duration,
-                    countdown,
-                    progress_bar_width,
-                )
-                progress.setPercent(init_pct)
-                self._last_smooth_fill_w = init_w
-                try:
-                    bg = self.getControl(_SMOOTH_PROGRESS_BG_ID)
-                    fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
-                    bg.setPosition(LEFT_MARGIN, py)
-                    bg.setWidth(progress_bar_width)
-                    bg.setHeight(progress_h)
-                    fill.setPosition(LEFT_MARGIN, py)
-                    fill.setHeight(progress_h)
-                    fill.setWidth(init_w)
-                except Exception as e:
-                    log(f"⚠️ Smooth progress controls (3030/3031): {e}")
-                    self._set_smooth_bar_window_visible(False)
-                    progress.setVisible(True)
-                else:
-                    if smooth_ui:
-                        progress.setVisible(False)
-                        self._set_smooth_bar_window_visible(True)
-                    else:
-                        self._set_smooth_bar_window_visible(False)
-                        progress.setVisible(True)
-                try:
-                    self.setProperty("skippy_progress_ready", "true")
-                except Exception:
-                    pass
-                log(
-                    f"📊 Progress seeded at open: {init_pct}% / {init_w}px "
-                    f"(countdown={countdown}, playhead={current:.2f}s)"
-                )
-            else:
-                self._set_smooth_bar_window_visible(False)
-                try:
-                    self.setProperty("skippy_progress_ready", "false")
-                except Exception:
-                    pass
-        except Exception as e:
-            log(f"⚠️ Full skip vertical layout failed: {e}")
 
     def _apply_skip_dialog_focus(self, hide_close, hide_skip_icon):
         """Set button focus so texturefocus / OK work (call only after skippy_dialog_ready=true)."""
@@ -631,67 +341,79 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             smooth = addon_get_bool(addon, "smooth_progress_bar", False) if addon else False
             ups = addon_get_int(addon, "progress_bar_updates_per_second", 4) if addon else 4
             ups = min(120, max(2, ups))
-            delay = (1.0 / ups) if smooth else 0.25
+            delay = (1.0 / ups) if (smooth or getattr(self, "_combined_mode", False)) else 0.25
 
             current = self.player.getTime()
             remaining = int(self.segment.end_seconds - current)
             m, s = divmod(max(remaining, 0), 60)
             self.setProperty("countdown", f"{m:02d}:{s:02d}")
             self._refresh_countdown_label()
+            self._refresh_skip_duration_label(current)
 
             if not self._minimal_mode:
                 try:
-                    raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
-                    show_progress = addon_get_bool(addon, "show_progress_bar", False)
-                    countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
-                    progress = self.getControl(3014)
-                    fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
+                    if getattr(self, "_combined_mode", False):
+                        self._update_combined_fill(current)
+                    else:
+                        raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
+                        show_progress = addon_get_bool(addon, "show_progress_bar", False)
+                        countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
+                        progress = self.getControl(3014)
+                        fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
 
-                    if show_progress:
-                        if smooth:
-                            progress.setVisible(False)
-                            self._set_smooth_bar_window_visible(True)
-                            elapsed_f = _elapsed_progress_percent_float(
-                                current, self.segment.start_seconds, self._total_duration
-                            )
-                            pct_f = _progress_display_percent_float(elapsed_f, countdown)
-                            w = int(
-                                round(
-                                    (pct_f / 100.0)
-                                    * self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
+                        if show_progress:
+                            if smooth:
+                                progress.setVisible(False)
+                                self._set_smooth_bar_window_visible(True)
+                                elapsed_f = _elapsed_progress_percent_float(
+                                    current, self.segment.start_seconds, self._total_duration
                                 )
-                            )
-                            bar_w = self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
-                            w = max(0, min(bar_w, w))
-                            if w != self._last_smooth_fill_w:
-                                self._last_smooth_fill_w = w
-                                fill.setWidth(w)
-                            now_wall = time.time()
-                            if (now_wall - self._last_smooth_log_ts) >= 1.5:
-                                self._last_smooth_log_ts = now_wall
-                                log(
-                                    f"📊 Smooth bar {w}px (≈{pct_f:.2f}%, countdown={countdown}, ups={ups}, raw: '{raw_setting}')"
+                                pct_f = _progress_display_percent_float(elapsed_f, countdown)
+                                w = int(
+                                    round(
+                                        (pct_f / 100.0)
+                                        * getattr(
+                                            self,
+                                            "_skip_progress_bar_width",
+                                            self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
+                                        )
+                                    )
                                 )
+                                bar_w = getattr(
+                                    self,
+                                    "_skip_progress_bar_width",
+                                    self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
+                                )
+                                w = max(0, min(bar_w, w))
+                                if w != self._last_smooth_fill_w:
+                                    self._last_smooth_fill_w = w
+                                    fill.setWidth(w)
+                                now_wall = time.time()
+                                if (now_wall - self._last_smooth_log_ts) >= 1.5:
+                                    self._last_smooth_log_ts = now_wall
+                                    log(
+                                        f"📊 Smooth bar {w}px (≈{pct_f:.2f}%, countdown={countdown}, ups={ups}, raw: '{raw_setting}')"
+                                    )
+                            else:
+                                self._last_smooth_fill_w = None
+                                self._set_smooth_bar_window_visible(False)
+                                progress.setVisible(True)
+                                elapsed_pct = _elapsed_progress_percent(
+                                    current, self.segment.start_seconds, self._total_duration
+                                )
+                                disp = _progress_display_percent(elapsed_pct, countdown)
+                                progress.setPercent(disp)
+                                now_wall = time.time()
+                                if (now_wall - self._last_classic_log_ts) >= 1.5:
+                                    self._last_classic_log_ts = now_wall
+                                    log(
+                                        f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
+                                    )
                         else:
                             self._last_smooth_fill_w = None
+                            progress.setVisible(False)
                             self._set_smooth_bar_window_visible(False)
-                            progress.setVisible(True)
-                            elapsed_pct = _elapsed_progress_percent(
-                                current, self.segment.start_seconds, self._total_duration
-                            )
-                            disp = _progress_display_percent(elapsed_pct, countdown)
-                            progress.setPercent(disp)
-                            now_wall = time.time()
-                            if (now_wall - self._last_classic_log_ts) >= 1.5:
-                                self._last_classic_log_ts = now_wall
-                                log(
-                                    f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
-                                )
-                    else:
-                        self._last_smooth_fill_w = None
-                        progress.setVisible(False)
-                        self._set_smooth_bar_window_visible(False)
-                        log(f"📊 Progress bar hidden due to setting (raw: '{raw_setting}')")
+                            log(f"📊 Progress bar hidden due to setting (raw: '{raw_setting}')")
                 except Exception as e:
                     log(f"⚠️ Progress bar update error: {e}")
 
@@ -708,6 +430,54 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 break
 
             time.sleep(delay)
+
+    def _refresh_skip_duration_label(self, playhead):
+        if not getattr(self, "_skip_duration_live", False):
+            return
+        addon = get_addon()
+        if not addon:
+            return
+        dur = skip_duration_for_playhead(playhead, self.segment, AddonSettingsReader(addon))
+        if dur == getattr(self, "_last_skip_dur_key", None):
+            return
+        self._last_skip_dur_key = dur
+        label = apply_skip_dialog_caps(
+            _build_skip_button_label(self.segment, self._skip_fmt, dur, addon),
+            getattr(self, "_skip_all_caps", False),
+        )
+        text_color = getattr(self, "_skip_text_color_argb", None) or "FF6E6E6E"
+        ids = (3012,) if self._minimal_mode else FULL_SKIP_BUTTON_IDS
+        for cid in ids:
+            try:
+                _set_skip_button_label(self.getControl(cid), label, text_color)
+            except Exception:
+                pass
+
+    def _update_combined_fill(self, current):
+        addon = get_addon()
+        countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
+        bar_w = getattr(
+            self,
+            "_skip_progress_bar_width",
+            self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
+        )
+        elapsed_f = _elapsed_progress_percent_float(
+            current, self.segment.start_seconds, self._total_duration
+        )
+        pct_f = _progress_display_percent_float(elapsed_f, countdown)
+        w = int(round((pct_f / 100.0) * float(bar_w)))
+        w = max(0, min(int(bar_w), w))
+        sliced = self.getProperty("skippy_combined_slice") == "true"
+        if sliced and w > 0:
+            w = max(w, min(int(bar_w), COMBINED_SLICE_MIN_W))
+        if w == getattr(self, "_last_smooth_fill_w", None):
+            return
+        self._last_smooth_fill_w = w
+        fill_id = COMBINED_FILL_SLICE_ID if sliced else COMBINED_FILL_STRETCH_ID
+        try:
+            self.getControl(fill_id).setWidth(w)
+        except Exception:
+            pass
 
     def _apply_dialog_text_colors(self):
         """Apply label text and colours; plain setLabel() resets XML/$INFO colours."""
@@ -726,7 +496,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                     pass
             try:
                 c = self.getControl(3013)
-                close_lbl = get_localized(get_addon(), 40001, "Close")
+                close_lbl = apply_skip_dialog_caps(
+                    get_localized(get_addon(), 40001, "Close"),
+                    getattr(self, "_skip_all_caps", False),
+                )
                 _set_skip_button_label(c, close_lbl, text_color)
             except Exception:
                 pass
@@ -734,7 +507,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 if self.getProperty("show_next_jump") == "true":
                     c = self.getControl(3011)
                     txt = self.getProperty("next_jump_label") or ""
-                    _set_skip_info_label(c, txt, text_color, font="font11")
+                    _set_skip_info_label(c, txt, JUMP_LABEL_ARGB, font=JUMP_LABEL_FONT)
             except Exception as e:
                 log(f"⚠️ next-jump label: {e}")
             self._refresh_countdown_label()
@@ -751,7 +524,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             et = self.getProperty("ending_text") or ""
             cd = self.getProperty("countdown") or ""
             line = f"{et} {cd}".strip()
-            text_color = getattr(self, "_skip_text_color_argb", None) or "FF6E6E6E"
+            text_color = ENDING_TEXT_ARGB
             _set_skip_info_label(c, line, text_color, font="font10")
         except Exception:
             pass

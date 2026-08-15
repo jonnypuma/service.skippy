@@ -1,5 +1,88 @@
 # Changelog
 
+## [6.3.5] - 2026-08-16
+
+### Fixed
+- **Segment ending text** (and its countdown) stays white. Skip/Close still follow the skip-dialog font colour setting.
+
+## [6.3.4] - 2026-08-15
+
+### Fixed
+- **Aqua Vignette**: 9-slice copied the darkest ends and flattened the bright center, so the caps looked much darker than the body. The original full-width gradient is back, height-matched to the 25px Skip/Close button.
+
+## [6.3.3] - 2026-08-15
+
+### Fixed
+- **Aqua Bevel, Aqua Vignette, Aqua Rounded** button focus textures are 9-sliced like the 3D styles, so Skip/Close endcaps stay round (or beveled) instead of stretching.
+- **Right-corner skip dialog**: after the panel grew to 430px (5px right inset), lower-right and upper-right still used the old X (`895` / `1342`), so the dialog hung off the right edge. It now keeps the same 10px inset as the left corners.
+
+## [6.3.2] - 2026-08-15
+
+### Fixed
+- **Customize skip dialog**: Skip + Type + Duration (format and content rows) no longer overlap Save and Cancel. Setting rows shrink to stay above the pinned footer.
+
+## [6.3.1] - 2026-08-15
+
+### Fixed
+- **Customize skip dialog**: Combined skip and progress stays with Ignore overlapping segments. Enabling it no longer inserts the Full/Compact header above Combined or drops the row under the Full-mode options.
+
+## [6.3.0] - 2026-08-15
+
+### Added
+- **Combined skip and progress** is available in **Full** mode as well as Compact Full (Skip-only fill, no Close, no separate bar). Full still keeps the card, ending text, and icons unless those Full options hide them.
+
+## [6.2.2] - 2026-08-15
+
+### Fixed
+- **Ask dialog debounce** and **Jump offset** (and the other integer range settings) use a spinner instead of a slider so left/right actually changes the value. Kodi addon sliders often ignore those keys, and they cannot represent Jump offset’s negative range (it stayed at 0).
+
+## [6.2.1] - 2026-08-15
+
+### Fixed
+- **Combined** dimmed track uses the same 9-slice endcaps as the fill / 3D button focus textures (Green 3D and the other sliced styles no longer stretch the background).
+
+## [6.2.0] - 2026-08-15
+
+### Added
+- **Compact Full Combined**: optional Skip-only pill where the button focus texture is the progress fill (no Close, no separate bar).
+- **Skip duration format**: `1m30s` or numeric `01:30` (hours as `H:MM:SS`).
+- **Skip duration content**: total segment time, elapsed counting up, remaining counting down, or `elapsed / total`. Live Skip labels refresh when the content is elapsed-based.
+
+### Fixed
+- Progress bar no-outline track: dropped missing `progress_left.png` / `progress_right.png` endcaps (they rendered as white ticks) and replaced `progress_background.png` with a flat dark fill.
+
+## [6.1.0] - 2026-08-15
+
+### Added
+- **Compact Full** skip dialog mode: a pill Skip/Close cluster without the Full black card, ending text, or skip/close icons. Recap/next-jump and a 4px progress bar still use Full focus textures, skip format, and corner position.
+
+## [6.0.3] - 2026-08-15
+
+### Fixed
+- **3D button focus textures** (Blue Rounded, Gold Rectangular, Green, Pink, Light Pink): rebuilt as 9-slice templates so Skip and Close keep their endcaps at every button width instead of stretching.
+
+## [6.0.2] - 2026-08-15
+
+### Added
+- **Skip dialog text in ALL CAPS**: global Full + Minimal option in settings and Customize. Button and info labels go uppercase; duration units stay `m`/`s` (`SKIP INTRO (1m30s)`).
+
+### Fixed
+- **Skip dialog font color**: focused Skip/Close buttons and Customize mock labels follow the selected colour instead of staying white.
+- **Full skip panel**: progress bar and buttons use the same 5 px right inset as the left (bar width 420 / 630).
+- **Customize Minimal mode**: Hide ending text and Ignore overlapping segments are hidden (Full-only).
+
+## [6.0.1] - 2026-08-15
+
+### Fixed
+- **Customize skip dialog**: Progress bar style and Hide Skip and Close Icons rows; button focus textures on the mockup; up/down no longer skips a row.
+- **Skip to Recap** nested jump line uses accent cyan (`FFB0D4E8`) and `font11` in both the live skip dialog and the Customize mockup.
+
+## [6.0.0] - 2026-08-15
+
+### Added
+- **Button focus styles**: Green 3D, Pink 3D, and Light Pink 3D (`button_focus_3d_green.png`, `button_focus_3d_pink.png`, `button_focus_3d_light_pink.png`).
+- **Customize skip dialog**: Playback & Skip Dialog has a **Customize skip dialog** action that opens a two-pane preview (draft settings on the left, frozen Intro/Recap mockup on fanart on the right). Save writes settings; Cancel discards. The modal is loaded only from RunScript, not by the playback service.
+
 ## [5.6.0] - 2026-08-13
 
 ### Changed

@@ -43,6 +43,8 @@ service.skippy/
 ├── remote_http.py / remote_tmdb.py / remote_library.py / remote_lookup.py
 ├── online_segment_upload.py        # Editor / sync uploads
 ├── skipdialog.py                   # Full / Minimal ask dialog (WindowXML)
+├── skip_dialog_appearance.py       # Shared skip-dialog labels / layout / colours
+├── skip_dialog_customize_ui.py     # Settings Customize modal (lazy RunScript)
 ├── segment_marker.py               # Segment Marker UX
 ├── segment_editor*.py              # Segment Editor (dialog, parser, session, …)
 ├── segment_relations.py            # Segment ids, nesting / overlap, jump-hint text
@@ -102,7 +104,7 @@ Use when you already have `.edl` / `_chapters.xml` next to files (or plan to mar
 | Save online segments | Off |
 | Segment always skip | `commercial, commercials, sponsor, sponsors, ad, ads` |
 | Segment ask skip | `intro, recap, segment, preview, …` (defaults are fine) |
-| Skip dialog mode | **Full** or **Minimal** (preference) |
+| Skip dialog mode | **Full**, **Compact Full**, or **Minimal** (preference) |
 
 ### 2. Local first + online fill-in (recommended for TV)
 
@@ -144,10 +146,10 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - Label logic allows fine-grained control: `"intro"`, `"recap"`, `"ads"`, etc.
 - Platform-agnostic compatibility: Works seamlessly across Android, Windows, CoreELEC, and Linux.
 - Progress Bar Display toggle: Progress bar which fills up until end of segment. On/off toggle available under settings.
-- Skip dialog modes: **Full** (panel with optional Close, progress bar, icons) or **Minimal** (small corner chip + Skip only). Separate corner placement per mode. See **Skip dialog modes** below.
+- Skip dialog modes: **Full** (panel with optional Close, progress bar, icons), **Compact Full** (pill cluster, no card/ending/icons, optional recap + thin bar), or **Minimal** (small corner chip + Skip only). Separate corner placement per mode. See **Skip dialog modes** below.
 - **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied in Python on dialog open (see **Skip dialog modes**). **May be overridden by the active Kodi skin or theme** — see **Supported Kodi versions and platforms** above.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
-- **Jump offset** (Advanced, **Global options**): slider **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
+- **Jump offset** (Advanced, **Global options**): **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - **Skin-cooperative seek OSD hide** (opt-in setting **Hide OSD display during skip**): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
@@ -269,13 +271,19 @@ Duplicate Ask prompts are blocked primarily by **state**, not by sleeping before
 
 ## Skip dialog modes
 
-Choose **Skip dialog mode** under **Customize Skip Dialog Look and Behavior** — **Full** or **Minimal**. Each mode has its own **dialog placement** setting (bottom/top × left/right).
+Choose **Skip dialog mode** under **Customize Skip Dialog Look and Behavior** — **Full**, **Compact Full**, or **Minimal**. Full and Compact Full share **Skip Dialog Position**; Minimal has its own placement setting.
 
-Both modes open **atomically**: the panel stays hidden until `onInit` finishes labels, layout, and progress seed (Full) (`skippy_dialog_ready`), then reveals with one slide/fade and focus is set afterward so OK/Enter and the focus texture work.
+All three modes open **atomically**: the panel stays hidden until `onInit` finishes labels, layout, and progress seed (Full / Compact Full) (`skippy_dialog_ready`), then reveals with one slide/fade and focus is set afterward so OK/Enter and the focus texture work.
 
 ### Full mode
 
-Classic panel: optional skip/close icons, **Skip** and **Close** buttons, optional progress bar, optional **Segment ending in:** countdown, and optional **next jump** hint line. **Hide Close Button** and related toggles apply here only (not Minimal).
+Classic panel: optional skip/close icons, **Skip** and **Close** buttons, optional progress bar, optional **Segment ending in:** countdown, and optional **next jump** hint line. **Hide Close Button** and related toggles apply here only (not Minimal). **Combined skip and progress** hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar.
+
+### Compact Full mode
+
+Same SkipDialog XML and Full-mode styles (button focus, skip label format, corner) without the black card. Ending text and skip/close icons are always off. Skip and Close sit in a **300px** pill cluster (Close can still be hidden). Optional next-jump line and a **4px** progress bar stay under the cluster. **Combined skip and progress** (Full and Compact Full) hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar. Compact Full is for a sleeker Full prompt, not a replacement for Minimal’s plate chip.
+
+### Next jump line (Full and Compact Full)
 
 The **next jump** line (control **3011**) describes where Skip will land, for example:
 
@@ -400,15 +408,20 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | show_progress_bar | Enables visual progress bar during skip dialog |
 | progress_bar_countdown | Full mode: bar starts full and shrinks (remaining time) instead of filling with elapsed time (default: false) |
 | progress_bar_style | Full mode: `progress_mid*.png` fill texture (filename storage; same pattern as button focus). |
-| progress_bar_height | Full mode: progress bar height (**slider** **5–32** px, default **16**). |
+| progress_bar_height | Full mode: progress bar height (**5–32** px, default **16**). |
 | smooth_progress_bar | Full mode (Advanced): smoother bar motion via higher refresh + easing; default off — disable if stutter on slow devices |
 | progress_bar_updates_per_second | Full mode (Advanced): when smooth progress is on, updates per second (**2–120**, default **4**, same as legacy 0.25 s interval) |
-| skip_dialog_mode | **Full** (panel) or **Minimal** (corner chip + Skip only) |
+| skip_dialog_mode | **Full**, **Compact Full**, or **Minimal** |
+| compact_full_combined | Full and Compact Full: Skip-only; focus texture is the progress fill (no Close) |
+| skip_duration_format | Duration on the Skip label: **1m30s** or numeric **01:30** |
+| skip_duration_content | Duration on the Skip label: total, elapsed up, remaining down, or elapsed / total |
+| settings_action_customize_skip_dialog | Button: live preview of skip-dialog look (Save commits, Cancel discards) |
 | skip_dialog_position | Corner placement for **Full** mode skip dialog |
 | minimal_skip_dialog_position | Corner placement for **Minimal** mode chip |
 | minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (patched into skin XML before open) |
 | skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied in Python on dialog open (**may be overridden by active skin/theme** — see README) |
-| button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua, Aqua Bevel, Aqua Dark, Aqua Vignette, Aqua Rounded, Blue) |
+| skip_dialog_all_caps | Full and Minimal: render skip-dialog labels in ALL CAPS. Duration units stay lowercase (`1m30s`). |
+| button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua variants, Blue, Blue/Gold 3D, Green/Pink/Light Pink 3D) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
 | show_skip_button_focus_texture | Full mode: when Close is hidden, show the selected focus texture on Skip (default: true); turn off for no focus frame |
@@ -470,6 +483,12 @@ Skippy supports multiple visual styles for the focused buttons in the skip dialo
 - **Aqua Vignette**: Aqua texture with vignette effect
 - **Aqua Rounded**: Aqua texture with rounded corners
 - **Blue**: Alternative blue style
+- **Blue Rectangular 3D**: Blue rectangular 3D frame
+- **Blue Rounded 3D**: Blue rounded 3D frame
+- **Gold Rectangular 3D**: Gold rectangular 3D frame
+- **Green 3D**: Green 3D frame
+- **Pink 3D**: Pink 3D frame
+- **Light Pink 3D**: Light pink 3D frame
 
 **How to Change:**
 1. Go to `Settings -> Add-ons -> My Add-ons -> Services -> Skippy`
@@ -502,10 +521,10 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 4. Changes apply immediately for new skip dialogs
 
 **Technical Details:**
-- Progress bar dimensions: width **370**; height **5–32** via settings (default **16**), applied at dialog layout
+- Progress bar dimensions: width **420** (5 px inset from each side of the 430-wide panel); height **5–32** via settings (default **16**), applied at dialog layout
 - Skin uses Kodi **`reveal` true**: **`midtexture`** should match **`texturebg`** dimensions (full-width fill image clips to the current percent instead of stretching horizontally)
 - Located at the bottom of the skip dialog
-- Uses custom textures: `progress_left.png`, `progress_mid.png`, `progress_right.png`, `progress_background.png`
+- Uses a flat dark `progress_background.png` track (no left/right outline caps)
 - Setting is read dynamically - no caching issues
 
 ---
@@ -517,7 +536,7 @@ Skippy allows you to customize how the skip button label is displayed in the ski
 **Available Formats:**
 - **Skip**: Shows only "Skip" (no segment type or duration)
 - **Skip + Type**: Shows segment type, e.g., "Skip Intro" or "Skip Recap"
-- **Skip + Type + Duration**: Shows segment type and duration, e.g., "Skip Intro (29s)" or "Skip Recap (1m15s)" (default)
+- **Skip + Type + Duration**: Shows segment type and duration, e.g., "Skip Intro (29s)" or "Skip Recap (1m15s)" (default). Duration format can be **1m30s** or **01:30**; content can be total time, elapsed (up or down), or elapsed / total.
 
 **How to Change:**
 1. Go to `Settings -> Add-ons -> My Add-ons -> Services -> Skippy`

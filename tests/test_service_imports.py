@@ -28,6 +28,7 @@ REFACTORED_LOOP_MODULES = (
     "service_online_sidecar_write",
     "service_online_sidecar_save",
     "skippy_profile_backup",
+    "skip_dialog_appearance",
 )
 
 

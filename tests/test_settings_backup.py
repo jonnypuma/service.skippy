@@ -212,6 +212,43 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
         _, _, shipped_all = _xml_setting_ids()
         self.assertEqual(gen_ids, shipped_all)
 
+    def test_all_button_focus_textures_are_settings_options(self):
+        """Every button_focus*.png in media (except nofocus) must be a picker value."""
+        media = ROOT / "resources" / "skins" / "default" / "media"
+        on_disk = sorted(
+            name
+            for name in os.listdir(media)
+            if name.startswith("button_focus") and name.endswith(".png")
+        )
+        tree = ET.parse(SETTINGS_XML)
+        wired = []
+        for setting in tree.getroot().iter("setting"):
+            if setting.get("id") != "button_focus_style":
+                continue
+            for option in setting.iter("option"):
+                if option.text:
+                    wired.append(option.text.strip())
+            break
+        self.assertEqual(on_disk, sorted(wired))
+
+    def test_integer_range_settings_use_spinner_not_slider(self):
+        tree = ET.parse(SETTINGS_XML)
+        ids = (
+            "skip_jump_offset_seconds",
+            "ask_dialog_debounce_ms",
+            "progress_bar_height",
+            "progress_bar_updates_per_second",
+        )
+        found = {sid: None for sid in ids}
+        for setting in tree.getroot().iter("setting"):
+            sid = setting.get("id")
+            if sid in found:
+                found[sid] = setting.find("control")
+        for sid, ctrl in found.items():
+            self.assertIsNotNone(ctrl, sid)
+            self.assertEqual(ctrl.get("type"), "spinner", sid)
+            self.assertEqual(ctrl.get("format"), "integer", sid)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,6 +4,7 @@ import os
 import xml.etree.ElementTree as ET
 
 from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log
+from skip_dialog_appearance import button_focus_nine_slice_border, is_minimal_skip_mode
 
 _SKIP_DIALOG_FULL_FILES = (
     "SkipDialog_BottomRight.xml",
@@ -24,7 +25,7 @@ _FULL_MODE_BUTTON_IDS = frozenset({"3012", "3013", "3015", "3016"})
 _MINIMAL_PLATE_IMAGE_ID = "3021"
 _DEFAULT_SKIP_DIALOG_CORNER = "Bottom Right"
 
-_last_full_skip_textures = (None, None)
+_last_full_skip_textures = (None, None, None)
 _last_minimal_plate_texture = None
 
 
@@ -50,13 +51,19 @@ def _get_skins_res_dirs():
     return dirs
 
 
-def _set_button_texturefocus(control, texture_path):
+def _set_button_texturefocus(control, texture_path, border=None):
+    el = None
     for child in control:
         if child.tag == "texturefocus":
-            child.text = texture_path
-            return
-    el = ET.SubElement(control, "texturefocus")
+            el = child
+            break
+    if el is None:
+        el = ET.SubElement(control, "texturefocus")
     el.text = texture_path
+    if border:
+        el.set("border", border)
+    elif "border" in el.attrib:
+        del el.attrib["border"]
 
 
 def _set_progress_midtexture(control, texture_path):
@@ -95,7 +102,7 @@ def warm_skip_dialog_skin_textures(addon=None):
     if not ad:
         return
     mode = (addon_get_setting_text(ad, "skip_dialog_mode", "Full") or "Full").strip()
-    if mode == "Minimal":
+    if is_minimal_skip_mode(mode):
         plate = (addon_get_setting_text(ad, "minimal_button_style", "") or "").strip()
         if not plate.endswith(".png"):
             plate = "minimal_rounded_gray_640.png"
@@ -105,21 +112,25 @@ def warm_skip_dialog_skin_textures(addon=None):
     mid_texture_file = addon_get_setting_text(ad, "progress_bar_style", "") or ""
     if not focus_texture_file:
         focus_texture_file = "button_focus.png"
-    if addon_get_bool(ad, "hide_close_button", False) and not addon_get_bool(
+    if not is_minimal_skip_mode(mode) and addon_get_bool(ad, "compact_full_combined", False):
+        focus_texture_file = "-"
+    elif addon_get_bool(ad, "hide_close_button", False) and not addon_get_bool(
         ad, "show_skip_button_focus_texture", True
     ):
         focus_texture_file = "-"
     if not mid_texture_file:
         mid_texture_file = "progress_mid.png"
-    _update_full_skip_dialog_textures(focus_texture_file, mid_texture_file)
+    border = button_focus_nine_slice_border(focus_texture_file)
+    _update_full_skip_dialog_textures(focus_texture_file, mid_texture_file, border)
 
 
-def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None):
+def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None, border=None):
     """Set texturefocus on Full mode skip/close buttons; optional progress midtexture."""
     global _last_full_skip_textures
     try:
         mid_texture_path = (mid_texture_path or "").strip() or None
-        cache_key = (focus_texture_path or "", mid_texture_path)
+        border = (border or "").strip() or None
+        cache_key = (focus_texture_path or "", mid_texture_path, border)
         if cache_key == _last_full_skip_textures:
             return
         xml_dirs = _get_skins_res_dirs()
@@ -139,7 +150,7 @@ def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None)
                     ctype = control.get("type")
                     cid = control.get("id")
                     if ctype == "button" and cid in _FULL_MODE_BUTTON_IDS and focus_texture_path:
-                        _set_button_texturefocus(control, focus_texture_path)
+                        _set_button_texturefocus(control, focus_texture_path, border)
                     if (
                         mid_texture_path
                         and ctype == "progress"
@@ -157,10 +168,11 @@ def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None)
         if updated:
             _last_full_skip_textures = cache_key
             log(
-                "📝 Full skip dialog skin XML (%s): button focus=%s, progress mid=%s"
+                "📝 Full skip dialog skin XML (%s): button focus=%s border=%s, progress mid=%s"
                 % (
                     ", ".join(updated),
                     focus_texture_path or "-",
+                    border or "-",
                     mid_texture_path or "-",
                 )
             )

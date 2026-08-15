@@ -77,6 +77,11 @@ def main():
 
             show_manage_title_autoskip_modal()
             return
+        if command == "customize_skip_dialog":
+            from skip_dialog_customize_ui import show_skip_dialog_customize
+
+            show_skip_dialog_customize()
+            return
         if command == "clear_show_overrides":
             from per_show_overrides import clear_all_overrides
             from settings_utils import get_localized, notify_skippy
