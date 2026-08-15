@@ -259,20 +259,25 @@ class SegmentItem:
 
 def safe_file_read(*paths):
     """Read the first readable path. Returns content or None."""
+    from service_sidecar_paths import vfs_file_exists
+
     for path in paths:
-        if path:
-            log(f"Attempting to read: {path}")
-            try:
-                f = xbmcvfs.File(path)
-                content = f.read()
-                f.close()
-                if isinstance(content, bytes):
-                    content = content.decode('utf-8', errors='replace')
-                if content:
-                    log(f"Successfully read file: {path}")
-                    return content
-            except Exception as e:
-                log(f"Failed to read {path}: {e}")
+        if not path:
+            continue
+        log(f"Attempting to read: {path}")
+        if not vfs_file_exists(path):
+            continue
+        try:
+            f = xbmcvfs.File(path)
+            content = f.read()
+            f.close()
+            if isinstance(content, bytes):
+                content = content.decode('utf-8', errors='replace')
+            if content:
+                log(f"Successfully read file: {path}")
+                return content
+        except Exception as e:
+            log(f"Failed to read {path}: {e}")
     return None
 
 
@@ -313,9 +318,15 @@ def parse_chapters(video_path):
     later paths are still tried so XML is preferred over falling back to EDL.
     """
     try:
-        from service_sidecar_paths import _chapter_xml_paths_to_try
+        from service_sidecar_paths import (
+            _chapter_xml_paths_to_try,
+            existing_paths_from_listing,
+            vfs_file_exists,
+        )
 
         paths_to_try = list(_chapter_xml_paths_to_try(video_path))
+        listed, unknown = existing_paths_from_listing(paths_to_try)
+        paths_to_try = listed + [p for p in unknown if vfs_file_exists(p)]
     except ImportError:
         base = os.path.splitext(video_path)[0]
         video_dir = os.path.dirname(video_path)
@@ -323,6 +334,7 @@ def parse_chapters(video_path):
         paths_to_try = [f"{base}{s}" for s in suffixes]
         if video_dir:
             paths_to_try.append(os.path.join(video_dir, "chapters.xml"))
+        paths_to_try = [p for p in paths_to_try if xbmcvfs.exists(p)]
 
     log(f"Attempting chapter XML paths: {paths_to_try}")
 

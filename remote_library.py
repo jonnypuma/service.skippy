@@ -1,0 +1,1082 @@
+# -*- coding: utf-8 -*-
+"""Kodi library JSON-RPC identity and playback item enrichment."""
+
+import json
+import os
+import re
+import time
+
+import xbmcaddon
+from contextlib import closing
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
+import xbmc
+import xbmcvfs
+
+from settings_utils import (
+    addon_get_bool,
+    addon_get_setting_text,
+    get_addon,
+    log_remote,
+    log_service_detail,
+    parse_kodi_jsonrpc_raw,
+)
+
+from remote_http import (
+    ADDON_ID,
+    _EPISODE_JSONRPC_FIELDS,
+    _EPISODE_JSONRPC_FIELDS_MINIMAL,
+    _GET_EPISODES_PROPERTIES,
+    _PLAYER_GETITEM_FIELDS,
+    _SXXEXX,
+    _addon_version,
+    _rlog,
+    jsonrpc,
+    normalize_imdb_id,
+    normalize_numeric_id,
+    parse_int,
+)
+from remote_tmdb import (
+    _get_tmdb_api_key,
+    _tmdb_api3_json,
+    _tmdb_enrich_missing_ids,
+    _tmdb_enrich_missing_movie_ids,
+    _tmdb_search_tv_show_id,
+)
+def get_active_video_player_id():
+    result = jsonrpc("Player.GetActivePlayers", log_errors=False)
+    players = result.get("result") or []
+    for p in players:
+        if p.get("type") == "video":
+            return p.get("playerid")
+    return None
+
+
+def _get_playing_file_path():
+    try:
+        return xbmc.Player().getPlayingFile()
+    except Exception:
+        return None
+
+
+def _item_has_playback_metadata(item):
+    """True when Player.GetItem has enough data to use (not {} during startup race)."""
+    if not item:
+        return False
+    if item.get("type") == "episode" and item.get("id"):
+        return True
+    if item.get("file") or item.get("showtitle"):
+        return True
+    return False
+
+
+def _episode_from_get_episodes_path(ep_id, path_hint):
+    """
+    Last-resort Kodi library lookup: find the episode row by path (same idea as other addons
+    that match the playing file to the library). Does not call TMDB — only JSON-RPC.
+    """
+    if not path_hint or not ep_id:
+        return None
+    base = os.path.basename(path_hint)
+    if not base:
+        return None
+    needles = [base]
+    if "." in base:
+        needles.append(base.rsplit(".", 1)[0])
+    needles = [n for n in needles if len(n) >= 4]
+    seen = set()
+    for needle in needles:
+        if needle in seen:
+            continue
+        seen.add(needle)
+        r = jsonrpc(
+            "VideoLibrary.GetEpisodes",
+            {
+                "properties": _GET_EPISODES_PROPERTIES,
+                "filter": {
+                    "field": "path",
+                    "operator": "contains",
+                    "value": needle,
+                },
+            },
+            log_errors=False,
+        )
+        if r.get("error"):
+            continue
+        for ep in (r.get("result") or {}).get("episodes") or []:
+            try:
+                eid = int(ep.get("episodeid"))
+            except (TypeError, ValueError):
+                continue
+            if eid == ep_id:
+                return ep
+    return None
+
+
+def _fetch_episode_details(ep_id, path_hint=None):
+    """Return (episode row dict or None, jsonrpc error or None). Retries with fewer fields on -32602."""
+    det = jsonrpc(
+        "VideoLibrary.GetEpisodeDetails",
+        {"episodeid": ep_id, "properties": _EPISODE_JSONRPC_FIELDS},
+        log_errors=False,
+    )
+    ed = (det.get("result") or {}).get("episodedetails") or {}
+    if ed:
+        return ed, None
+    err = det.get("error")
+    last_err = err
+    if err and err.get("code") == -32602:
+        det2 = jsonrpc(
+            "VideoLibrary.GetEpisodeDetails",
+            {"episodeid": ep_id, "properties": _EPISODE_JSONRPC_FIELDS_MINIMAL},
+            log_errors=False,
+        )
+        ed2 = (det2.get("result") or {}).get("episodedetails") or {}
+        if ed2:
+            _rlog(
+                "GetEpisodeDetails: using minimal properties (full list rejected by Kodi)"
+            )
+            return ed2, None
+        last_err = det2.get("error") or err
+    if path_hint:
+        ep_list = _episode_from_get_episodes_path(ep_id, path_hint)
+        if ep_list:
+            _rlog(
+                "Episode metadata via VideoLibrary.GetEpisodes (path contains filename)"
+            )
+            return ep_list, None
+    return None, last_err
+
+
+_MOVIE_JSONRPC_FIELDS = ["uniqueid", "imdbnumber", "title", "file"]
+
+
+def _fetch_movie_details(movie_id):
+    det = jsonrpc(
+        "VideoLibrary.GetMovieDetails",
+        {"movieid": int(movie_id), "properties": _MOVIE_JSONRPC_FIELDS},
+        log_errors=False,
+    )
+    return (det.get("result") or {}).get("moviedetails") or {}
+
+
+def _item_from_files_get_file_details(path):
+    """
+    When Player.GetItem returns {} for ~1s after start, resolve library episode or movie via path.
+    Files.GetFileDetails -> GetEpisodeDetails / GetMovieDetails.
+    """
+    if not path:
+        return None
+    r = jsonrpc(
+        "Files.GetFileDetails",
+        {"file": path, "media": "video", "properties": ["title", "playcount", "runtime"]},
+        log_errors=False,
+    )
+    fd = (r.get("result") or {}).get("filedetails") or {}
+    if fd.get("type") == "movie":
+        mid = fd.get("id")
+        try:
+            mid = int(mid)
+        except (TypeError, ValueError):
+            return None
+        md = _fetch_movie_details(mid)
+        if not md:
+            _rlog("Files.GetFileDetails fallback: GetMovieDetails empty for movieid=%s" % mid)
+            return None
+        item = {
+            "type": "movie",
+            "id": mid,
+            "file": md.get("file") or path,
+            "title": md.get("title"),
+        }
+        for k in ("uniqueid", "imdbnumber"):
+            if md.get(k) is not None:
+                item[k] = md[k]
+        return item
+    if fd.get("type") != "episode":
+        return None
+    ep_id = fd.get("id")
+    try:
+        ep_id = int(ep_id)
+    except (TypeError, ValueError):
+        return None
+    ed, rpc_err = _fetch_episode_details(ep_id, path)
+    if not ed:
+        if rpc_err:
+            _rlog(
+                "Files.GetFileDetails fallback: GetEpisodeDetails JSON-RPC error for episodeid=%s: %s"
+                % (ep_id, rpc_err)
+            )
+        else:
+            _rlog(
+                "Files.GetFileDetails fallback: GetEpisodeDetails empty for episodeid=%s"
+                % ep_id
+            )
+        return None
+    item = {
+        "type": "episode",
+        "id": ep_id,
+        "file": ed.get("file") or path,
+    }
+    for k in ("season", "episode", "uniqueid", "imdbnumber", "tvshowid", "title"):
+        if ed.get(k) is not None:
+            item[k] = ed[k]
+    st = ed.get("showtitle") or ed.get("tvshowtitle")
+    if st:
+        item["showtitle"] = st
+    return item
+
+
+def get_enriched_playing_item(snapshot=None):
+    """Return current video Player.GetItem dict with season, uniqueid, etc., or None."""
+    player_id = None
+    if snapshot is not None and snapshot.player_id is not None:
+        player_id = snapshot.player_id
+    if player_id is None:
+        player_id = get_active_video_player_id()
+    if player_id is None:
+        _rlog("no active video player id (cannot run Player.GetItem)")
+        return None
+
+    props = _PLAYER_GETITEM_FIELDS
+    seed = dict(snapshot.item) if snapshot is not None and snapshot.item else {}
+    item = seed if seed and _item_has_playback_metadata(seed) else None
+
+    if not item:
+        result = jsonrpc(
+            "Player.GetItem",
+            {"playerid": player_id, "properties": props},
+            log_errors=False,
+        )
+        raw = (result.get("result") or {}).get("item") or {}
+        item = raw if _item_has_playback_metadata(raw) else None
+
+    if not item:
+        path = _get_playing_file_path()
+        item = _item_from_files_get_file_details(path)
+        if item:
+            _rlog(
+                "resolved playing item via Files.GetFileDetails (Player.GetItem was empty — startup race)"
+            )
+
+    if not item:
+        for attempt in range(4):
+            _rlog(
+                "Player.GetItem still empty (attempt %d/4) — retry in 250ms"
+                % (attempt + 1)
+            )
+            xbmc.sleep(250)
+            result = jsonrpc(
+                "Player.GetItem",
+                {"playerid": player_id, "properties": props},
+                log_errors=False,
+            )
+            raw = (result.get("result") or {}).get("item") or {}
+            if raw and _item_has_playback_metadata(raw):
+                item = raw
+                break
+            if attempt == 3:
+                path = _get_playing_file_path()
+                item = _item_from_files_get_file_details(path)
+                if item:
+                    _rlog(
+                        "resolved playing item via Files.GetFileDetails after GetItem retries"
+                    )
+
+    if not item:
+        _rlog(
+            "Remote TV segments: no enriched playing item (GetItem empty after retries + file fallback failed)"
+        )
+        return None
+
+    # Minimal Player.GetItem omits type/id/uniqueid — merge library row once via path.
+    path = item.get("file") or _get_playing_file_path()
+    itype = (item.get("type") or "").lower()
+    need_lib = path and (
+        (itype == "episode" and (not item.get("id") or not item.get("uniqueid")))
+        or (itype == "movie" and (not item.get("id") or not item.get("uniqueid")))
+        or (
+            itype not in ("episode", "movie")
+            and (not item.get("id") or not item.get("uniqueid"))
+        )
+    )
+    if need_lib:
+        sup = _item_from_files_get_file_details(path)
+        if sup:
+            for k in (
+                "type",
+                "id",
+                "season",
+                "episode",
+                "uniqueid",
+                "imdbnumber",
+                "tvshowid",
+                "title",
+                "file",
+            ):
+                if sup.get(k) is not None:
+                    item[k] = sup[k]
+            if sup.get("showtitle"):
+                item["showtitle"] = sup["showtitle"]
+
+    itype = (item.get("type") or "").lower()
+    if itype == "movie":
+        st = item.get("title") or ""
+    else:
+        st = item.get("showtitle") or item.get("title") or ""
+    _rlog(
+        "playing item: type=%s id=%s S=%s E=%s show=%r"
+        % (
+            item.get("type"),
+            item.get("id"),
+            item.get("season"),
+            item.get("episode"),
+            st[:60] + ("…" if len(st) > 60 else ""),
+        )
+    )
+    return item
+
+
+def paths_refer_to_same_video(path_a, path_b):
+    if not path_a or not path_b:
+        return False
+    try:
+        ta = xbmcvfs.translatePath(str(path_a).strip())
+        tb = xbmcvfs.translatePath(str(path_b).strip())
+        return os.path.normcase(os.path.normpath(ta)) == os.path.normcase(
+            os.path.normpath(tb)
+        )
+    except (OSError, TypeError, ValueError, AttributeError):
+        sa = str(path_a).strip().replace("\\", "/").rstrip("/")
+        sb = str(path_b).strip().replace("\\", "/").rstrip("/")
+        return sa.lower() == sb.lower()
+
+
+def get_enriched_item_for_path(video_path, snapshot=None):
+    """
+    Library-backed metadata dict (same shape as :func:`get_enriched_playing_item`) for
+    ``video_path``, whether or not it is the currently playing file.
+    """
+    if not video_path or not str(video_path).strip():
+        return get_enriched_playing_item(snapshot=snapshot)
+    vp = str(video_path).strip()
+    playing = _get_playing_file_path()
+    if playing and paths_refer_to_same_video(vp, playing):
+        return get_enriched_playing_item(snapshot=snapshot)
+    item = _item_from_files_get_file_details(vp)
+    if not item:
+        _rlog(
+            "get_enriched_item_for_path: no library episode/movie row for file=%r"
+            % (os.path.basename(vp),)
+        )
+    return item
+
+
+def episode_runtime_seconds_for_prefetch(episode_id):
+    """Episode duration in seconds for online API window clamp (prefetch path)."""
+    try:
+        eid = int(episode_id)
+    except (TypeError, ValueError):
+        return 0.0
+    if eid <= 0:
+        return 0.0
+    det = jsonrpc(
+        "VideoLibrary.GetEpisodeDetails",
+        {"episodeid": eid, "properties": ["runtime"]},
+        log_errors=False,
+    )
+    if det.get("error"):
+        return 0.0
+    ed = (det.get("result") or {}).get("episodedetails") or {}
+    rt = ed.get("runtime")
+    try:
+        return float(rt)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def playback_duration_seconds_for_upload(item, video_path):
+    """
+    Best-effort video duration (seconds) for TheIntroDB v3 ``video_duration_ms`` on submit.
+
+    Omit from the POST when unknown; when set on the wire the API expects 300000–21600000 ms
+    (omit below 300 s). Playback ``getTotalTime()`` is preferred when the same file is playing.
+    """
+    vp = (video_path or "").strip()
+    try:
+        pl = xbmc.Player()
+        if vp and pl.isPlayingVideo():
+            pf = pl.getPlayingFile()
+            if pf and paths_refer_to_same_video(vp, pf):
+                tt = float(pl.getTotalTime())
+                if tt >= 60.0:
+                    return tt
+    except (OSError, TypeError, ValueError, AttributeError):
+        pass
+
+    if not item:
+        if vp:
+            r = jsonrpc(
+                "Files.GetFileDetails",
+                {"file": vp, "media": "video", "properties": ["runtime"]},
+                log_errors=False,
+            )
+            fd = (r.get("result") or {}).get("filedetails") or {}
+            rt = fd.get("runtime")
+            try:
+                rtv = float(rt)
+                return rtv if rtv >= 60.0 else None
+            except (TypeError, ValueError):
+                return None
+        return None
+
+    itype = (item.get("type") or "").lower()
+    try:
+        lib_id = int(item["id"])
+    except (KeyError, TypeError, ValueError):
+        lib_id = None
+
+    if lib_id is None:
+        return playback_duration_seconds_for_upload(None, vp or item.get("file") or "")
+
+    if itype == "episode":
+        rtv = episode_runtime_seconds_for_prefetch(lib_id)
+        return rtv if rtv >= 60.0 else None
+    if itype == "movie":
+        det = jsonrpc(
+            "VideoLibrary.GetMovieDetails",
+            {"movieid": lib_id, "properties": ["runtime"]},
+            log_errors=False,
+        )
+        md = (det.get("result") or {}).get("moviedetails") or {}
+        rt = md.get("runtime")
+        try:
+            rtv = float(rt)
+            return rtv if rtv >= 60.0 else None
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def resolve_tv_library_successor_episode_item(item):
+    """
+    Library-based successor: same show, episode + 1 in-season if present; else
+    first season with number ``season + 1`` and smallest episode number in that season.
+    """
+    if not item or (item.get("type") or "").lower() != "episode":
+        return None
+    ts = _resolve_tvshow_id(item)
+    cur_s = parse_int(item.get("season"))
+    cur_e = parse_int(item.get("episode"))
+    if ts is None or cur_s is None or cur_e is None:
+        return None
+    try:
+        ts_i = int(ts)
+        cur_si = int(cur_s)
+        cur_ei = int(cur_e)
+    except (TypeError, ValueError):
+        return None
+
+    r = jsonrpc(
+        "VideoLibrary.GetEpisodes",
+        {
+            "tvshowid": ts_i,
+            "season": cur_si,
+            "properties": _GET_EPISODES_PROPERTIES,
+        },
+        log_errors=False,
+    )
+    if r.get("error"):
+        return None
+    eps = (r.get("result") or {}).get("episodes") or []
+    target_row = None
+    for ep in eps:
+        if parse_int(ep.get("episode")) == cur_ei + 1:
+            target_row = ep
+            break
+
+    if not target_row:
+        r2 = jsonrpc(
+            "VideoLibrary.GetEpisodes",
+            {
+                "tvshowid": ts_i,
+                "season": cur_si + 1,
+                "properties": _GET_EPISODES_PROPERTIES,
+            },
+            log_errors=False,
+        )
+        if r2.get("error"):
+            return None
+        eps2 = (r2.get("result") or {}).get("episodes") or []
+        if not eps2:
+            return None
+        ep_nums = []
+        for e in eps2:
+            en = parse_int(e.get("episode"))
+            if en is not None:
+                ep_nums.append(en)
+        if not ep_nums:
+            return None
+        min_e = min(ep_nums)
+        for e in eps2:
+            if parse_int(e.get("episode")) == min_e:
+                target_row = e
+                break
+
+    if not target_row:
+        return None
+
+    eid = target_row.get("episodeid")
+    try:
+        eid = int(eid)
+    except (TypeError, ValueError):
+        return None
+    if eid <= 0:
+        return None
+    path_hint = target_row.get("file")
+    ed, _ = _fetch_episode_details(eid, path_hint)
+    if not ed:
+        return None
+    out = {
+        "type": "episode",
+        "id": eid,
+        "file": ed.get("file") or path_hint,
+    }
+    for k in ("season", "episode", "uniqueid", "imdbnumber", "tvshowid", "title"):
+        if ed.get(k) is not None:
+            out[k] = ed[k]
+    st = ed.get("showtitle") or ed.get("tvshowtitle")
+    if st:
+        out["showtitle"] = st
+    return out
+
+
+def _use_filename_season_episode_fallback(item):
+    """
+    Season/episode from Kodi library metadata take priority. Parse SxxExx from the path only
+    when the current item is not a library episode (e.g. file mode / not scanned).
+    """
+    if not item:
+        return True
+    itype = (item.get("type") or "").lower()
+    if itype != "episode":
+        return True
+    ep_id = item.get("id")
+    try:
+        ep_id = int(ep_id)
+    except (TypeError, ValueError):
+        ep_id = None
+    return not (ep_id and ep_id > 0)
+
+
+def get_show_imdb_id(item):
+    uid = item.get("uniqueid") or {}
+    imdb = normalize_imdb_id(uid.get("imdb"))
+    if imdb:
+        return imdb
+
+    tvshowid = item.get("tvshowid")
+    try:
+        tvshowid = int(tvshowid)
+    except (TypeError, ValueError):
+        tvshowid = None
+    if tvshowid and tvshowid > 0:
+        det = jsonrpc(
+            "VideoLibrary.GetTVShowDetails",
+            {"tvshowid": tvshowid, "properties": ["imdbnumber", "uniqueid"]},
+            log_errors=False,
+        )
+        td = (det.get("result") or {}).get("tvshowdetails") or {}
+        tuid = td.get("uniqueid") or {}
+        imdb = normalize_imdb_id(tuid.get("imdb") or td.get("imdbnumber"))
+        if imdb:
+            return imdb
+    return None
+
+
+def _parse_library_episode_id(item):
+    eid = item.get("id")
+    try:
+        eid = int(eid)
+        return eid if eid > 0 else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_library_movie_id(item):
+    mid = item.get("id")
+    try:
+        mid = int(mid)
+        return mid if mid > 0 else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id):
+    """Merge uniqueid from GetMovieDetails when Player item is thin."""
+    if (item.get("type") or "").lower() != "movie":
+        return tmdb_id, imdb_id
+    mid = _parse_library_movie_id(item)
+    if not mid:
+        return tmdb_id, imdb_id
+    if tmdb_id is not None and imdb_id:
+        return tmdb_id, imdb_id
+    md = _fetch_movie_details(mid)
+    uid = md.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+    if tmdb_id is None:
+        tmdb_id = normalize_numeric_id(uid.get("tmdb"))
+        if tmdb_id is not None:
+            _rlog("Kodi movie layers: tmdb_id=%s from GetMovieDetails" % tmdb_id)
+    if not imdb_id:
+        imdb_id = normalize_imdb_id(uid.get("imdb") or md.get("imdbnumber"))
+        if imdb_id:
+            _rlog("Kodi movie layers: imdb from GetMovieDetails")
+    return tmdb_id, imdb_id
+
+
+def build_movie_context(item, force_tmdb_enrichment=False):
+    """Context for TheIntroDB movie lookup (tmdb_id and/or imdb_id)."""
+    if not item:
+        return None
+    if (item.get("type") or "").lower() != "movie":
+        return None
+    uid = item.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+    tmdb_id = normalize_numeric_id(uid.get("tmdb"))
+    imdb_id = normalize_imdb_id(uid.get("imdb") or item.get("imdbnumber"))
+    tmdb_id, imdb_id = _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id)
+
+    addon = get_addon()
+    key = _get_tmdb_api_key()
+    allow_enrich = addon and key and (
+        force_tmdb_enrichment
+        or addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
+    )
+    if allow_enrich and (tmdb_id is None or not imdb_id):
+        tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, key)
+        _rlog(
+            "After TMDB API enrichment (movie): tmdb=%s imdb=%s" % (tmdb_id, imdb_id)
+        )
+
+    if tmdb_id is None and not imdb_id:
+        _rlog("Remote movie segments skipped: no TMDB/IMDb after Kodi and TMDB API")
+        return None
+    return {
+        "type": "movie",
+        "tmdb_id": tmdb_id,
+        "imdb_id": imdb_id,
+        "tvdb_id": normalize_numeric_id(uid.get("tvdb")),
+    }
+
+
+def library_title_identity(item):
+    """
+    Title-level identity from Kodi library data only — never calls TMDB.
+
+    Returns ``{"type", "tmdb_id", "imdb_id", "title"}`` where the ids identify the
+    **show** for episodes and the movie for movies, so every copy of a title maps to
+    the same identity. Returns None when the media type is unknown.
+    """
+    if not item:
+        return None
+    itype = (item.get("type") or "").lower()
+    uid = item.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+
+    if itype == "episode":
+        tvshow_id = _resolve_tvshow_id(item)
+        tmdb_id = _tmdb_from_tvshow_row(tvshow_id) if tvshow_id else None
+        return {
+            "type": "episode",
+            "tmdb_id": tmdb_id,
+            "imdb_id": get_show_imdb_id(item),
+            "title": item.get("showtitle") or item.get("title") or "",
+        }
+
+    if itype == "movie":
+        tmdb_id = normalize_numeric_id(uid.get("tmdb"))
+        imdb_id = normalize_imdb_id(uid.get("imdb") or item.get("imdbnumber"))
+        tmdb_id, imdb_id = _apply_kodi_movie_id_layers(item, tmdb_id, imdb_id)
+        return {
+            "type": "movie",
+            "tmdb_id": tmdb_id,
+            "imdb_id": imdb_id,
+            "title": item.get("title") or "",
+        }
+
+    return None
+
+
+def _resolve_tvshow_id(item):
+    """tvshowid from item, episode row, or infolabel (service.nextonlibrary-style)."""
+    tid = item.get("tvshowid")
+    try:
+        tid = int(tid)
+        if tid > 0:
+            return tid
+    except (TypeError, ValueError):
+        pass
+    ep_id = _parse_library_episode_id(item)
+    if ep_id:
+        det = jsonrpc(
+            "VideoLibrary.GetEpisodeDetails",
+            {"episodeid": ep_id, "properties": ["tvshowid"]},
+            log_errors=False,
+        )
+        ed = (det.get("result") or {}).get("episodedetails") or {}
+        ts = ed.get("tvshowid")
+        try:
+            ts = int(ts)
+            if ts > 0:
+                return ts
+        except (TypeError, ValueError):
+            pass
+    raw = xbmc.getInfoLabel("VideoPlayer.TvShowDBID")
+    ts = parse_int(raw)
+    return ts if ts and ts > 0 else None
+
+
+def _tmdb_from_tvshow_row(tvshow_id):
+    det = jsonrpc(
+        "VideoLibrary.GetTVShowDetails",
+        {"tvshowid": int(tvshow_id), "properties": ["uniqueid"]},
+        log_errors=False,
+    )
+    td = (det.get("result") or {}).get("tvshowdetails") or {}
+    uid = td.get("uniqueid") or {}
+    return normalize_numeric_id(uid.get("tmdb"))
+
+
+def _tvdb_from_tvshow_row(tvshow_id):
+    det = jsonrpc(
+        "VideoLibrary.GetTVShowDetails",
+        {"tvshowid": int(tvshow_id), "properties": ["uniqueid"]},
+        log_errors=False,
+    )
+    td = (det.get("result") or {}).get("tvshowdetails") or {}
+    uid = td.get("uniqueid") or {}
+    return normalize_numeric_id(uid.get("tvdb"))
+
+
+def _uniqueid_from_episode_row(episode_id):
+    """Minimal GetEpisodeDetails — uniqueid only (imdbnumber is not a valid Episode field)."""
+    det = jsonrpc(
+        "VideoLibrary.GetEpisodeDetails",
+        {"episodeid": int(episode_id), "properties": ["uniqueid"]},
+        log_errors=False,
+    )
+    if det.get("error"):
+        return {}, None
+    ed = (det.get("result") or {}).get("episodedetails") or {}
+    uid = ed.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+    imdb = normalize_imdb_id(uid.get("imdb"))
+    return uid, imdb
+
+
+def _get_first_infolabel(labels):
+    for lab in labels:
+        try:
+            v = xbmc.getInfoLabel(lab)
+        except Exception:
+            v = ""
+        if v and str(v).strip():
+            return str(v).strip()
+    return ""
+
+
+def _tmdb_from_infolabels():
+    v = _get_first_infolabel(
+        [
+            "ListItem.UniqueID(tmdb)",
+            "VideoPlayer.UniqueID(tmdb)",
+            "VideoPlayer.Property(tmdb_id)",
+            "VideoPlayer.Property(tmdb)",
+        ]
+    )
+    return normalize_numeric_id(v) if v else None
+
+
+def _show_imdb_from_infolabels():
+    v = _get_first_infolabel(
+        [
+            "VideoPlayer.TVshowIMDBNumber",
+            "Container.ListItem.TVShowIMDBNumber",
+            "ListItem.TVShowIMDBNumber",
+        ]
+    )
+    return normalize_imdb_id(v) if v else None
+
+
+def _tmdb_show_id_from_episode_imdb(episode_imdb, api_key):
+    """Resolve TV **series** TMDB id from an **episode** IMDb id via TMDB v3 /find."""
+    if not episode_imdb or not api_key:
+        return None
+    imdb = normalize_imdb_id(episode_imdb)
+    if not imdb:
+        return None
+    data = _tmdb_api3_json("/find/%s" % imdb, api_key, {"external_source": "imdb_id"})
+    if not isinstance(data, dict):
+        return None
+    for ep in data.get("tv_episode_results") or []:
+        try:
+            sid = int(ep.get("show_id"))
+            if sid > 0:
+                return sid
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def _normalize_tv_context_to_show_tmdb_id(item, tmdb_id, imdb_id, api_key):
+    """
+    TheIntroDB (and ``/tv/{id}/season/...`` enrichment) expect the **series** TMDB id.
+    Kodi often stores the **episode** TMDB id on the episode row.
+    """
+    tvshow_id = _resolve_tvshow_id(item)
+    if tvshow_id:
+        show_tmdb = _tmdb_from_tvshow_row(tvshow_id)
+        if show_tmdb is not None:
+            try:
+                cur = int(tmdb_id) if tmdb_id is not None else None
+            except (TypeError, ValueError):
+                cur = None
+            try:
+                st = int(show_tmdb)
+            except (TypeError, ValueError):
+                st = None
+            if st is not None and cur is not None and cur != st:
+                _rlog(
+                    "TV TMDB: using series id %s for API (episode row had %s; TheIntroDB needs the show id)"
+                    % (st, cur)
+                )
+            return show_tmdb
+    if api_key and imdb_id:
+        found = _tmdb_show_id_from_episode_imdb(imdb_id, api_key)
+        if found is not None:
+            _rlog(
+                "TV TMDB: series id %s from TMDB /find (episode imdb=%s)"
+                % (found, imdb_id)
+            )
+            return found
+    return tmdb_id
+
+
+def _correct_show_imdb_from_series_external_ids(
+    show_imdb_id, episode_imdb_id, series_tmdb_id, api_key
+):
+    """
+    IntroDB.app GET/POST expect the **series** IMDb. Kodi sometimes stores only the
+    **episode** IMDb on the episode row and duplicates it as show_imdb. When both match,
+    resolve the real series id from TMDB external_ids.
+    """
+    if not api_key or series_tmdb_id is None or not episode_imdb_id:
+        return show_imdb_id
+    epi = normalize_imdb_id(episode_imdb_id)
+    show = normalize_imdb_id(show_imdb_id)
+    if not epi:
+        return show_imdb_id
+    if show and show != epi:
+        return show_imdb_id
+    try:
+        tid = int(series_tmdb_id)
+    except (TypeError, ValueError):
+        return show_imdb_id
+    ex = _tmdb_api3_json("/tv/%s/external_ids" % tid, api_key)
+    if not isinstance(ex, dict):
+        return show_imdb_id
+    series_imdb = normalize_imdb_id(ex.get("imdb_id"))
+    if series_imdb and series_imdb != epi:
+        _rlog(
+            "TV context: series IMDb from TMDB external_ids=%s (Kodi show_imdb matched episode %s)"
+            % (series_imdb, epi)
+        )
+        return series_imdb
+    return show_imdb_id
+
+
+def _apply_kodi_library_id_layers(item, tmdb_id, imdb_id, show_imdb_id):
+    """
+    Fill TMDB/IMDb from Kodi DB + infolabels (same strategy as service.nextonlibrary):
+    show-level uniqueid.tmdb often exists when episode row only has TVDB/Sonarr.
+    """
+    if (item.get("type") or "").lower() != "episode":
+        return tmdb_id, imdb_id, show_imdb_id
+
+    if tmdb_id is None:
+        tvshow_id = _resolve_tvshow_id(item)
+        if tvshow_id:
+            tmdb_id = _tmdb_from_tvshow_row(tvshow_id)
+            if tmdb_id is not None:
+                _rlog(
+                    "Kodi layers: tmdb_id=%s from TV show uniqueid (tvshowid=%s)"
+                    % (tmdb_id, tvshow_id)
+                )
+
+    ep_id = _parse_library_episode_id(item)
+    if ep_id:
+        if tmdb_id is None or not imdb_id:
+            uid_e, imdb_e = _uniqueid_from_episode_row(ep_id)
+            if tmdb_id is None:
+                tmdb_id = normalize_numeric_id(uid_e.get("tmdb"))
+                if tmdb_id is not None:
+                    _rlog(
+                        "Kodi layers: tmdb_id=%s from episode DB uniqueid (episodeid=%s)"
+                        % (tmdb_id, ep_id)
+                    )
+            if not imdb_id and imdb_e:
+                imdb_id = imdb_e
+                _rlog("Kodi layers: episode imdb from GetEpisodeDetails")
+
+    if tmdb_id is None:
+        tmdb_il = _tmdb_from_infolabels()
+        if tmdb_il is not None:
+            tmdb_id = tmdb_il
+            _rlog("Kodi layers: tmdb_id=%s from infolabel" % tmdb_id)
+
+    if not show_imdb_id:
+        sil = _show_imdb_from_infolabels()
+        if sil:
+            show_imdb_id = sil
+            _rlog("Kodi layers: show_imdb from infolabel")
+
+    return tmdb_id, imdb_id, show_imdb_id
+
+
+def build_tv_episode_context(item, force_tmdb_enrichment=False):
+    if not item:
+        return None
+
+    season = parse_int(item.get("season"))
+    episode = parse_int(item.get("episode"))
+    file_path = item.get("file") or ""
+
+    if season is None or episode is None:
+        m = _SXXEXX.search(file_path or "")
+        if m:
+            if _use_filename_season_episode_fallback(item):
+                season = season if season is not None else int(m.group(1))
+                episode = episode if episode is not None else int(m.group(2))
+            elif (item.get("type") or "").lower() == "episode" and item.get("id"):
+                # Library episode: fill only missing values (e.g. GetEpisodeDetails omitted season)
+                season = season if season is not None else int(m.group(1))
+                episode = episode if episode is not None else int(m.group(2))
+        if season is None or episode is None:
+            if (item.get("type") or "").lower() == "episode" and item.get("id"):
+                _rlog(
+                    "Remote TV segments skipped: library episode missing season/episode in metadata "
+                    "and no SxxExx in path"
+                )
+            else:
+                _rlog(
+                    "Remote TV segments skipped: no season/episode after metadata "
+                    "(for files not in the library, add SxxExx to the filename if needed)"
+                )
+            return None
+
+    uid = item.get("uniqueid") or {}
+    if not isinstance(uid, dict):
+        uid = {}
+    tmdb_id = normalize_numeric_id(uid.get("tmdb"))
+    imdb_id = normalize_imdb_id(uid.get("imdb") or item.get("imdbnumber"))
+    show_imdb_id = get_show_imdb_id(item) or imdb_id
+
+    tmdb_id, imdb_id, show_imdb_id = _apply_kodi_library_id_layers(
+        item, tmdb_id, imdb_id, show_imdb_id
+    )
+    if not show_imdb_id:
+        show_imdb_id = get_show_imdb_id(item) or imdb_id
+
+    key = _get_tmdb_api_key()
+    tmdb_id = _normalize_tv_context_to_show_tmdb_id(item, tmdb_id, imdb_id, key)
+
+    _rlog(
+        "Kodi library uniqueid keys for S%02dE%02d: %s (tmdb=%s imdb=%s show_imdb=%s)"
+        % (
+            season,
+            episode,
+            sorted(uid.keys()),
+            tmdb_id,
+            imdb_id,
+            show_imdb_id,
+        )
+    )
+
+    addon = get_addon()
+    allow_enrich = addon and key and (
+        force_tmdb_enrichment
+        or (
+            addon_get_bool(addon, "tv_use_online_segment_lookup", False)
+            and addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
+        )
+    )
+    if allow_enrich and (tmdb_id is None or not imdb_id or show_imdb_id is None):
+        tmdb_id, imdb_id, show_imdb_id = _tmdb_enrich_missing_ids(
+            item, season, episode, tmdb_id, imdb_id, show_imdb_id, key
+        )
+        _rlog(
+            "After TMDB API enrichment: tmdb=%s episode_imdb=%s show_imdb=%s"
+            % (tmdb_id, imdb_id, show_imdb_id)
+        )
+
+    if key and tmdb_id is not None and imdb_id:
+        show_imdb_id = _correct_show_imdb_from_series_external_ids(
+            show_imdb_id, imdb_id, tmdb_id, key
+        )
+
+    tvdb_id = normalize_numeric_id(uid.get("tvdb"))
+    if tvdb_id is None:
+        tvshow_id = _resolve_tvshow_id(item)
+        if tvshow_id:
+            tvdb_id = _tvdb_from_tvshow_row(tvshow_id)
+
+    if tmdb_id is None and not imdb_id and not show_imdb_id:
+        tvdb_raw = uid.get("tvdb")
+        if tvdb_raw is not None and str(tvdb_raw).strip() != "":
+            _rlog(
+                "Remote TV segments skipped: Kodi has TVDB in uniqueid (%s) but TheIntroDB and "
+                "IntroDB.app need TMDB and/or IMDb — add a TMDB API key (TV episode settings), "
+                "use TheMovieDB Helper’s key, or rescrape with TMDB/IMDb."
+                % tvdb_raw
+            )
+        else:
+            _rlog(
+                "Remote TV segments skipped: no TMDB/IMDb for S%02dE%02d after Kodi and TMDB API "
+                "(enable resolve + API key or TheMovieDB Helper), or rescrape."
+                % (season, episode)
+            )
+        return None
+
+    ctx = {
+        "type": "tv",
+        "season": season,
+        "episode": episode,
+        "tmdb_id": tmdb_id,
+        "imdb_id": imdb_id,
+        "show_imdb_id": show_imdb_id,
+        "tvdb_id": tvdb_id,
+    }
+    _rlog(
+        "TV context: S%02dE%02d tmdb_id=%s tvdb_id=%s episode_imdb=%s show_imdb=%s"
+        % (season, episode, tmdb_id, tvdb_id, imdb_id, show_imdb_id)
+    )
+    return ctx
+
+
+def build_upload_context(item):
+    """TheIntroDB / IntroDB movie or TV context with optional TMDB resolution forced on."""
+    if not item:
+        return None
+    itype = (item.get("type") or "").lower()
+    if itype == "movie":
+        return build_movie_context(item, force_tmdb_enrichment=True)
+    if itype == "episode":
+        return build_tv_episode_context(item, force_tmdb_enrichment=True)
+    return None

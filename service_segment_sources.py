@@ -117,32 +117,26 @@ def _invoke_local_to_online_sync(
 
 def safe_file_read(*paths):
     for path in paths:
-        if path:
-            _log_seg_detail(f"📂 Attempting to read: {path}")
-            exists_result = False
-            try:
-                exists_result = xbmcvfs.exists(path)
-                _log_seg_detail(f"📂 xbmcvfs.exists('{path}') = {exists_result}")
-            except Exception as ex:
-                _log_seg_detail(f"📂 xbmcvfs.exists('{path}') raised: {ex}")
-            try:
-                f = xbmcvfs.File(path)
-                content = f.read()
-                f.close()
-                if isinstance(content, bytes):
-                    content = content.decode("utf-8", errors="replace")
-                if content:
-                    _log_seg_detail(f"✅ Successfully read file: {path}")
-                    return content
-                else:
-                    if exists_result:
-                        log(f"⚠ File exists but read returned empty: {path}")
-                    else:
-                        _log_seg_detail(
-                            f"⚠ File was empty (exists={exists_result}): {path}"
-                        )
-            except Exception as e:
-                log(f"❌ Failed to read {path}: {e}")
+        if not path:
+            continue
+        _log_seg_detail(f"📂 Attempting to read: {path}")
+        from service_sidecar_paths import vfs_file_exists
+
+        if not vfs_file_exists(path):
+            _log_seg_detail(f"📂 skip missing path (no File): {path}")
+            continue
+        try:
+            f = xbmcvfs.File(path)
+            content = f.read()
+            f.close()
+            if isinstance(content, bytes):
+                content = content.decode("utf-8", errors="replace")
+            if content:
+                _log_seg_detail(f"✅ Successfully read file: {path}")
+                return content
+            log(f"⚠ File exists but read returned empty: {path}")
+        except Exception as e:
+            log(f"❌ Failed to read {path}: {e}")
     return None
 
 
@@ -234,6 +228,8 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
                 segment_monitor.segment_file_found = False
                 log("🚫 No chapter XML file found — segment_file_found set to False")
             return None
+        if probe.probed and probe.chapter_path:
+            paths_to_try = [probe.chapter_path]
 
     _log_seg_detail(f"🔍 Attempting chapter XML paths: {paths_to_try}")
 
@@ -342,6 +338,8 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
                 segment_monitor.segment_file_found = False
                 log("🚫 No EDL file found — segment_file_found set to False")
             return []
+        if probe.probed and probe.edl_path:
+            paths_to_try = [probe.edl_path]
 
     _log_seg_detail(f"🔍 Attempting EDL paths: {paths_to_try}")
     edl_data = safe_file_read(*paths_to_try)

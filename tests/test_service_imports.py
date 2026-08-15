@@ -15,8 +15,19 @@ REFACTORED_LOOP_MODULES = (
     "service_loop_toast",
     "service_loop_skip",
     "service_playback_context",
+    "service_playback_state",
     "service_sidecar_probe_cache",
     "service_main_loop",
+    "remote_http",
+    "remote_tmdb",
+    "remote_library",
+    "remote_lookup",
+    "remote_segments",
+    "service_online_sidecar_merge",
+    "service_online_sidecar_preview",
+    "service_online_sidecar_write",
+    "service_online_sidecar_save",
+    "skippy_profile_backup",
 )
 
 

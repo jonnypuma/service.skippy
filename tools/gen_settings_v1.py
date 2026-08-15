@@ -930,19 +930,19 @@ def main():
     )
     action_setting(
         g,
-        "settings_action_backup_upload_history",
+        "settings_action_backup_profile_data",
         2,
         "38009",
         "38010",
-        "RunScript(service.skippy,backup_upload_history)",
+        "RunScript(service.skippy,backup_profile_data)",
     )
     action_setting(
         g,
-        "settings_action_restore_upload_history",
+        "settings_action_restore_profile_data",
         2,
         "38011",
         "38012",
-        "RunScript(service.skippy,restore_upload_history)",
+        "RunScript(service.skippy,restore_profile_data)",
     )
 
     # ---- 44060 title autoskip ----

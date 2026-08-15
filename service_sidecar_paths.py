@@ -108,6 +108,90 @@ def _chapter_xml_paths_to_try(video_path):
     return paths_to_try
 
 
+def _listdir_index(parent):
+    """Return ``(file_lower_to_name, dir_lower_set)`` or ``None`` when listdir fails."""
+    if not parent:
+        return None
+    try:
+        dirs, files = xbmcvfs.listdir(parent)
+    except (OSError, IOError, RuntimeError, ValueError, TypeError, AttributeError) as exc:
+        _log_paths_detail("listdir failed for %s: %s" % (parent, exc))
+        return None
+    file_map = {}
+    for name in files or []:
+        if name:
+            file_map[str(name).lower()] = name
+    dir_set = set(str(d).lower() for d in (dirs or []) if d)
+    return file_map, dir_set
+
+
+def existing_paths_from_listing(candidate_paths):
+    """Split candidates into listed hits vs unknown (listdir failed for that parent).
+
+    Missing files in a successful listing are dropped (no ``exists`` / ``File``).
+    A missing ``.chapters`` directory is treated as empty, not unknown.
+    """
+    found = []
+    unknown = []
+    indexes = {}
+    jf_lower = _JF_CHAPTERS_SUBDIR.lower()
+
+    def index_for(parent):
+        if parent not in indexes:
+            indexes[parent] = _listdir_index(parent)
+        return indexes[parent]
+
+    for path in candidate_paths:
+        if not path:
+            continue
+        parent = os.path.dirname(path)
+        name = os.path.basename(path)
+        if not name:
+            continue
+        grandparent = os.path.dirname(parent)
+        if os.path.basename(parent).lower() == jf_lower and grandparent:
+            gp = index_for(grandparent)
+            if gp is not None:
+                _files, dirs = gp
+                if jf_lower not in dirs:
+                    continue
+        idx = index_for(parent)
+        if idx is None:
+            unknown.append(path)
+            continue
+        file_map, _dirs = idx
+        listed = file_map.get(name.lower())
+        if listed:
+            found.append(os.path.join(parent, listed))
+    return _dedupe_paths(found), _dedupe_paths(unknown)
+
+
+def sidecar_hits_from_directory_listing(video_path):
+    """First listed chapter XML and EDL paths, plus candidates listdir could not decide."""
+    chapter_candidates = _chapter_xml_paths_to_try(video_path)
+    edl_candidates = _edl_paths_to_try(video_path)
+    found_ch, unknown_ch = existing_paths_from_listing(chapter_candidates)
+    found_edl, unknown_edl = existing_paths_from_listing(edl_candidates)
+    return (
+        found_ch[0] if found_ch else None,
+        found_edl[0] if found_edl else None,
+        unknown_ch,
+        unknown_edl,
+        len(chapter_candidates),
+        len(edl_candidates),
+    )
+
+
+def vfs_file_exists(path):
+    """True when the path exists. Prefer this over opening missing NFS files."""
+    if not path:
+        return False
+    try:
+        return bool(xbmcvfs.exists(path))
+    except Exception:
+        return False
+
+
 def _log_parent_dir_contents(video_path, ext):
     """Log parent directory contents for MP4 files to help diagnose sidecar issues (All detail only)."""
     addon = get_addon()
@@ -119,18 +203,16 @@ def _log_parent_dir_contents(video_path, ext):
         return
     if ext not in (".mp4", ".m4v"):
         return
-    try:
-        parent = (
-            video_path.rsplit("/", 1)[0]
-            if "/" in video_path
-            else video_path.rsplit("\\", 1)[0]
-        )
-        dirs, files = xbmcvfs.listdir(parent)
-        _log_paths_detail(
-            f"📁 MP4 parent directory listing ({parent}): dirs={dirs[:10]}, files={files[:20]}"
-        )
-    except (OSError, IOError, RuntimeError, ValueError, TypeError, AttributeError) as e:
-        _log_paths_detail(f"📁 MP4 parent directory listing failed: {e}")
+    parent = os.path.dirname(video_path)
+    idx = _listdir_index(parent)
+    if idx is None:
+        _log_paths_detail("📁 MP4 parent directory listing failed: %s" % parent)
+        return
+    file_map, dirs = idx
+    _log_paths_detail(
+        "📁 MP4 parent directory listing (%s): dirs=%s, files=%s"
+        % (parent, list(dirs)[:10], list(file_map.values())[:20])
+    )
 
 
 def _edl_paths_to_try(video_path):
@@ -163,12 +245,14 @@ def _edl_paths_to_try(video_path):
 
 def _find_existing_edl_path(video_path):
     """First existing .edl in discovery order (sibling preferred, then .chapters/)."""
-    for p in _edl_paths_to_try(video_path):
-        try:
-            if p and xbmcvfs.exists(p):
-                return p
-        except Exception:
-            continue
+    _chapter, edl_path, _unknown_ch, unknown_edl, _cc, _ec = (
+        sidecar_hits_from_directory_listing(video_path)
+    )
+    if edl_path:
+        return edl_path
+    for path in unknown_edl:
+        if vfs_file_exists(path):
+            return path
     return None
 
 
@@ -177,11 +261,13 @@ def local_chapter_or_edl_file_exists(video_path, segment_monitor=None):
         from service_sidecar_probe_cache import local_sidecar_exists
 
         return local_sidecar_exists(video_path, segment_monitor)
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return True
-    for p in _edl_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
+    chapter_path, edl_path, unknown_ch, unknown_edl, _cc, _ec = (
+        sidecar_hits_from_directory_listing(video_path)
+    )
+    if chapter_path or edl_path:
+        return True
+    for path in unknown_ch + unknown_edl:
+        if vfs_file_exists(path):
             return True
     return False
 
@@ -251,10 +337,12 @@ def _sidecar_signature(video_path, segment_monitor=None):
 
 
 def _sidecar_chapter_xml_exists(video_path):
-    for p in _chapter_xml_paths_to_try(video_path):
-        if p and xbmcvfs.exists(p):
-            return True
-    return False
+    chapter_path, _edl, unknown_ch, _unknown_edl, _cc, _ec = (
+        sidecar_hits_from_directory_listing(video_path)
+    )
+    if chapter_path:
+        return True
+    return any(vfs_file_exists(p) for p in unknown_ch)
 
 
 def playback_path_supports_sidecar_chapters_xml(video_path):
@@ -290,19 +378,21 @@ def _find_existing_sidecar_chapter_xml_path(video_path):
     (see ``normalize_matroska_chapter_xml_text``). If every existing file is corrupt,
     return the first existing path so callers can overwrite/repair it.
     """
-    paths = _chapter_xml_paths_to_try(video_path)
+    chapter_path, _edl, unknown_ch, _unknown_edl, _cc, _ec = (
+        sidecar_hits_from_directory_listing(video_path)
+    )
+    paths = []
+    if chapter_path:
+        paths.append(chapter_path)
+    for path in unknown_ch:
+        if vfs_file_exists(path):
+            paths.append(path)
     seen = set()
     first_existing = None
     for p in paths:
         if not p or p in seen:
             continue
         seen.add(p)
-        try:
-            exists = xbmcvfs.exists(p)
-        except Exception:
-            continue
-        if not exists:
-            continue
         if first_existing is None:
             first_existing = p
         try:

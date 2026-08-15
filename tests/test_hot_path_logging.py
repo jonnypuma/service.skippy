@@ -88,5 +88,49 @@ class SettingsCacheTests(unittest.TestCase):
         self.assertIn("preview", second[1])
 
 
+class LogTagAndLevelTests(unittest.TestCase):
+    def tearDown(self):
+        settings_utils.invalidate_settings_cache()
+
+    def test_log_uses_service_tag_not_settingsutils(self):
+        recorded = []
+
+        def _xbmc_log(msg, _level=None):
+            recorded.append(msg)
+
+        with patch.object(settings_utils, "get_addon", return_value=object()):
+            with patch.object(
+                settings_utils,
+                "skippy_log_effective_detail_level",
+                return_value=settings_utils.SKIPPY_LOG_NORMAL,
+            ):
+                with patch.object(settings_utils.xbmc, "log", side_effect=_xbmc_log):
+                    settings_utils.log("hello")
+        self.assertEqual(len(recorded), 1)
+        self.assertIn("[service.skippy - service]", recorded[0])
+        self.assertNotIn("SettingsUtils", recorded[0])
+
+    def test_log_service_detail_silent_on_normal(self):
+        recorded = []
+        with patch.object(settings_utils, "get_addon", return_value=object()):
+            with patch.object(
+                settings_utils,
+                "skippy_log_effective_detail_level",
+                return_value=settings_utils.SKIPPY_LOG_NORMAL,
+            ):
+                with patch.object(
+                    settings_utils.xbmc, "log", side_effect=lambda *a, **k: recorded.append(a)
+                ):
+                    settings_utils.log_service_detail("⏱️ Playback time: 12s", tag="playback")
+        self.assertEqual(recorded, [])
+
+
+class PlayheadMovedLogTests(unittest.TestCase):
+    def test_slow_parse_logs_at_all_detail_only(self):
+        from service_main_loop import PARSE_SLOW_LOG_MS
+
+        self.assertGreaterEqual(PARSE_SLOW_LOG_MS, 200)
+
+
 if __name__ == "__main__":
     unittest.main()

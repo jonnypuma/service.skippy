@@ -9,53 +9,19 @@ from typing import Any
 
 import xbmc
 
-from playback_segment_cache import publish_parse_cache
 from segment_item import segment_is_active_lenient
-from service_loop_per_show import clear_playback_override_key
-from service_segment_processed_cache import clear_segment_processed_cache
-from service_segment_prefetch import clear_tv_prefetch_thread_state
-from service_sidecar_probe_cache import clear_sidecar_probe_cache
-from service_skip_seek_property import clear_skippy_skipping
+from service_playback_state import reset_playback_session
 from settings_utils import log, log_playback_settings_snapshot
-from service_loop_skip import clear_last_skipped_segment
 
 
 def reset_monitor_playback_state(ctx: Any, *, log_prefix: str) -> None:
     """Clear per-title monitor caches (new video, replay, etc.)."""
-    monitor = ctx.monitor
-    monitor.shown_missing_file_toast = False
-    monitor.prompted.clear()
-    monitor.recently_dismissed.clear()
-    monitor.segment_parse_cache = None
-    clear_segment_processed_cache(monitor)
-    publish_parse_cache(None)
-    monitor.cleared_parent_dismissals.clear()
-    monitor.playback_ready = False
-    monitor.play_start_time = time.time()
-    monitor.last_time = 0
-    monitor.last_toast_time = 0
-    monitor.skipped_to_nested_segment.clear()
-    clear_last_skipped_segment(monitor)
-    monitor.last_ask_seg_id = None
-    monitor.last_ask_mono = None
-    monitor._last_log_state.clear()
-    monitor.overlap_editor_opened_for_path = None
-    monitor.online_sidecar_save_prompt_suppressed_path = None
-    monitor.local_to_online_sync_suppressed_path = None
-    monitor.prefetch_tv_scheduled_path = None
-    monitor.nested_parent_map = {}
-    monitor.online_segments_toast_shown_for_path = None
-    clear_playback_override_key(monitor)
-    monitor._home_window = None
-    clear_tv_prefetch_thread_state(monitor)
-    ctx.clear_deferred_remote_probe_state(monitor)
-    # Keep playback-context cache when the path is unchanged. refresh_playback_context
-    # already refetches Player.GetItem when the video path differs; invalidating here
-    # (right after a successful refresh on new-video ticks) forced a second GetItem
-    # and delayed the next skip dialog by ~1s.
-    clear_sidecar_probe_cache(monitor)
-    clear_skippy_skipping(monitor)
-    log("%s state cleared - recently_dismissed now has %d items" % (log_prefix, len(monitor.recently_dismissed)))
+    reset_playback_session(
+        ctx.monitor,
+        clear_deferred=ctx.clear_deferred_remote_probe_state,
+        log_prefix=log_prefix,
+        log_fn=log,
+    )
 
 
 def handle_replay_detection(ctx: Any, video: str, current_time: float) -> None:

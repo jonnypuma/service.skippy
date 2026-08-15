@@ -141,5 +141,60 @@ class MainLoopDedupTests(unittest.TestCase):
         self.assertEqual(skips, 1)
 
 
+class IdleParseSkipTests(unittest.TestCase):
+    def _ctx(self, monitor):
+        return _bindings(monitor, _Player(200.0))
+
+    def test_idle_far_from_segments_skips_parse(self):
+        import time
+
+        monitor = _Monitor([_segment(0.0, 20.0)])
+        monitor.segment_parse_cache = {
+            "path": "episode.mkv",
+            "playback_type": "episode",
+            "last_sidecar_check": time.time(),
+            "segments": [_segment(0.0, 20.0)],
+        }
+        monitor.segment_processed_cache = {"link_boundaries": ()}
+        monitor.deferred_remote_playback_stash = None
+        ctx = self._ctx(monitor)
+        self.assertFalse(
+            service_main_loop._should_parse_segments(ctx, "episode.mkv", 200.0, "episode")
+        )
+
+    def test_near_segment_forces_parse(self):
+        import time
+
+        monitor = _Monitor([_segment(0.0, 20.0)])
+        monitor.segment_parse_cache = {
+            "path": "episode.mkv",
+            "playback_type": "episode",
+            "last_sidecar_check": time.time(),
+            "segments": [_segment(0.0, 20.0)],
+        }
+        monitor.segment_processed_cache = {"link_boundaries": ()}
+        ctx = self._ctx(monitor)
+        self.assertTrue(
+            service_main_loop._should_parse_segments(ctx, "episode.mkv", 10.0, "episode")
+        )
+
+    def test_seek_grace_forces_parse(self):
+        import time
+
+        monitor = _Monitor([_segment(0.0, 20.0)])
+        monitor.skippy_skipping_since = time.monotonic()
+        monitor.segment_parse_cache = {
+            "path": "episode.mkv",
+            "playback_type": "episode",
+            "last_sidecar_check": time.time(),
+            "segments": [_segment(0.0, 20.0)],
+        }
+        monitor.segment_processed_cache = {"link_boundaries": ()}
+        ctx = self._ctx(monitor)
+        self.assertTrue(
+            service_main_loop._should_parse_segments(ctx, "episode.mkv", 200.0, "episode")
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

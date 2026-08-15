@@ -1,6 +1,5 @@
 import os
 import time
-import threading
 import json
 import re
 import traceback
@@ -21,7 +20,7 @@ from settings_utils import (
     skippy_notification_icon,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
-from prefetch_segment_cache import clear_prefetch_segment_cache
+from service_playback_state import init_playback_session
 from service_online_sidecar_save import (
     maybe_save_online_segments_to_sidecars as _maybe_save_online_segments_to_sidecars_impl,
 )
@@ -57,6 +56,13 @@ def log_if_changed(key, msg):
         monitor._last_log_state[key] = msg
         log(msg)
 
+
+def log_detail_if_changed(key, msg, *, tag="service"):
+    """All-detail equivalent of log_if_changed (same-text ticks stay quiet)."""
+    if key not in monitor._last_log_state or monitor._last_log_state[key] != msg:
+        monitor._last_log_state[key] = msg
+        log_service_detail(msg, tag=tag)
+
 CHECK_INTERVAL = 1
 SIDECAR_MTIME_CHECK_INTERVAL = 5
 # Drop orphaned first-press marker state after this many seconds (wall clock).
@@ -68,49 +74,7 @@ ICON_PATH = skippy_notification_icon(get_addon()) or ""
 class PlayerMonitor(xbmc.Monitor):
     def __init__(self):
         super().__init__()
-        self.segment_file_found = False
-        self.prompted = set()
-        self.recently_dismissed = set()
-        self.current_segments = []
-        self.last_video = None
-        self.last_time = 0
-        self.shown_missing_file_toast = False
-        self.playback_ready = False
-        self.playback_ready_time = 0
-        self.play_start_time = 0
-        self.last_toast_time = 0
-        self.last_toast_for_file = {}
-        self.sidecar_probe_cache = {}
-        self.toast_overlap_shown = False
-        self.skipped_to_nested_segment = {}  # Track when we've skipped to nested segments
-        self._last_log_state = {}  # Cache for logging state changes only
-        self.cleared_parent_dismissals = set()  # Track which parent dismissals have been cleared for nested segments
-        self.remote_segment_cache = {}  # Online lookup cache (TV: TheIntroDB+IntroDB; movies: TheIntroDB)
-        self.segment_parse_cache = None  # Parsed source segments for current playback; refreshed when sidecars change
-        self.segment_processed_cache = None  # Pass 1/2 linked segments; invalidated on source/settings change
-        self.nested_parent_map = {}  # child seg id -> parent seg id (built during Pass 2)
-        self.online_segments_toast_shown_for_path = None
-        # (video_path, override key, title) resolved once per title for per-show overrides.
-        self.per_show_override_identity = None
-        self._home_window = None
-        self.skip_dialog_modal_active = False  # Single-flight guard for ask-dialog(doModal)
-        self.skippy_skipping_since = None  # monotonic time when Skippy.Skipping was set
-        # After Skippy skip: ignore re-ask/auto for this id while playhead still inside bounds.
-        self.last_skipped_seg_id = None
-        self.last_skipped_seg_bounds = None  # (start, end) floats
-        # Same-seg ask anti-spam (monotonic stamp when ask actually opens).
-        self.last_ask_seg_id = None
-        self.last_ask_mono = None
-        # Once per file: auto-open editor when overlaps present (open_segment_editor_on_overlap).
-        self.overlap_editor_opened_for_path = None
-        # Overwrite/update ask was answered (Yes or No) for this file — no re-prompt until next title.
-        self.online_sidecar_save_prompt_suppressed_path = None
-        self.local_to_online_sync_suppressed_path = None
-        clear_prefetch_segment_cache()
-        self.prefetch_tv_scheduled_path = None
-        self.prefetch_tv_lock = threading.Lock()
-        self.prefetch_tv_result = None
-        self.deferred_remote_probe_lock = threading.Lock()
+        init_playback_session(self)
         clear_deferred_remote_probe_state(self)
 
     def onNotification(self, sender, method, data):
@@ -311,7 +275,11 @@ def infer_playback_type(item):
     episode = item.get("episode", -1)
     file_path = item.get("file", "")
 
-    log_service_detail(f"📺 showtitle: {showtitle}, episode: {episode}", tag="playback")
+    log_detail_if_changed(
+        "playback_showtitle",
+        "📺 showtitle: %s, episode: %s" % (showtitle, episode),
+        tag="playback",
+    )
     normalized_path = file_path.lower()
 
     if showtitle:

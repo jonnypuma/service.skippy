@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.6.0] - 2026-08-13
+
+### Changed
+- **Logging**: Normal verbose no longer heartbeats `Playback time` every second or logs playhead-during-parse for fast parses. Those lines are All-detail only (playhead-moved also requires parse ≥ 200 ms). Unchanged `showtitle` / episode is deduped. Shared `log()` / `log_always` / `log_error` tags default to `service` instead of `SettingsUtils`.
+- **NFS sidecar discovery**: Probe via directory listing (and `.chapters/` only when that folder is listed). Missing candidates are not `File()`-opened. Negative probes re-list every 5s so a sidecar added mid-playback is still found.
+- **Idle parse**: When source/processed caches are valid and the playhead is more than 3s from any segment or nested-link boundary, the monitor tick skips `parse_and_process_segments`. Loop interval stays 1s.
+- **Segment Editor**: Uses the playback parse snapshot for local as well as remote origin. Disk fallback opens only listed/existing sidecar paths.
+- **Profile data backup** module renamed to `skippy_profile_backup.py`. Settings actions call `backup_profile_data` / `restore_profile_data`; legacy `backup_upload_history` / `restore_upload_history` RunScript names still work.
+
+### Fixed
+- Service `safe_file_read` no longer opens paths `exists()` already said were missing (Kodi `CNFSFile::Open` ERROR spam on NFS).
+
+### Changed (hygiene)
+- `PlaybackSessionState` helpers in `service_playback_state.py` own monitor field init/reset.
+- `remote_segments.py` is a facade over `remote_http.py`, `remote_tmdb.py`, `remote_library.py`, `remote_lookup.py`.
+- `service_online_sidecar_save.py` is a facade over merge / preview / write modules.
+- Removed leftover `tools/_tmp_string_ranges.py`, `tools/_repair_marker_try_block.py`, and `tools/apply_segment_editor_phase1.py`.
+
 ## [5.5.2] - 2026-08-02
 
 ### Changed

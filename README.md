@@ -38,7 +38,9 @@ service.skippy/
 ├── service_segment_*.py            # Parse, sources, prefetch, caches
 ├── service_online_*.py             # Online lookup pause, sidecar save, policy
 ├── service_playback_context.py     # Player path / metadata snapshot for the loop
-├── remote_segments.py              # TheIntroDB / IntroDB.app / TMDB client
+├── service_playback_state.py       # Per-title monitor field init / reset
+├── remote_segments.py              # Facade: TheIntroDB / IntroDB.app / TMDB
+├── remote_http.py / remote_tmdb.py / remote_library.py / remote_lookup.py
 ├── online_segment_upload.py        # Editor / sync uploads
 ├── skipdialog.py                   # Full / Minimal ask dialog (WindowXML)
 ├── segment_marker.py               # Segment Marker UX
@@ -48,7 +50,7 @@ service.skippy/
 ├── per_show_overrides.py / per_show_overrides_ui.py  # Per-title auto-skip store + manage modal
 ├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters and the statistics modal
 ├── skippy_profile_store.py         # JSON helpers for addon_data files
-├── settings_utils.py / settings_backup.py / upload_history_backup.py  # Settings + profile-data backup (history, title autoskip, stats)
+├── settings_utils.py / settings_backup.py / skippy_profile_backup.py  # Settings + profile-data backup (history, title autoskip, stats)
 ├── keymap_utils.py
 ├── icon.png / fanart.png / screenshot0{1,2,3}.png
 ├── resources/
@@ -341,7 +343,7 @@ The **Statistics** category opens a modal with:
 
 Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown at the bottom of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
 
-**Backup & Restore** (Advanced) includes **Back up / Restore profile data**: one JSON file carries upload fingerprints, per-title auto-skip rules, and statistics. Restore **merges** into the local profile (fingerprints union; title rules merge per key; statistics keep the larger counter for each field). Legacy upload-history-only backups still restore.
+**Backup & Restore** (Advanced) includes **Back up / Restore profile data**: one JSON file carries upload fingerprints, per-title auto-skip rules, and statistics. Restore **merges** into the local profile (fingerprints union; title rules merge per key; statistics keep the larger counter for each field). Legacy upload-history-only backups still restore. Settings actions call `RunScript(service.skippy,backup_profile_data)` / `restore_profile_data`; the old `backup_upload_history` / `restore_upload_history` names still work.
 
 ---
 
@@ -437,6 +439,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | Category: | Debug Logging |
 | ----------------------------- | ---------------------------------------------------------------- |
 | enable_verbose_logging | Enables extra log entries for debugging |
+| skippy_log_detail_level | When verbose is on: Errors only / Normal / All detail (default Normal) |
 
 ---
 
@@ -969,33 +972,30 @@ Setting jump point for 'intro' to 20.0s (nested segment 'recap')
 
 ## Logging
 
-Verbose logging provides detailed insight into Skippy's operation. When enabled, it reveals:
+Turn on **Enable verbose logging**, then pick **Log detail level**:
 
-**What Gets Logged:**
+- **Errors only** — failures and `log_error` lines
+- **Normal** — skip flow, parse summaries, dialog/toast decisions, state changes (not per-second heartbeats)
+- **All detail** — JSON-RPC dumps, path probes, per-atom parse lines, playback time, showtitle/episode, slow playhead-during-parse notices
+
+Filter `kodi.log` for `[service.skippy`. Sub-tags include `service`, `playback`, `remote`, `jsonrpc`, `paths`, `segments`.
+
+**What Normal logs:**
 - Parsed segments and labels
-- Playback state and detection
+- Playback path / type when they change
 - Toast decision logic and suppression
 - Skip dialog flow and user choice
 - Overlapping/nested segments
 - Dialog and toast creation failures (helps identify Kodi/device limitations)
-- State changes and new events
 
-**Smart Logging to Reduce Clutter:**
-Skippy uses intelligent state-based logging to keep log files manageable:
+**What Normal does not log:**
+- `Playback time: Ns` every second
+- Unchanged `showtitle` / episode on every tick
+- Playhead drift during a fast parse (All detail logs it when parse took ≥ 200 ms)
 
-- **State Changes Only**: Logs only when values change, not on every check
-- **No Repetition**: Same messages aren't logged repeatedly (e.g., "segment not active" won't spam the log)
-- **Event-Based**: New events and errors are always logged
-- **Cache Management**: Log cache is cleared on video changes, replays, and major rewinds
+**State-change helpers:** `log_if_changed` (Normal) and `log_detail_if_changed` (All) skip identical messages. The log-state cache is cleared on video changes, replays, and major rewinds.
 
-**Examples:**
-- Logs when a new segment becomes active
-- Logs when playback type changes
-- Logs when state counts change (prompted, dismissed, etc.)
-- Doesn't log "segment not active" every second for inactive segments
-- Doesn't log "already prompted" repeatedly for the same segment
-
-**Enable via `enable_verbose_logging` for full insight.**
+**Enable via `enable_verbose_logging` for full insight.** Use **All detail** only while diagnosing.
 
 **Troubleshooting Device Limitations:**
 When verbose logging is enabled, Skippy will log when dialog or toast creation fails with messages like:

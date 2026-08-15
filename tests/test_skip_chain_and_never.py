@@ -170,11 +170,11 @@ class ResetKeepsPlaybackCacheTests(unittest.TestCase):
         ctx.monitor = monitor
         ctx.clear_deferred_remote_probe_state = MagicMock()
 
-        with patch("service_loop_playback.clear_segment_processed_cache"):
-            with patch("service_loop_playback.publish_parse_cache"):
-                with patch("service_loop_playback.clear_tv_prefetch_thread_state"):
-                    with patch("service_loop_playback.clear_sidecar_probe_cache"):
-                        with patch("service_loop_playback.clear_skippy_skipping"):
+        with patch("service_playback_state.clear_segment_processed_cache"):
+            with patch("service_playback_state.publish_parse_cache"):
+                with patch("service_playback_state.clear_tv_prefetch_thread_state"):
+                    with patch("service_playback_state.clear_sidecar_probe_cache"):
+                        with patch("service_playback_state.clear_skippy_skipping"):
                             mod.reset_monitor_playback_state(
                                 ctx, log_prefix="✅ New video"
                             )

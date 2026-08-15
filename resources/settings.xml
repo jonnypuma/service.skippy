@@ -973,16 +973,16 @@
                         <data>RunScript(service.skippy,restore_settings)</data>
                     </control>
                 </setting>
-                <setting id="settings_action_backup_upload_history" type="action" label="38009" help="38010">
+                <setting id="settings_action_backup_profile_data" type="action" label="38009" help="38010">
                     <level>2</level>
                     <control type="button" format="action">
-                        <data>RunScript(service.skippy,backup_upload_history)</data>
+                        <data>RunScript(service.skippy,backup_profile_data)</data>
                     </control>
                 </setting>
-                <setting id="settings_action_restore_upload_history" type="action" label="38011" help="38012">
+                <setting id="settings_action_restore_profile_data" type="action" label="38011" help="38012">
                     <level>2</level>
                     <control type="button" format="action">
-                        <data>RunScript(service.skippy,restore_upload_history)</data>
+                        <data>RunScript(service.skippy,restore_profile_data)</data>
                     </control>
                 </setting>
             </group>

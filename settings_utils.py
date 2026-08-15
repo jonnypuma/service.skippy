@@ -341,19 +341,26 @@ def compute_skip_seek_destination_seconds(segment, addon):
     return max(0.0, float(base) + off)
 
 
-def log(msg):
+_DEFAULT_LOG_TAG = "service"
+
+
+def _skippy_log_line(msg, tag=_DEFAULT_LOG_TAG):
+    return "[service.skippy - %s] %s" % (tag or _DEFAULT_LOG_TAG, _ascii_log_text(msg))
+
+
+def log(msg, *, tag=_DEFAULT_LOG_TAG):
     """Standard INFO trace when verbose is on and log level is Normal or All detail."""
     addon = get_addon()
     if not addon:
-        xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)} (shutdown)", xbmc.LOGINFO)
+        xbmc.log(_skippy_log_line("%s (shutdown)" % msg, tag), xbmc.LOGINFO)
         return
     lv = skippy_log_effective_detail_level(addon)
     if lv == "Off" or lv == SKIPPY_LOG_ERROR_ONLY:
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGINFO)
+    xbmc.log(_skippy_log_line(msg, tag), xbmc.LOGINFO)
 
 
-def log_error(msg):
+def log_error(msg, *, tag=_DEFAULT_LOG_TAG):
     """LOGERROR when verbose is on (any level except Off). For Errors-only mode this is the main output."""
     addon = get_addon()
     if not addon:
@@ -361,7 +368,7 @@ def log_error(msg):
     lv = skippy_log_effective_detail_level(addon)
     if lv == "Off":
         return
-    xbmc.log(f"[service.skippy - SettingsUtils] {_ascii_log_text(msg)}", xbmc.LOGERROR)
+    xbmc.log(_skippy_log_line(msg, tag), xbmc.LOGERROR)
 
 
 def log_remote(msg):
@@ -389,7 +396,7 @@ def log_segment_detail(msg):
     xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
-def log_service_detail(msg, *, tag="SettingsUtils"):
+def log_service_detail(msg, *, tag=_DEFAULT_LOG_TAG):
     """Per-loop JSON-RPC, path probes, per-atom parse lines; All detail only (quiets Normal).
 
     tag: short sub-source for kodi.log filters, e.g. jsonrpc, segments, sidecar, playback.
@@ -399,7 +406,7 @@ def log_service_detail(msg, *, tag="SettingsUtils"):
         return
     if skippy_log_effective_detail_level(addon) != SKIPPY_LOG_ALL:
         return
-    xbmc.log(f"[service.skippy - {tag}] {_ascii_log_text(msg)}", xbmc.LOGINFO)
+    xbmc.log(_skippy_log_line(msg, tag), xbmc.LOGINFO)
 
 
 def log_segment(msg):
@@ -532,13 +539,13 @@ def log_playback_settings_snapshot(addon=None):
     log("📋 Playback settings snapshot [API, toasts, logging] — %s" % part_api)
 
 
-def log_always(msg):
+def log_always(msg, *, tag=_DEFAULT_LOG_TAG):
     """Startup/shutdown and rare critical paths; always INFO."""
     addon = get_addon()
     if addon:
-        xbmc.log(f"[service.skippy - SettingsUtils] {msg}", xbmc.LOGINFO)
+        xbmc.log(_skippy_log_line(msg, tag), xbmc.LOGINFO)
     else:
-        xbmc.log(f"[service.skippy - SettingsUtils] {msg} (shutdown)", xbmc.LOGINFO)
+        xbmc.log(_skippy_log_line("%s (shutdown)" % msg, tag), xbmc.LOGINFO)
 
 def normalize_label(label):
     # Normalize and lowercase labels for consistent matching

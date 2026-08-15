@@ -125,8 +125,8 @@ def main():
                     segment_marker.log,
                 )
             return
-        if command == "backup_upload_history":
-            from upload_history_backup import run_backup_ui
+        if command in ("backup_profile_data", "backup_upload_history"):
+            from skippy_profile_backup import run_backup_ui
             from settings_utils import skippy_notification_icon
 
             import segment_marker
@@ -139,8 +139,8 @@ def main():
                     segment_marker.log,
                 )
             return
-        if command == "restore_upload_history":
-            from upload_history_backup import run_restore_ui
+        if command in ("restore_profile_data", "restore_upload_history"):
+            from skippy_profile_backup import run_restore_ui
             from settings_utils import skippy_notification_icon
 
             import segment_marker

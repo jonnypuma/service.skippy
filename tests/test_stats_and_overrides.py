@@ -361,5 +361,40 @@ class ManageTitleAutoskipUiTests(_ProfileTempDir):
         )
 
 
+class GlobalAutoskipIntactTests(unittest.TestCase):
+    def test_per_title_only_upgrades_ask(self):
+        from service_loop_per_show import apply_per_show_override
+
+        monitor = MagicMock()
+        addon = MagicMock()
+        with patch(
+            "service_loop_per_show.per_show_override_enabled", return_value=True
+        ), patch("service_loop_per_show.playback_override_identity", return_value=(None, "")):
+            self.assertEqual(
+                apply_per_show_override(monitor, addon, "/v.mkv", "intro", "auto"),
+                "auto",
+            )
+            self.assertEqual(
+                apply_per_show_override(monitor, addon, "/v.mkv", "credits", "never"),
+                "never",
+            )
+
+    def test_global_always_skip_unaffected_when_per_title_enabled(self):
+        """Keyword Always skip is decided before per-title; no override must not demote it."""
+        import settings_utils
+
+        settings_utils.invalidate_settings_cache()
+        values = {
+            "segment_always_skip": "intro",
+            "segment_ask_skip": "recap",
+            "segment_never_skip": "credits",
+        }
+        addon = type("_A", (), {"getSetting": lambda _self, key: values.get(key, "")})()
+        with patch.object(settings_utils, "get_addon", return_value=addon):
+            self.assertEqual(settings_utils.get_user_skip_mode("intro"), "auto")
+            self.assertEqual(settings_utils.get_user_skip_mode("recap"), "ask")
+            self.assertEqual(settings_utils.get_user_skip_mode("credits"), "never")
+
+
 if __name__ == "__main__":
     unittest.main()

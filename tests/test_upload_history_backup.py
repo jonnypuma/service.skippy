@@ -53,7 +53,7 @@ class ProfileDataBackupFileTests(unittest.TestCase):
         import per_show_overrides
         import skippy_profile_store
         import skippy_stats
-        from upload_history_backup import (
+        from skippy_profile_backup import (
             SCHEMA,
             export_to_path,
             import_merge_from_path,
@@ -142,7 +142,7 @@ class ProfileDataBackupFileTests(unittest.TestCase):
                     self.assertEqual(stats["online"]["segments_uploaded"], 1)
 
     def test_legacy_upload_history_schema_still_merges(self):
-        from upload_history_backup import LEGACY_SCHEMA, import_merge_from_path
+        from skippy_profile_backup import LEGACY_SCHEMA, import_merge_from_path
 
         with tempfile.TemporaryDirectory() as tmp:
             prof = os.path.join(tmp, "profile")

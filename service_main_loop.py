@@ -25,6 +25,12 @@ from service_skip_seek_property import (
 )
 from settings_utils import log, log_service_detail
 
+# All-detail only: playhead drift during parse is noise unless the parse was slow.
+PARSE_SLOW_LOG_MS = 200
+# Must match service.py SIDECAR_MTIME_CHECK_INTERVAL (avoid importing service).
+SIDECAR_CHECK_S = 5
+PARSE_LOOKAHEAD_S = 3.0
+
 
 @dataclass(frozen=True)
 class ServiceLoopBindings:
@@ -62,6 +68,65 @@ def _skip_input_fingerprint(segments):
     )
 
 
+def _near_skip_window(segments, current_time, boundaries, lookahead=PARSE_LOOKAHEAD_S):
+    """True when the playhead is inside or within lookahead of a segment or link boundary."""
+    try:
+        t = float(current_time)
+    except (TypeError, ValueError):
+        return True
+    for seg in segments or []:
+        try:
+            start = float(seg.start_seconds)
+            end = float(seg.end_seconds)
+        except (TypeError, ValueError):
+            continue
+        if (start - lookahead) <= t <= (end + lookahead):
+            return True
+    for raw in boundaries or ():
+        try:
+            boundary = float(raw)
+        except (TypeError, ValueError):
+            continue
+        if abs(t - boundary) <= lookahead:
+            return True
+    return False
+
+
+def _should_parse_segments(ctx: ServiceLoopBindings, video, current_time, playback_type) -> bool:
+    """False when caches are valid and the playhead is idle far from any skip window."""
+    monitor = ctx.monitor
+    if skippy_seek_grace_active(monitor):
+        return True
+    cache = getattr(monitor, "segment_parse_cache", None) or {}
+    if not cache or cache.get("path") != video or cache.get("playback_type") != playback_type:
+        return True
+    last = cache.get("last_sidecar_check", 0) or 0
+    try:
+        if (time.time() - float(last)) >= SIDECAR_CHECK_S:
+            return True
+    except (TypeError, ValueError):
+        return True
+    stash = getattr(monitor, "deferred_remote_playback_stash", None)
+    if (
+        isinstance(stash, dict)
+        and stash.get("path") == video
+        and stash.get("playback_type") == playback_type
+        and stash.get("remote_list")
+    ):
+        return True
+    source_segs = cache.get("segments") or []
+    current = monitor.current_segments or []
+    if not source_segs and not current:
+        return False
+    proc = getattr(monitor, "segment_processed_cache", None) or {}
+    if not proc:
+        return True
+    boundaries = proc.get("link_boundaries") or ()
+    if _near_skip_window(current or source_segs, current_time, boundaries):
+        return True
+    return False
+
+
 def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current_time, playback_type):
     """Parse segments; apply deferred remote probe and optional re-parse."""
     if video and playback_type:
@@ -77,6 +142,9 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
         ctx.monitor.current_segments = []
         return current_time
 
+    if not _should_parse_segments(ctx, video, current_time, playback_type):
+        return current_time
+
     parse_started = time.time()
     ctx.monitor.current_segments = (
         ctx.parse_and_process_segments(video, current_time, playback_type) or []
@@ -90,15 +158,19 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
 
     try:
         refreshed_time = ctx.player.getTime()
-        if abs(refreshed_time - current_time) > 0.5:
-            log(
+        if (
+            abs(refreshed_time - current_time) > 0.5
+            and parse_elapsed_ms >= PARSE_SLOW_LOG_MS
+        ):
+            log_service_detail(
                 "⏱️ Playhead moved during segment parse (%.2fs → %.2fs, parse took %dms)"
-                % (current_time, refreshed_time, parse_elapsed_ms)
+                % (current_time, refreshed_time, parse_elapsed_ms),
+                tag="playback",
             )
         current_time = refreshed_time
-        ctx.log_if_changed(
-            "playback_time_sec",
+        log_service_detail(
             "⏱️ Playback time: %ds" % int(current_time),
+            tag="playback",
         )
     except RuntimeError:
         pass
@@ -140,15 +212,16 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
                 try:
                     refreshed_time = ctx.player.getTime()
                     if abs(refreshed_time - current_time) > 0.5:
-                        log(
+                        log_service_detail(
                             "⏱️ Playhead moved during reparsed segments "
                             "(%.2fs → %.2fs)"
-                            % (current_time, refreshed_time)
+                            % (current_time, refreshed_time),
+                            tag="playback",
                         )
                     current_time = refreshed_time
-                    ctx.log_if_changed(
-                        "playback_time_sec",
+                    log_service_detail(
                         "⏱️ Playback time: %ds" % int(current_time),
+                        tag="playback",
                     )
                 except RuntimeError:
                     pass

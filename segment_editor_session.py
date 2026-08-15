@@ -98,18 +98,16 @@ def get_initial_segments_for_segment_editor(video_path):
     if not paths_refer_to_same_video(cache_path, video_path):
         log_always(
             "Segment editor: cache path differs from playing path "
-            "(not using online snapshot) cache=%r play=%r"
+            "(not using snapshot) cache=%r play=%r"
             % (cache_path, video_path)
-        )
-        return None
-    if cache.get("segment_origin") != "remote":
-        log_always(
-            "Segment editor: snapshot segment_origin=%r (need remote) — loading from disk"
-            % (cache.get("segment_origin"),)
         )
         return None
     raw_segs = cache.get("segments") or []
     if not raw_segs:
+        log_always(
+            "Segment editor: snapshot has no segments (origin=%r) — loading from disk"
+            % (cache.get("segment_origin"),)
+        )
         return None
 
     item = _get_active_video_player_item()
@@ -143,7 +141,8 @@ def get_initial_segments_for_segment_editor(video_path):
     if editor_segments:
         log_always(
             f"Segment editor: loaded {len(editor_segments)} segment(s) "
-            "from playback online cache (per-row source preserved)"
+            "from playback cache (origin=%s, per-row source preserved)"
+            % (cache.get("segment_origin") or "none",)
         )
     return editor_segments or None
 
