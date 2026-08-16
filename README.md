@@ -7,6 +7,13 @@ During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-s
 <img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
 <img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
 
+<img width="1267" height="704" alt="screenshot06" src="https://github.com/user-attachments/assets/afe25b5d-cef2-4ea3-8a8b-ee4df9d8a8c9" />
+<img width="1259" height="709" alt="screenshot05" src="https://github.com/user-attachments/assets/d9978fc4-daf0-47e1-9d81-c80c4a7f5e9d" />
+<img width="1262" height="708" alt="screenshot04" src="https://github.com/user-attachments/assets/8527089e-0dcb-4bc1-8efe-5ccdff1bcef9" />
+<img width="1264" height="707" alt="screenshot03" src="https://github.com/user-attachments/assets/a5ced74c-5842-41ca-b0f1-2795244624c5" />
+<img width="1261" height="694" alt="screenshot02" src="https://github.com/user-attachments/assets/1f646129-b585-4f0f-b478-928e68ccf6a4" />
+<img width="1262" height="699" alt="screenshot01" src="https://github.com/user-attachments/assets/f6bed7d2-7f5c-4b3d-b714-13e84b189d6e" />
+
 **Local workflows** stay on disk: Skippy reads and writes those sidecars next to your video files, so you can work entirely offline. 
 
 **Online** adds optional **lookup** from **TheIntroDB.org** and **IntroDB.app** (together on **TV** episodes; **movies** use TheIntroDB only today — see **Online segment lookup** below). 
