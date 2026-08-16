@@ -182,19 +182,19 @@ msgstr "Mode minimal"
 
 msgctxt "#32100"
 msgid "Compact Full"
-msgstr "Compact Full"
+msgstr "Complet compact"
 
 msgctxt "#32101"
 msgid "Combined skip and progress"
-msgstr "Combined skip and progress"
+msgstr "Combiner saut et progression"
 
 msgctxt "#32102"
 msgid "Skip duration format"
-msgstr "Skip duration format"
+msgstr "Format de durée du saut"
 
 msgctxt "#32103"
 msgid "Skip duration content"
-msgstr "Skip duration content"
+msgstr "Contenu de la durée du saut"
 
 msgctxt "#32023"
 msgid "Minimal plate style"
@@ -1742,28 +1742,28 @@ msgstr "Supprimer"
 
 msgctxt "#44100"
 msgid "Customize skip dialog"
-msgstr "Customize skip dialog"
+msgstr "Personnaliser le dialogue de saut"
 
 msgctxt "#44101"
 msgid "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
-msgstr "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
+msgstr "Ouvre un aperçu en direct de l'apparence et du comportement du dialogue de saut. Les modifications s'appliquent à l'enregistrement."
 
 msgctxt "#44102"
 msgid "Customize skip dialog"
-msgstr "Customize skip dialog"
+msgstr "Personnaliser le dialogue de saut"
 
 msgctxt "#44103"
 msgid "Save"
-msgstr "Save"
+msgstr "Enregistrer"
 
 msgctxt "#44104"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Annuler"
 
 msgctxt "#44105"
 msgid "Yes"
-msgstr "Yes"
+msgstr "Oui"
 
 msgctxt "#44106"
 msgid "No"
-msgstr "No"
+msgstr "Non"

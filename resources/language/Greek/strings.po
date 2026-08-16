@@ -182,19 +182,19 @@ msgstr "Ελάχιστη λειτουργία"
 
 msgctxt "#32100"
 msgid "Compact Full"
-msgstr "Compact Full"
+msgstr "Συμπαγής πλήρης"
 
 msgctxt "#32101"
 msgid "Combined skip and progress"
-msgstr "Combined skip and progress"
+msgstr "Συνδυασμός παράλειψης και προόδου"
 
 msgctxt "#32102"
 msgid "Skip duration format"
-msgstr "Skip duration format"
+msgstr "Μορφή διάρκειας παράλειψης"
 
 msgctxt "#32103"
 msgid "Skip duration content"
-msgstr "Skip duration content"
+msgstr "Περιεχόμενο διάρκειας παράλειψης"
 
 msgctxt "#32023"
 msgid "Minimal plate style"
@@ -1744,28 +1744,28 @@ msgstr "Διαγραφή"
 
 msgctxt "#44100"
 msgid "Customize skip dialog"
-msgstr "Customize skip dialog"
+msgstr "Προσαρμογή διαλόγου παράλειψης"
 
 msgctxt "#44101"
 msgid "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
-msgstr "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
+msgstr "Άνοιγμα ζωντανής προεπισκόπησης εμφάνισης και συμπεριφοράς του διαλόγου παράλειψης. Οι αλλαγές εφαρμόζονται όταν αποθηκεύσετε."
 
 msgctxt "#44102"
 msgid "Customize skip dialog"
-msgstr "Customize skip dialog"
+msgstr "Προσαρμογή διαλόγου παράλειψης"
 
 msgctxt "#44103"
 msgid "Save"
-msgstr "Save"
+msgstr "Αποθήκευση"
 
 msgctxt "#44104"
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Ακύρωση"
 
 msgctxt "#44105"
 msgid "Yes"
-msgstr "Yes"
+msgstr "Ναι"
 
 msgctxt "#44106"
 msgid "No"
-msgstr "No"
+msgstr "Όχι"

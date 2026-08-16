@@ -1,5 +1,10 @@
 # Changelog
 
+## [6.4.2] - 2026-08-16
+
+### Added
+- **Customize skip dialog** translations (title, help, Save/Cancel/Yes/No, Compact Full, Combined skip and progress, duration format/content) in Danish, Dutch, French, German, Greek, Italian, Norwegian, Spanish, and Swedish. English msgid text is unchanged.
+
 ## [6.4.1] - 2026-08-16
 
 ### Added
