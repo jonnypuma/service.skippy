@@ -421,7 +421,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (patched into skin XML before open) |
 | skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied in Python on dialog open (**may be overridden by active skin/theme** — see README) |
 | skip_dialog_all_caps | Full and Minimal: render skip-dialog labels in ALL CAPS. Duration units stay lowercase (`1m30s`). |
-| button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua variants, Blue, Blue/Gold 3D, Green/Pink/Light Pink 3D) |
+| button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua variants, Blue, Blue/Gold 3D, Green/Pink/Light Pink 3D, Cyan/Silver/Orange/Violet/Graphite/Ice 3D) |
 | skip_button_format | Choose how the skip button label is displayed: "Skip", "Skip + Type", or "Skip + Type + Duration" (default: Skip + Type + Duration) |
 | hide_close_button | Hide the Close button and its icon, leaving only the Skip button visible (default: false) |
 | show_skip_button_focus_texture | Full mode: when Close is hidden, show the selected focus texture on Skip (default: true); turn off for no focus frame |
@@ -489,6 +489,12 @@ Skippy supports multiple visual styles for the focused buttons in the skip dialo
 - **Green 3D**: Green 3D frame
 - **Pink 3D**: Pink 3D frame
 - **Light Pink 3D**: Light pink 3D frame
+- **Cyan 3D**: Glossy cyan glass pill
+- **Silver 3D**: Glossy silver/chrome pill
+- **Orange 3D**: Glossy orange pill
+- **Violet 3D**: Glossy violet pill
+- **Graphite 3D**: Dark metallic pill
+- **Ice 3D**: Pale icy-blue glass pill
 
 **How to Change:**
 1. Go to `Settings -> Add-ons -> My Add-ons -> Services -> Skippy`

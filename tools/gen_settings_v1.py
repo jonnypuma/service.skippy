@@ -398,8 +398,8 @@ def main():
         "32079",
         "progress_mid.png",
         enum_b(
-            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png",
-            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient",
+            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png|progress_mid_3d_cyan.png|progress_mid_3d_silver.png|progress_mid_3d_orange.png|progress_mid_3d_violet.png|progress_mid_3d_graphite.png|progress_mid_3d_ice.png",
+            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D",
         ),
         en=[("show_progress_bar", "true")],
     )
@@ -461,8 +461,8 @@ def main():
         "32000",
         "button_focus.png",
         enum_b(
-            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png",
-            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D",
+            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png|button_focus_3d_cyan.png|button_focus_3d_silver.png|button_focus_3d_orange.png|button_focus_3d_violet.png|button_focus_3d_graphite.png|button_focus_3d_ice.png",
+            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D",
         ),
     )
     labelenum_setting(

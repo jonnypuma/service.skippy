@@ -139,6 +139,12 @@ BUTTON_FOCUS = (
     ("Green 3D", "button_focus_3d_green.png"),
     ("Pink 3D", "button_focus_3d_pink.png"),
     ("Light Pink 3D", "button_focus_3d_light_pink.png"),
+    ("Cyan 3D", "button_focus_3d_cyan.png"),
+    ("Silver 3D", "button_focus_3d_silver.png"),
+    ("Orange 3D", "button_focus_3d_orange.png"),
+    ("Violet 3D", "button_focus_3d_violet.png"),
+    ("Graphite 3D", "button_focus_3d_graphite.png"),
+    ("Ice 3D", "button_focus_3d_ice.png"),
 )
 MINIMAL_PLATES = (
     ("Rounded Gray", "minimal_rounded_gray_640.png"),
@@ -183,6 +189,12 @@ PROGRESS_STYLES = (
     ("Pink/light blue gradient", "progress_mid_pink_lightblue.png"),
     ("Purple", "progress_mid_purple.png"),
     ("Yellow/red gradient", "progress_mid_yellow_red.png"),
+    ("Cyan 3D", "progress_mid_3d_cyan.png"),
+    ("Silver 3D", "progress_mid_3d_silver.png"),
+    ("Orange 3D", "progress_mid_3d_orange.png"),
+    ("Violet 3D", "progress_mid_3d_violet.png"),
+    ("Graphite 3D", "progress_mid_3d_graphite.png"),
+    ("Ice 3D", "progress_mid_3d_ice.png"),
 )
 
 DRAFT_BOOL_KEYS = (

@@ -308,6 +308,12 @@
                             <option label="Pink/light blue gradient">progress_mid_pink_lightblue.png</option>
                             <option label="Purple">progress_mid_purple.png</option>
                             <option label="Yellow/red gradient">progress_mid_yellow_red.png</option>
+                            <option label="Cyan 3D">progress_mid_3d_cyan.png</option>
+                            <option label="Silver 3D">progress_mid_3d_silver.png</option>
+                            <option label="Orange 3D">progress_mid_3d_orange.png</option>
+                            <option label="Violet 3D">progress_mid_3d_violet.png</option>
+                            <option label="Graphite 3D">progress_mid_3d_graphite.png</option>
+                            <option label="Ice 3D">progress_mid_3d_ice.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -383,6 +389,12 @@
                             <option label="Green 3D">button_focus_3d_green.png</option>
                             <option label="Pink 3D">button_focus_3d_pink.png</option>
                             <option label="Light Pink 3D">button_focus_3d_light_pink.png</option>
+                            <option label="Cyan 3D">button_focus_3d_cyan.png</option>
+                            <option label="Silver 3D">button_focus_3d_silver.png</option>
+                            <option label="Orange 3D">button_focus_3d_orange.png</option>
+                            <option label="Violet 3D">button_focus_3d_violet.png</option>
+                            <option label="Graphite 3D">button_focus_3d_graphite.png</option>
+                            <option label="Ice 3D">button_focus_3d_ice.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>

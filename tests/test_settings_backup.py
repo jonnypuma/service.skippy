@@ -231,6 +231,24 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
             break
         self.assertEqual(on_disk, sorted(wired))
 
+    def test_all_progress_mid_textures_are_settings_options(self):
+        media = ROOT / "resources" / "skins" / "default" / "media"
+        on_disk = sorted(
+            name
+            for name in os.listdir(media)
+            if name.startswith("progress_mid") and name.endswith(".png")
+        )
+        tree = ET.parse(SETTINGS_XML)
+        wired = []
+        for setting in tree.getroot().iter("setting"):
+            if setting.get("id") != "progress_bar_style":
+                continue
+            for option in setting.iter("option"):
+                if option.text:
+                    wired.append(option.text.strip())
+            break
+        self.assertEqual(on_disk, sorted(wired))
+
     def test_integer_range_settings_use_spinner_not_slider(self):
         tree = ET.parse(SETTINGS_XML)
         ids = (

@@ -519,6 +519,12 @@ class NineSliceFocusTextureTests(unittest.TestCase):
         "button_focus_3d_green.png",
         "button_focus_3d_pink.png",
         "button_focus_3d_light_pink.png",
+        "button_focus_3d_cyan.png",
+        "button_focus_3d_silver.png",
+        "button_focus_3d_orange.png",
+        "button_focus_3d_violet.png",
+        "button_focus_3d_graphite.png",
+        "button_focus_3d_ice.png",
     )
 
     def test_border_map(self):

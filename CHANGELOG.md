@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.4.1] - 2026-08-16
+
+### Added
+- Three more add-on screenshots (`screenshot04.png`–`screenshot06.png`) listed in `addon.xml` for the Kodi add-on browser.
+
+## [6.4.0] - 2026-08-16
+
+### Added
+- **Sleek 3D button focus** styles: Cyan, Silver, Orange, Violet, Graphite, and Ice (glossy pills, 9-sliced like Green/Pink 3D).
+- **Matching 3D progress fills** for the same six colours (vertical gloss so Combined/short fills do not stretch a side-to-side gradient).
+
 ## [6.3.5] - 2026-08-16
 
 ### Fixed

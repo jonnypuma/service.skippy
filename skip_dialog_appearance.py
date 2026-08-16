@@ -85,6 +85,12 @@ BUTTON_FOCUS_NINE_SLICE_BORDERS = {
     "button_focus_3d_green.png": "12,0,12,0",
     "button_focus_3d_pink.png": "12,0,12,0",
     "button_focus_3d_light_pink.png": "12,0,12,0",
+    "button_focus_3d_cyan.png": "12,0,12,0",
+    "button_focus_3d_silver.png": "12,0,12,0",
+    "button_focus_3d_orange.png": "12,0,12,0",
+    "button_focus_3d_violet.png": "12,0,12,0",
+    "button_focus_3d_graphite.png": "12,0,12,0",
+    "button_focus_3d_ice.png": "12,0,12,0",
 }
 
 
