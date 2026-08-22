@@ -49,6 +49,43 @@ class SidecarProbeCacheTests(unittest.TestCase):
             resolve_sidecar_paths(video, self.monitor, max_age_s=0.01)
             self.assertEqual(listing.call_count, 2)
 
+    def test_confirmed_miss_uses_longer_ttl(self):
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        listed = (None, None, [], [], 12, 2)
+        clock = {"t": 0.0}
+        with patch(
+            "service_sidecar_probe_cache.sidecar_hits_from_directory_listing",
+            return_value=listed,
+        ) as listing, patch(
+            "service_sidecar_probe_cache.time.monotonic", side_effect=lambda: clock["t"]
+        ):
+            video = "/media/show.mkv"
+            resolve_sidecar_paths(video, self.monitor)
+            clock["t"] = 10.0
+            resolve_sidecar_paths(video, self.monitor)
+            self.assertEqual(listing.call_count, 1)
+            clock["t"] = 61.0
+            resolve_sidecar_paths(video, self.monitor)
+            self.assertEqual(listing.call_count, 2)
+
+    def test_hit_relists_after_five_seconds(self):
+        from service_sidecar_probe_cache import resolve_sidecar_paths
+
+        listed = ("/media/show_chapters.xml", "/media/show.edl", [], [], 12, 2)
+        clock = {"t": 0.0}
+        with patch(
+            "service_sidecar_probe_cache.sidecar_hits_from_directory_listing",
+            return_value=listed,
+        ) as listing, patch(
+            "service_sidecar_probe_cache.time.monotonic", side_effect=lambda: clock["t"]
+        ):
+            video = "/media/show.mkv"
+            resolve_sidecar_paths(video, self.monitor)
+            clock["t"] = 6.0
+            resolve_sidecar_paths(video, self.monitor)
+            self.assertEqual(listing.call_count, 2)
+
     def test_invalidation_on_clear(self):
         from service_sidecar_probe_cache import (
             clear_sidecar_probe_cache,

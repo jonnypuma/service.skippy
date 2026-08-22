@@ -249,6 +249,26 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
             break
         self.assertEqual(on_disk, sorted(wired))
 
+    def test_all_minimal_plate_textures_are_settings_options(self):
+        """Every minimal_*.png / .jpg in media must be a Minimal plate picker value."""
+        media = ROOT / "resources" / "skins" / "default" / "media"
+        on_disk = sorted(
+            name
+            for name in os.listdir(media)
+            if name.startswith("minimal_")
+            and name.lower().endswith((".png", ".jpg", ".jpeg"))
+        )
+        tree = ET.parse(SETTINGS_XML)
+        wired = []
+        for setting in tree.getroot().iter("setting"):
+            if setting.get("id") != "minimal_button_style":
+                continue
+            for option in setting.iter("option"):
+                if option.text:
+                    wired.append(option.text.strip())
+            break
+        self.assertEqual(on_disk, sorted(wired))
+
     def test_integer_range_settings_use_spinner_not_slider(self):
         tree = ET.parse(SETTINGS_XML)
         ids = (

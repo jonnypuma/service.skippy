@@ -215,7 +215,7 @@ msgstr "Colore carattere finestra di salto"
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
-msgstr "Skip dialog text in ALL CAPS"
+msgstr "Testo della finestra di salto in MAIUSCOLO"
 
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
@@ -283,7 +283,7 @@ msgstr "Antirimbalzo finestra Chiedi (ms)"
 
 msgctxt "#32098"
 msgid "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
-msgstr "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
+msgstr "Millisecondi di attesa prima di aprire una finestra di richiesta (0-500, passo 10, predefinito 0). Lasciare 0 se le finestre non si aprono due volte. Le richieste duplicate sono anche bloccate da un intervallo sullo stesso segmento e dal tracciamento dei salti appena eseguiti."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"

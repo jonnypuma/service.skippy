@@ -468,6 +468,10 @@
                             <option label="Rectangular Aquamarine Blue">minimal_rectangular_aquamarine-blue_640.png</option>
                             <option label="Rectangular Blue">minimal_rectangular_blue_640.png</option>
                             <option label="Rectangular Yellow">minimal_rectangular_yellow_640.png</option>
+                            <option label="3D Blue">minimal_3d_blue.png</option>
+                            <option label="3D Glossy Blue">minimal_3d_glossy_blue.png</option>
+                            <option label="3D Red Glossy">minimal_3d_red_glossy.png</option>
+                            <option label="Black Beveled">minimal_black_beveled.png</option>
                             <option label="Rounded Baby Purple">minimal_rounded_baby-purple_640.png</option>
                             <option label="Rounded Blue Red Gradient">minimal_rounded_blue-red-gradient_640.png</option>
                             <option label="Rounded Bright Aqua">minimal_rounded_bright-aqua_640.png</option>

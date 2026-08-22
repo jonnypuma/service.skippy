@@ -1,0 +1,1146 @@
+﻿2026-08-17 22:44:22.534 T:62764    info <general>: -----------------------------------------------------------------------
+2026-08-17 22:44:22.534 T:62764    info <general>: Starting Kodi (22.0-BETA1 (21.90.801) Git:20260711-5bc2478806). Platform: Windows NT x86 64-bit
+2026-08-17 22:44:22.534 T:62764    info <general>: Using Release Kodi x64
+2026-08-17 22:44:22.534 T:62764    info <general>: Kodi compiled 2026-07-11 by MSVC 194234436 for Windows NT x86 64-bit version 10.0 (0x0A00000C)
+2026-08-17 22:44:22.534 T:62764    info <general>: Running on Windows 11 25H2, kernel: Windows NT x86 64-bit version 10.0.26200.9168
+2026-08-17 22:44:22.534 T:62764    info <general>: FFmpeg version/source: 8.1.2-Kodi
+2026-08-17 22:44:22.534 T:62764    info <general>: Host CPU: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz, 12 cores available
+2026-08-17 22:44:22.535 T:62764    info <general>: System has 16.0 GB of RAM installed
+2026-08-17 22:44:22.535 T:62764    info <general>: Desktop Resolution: 1920x1080 32Bit at 144Hz
+2026-08-17 22:44:22.535 T:62764    info <general>: Running with restricted rights
+2026-08-17 22:44:22.535 T:62764    info <general>: Aero is enabled
+2026-08-17 22:44:22.535 T:62764    info <general>: Display is not HDR capable or cannot be detected
+2026-08-17 22:44:22.535 T:62764    info <general>: special://xbmc/ is mapped to: C:\Program Files\Kodi
+2026-08-17 22:44:22.535 T:62764    info <general>: special://xbmcbin/ is mapped to: C:\Program Files\Kodi
+2026-08-17 22:44:22.535 T:62764    info <general>: special://xbmcbinaddons/ is mapped to: C:\Program Files\Kodi/addons
+2026-08-17 22:44:22.535 T:62764    info <general>: special://masterprofile/ is mapped to: C:\Users\stone\AppData\Roaming\Kodi\userdata
+2026-08-17 22:44:22.535 T:62764    info <general>: special://home/ is mapped to: C:\Users\stone\AppData\Roaming\Kodi\
+2026-08-17 22:44:22.535 T:62764    info <general>: special://temp/ is mapped to: C:\Users\stone\AppData\Roaming\Kodi\cache
+2026-08-17 22:44:22.535 T:62764    info <general>: special://logpath/ is mapped to: C:\Users\stone\AppData\Roaming\Kodi\
+2026-08-17 22:44:22.535 T:62764    info <general>: Webserver extra whitelist paths: 
+2026-08-17 22:44:22.535 T:62764    info <general>: The executable running is: C:\Program Files\Kodi\kodi.exe
+2026-08-17 22:44:22.537 T:62764    info <general>: Local hostname: PredatorH300
+2026-08-17 22:44:22.537 T:62764    info <general>: Log File is located: C:\Users\stone\AppData\Roaming\Kodi\kodi.log
+2026-08-17 22:44:22.537 T:62764    info <general>: -----------------------------------------------------------------------
+2026-08-17 22:44:22.537 T:62764    info <general>: loading settings
+2026-08-17 22:44:22.538 T:62764    info <general>: special://profile/ is mapped to: special://masterprofile/
+2026-08-17 22:44:22.546 T:62764    info <general>: No settings file to load (special://xbmc/system/advancedsettings.xml)
+2026-08-17 22:44:22.546 T:62764    info <general>: Loaded settings file from special://profile/advancedsettings.xml
+2026-08-17 22:44:22.547 T:62764    info <general>: Contents of special://profile/advancedsettings.xml are...
+                                                   <advancedsettings>
+                                                     <videodatabase>
+                                                       <type>mysql</type>
+                                                       <host>192.168.0.26</host>
+                                                       <port>3306</port>
+                                                       <name>kodi22_videos</name>
+                                                       <user>Kodi</user>
+                                                       <pass>*****</pass>
+                                                     </videodatabase>
+                                                     <musicdatabase>
+                                                       <type>mysql</type>
+                                                       <host>192.168.0.26</host>
+                                                       <port>3306</port>
+                                                       <name>kodi22_music</name>
+                                                       <user>Kodi</user>
+                                                       <pass>*****</pass>
+                                                     </musicdatabase>
+                                                     <videolibrary>
+                                                       <importwatchedstate>true</importwatchedstate>
+                                                       <importresumepoint>true</importresumepoint>
+                                                       <cleanonupdate>true</cleanonupdate>
+                                                     </videolibrary>
+                                                     <artistseparators>
+                                                       <separator>;</separator>
+                                                       <separator> featuring </separator>
+                                                       <separator>|</separator>
+                                                       <separator> feat. </separator>
+                                                       <separator> ft. </separator>
+                                                       <separator> vs. </separator>
+                                                       <separator> x </separator>
+                                                     </artistseparators>
+                                                     <video>
+                                                       <excludefromscan>
+                                                         <regexp>[-\._ ](sample|trailer|extrathumbs|sub|idx|srt|zip|7z|rar|bak|bck|trickplay)[-\._ ]</regexp>
+                                                       </excludefromscan>
+                                                       <excludefromlisting>
+                                                         <regexp>[-._ \\/](extrafanart|sample|trailer|extrathumbs|sub|idx|srt|zip|7z|rar|bak|bck|trickplay)[-._ \\/]</regexp>
+                                                       </excludefromlisting>
+                                                       <excludefromscan action="append">
+                                                         <regexp>/extras/</regexp>
+                                                         <regexp>[\\/]extras[\\/]</regexp>
+                                                       </excludefromscan>
+                                                       <excludetvshowsfromscan action="append">
+                                                         <regexp>/extras/</regexp>
+                                                         <regexp>[\\/]extras[\\/]</regexp>
+                                                       </excludetvshowsfromscan>
+                                                     </video>
+                                                     <samba>
+                                                       <statfiles>false</statfiles>
+                                                     </samba>
+                                                     <network>
+                                                       <disableipv6>true</disableipv6>
+                                                     </network>
+                                                   </advancedsettings>
+                                                   
+2026-08-17 22:44:22.548 T:62764 warning <general>: VIDEO database configuration is experimental.
+2026-08-17 22:44:22.548 T:62764 warning <CSettingsManager>: missing version attribute
+2026-08-17 22:44:22.548 T:62764    info <general>: Default Video Player: VideoPlayer
+2026-08-17 22:44:22.548 T:62764    info <general>: Default Audio Player: paplayer
+2026-08-17 22:44:22.548 T:62764    info <general>: Disabled debug logging due to GUI setting. Level 0.
+2026-08-17 22:44:22.548 T:62764    info <general>: Log level changed to "info"
+2026-08-17 22:44:22.548 T:62764    info <general>: CMediaSourceSettings: loading media sources from special://masterprofile/sources.xml
+2026-08-17 22:44:22.556 T:62764    info <general>: New Cache GUI Settings (replacement of cache in advancedsettings.xml) are:
+                                                     Buffer Mode: 4
+                                                     Memory Size: 64 MB
+                                                     Read Factor: 0.00 x (adaptive)
+                                                     Chunk Size : 131072 bytes
+2026-08-17 22:44:22.556 T:62764    info <general>: creating subdirectories
+2026-08-17 22:44:22.556 T:62764    info <general>: userdata folder: special://masterprofile/
+2026-08-17 22:44:22.556 T:62764    info <general>: recording folder: 
+2026-08-17 22:44:22.556 T:62764    info <general>: screenshots folder: 
+2026-08-17 22:44:22.566 T:62764    info <general>: SqliteDatabase: library version 3.51.3
+2026-08-17 22:44:22.567 T:62764    info <general>: Running database version Addons33
+2026-08-17 22:44:22.597 T:62764 warning <general>: ADDON::CAddonMgr::FindAddons: Addon 'game.controller.snes' already present with higher version 1.0.47 at 'C:\Program Files\Kodi\addons\game.controller.snes\' - other version 1.0.43 at 'C:\Users\stone\AppData\Roaming\Kodi\addons\game.controller.snes\' will be ignored
+2026-08-17 22:44:22.603 T:62764 warning <general>: ADDON::CAddonMgr::FindAddons: Addon 'metadata.generic.artists' already present with higher version 1.0.18 at 'C:\Program Files\Kodi\addons\metadata.generic.artists\' - other version 1.0.12 at 'C:\Users\stone\AppData\Roaming\Kodi\addons\metadata.generic.artists\' will be ignored
+2026-08-17 22:44:22.607 T:62764 warning <general>: ADDON::CAddonMgr::FindAddons: Addon 'peripheral.joystick' already present with higher version 22.0.9 at 'C:\Program Files\Kodi\addons\peripheral.joystick\' - other version 21.1.23 at 'C:\Users\stone\AppData\Roaming\Kodi\addons\peripheral.joystick\' will be ignored
+2026-08-17 22:44:22.633 T:62764    info <general>: Addon Manager: Found addon: 'audioencoder.kodi.builtin.aac v1.0.2'
+2026-08-17 22:44:22.633 T:62764    info <general>: Addon Manager: Found addon: 'audioencoder.kodi.builtin.wma v1.0.2'
+2026-08-17 22:44:22.633 T:62764    info <general>: Addon Manager: Found addon: 'context.embuary.info v2.0.0'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'context.item.extras v1.4.2'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'context.trakt.addtowatchlist v1.1.0+matrix.1'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'context.trakt.contextmenu v1.1.0+matrix.1'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'context.trakt.rate v1.1.0+matrix.1'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'context.trakt.watched v1.1.0+matrix.1'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'game.controller.default v1.0.47'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'game.controller.keyboard v1.1.49'
+2026-08-17 22:44:22.634 T:62764    info <general>: Addon Manager: Found addon: 'game.controller.mouse v1.0.31'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'game.controller.snes v1.0.47'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.audioengine v1.1.1'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.filesystem v1.1.11'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.general v1.0.5'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.gui v5.15.1'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.main v2.0.3'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.network v1.0.4'
+2026-08-17 22:44:22.635 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.global.tools v1.0.4'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.audiodecoder v4.0.0'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.audioencoder v3.0.0'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.game v6.0.0'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.imagedecoder v3.0.1'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.inputstream v3.4.0'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.peripheral v3.0.2'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.pvr v9.2.0'
+2026-08-17 22:44:22.636 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.screensaver v2.2.0'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.shaderpreset v1.1.0'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.vfs v3.0.1'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.videocodec v2.2.0'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'kodi.binary.instance.visualization v5.0.0'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'kodi.resource v1.0.0'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'metadata.album.universal v3.1.20'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'metadata.albums.theaudiodb.com v1.2.3'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'metadata.artists.theaudiodb.com v1.1.2'
+2026-08-17 22:44:22.637 T:62764    info <general>: Addon Manager: Found addon: 'metadata.artists.universal v4.3.23'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.allmusic.com v3.2.2'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.fanart.tv v3.6.5'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.imdb.com v3.3.0'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.musicbrainz.org v2.2.4'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.omdbapi.com v1.2.2'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.theaudiodb.com v2.0.3'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.common.themoviedb.org v3.2.19'
+2026-08-17 22:44:22.638 T:62764    info <general>: Addon Manager: Found addon: 'metadata.generic.albums v1.0.18'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.generic.artists v1.0.18'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.local v1.0.1'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.movies.thetvdb.com.v4.python v1.0.11'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.themoviedb.org.python v3.2.1'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.tvshows.themoviedb.org.python v2.0.6'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.tvshows.thetvdb.com.v4.python v1.1.6'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'metadata.universal v5.6.6'
+2026-08-17 22:44:22.639 T:62764    info <general>: Addon Manager: Found addon: 'peripheral.joystick v22.0.9'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'plugin.library.node.editor v2.0.5'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'plugin.program.autocompletion v2.1.2'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'plugin.video.themoviedb.helper v6.15.6'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'repository.jurialmunkey v2.2'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'repository.kodinerds v7.0.1.7'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'repository.skippyrepo v1.0.4'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'repository.xbmc.org v3.5.0'
+2026-08-17 22:44:22.640 T:62764    info <general>: Addon Manager: Found addon: 'resource.images.studios.white v0.0.34'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'resource.images.weathericons.default v1.1.9'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'resource.language.en_gb v2.0.2'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'resource.uisounds.kodi v1.0.1'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'screensaver.xbmc.builtin.black v1.0.34'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'screensaver.xbmc.builtin.dim v1.0.66'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'script.artistslideshow v4.2.0'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'script.embuary.helper v2.0.8'
+2026-08-17 22:44:22.641 T:62764    info <general>: Addon Manager: Found addon: 'script.embuary.info v2.0.8'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.extendedinfo v6.0.9'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.image.resource.select v3.0.2'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.keymap v1.4.0'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.kodi.loguploader v1.0.5'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.logviewer v2.1.8+matrix.1'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.metadata.editor v3.0.2'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.module.arrow v1.2.3'
+2026-08-17 22:44:22.642 T:62764    info <general>: Addon Manager: Found addon: 'script.module.autocompletion v2.1.1'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.bossanova808 v1.0.4'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.certifi v2023.5.7'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.chardet v5.1.0'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.dateutil v2.8.2'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.defusedxml v0.6.0+matrix.1'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.future v1.0.0+matrix.1'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.idna v3.10.0'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.infotagger v0.0.8'
+2026-08-17 22:44:22.643 T:62764    info <general>: Addon Manager: Found addon: 'script.module.jurialmunkey v0.2.35'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.kodi-six v0.1.3.1'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.pil v5.1.0'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.pvr.artwork v2.2.10'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.pycryptodome v3.4.3'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.pyqrcode v1.2.1+matrix.4'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.requests v2.31.0'
+2026-08-17 22:44:22.644 T:62764    info <general>: Addon Manager: Found addon: 'script.module.routing v0.2.3+matrix.1'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.simplecache v2.0.2'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.simpleeval v0.9.13'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.six v1.16.0+matrix.1'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.trakt v4.4.0+matrix.1'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.typing_extensions v4.7.1'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.unidecode v1.3.6'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.module.urllib3 v2.2.3'
+2026-08-17 22:44:22.645 T:62764    info <general>: Addon Manager: Found addon: 'script.service.playbackresumer v2.2.0'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.skinhelper v0.0.4'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.skinshortcuts v2.0.3'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.skinvariables v2.1.33'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.texture.wrapper v1.0.0'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.trakt v3.9.0'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'script.xbmc.unpausejumpback v3.0.8'
+2026-08-17 22:44:22.646 T:62764    info <general>: Addon Manager: Found addon: 'service.kodi.configarr v1.0.0'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'service.skippy v6.4.1'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'service.trickplay v8.15.2'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'service.upnext v1.1.9+matrix.1'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'service.xbmc.versioncheck v0.5.30+matrix.1'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'skin.estuary v4.1.0'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'skin.estuary.modv2 v21.4+omega.6'
+2026-08-17 22:44:22.647 T:62764    info <general>: Addon Manager: Found addon: 'tools.ffmpeg-tools v22.0.10.1'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'webinterface.default v21.x-1.0.1'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.addon v21.90.801'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.core v0.1.0'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.gui v5.18.0'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.json v13.11.0'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.metadata v2.1.0'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.python v3.0.2'
+2026-08-17 22:44:22.648 T:62764    info <general>: Addon Manager: Found addon: 'xbmc.webinterface v1.0.0'
+2026-08-17 22:44:22.650 T:62764    info <general>: IANA Language Subtag Registry: loading...
+2026-08-17 22:44:22.650 T:62764    info <general>: IANA Language Subtag Registry: file C:\Program Files\Kodi\system\language-subtag-registry.txt
+2026-08-17 22:44:22.650 T:62764    info <general>: IANA Language Subtag Registry: registry date 2025-08-25
+2026-08-17 22:44:22.894 T:62764    info <general>: IANA Language Subtag Registry: 9281 records loaded
+2026-08-17 22:44:22.897 T:62764    info <general>: CKeyboardLayoutManager: loading keyboard layouts from special://xbmc/system/keyboardlayouts...
+2026-08-17 22:44:22.912 T:1948     info <general>: Loading special://xbmc/system/IRSSmap.xml
+2026-08-17 22:44:22.912 T:1948     info <general>: * Adding remote mapping for device 'Microsoft MCE'
+2026-08-17 22:44:22.912 T:1948     info <general>: * Adding remote mapping for device 'Abstract'
+2026-08-17 22:44:22.912 T:62764    info <general>: Primary mode: Generic PnP Monitor #1: 1920x1080 @ 144.00Hz
+2026-08-17 22:44:22.913 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 320x200 @ 60.00Hz
+2026-08-17 22:44:22.913 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 320x200 @ 144.00Hz
+2026-08-17 22:44:22.913 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 320x240 @ 60.00Hz
+2026-08-17 22:44:22.913 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 320x240 @ 144.00Hz
+2026-08-17 22:44:22.914 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 400x300 @ 60.00Hz
+2026-08-17 22:44:22.914 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 400x300 @ 144.00Hz
+2026-08-17 22:44:22.914 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 512x384 @ 60.00Hz
+2026-08-17 22:44:22.914 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 512x384 @ 144.00Hz
+2026-08-17 22:44:22.915 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 640x400 @ 60.00Hz
+2026-08-17 22:44:22.915 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 640x400 @ 144.00Hz
+2026-08-17 22:44:22.915 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 640x480 @ 60.00Hz
+2026-08-17 22:44:22.915 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 640x480 @ 144.00Hz
+2026-08-17 22:44:22.915 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 800x600 @ 60.00Hz
+2026-08-17 22:44:22.916 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 800x600 @ 144.00Hz
+2026-08-17 22:44:22.916 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1024x768 @ 60.00Hz
+2026-08-17 22:44:22.916 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1024x768 @ 144.00Hz
+2026-08-17 22:44:22.916 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1152x864 @ 60.00Hz
+2026-08-17 22:44:22.916 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1152x864 @ 144.00Hz
+2026-08-17 22:44:22.917 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x600 @ 60.00Hz
+2026-08-17 22:44:22.917 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x600 @ 144.00Hz
+2026-08-17 22:44:22.917 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x720 @ 60.00Hz
+2026-08-17 22:44:22.917 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x720 @ 144.00Hz
+2026-08-17 22:44:22.917 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x768 @ 60.00Hz
+2026-08-17 22:44:22.918 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x768 @ 144.00Hz
+2026-08-17 22:44:22.918 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x800 @ 60.00Hz
+2026-08-17 22:44:22.918 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x800 @ 144.00Hz
+2026-08-17 22:44:22.918 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x960 @ 60.00Hz
+2026-08-17 22:44:22.918 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x960 @ 144.00Hz
+2026-08-17 22:44:22.919 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x1024 @ 60.00Hz
+2026-08-17 22:44:22.919 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1280x1024 @ 144.00Hz
+2026-08-17 22:44:22.919 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1360x768 @ 60.00Hz
+2026-08-17 22:44:22.919 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1360x768 @ 144.00Hz
+2026-08-17 22:44:22.919 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1366x768 @ 60.00Hz
+2026-08-17 22:44:22.920 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1366x768 @ 144.00Hz
+2026-08-17 22:44:22.920 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1400x1050 @ 60.00Hz
+2026-08-17 22:44:22.920 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1400x1050 @ 144.00Hz
+2026-08-17 22:44:22.920 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1440x900 @ 60.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1440x900 @ 144.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1600x900 @ 60.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1600x900 @ 144.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1680x1050 @ 60.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1680x1050 @ 144.00Hz
+2026-08-17 22:44:22.921 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1920x1080 @ 60.00Hz
+2026-08-17 22:44:22.922 T:62764    info <general>: Additional mode: Generic PnP Monitor #1: 1920x1080 @ 144.00Hz
+2026-08-17 22:44:22.922 T:62764    info <general>: CApplication::CApplication::CreateGUI - using the default windowing system
+2026-08-17 22:44:22.922 T:62764    info <general>: Checking resolution 15
+2026-08-17 22:44:22.997 T:62764    info <general>: DX::DeviceResources::CheckNV12SharedTexturesSupport: extended NV12 shared textures is supported
+2026-08-17 22:44:22.997 T:62764    info <general>: DX::DeviceResources::CreateDeviceResources: device is created on adapter 'Intel(R) UHD Graphics' with D3D_FEATURE_LEVEL_12_1
+2026-08-17 22:44:22.998 T:62764    info <general>: VideoDriverInfo::Log: video driver version is Intel 27.20.100.8280
+2026-08-17 22:44:22.998 T:62764    info <general>: DX::DeviceResources::CheckDXVA2SharedDecoderSurfaces: DXVA2 shared decoder surfaces is supported
+2026-08-17 22:44:22.998 T:62764    info <general>: DX::DeviceResources::CheckDXVA2SharedDecoderSurfaces: DXVA2 shared decoder surfaces WITHOUT fence synchronization.
+2026-08-17 22:44:23.028 T:62764    info <general>: DX::DeviceResources::ResizeBuffers: 8 bit swapchain is used with 6 flip discard buffers and SDR output (format B8G8R8A8_UNORM)
+2026-08-17 22:44:23.034 T:62764    info <general>: RetroPlayer[RENDER]: Registering renderer factory for DirectX
+2026-08-17 22:44:23.061 T:62764    info <general>: load keymapping
+2026-08-17 22:44:23.063 T:62764    info <general>: Loading special://xbmc/system/keymaps/appcommand.xml
+2026-08-17 22:44:23.064 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.Harmony.xml
+2026-08-17 22:44:23.065 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.SiriRemote.xml
+2026-08-17 22:44:23.066 T:62764    info <general>: Loading special://xbmc/system/keymaps/gamepad.xml
+2026-08-17 22:44:23.067 T:62764    info <general>: Loading special://xbmc/system/keymaps/joystick.xml
+2026-08-17 22:44:23.068 T:62764    info <general>: Loading special://xbmc/system/keymaps/keyboard.xml
+2026-08-17 22:44:23.070 T:62764    info <general>: Loading special://xbmc/system/keymaps/mouse.xml
+2026-08-17 22:44:23.071 T:62764    info <general>: Loading special://xbmc/system/keymaps/remote.xml
+2026-08-17 22:44:23.072 T:62764    info <general>: Loading special://xbmc/system/keymaps/touchscreen.xml
+2026-08-17 22:44:23.074 T:62764    info <general>: Loading special://masterprofile/keymaps/gen.xml
+2026-08-17 22:44:23.075 T:62764    info <general>: Loading special://masterprofile/keymaps/keymap.xml
+2026-08-17 22:44:23.075 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_editor.xml
+2026-08-17 22:44:23.075 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_marker.xml
+2026-08-17 22:44:23.077 T:62764    info <general>: Loading special://profile/keymaps/gen.xml
+2026-08-17 22:44:23.077 T:62764    info <general>: Loading special://profile/keymaps/keymap.xml
+2026-08-17 22:44:23.077 T:62764    info <general>: Loading special://profile/keymaps/skippy_editor.xml
+2026-08-17 22:44:23.077 T:62764    info <general>: Loading special://profile/keymaps/skippy_marker.xml
+2026-08-17 22:44:23.077 T:62764    info <general>: GUI format 1902x973, Display Windowed
+2026-08-17 22:44:23.632 T:39056    info <general>: Found 3 Lists of Devices
+2026-08-17 22:44:23.632 T:39056    info <general>: Enumerated DIRECTSOUND devices:
+2026-08-17 22:44:23.632 T:39056    info <general>:     Device 1
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceName      : {A1E43BA6-997F-4658-8A97-42BE04D56ED3}
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayName     : Speakers - Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayNameExtra: DIRECTSOUND: Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_sampleRates     : 48000
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.632 T:39056    info <general>:     Device 2
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceName      : {AF9AC5BB-E903-4B6D-895F-7C90364AA2AB}
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayName     : Speakers - FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayNameExtra: DIRECTSOUND: FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_sampleRates     : 48000
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.632 T:39056    info <general>:     Device 3
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceName      : default
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayName     : default
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayNameExtra: 
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_sampleRates     : 48000
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.632 T:39056    info <general>: Enumerated WASAPI devices:
+2026-08-17 22:44:23.632 T:39056    info <general>:     Device 1
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceName      : {A1E43BA6-997F-4658-8A97-42BE04D56ED3}
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayName     : Speakers - Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_displayNameExtra: WASAPI: Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.632 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 192000,176400,96000,88200,48000,44100,32000,22050,11025
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3,AE_FMT_S24NE4MSB,AE_FMT_S16NE,AE_FMT_S16LE,AE_FMT_S16BE,AE_FMT_U8
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:39056    info <general>:     Device 2
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceName      : {AF9AC5BB-E903-4B6D-895F-7C90364AA2AB}
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayName     : Speakers - FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayNameExtra: WASAPI: FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 48000,44100
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:39056    info <general>:     Device 3
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceName      : default
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayName     : default
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayNameExtra: 
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 48000,44100
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:39056    info <general>: Enumerated XAUDIO devices:
+2026-08-17 22:44:23.633 T:39056    info <general>:     Device 1
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceName      : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{af9ac5bb-e903-4b6d-895f-7c90364aa2ab}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayName     : Speakers - FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayNameExtra: XAudio: FxSound Speakers (FxSound Audio Enhancer)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 192000,176400,96000,88200,48000,44100,32000,22050,11025
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT,AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3,AE_FMT_S24NE4MSB,AE_FMT_S32NE,AE_FMT_S32LE,AE_FMT_S32BE,AE_FMT_S16NE,AE_FMT_S16LE,AE_FMT_S16BE,AE_FMT_U8
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:39056    info <general>:     Device 2
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceName      : default
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayName     : default
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayNameExtra: 
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 192000,176400,96000,88200,48000,44100,32000,22050,11025
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT,AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3,AE_FMT_S24NE4MSB,AE_FMT_S32NE,AE_FMT_S32LE,AE_FMT_S32BE,AE_FMT_S16NE,AE_FMT_S16LE,AE_FMT_S16BE,AE_FMT_U8
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:39056    info <general>:     Device 3
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceName      : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{a1e43ba6-997f-4658-8a97-42be04d56ed3}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayName     : Speakers - Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_displayNameExtra: XAudio: Speakers (Realtek(R) Audio)
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_deviceType      : AE_DEVTYPE_PCM
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_channels        : FL, FR
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_sampleRates     : 192000,176400,96000,88200,48000,44100,32000,22050,11025
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_dataFormats     : AE_FMT_FLOAT,AE_FMT_S24NE3,AE_FMT_S24LE3,AE_FMT_S24BE3,AE_FMT_S24NE4MSB,AE_FMT_S32NE,AE_FMT_S32LE,AE_FMT_S32BE,AE_FMT_S16NE,AE_FMT_S16LE,AE_FMT_S16BE,AE_FMT_U8
+2026-08-17 22:44:23.633 T:39056    info <general>:         m_streamTypes     : No passthrough capabilities
+2026-08-17 22:44:23.633 T:65744    info <general>: CActiveAESink::OpenSink - initialize sink
+2026-08-17 22:44:23.645 T:65744    info <general>: CAESinkXAudio::InitializeInternal: Format is Supported - will attempt to Initialize
+2026-08-17 22:44:23.645 T:65744    info <general>: CAESinkXAudio::InitializeInternal: XAudio Sink Initialized using: AE_FMT_FLOAT, 48000, 2
+2026-08-17 22:44:23.645 T:39056 warning <general>: CActiveAE::ActiveAE::CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
+2026-08-17 22:44:23.646 T:62764 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:23.646 T:62764    info <general>: CLangInfo: loading resource.language.en_gb language information...
+2026-08-17 22:44:23.669 T:62764    info <general>: global locale set to en-us
+2026-08-17 22:44:23.669 T:62764    info <general>: CLangInfo: loading resource.language.en_gb language strings...
+2026-08-17 22:44:23.728 T:62292    info <general>: Running database version ViewModes6
+2026-08-17 22:44:23.729 T:62292    info <general>: Running database version Textures14
+2026-08-17 22:44:23.771 T:62292    info <general>: MYSQL: client library 3.3.17
+2026-08-17 22:44:23.771 T:62292    info <general>: MYSQL: Connected to version 10.11.14-MariaDB-ubu2204
+2026-08-17 22:44:23.927 T:62292    info <general>: Running database version kodi22_music84
+2026-08-17 22:44:24.121 T:62292    info <general>: Running database version kodi22_videos147
+2026-08-17 22:44:24.122 T:62292    info <general>: Running database version TV48
+2026-08-17 22:44:24.123 T:62292    info <general>: Running database version Epg21
+2026-08-17 22:44:24.151 T:62764    info <general>:   load skin from: C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\ (version: 21.4+omega.6)
+2026-08-17 22:44:24.151 T:62764    info <general>:   load fonts for skin...
+2026-08-17 22:44:24.153 T:62764    info <general>: Loading skin includes from C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\xml\Includes.xml
+2026-08-17 22:44:24.270 T:62764    info <general>: GUIFontManager::LoadFontsFromFile: Loading <fontset> with name 'Default' from 'C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\xml\Font.xml'
+2026-08-17 22:44:24.312 T:62764    info <general>: ADDON::CSkinInfo::LoadTimers: Trying to load skin timers from C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\xml\Timers.xml
+2026-08-17 22:44:24.312 T:62764    info <general>:   load new skin...
+2026-08-17 22:44:24.312 T:62764    info <general>: Loading custom window XMLs from skin path C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\xml
+2026-08-17 22:44:24.339 T:62764    info <general>:   initialize new skin...
+2026-08-17 22:44:24.339 T:62764    info <general>: Loading skin file: Custom_1142_Themes.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.349 T:62764    info <general>: Loading skin file: DialogBusy.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.355 T:62764    info <general>: Loading skin file: Pointer.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.356 T:62764    info <general>: Loading skin file: DialogVolumeBar.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.357 T:62764    info <general>: Loading skin file: DialogExtendedProgressBar.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.358 T:62764    info <general>: Loading skin file: DialogSeekBar.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.363 T:62764    info <general>: Loading skin file: DialogNotification.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.364 T:62764    info <general>: Loading skin file: DialogBusy.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.365 T:62764    info <general>: Loading skin file: Custom_1109_TopBarOverlay.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.366 T:62764    info <general>: Loading skin file: Custom_1110_CloseVideoOSD.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.367 T:62764    info <general>: Loading skin file: Custom_1134_PVRNextUp.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.368 T:62764    info <general>: Loading skin file: Custom_1135_PVROverlay.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.373 T:62764    info <general>: Loading skin file: Custom_1140_MusicVideoInfo.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:24.375 T:62764    info <general>: Loading resource://resource.uisounds.kodi/sounds.xml
+2026-08-17 22:44:24.383 T:62764    info <general>:   skin loaded...
+2026-08-17 22:44:24.383 T:62764    info <general>: Loading skin file: Startup.xml, load type: LOAD_EVERY_TIME
+2026-08-17 22:44:24.384 T:62764 warning <general>: CApplication::Initialize - startup.xml taints init process
+2026-08-17 22:44:24.390 T:62764 warning <general>: JSONRPC: Could not parse type "Setting.Details.SettingList"
+2026-08-17 22:44:24.390 T:62764    info <general>: JSONRPC: Adding type "Setting.Details.SettingList" to list of incomplete definitions (waiting for "Setting.Details.Setting")
+2026-08-17 22:44:24.390 T:62764    info <general>: JSONRPC: Resolving incomplete types/methods referencing Setting.Details.Setting
+2026-08-17 22:44:24.400 T:62764    info <general>: JSONRPC v13.11.0: Successfully initialized
+2026-08-17 22:44:24.408 T:62764    info <peripheral.joystick>: Enabling joystick interface "xinput"
+2026-08-17 22:44:24.409 T:62764    info <peripheral.joystick>: Enabling joystick interface "directinput"
+2026-08-17 22:44:24.410 T:62764    info <general>: Loading controller layout: C:\Program Files\Kodi\addons\game.controller.keyboard\resources\layout.xml
+2026-08-17 22:44:24.411 T:62764    info <general>: PERIPHERALS::CPeripheralBus::Register - new keyboard device registered on application->keyboard: Keyboard (0000:0000)
+2026-08-17 22:44:24.411 T:62764    info <general>: Loading controller layout: C:\Program Files\Kodi\addons\game.controller.mouse\resources\layout.xml
+2026-08-17 22:44:24.412 T:62764    info <general>: PERIPHERALS::CPeripheralBus::Register - new mouse device registered on application->mouse: Mouse (0000:0000)
+2026-08-17 22:44:24.413 T:62764    info <general>: Loading player core factory settings from special://xbmc/system/playercorefactory.xml.
+2026-08-17 22:44:24.413 T:62764    info <general>: Loaded playercorefactory configuration
+2026-08-17 22:44:24.413 T:62764    info <general>: Loading player core factory settings from special://masterprofile/playercorefactory.xml.
+2026-08-17 22:44:24.413 T:62764    info <general>: special://masterprofile/playercorefactory.xml does not exist. Skipping.
+2026-08-17 22:44:24.413 T:62764    info <general>: removing tempfiles
+2026-08-17 22:44:24.420 T:62764    info <general>: initialize done
+2026-08-17 22:44:24.422 T:62764    info <general>: Running the application...
+2026-08-17 22:44:24.423 T:45044    info <general>: ES: Starting UDP Event server on port 9777
+2026-08-17 22:44:24.424 T:45044    info <general>: UDP: Listening on port 9777 (ipv6 : true)
+2026-08-17 22:44:24.425 T:62764    info <general>: JSONRPC Server: Successfully initialized
+2026-08-17 22:44:24.428 T:62764    info <CWebserver[8080]>: Started
+2026-08-17 22:44:24.438 T:62764    info <general>: [WS-Discovery]: Daemon started successfully.
+2026-08-17 22:44:25.137 T:24088    info <general>: [service.upnext] UpNextMonitor -> Service started
+2026-08-17 22:44:25.304 T:66292   error <general>: C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\scripts\services.py:69: SyntaxWarning: "\d" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\d"? A raw string is also an option.
+                                                     cores = [int(core) for core in re.findall('(\d+)%', xbmc.getInfoLabel('System.CpuUsage'))]
+                                                   
+2026-08-17 22:44:25.596 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Start Unpause Jumpback
+2026-08-17 22:44:25.596 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Kodi 22.0-BETA1 (21.90.801) Git:20260711-5bc2478806 (Major version 22)
+2026-08-17 22:44:25.596 T:63064    info <general>: ### Unpause Jumpback 3.0.8: OS: Windows-11-10.0.26100
+2026-08-17 22:44:25.596 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Python 3.14.6 (main, Jun 12 2026, 16:03:12) [MSC v.1944 64 bit (AMD64)]
+2026-08-17 22:44:25.596 T:63064    info <general>: ### Unpause Jumpback 3.0.8: script.module.bossanova808 version: 1.0.4
+2026-08-17 22:44:25.608 T:66328 warning <general>: CPythonInvoker(9, C:\Users\stone\AppData\Roaming\Kodi\addons\service.kodi.configarr\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\service.kodi.configarr\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:44:25.637 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Found and parsed advancedsettings.xml
+2026-08-17 22:44:25.637 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Kodi debug logging enabled: False
+2026-08-17 22:44:25.637 T:63064    info <general>: ### Unpause Jumpback 3.0.8: No arguments supplied to addon
+2026-08-17 22:44:25.638 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Settings loaded, jump back set to: On Resume with a jump back of 4 seconds
+2026-08-17 22:44:25.675 T:48360    info <general>: ### Playback Resumer 2.2.0: Start Playback Resumer
+2026-08-17 22:44:25.675 T:48360    info <general>: ### Playback Resumer 2.2.0: Kodi 22.0-BETA1 (21.90.801) Git:20260711-5bc2478806 (Major version 22)
+2026-08-17 22:44:25.675 T:48360    info <general>: ### Playback Resumer 2.2.0: OS: Windows-11-10.0.26100
+2026-08-17 22:44:25.675 T:48360    info <general>: ### Playback Resumer 2.2.0: Python 3.14.6 (main, Jun 12 2026, 16:03:12) [MSC v.1944 64 bit (AMD64)]
+2026-08-17 22:44:25.675 T:48360    info <general>: ### Playback Resumer 2.2.0: script.module.bossanova808 version: 1.0.4
+2026-08-17 22:44:25.717 T:48360    info <general>: ### Playback Resumer 2.2.0: Found and parsed advancedsettings.xml
+2026-08-17 22:44:25.717 T:48360    info <general>: ### Playback Resumer 2.2.0: Kodi debug logging enabled: False
+2026-08-17 22:44:25.717 T:48360    info <general>: ### Playback Resumer 2.2.0: No arguments supplied to addon
+2026-08-17 22:44:25.717 T:48360    info <general>: ### Playback Resumer 2.2.0: Loading configuration
+2026-08-17 22:44:25.718 T:48360    info <general>: ### Playback Resumer 2.2.0: Will save a resume point every 20 seconds
+2026-08-17 22:44:25.718 T:48360    info <general>: ### Playback Resumer 2.2.0: Resume on startup: False
+2026-08-17 22:44:25.718 T:48360    info <general>: ### Playback Resumer 2.2.0: Autoplay random video: False
+2026-08-17 22:44:25.721 T:48360    info <general>: ### Playback Resumer 2.2.0: Found and parsed advancedsettings.xml
+2026-08-17 22:44:25.722 T:48360    info <general>: ### Playback Resumer 2.2.0: Using ignoresecondsatstart: 180, ignorepercentatend: 8
+2026-08-17 22:44:25.722 T:48360    info <general>: ### Playback Resumer 2.2.0: resume_if_was_playing: checking whether to attempt a resume on startup
+2026-08-17 22:44:25.722 T:48360    info <general>: ### Playback Resumer 2.2.0: resume_if_was_playing: 'resume on startup' setting is disabled - not attempting resume
+2026-08-17 22:44:26.278 T:52332    info <general>: [service.trickplay] Skin profile: Estuary Mod v2 (estuary_modv2) via skin.estuary.modv2; seekbar=(460, 990, 1430) wide=(30, 990, 1860); focus=87
+2026-08-17 22:44:26.280 T:52332    info <general>: [service.trickplay] Service initialized (display=skin v8.15.2)
+2026-08-17 22:44:26.306 T:66292    info <general>: Estuary MOD V2 service handler started
+2026-08-17 22:44:26.716 T:52332    info <general>: [service.trickplay] Pillow JPEG decoder: libjpeg-turbo (C:\Program Files\Kodi\system\python\Lib\site-packages\PIL\__init__.py)
+2026-08-17 22:44:26.849 T:52332    info <general>: [service.trickplay.generator] Generator ffmpeg: C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\service.trickplay\system\ffmpeg\bin\ffmpeg.exe (addon install (C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\service.trickplay\system\ffmpeg))
+2026-08-17 22:44:26.925 T:52332    info <general>: [service.trickplay.generator] Generator ffmpeg build: jellyfin-ffmpeg — ffmpeg version 8.1.2-Jellyfin Copyright (c) 2000-2026 the FFmpeg developers
+2026-08-17 22:44:26.983 T:1948     info <general>: CIRServerSuite::Process: failed to connect to irss, will keep retrying every 5 seconds
+2026-08-17 22:44:26.990 T:52332    info <general>: [service.trickplay.generator] Generator ffmpeg hwaccels: cuda dxva2 qsv d3d11va opencl vulkan d3d12va amf
+2026-08-17 22:44:27.321 T:66064    info <general>: [service.skippy - service]  Full skip dialog skin XML (720p\SkipDialog_BottomRight.xml, 720p\SkipDialog_BottomLeft.xml, 720p\SkipDialog_TopLeft.xml, 720p\SkipDialog_TopRight.xml, 720p\SkipDialog.xml, 1080i\SkipDialog_BottomRight.xml, 1080i\SkipDialog_BottomLeft.xml, 1080i\SkipDialog_TopLeft.xml, 1080i\SkipDialog_TopRight.xml, 1080i\SkipDialog.xml): button focus=button_focus_aqua_vignette.png border=-, progress mid=progress_mid_pink_lightblue.png
+2026-08-17 22:44:27.321 T:66064    info <general>: [service.skippy - service]  XML-EDL Intro Skipper service started.
+2026-08-17 22:44:27.324 T:66064    info <general>: [service.skippy - Keymap] Installed segment marker keymap: C:\Users\stone\AppData\Roaming\Kodi\userdata\keymaps\skippy_marker.xml; remote='key:253'; remote_press='normal'; keyboard_sections=('global', 'FullscreenVideo', 'VideoOSD', 'VideoMenu'); remote_sections=('FullscreenVideo', 'VideoOSD', 'VideoMenu')
+2026-08-17 22:44:27.329 T:66064    info <general>: [service.skippy - Keymap] Installed segment editor keymap: C:\Users\stone\AppData\Roaming\Kodi\userdata\keymaps\skippy_editor.xml; remote='key:254'; remote_press='normal'
+2026-08-17 22:44:27.345 T:62764    info <general>: Loading special://xbmc/system/keymaps/appcommand.xml
+2026-08-17 22:44:27.345 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.Harmony.xml
+2026-08-17 22:44:27.346 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.SiriRemote.xml
+2026-08-17 22:44:27.347 T:62764    info <general>: Loading special://xbmc/system/keymaps/gamepad.xml
+2026-08-17 22:44:27.347 T:62764    info <general>: Loading special://xbmc/system/keymaps/joystick.xml
+2026-08-17 22:44:27.348 T:62764    info <general>: Loading special://xbmc/system/keymaps/keyboard.xml
+2026-08-17 22:44:27.350 T:62764    info <general>: Loading special://xbmc/system/keymaps/mouse.xml
+2026-08-17 22:44:27.350 T:62764    info <general>: Loading special://xbmc/system/keymaps/remote.xml
+2026-08-17 22:44:27.352 T:62764    info <general>: Loading special://xbmc/system/keymaps/touchscreen.xml
+2026-08-17 22:44:27.353 T:62764    info <general>: Loading special://masterprofile/keymaps/gen.xml
+2026-08-17 22:44:27.354 T:62764    info <general>: Loading special://masterprofile/keymaps/keymap.xml
+2026-08-17 22:44:27.354 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_editor.xml
+2026-08-17 22:44:27.354 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_marker.xml
+2026-08-17 22:44:27.356 T:62764    info <general>: Loading special://profile/keymaps/gen.xml
+2026-08-17 22:44:27.356 T:62764    info <general>: Loading special://profile/keymaps/keymap.xml
+2026-08-17 22:44:27.356 T:62764    info <general>: Loading special://profile/keymaps/skippy_editor.xml
+2026-08-17 22:44:27.357 T:62764    info <general>: Loading special://profile/keymaps/skippy_marker.xml
+2026-08-17 22:44:27.360 T:62764    info <general>: Loading special://xbmc/system/keymaps/appcommand.xml
+2026-08-17 22:44:27.361 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.Harmony.xml
+2026-08-17 22:44:27.361 T:62764    info <general>: Loading special://xbmc/system/keymaps/customcontroller.SiriRemote.xml
+2026-08-17 22:44:27.362 T:62764    info <general>: Loading special://xbmc/system/keymaps/gamepad.xml
+2026-08-17 22:44:27.362 T:62764    info <general>: Loading special://xbmc/system/keymaps/joystick.xml
+2026-08-17 22:44:27.363 T:62764    info <general>: Loading special://xbmc/system/keymaps/keyboard.xml
+2026-08-17 22:44:27.365 T:62764    info <general>: Loading special://xbmc/system/keymaps/mouse.xml
+2026-08-17 22:44:27.365 T:62764    info <general>: Loading special://xbmc/system/keymaps/remote.xml
+2026-08-17 22:44:27.367 T:62764    info <general>: Loading special://xbmc/system/keymaps/touchscreen.xml
+2026-08-17 22:44:27.368 T:62764    info <general>: Loading special://masterprofile/keymaps/gen.xml
+2026-08-17 22:44:27.368 T:62764    info <general>: Loading special://masterprofile/keymaps/keymap.xml
+2026-08-17 22:44:27.368 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_editor.xml
+2026-08-17 22:44:27.369 T:62764    info <general>: Loading special://masterprofile/keymaps/skippy_marker.xml
+2026-08-17 22:44:27.370 T:62764    info <general>: Loading special://profile/keymaps/gen.xml
+2026-08-17 22:44:27.370 T:62764    info <general>: Loading special://profile/keymaps/keymap.xml
+2026-08-17 22:44:27.370 T:62764    info <general>: Loading special://profile/keymaps/skippy_editor.xml
+2026-08-17 22:44:27.371 T:62764    info <general>: Loading special://profile/keymaps/skippy_marker.xml
+2026-08-17 22:44:27.372 T:63088    info <general>: [script.module.pvr.artwork] Initialized
+2026-08-17 22:44:27.372 T:63088    info <general>: PVR Artwork module wrapper started
+2026-08-17 22:44:27.693 T:61460    info <general>: [ script.embuary.info ] Refreshing next airing database
+2026-08-17 22:44:27.979 T:61460    info <general>: [ script.embuary.info ] Finished next airing database refreshing
+2026-08-17 22:44:28.263 T:62764    info <general>: Loading skin file: Home.xml, load type: KEEP_IN_MEMORY
+2026-08-17 22:44:28.272 T:62764 warning <general>: Skin has invalid include: skinshortcuts-template-PersonalWidgetList
+2026-08-17 22:44:28.272 T:62764 warning <general>: Skin has invalid include: skinshortcuts-template-PersonalWidgetPanel
+2026-08-17 22:44:28.272 T:62764 warning <general>: Skin has invalid include: skinshortcuts-template-PersonalWidgetVariable
+2026-08-17 22:44:31.434 T:62764 warning <general>: Trying to add unsupported control type 7
+2026-08-17 22:44:32.141 T:15200 warning <general>: Skipped 28 duplicate messages..
+2026-08-17 22:44:32.141 T:15200 warning <general>: CPythonInvoker(13, C:\Users\stone\AppData\Roaming\Kodi\addons\service.xbmc.versioncheck\resources\lib\runner.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\service.xbmc.versioncheck\resources\lib\runner.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::Monitor
+2026-08-17 22:44:32.227 T:7904     info <general>: set Property 'videolibrary.showunwatchedplots' to [0, 1, 2]
+2026-08-17 22:44:32.236 T:62004    info <general>: [ script.embuary.helper ] Service: Started
+2026-08-17 22:44:32.236 T:62004    info <general>: [ script.embuary.helper ] Service: Player monitor started
+2026-08-17 22:44:32.520 T:27312 warning <general>: CPythonInvoker(15, C:\Users\stone\AppData\Roaming\Kodi\addons\script.skinshortcuts\resources\lib\entry_point.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.skinshortcuts\resources\lib\entry_point.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:44:34.446 T:16112 warning <general>: [WS-Discovery]: The initial search for servers has failed. No servers found.
+2026-08-17 22:44:41.115 T:62764    info <general>: Loading skin file: MyVideoNav.xml, load type: KEEP_IN_MEMORY
+2026-08-17 22:44:41.196 T:62764 warning <general>: Trying to add unsupported control type 3
+2026-08-17 22:44:41.966 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:41.967 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:41.967 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:41.967 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:41.967 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:41.968 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:41.968 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:42.845 T:57256 warning <general>: Skipped 45 duplicate messages..
+2026-08-17 22:44:42.845 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:42.845 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:42.845 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:42.846 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:42.846 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:42.846 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:42.846 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:43.652 T:46816 warning <general>: Skipped 39 duplicate messages..
+2026-08-17 22:44:43.652 T:46816 warning <general>: CPythonInvoker(18, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.info\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.info\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmc::Monitor,class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:44:43.780 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:43.780 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:43.780 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:43.780 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:44:43.780 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:43.780 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:43.780 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:44.672 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:44.672 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:44.672 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:44.673 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:44.673 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:44.673 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:44.673 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:44.673 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:45.540 T:57256 warning <general>: Skipped 43 duplicate messages..
+2026-08-17 22:44:45.540 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:45.540 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:45.540 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:45.540 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:44:45.540 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:45.540 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:45.540 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:46.912 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:46.912 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:46.912 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:46.912 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:46.912 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:46.912 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:46.912 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:47.212 T:62764 warning <general>: Skipped 27 duplicate messages..
+2026-08-17 22:44:47.212 T:62764    info <general>: VideoPlayer::OpenFile: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:47.214 T:59280    info <general>: Creating InputStream
+2026-08-17 22:44:47.999 T:59280    info <general>: Creating Demuxer
+2026-08-17 22:44:48.077 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:48.077 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:48.077 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:48.077 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:44:48.077 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:48.077 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:48.077 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:48.081 T:59280 warning <general>: Skipped 3 duplicate messages..
+2026-08-17 22:44:48.081 T:59280    info <general>: Opening stream: 0 source: 256
+2026-08-17 22:44:48.081 T:59280    info <general>: Creating video codec: hevc
+2026-08-17 22:44:48.082 T:59280    info <general>: CDVDVideoCodecFFmpeg::Open() Using codec: HEVC (High Efficiency Video Coding)
+2026-08-17 22:44:48.082 T:59280    info <general>: Creating video thread
+2026-08-17 22:44:48.082 T:55588    info <general>: running thread: video_thread
+2026-08-17 22:44:48.496 T:59280 warning <general>: EDL::CEdlFileParser::Parse: Invalid action on line 1 in EDL file: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.edl
+2026-08-17 22:44:48.496 T:59280 warning <general>: EDL::CEdlFileParser::Parse: Invalid action on line 2 in EDL file: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.edl
+2026-08-17 22:44:48.529 T:59280 warning <general>: EDL::CEdlFileParser::Parse: Invalid action on line 3 in EDL file: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.edl
+2026-08-17 22:44:48.838 T:59280    info <general>: Opening stream: 1 source: 256
+2026-08-17 22:44:48.838 T:59280    info <general>: Finding audio codec for: 86056
+2026-08-17 22:44:48.838 T:59280    info <general>: CDVDAudioCodecFFmpeg::Open() Successful opened audio decoder eac3
+2026-08-17 22:44:48.838 T:59280    info <general>: CVideoPlayerAudio::OpenStream: Allowing max Out-Of-Sync Value of 50 ms
+2026-08-17 22:44:48.838 T:59280    info <general>: Creating audio thread
+2026-08-17 22:44:48.839 T:52056    info <general>: running thread: CVideoPlayerAudio::Process()
+2026-08-17 22:44:48.839 T:59280    info <general>: Opening stream: 2 source: 256
+2026-08-17 22:44:48.839 T:59280    info <general>: CDVDSubtitlesLibass: Using libass version 1703000
+2026-08-17 22:44:48.839 T:59280    info <general>: CDVDSubtitlesLibass: Creating ASS library structure
+2026-08-17 22:44:48.839 T:59280    info <general>: CDVDSubtitlesLibass: Initializing ASS Renderer
+2026-08-17 22:44:48.842 T:59280    info <general>: CDVDSubtitlesLibass: Initializing ASS library font settings
+2026-08-17 22:44:48.873 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:48.873 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:48.873 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:48.873 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:48.873 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:48.873 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:48.873 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:49.230 T:59280 warning <general>: Skipped 7 duplicate messages..
+2026-08-17 22:44:49.230 T:59280    info <general>: CDVDSubtitlesLibass: Creating new ASS track
+2026-08-17 22:44:49.233 T:55588    info <general>: DXVA::CContext::CreateContext: creating discrete d3d11va device for decoding.
+2026-08-17 22:44:49.241 T:52056    info <general>: Creating audio stream (codec: eac3, channels: 6, sample rate: 48000, no pass-through)
+2026-08-17 22:44:49.246 T:55588    info <general>: DXVA::CContext::CreateContext: device for decoding created on adapter 'Intel(R) UHD Graphics' with D3D_FEATURE_LEVEL_12_1
+2026-08-17 22:44:49.260 T:55588    info <general>: DXVA::CDecoder::Open: Total video memory available is 8235 MB (dedicated = 128 MB, shared = 8107 MB)
+2026-08-17 22:44:49.274 T:65744    info <general>: CActiveAESink::OpenSink - initialize sink
+2026-08-17 22:44:49.305 T:42536    info <general>: [plugin.video.themoviedb.helper]
+                                                   CACHE: Initialising...
+                                                   C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\plugin.video.themoviedb.helper\database_07\ItemDetails.db
+                                                   database_07_ItemDetails.db_databaserowfactory_6.15.6
+2026-08-17 22:44:49.320 T:66064    info <general>: [service.skippy - service]  Kodi playback path: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:49.321 T:66064    info <general>: [service.skippy - playback]  Playback time: 0s
+2026-08-17 22:44:49.321 T:66064    info <general>: [service.skippy - service]  Playback state: is_playing=True, is_paused=False
+2026-08-17 22:44:49.321 T:66064    info <general>: [service.skippy - jsonrpc]  Fetching Player.GetItem (cache miss or video change)
+2026-08-17 22:44:49.321 T:66064    info <general>: [service.skippy - jsonrpc]  JSON-RPC request: {"jsonrpc": "2.0", "id": "getPlayers", "method": "Player.GetActivePlayers"}
+2026-08-17 22:44:49.322 T:66064    info <general>: [service.skippy - jsonrpc]  JSON-RPC response: {"id":"getPlayers","jsonrpc":"2.0","result":[{"playerid":1,"playertype":"internal","type":"video"}]}
+2026-08-17 22:44:49.322 T:66064    info <general>: [service.skippy - jsonrpc]  JSON-RPC request: {"jsonrpc": "2.0", "id": "VideoGetItem", "method": "Player.GetItem", "params": {"playerid": 1, "properties": ["file", "title", "showtitle", "episode"]}}
+2026-08-17 22:44:49.348 T:65744    info <general>: CAESinkXAudio::InitializeInternal: Format is Supported - will attempt to Initialize
+2026-08-17 22:44:49.348 T:65744    info <general>: CAESinkXAudio::InitializeInternal: XAudio Sink Initialized using: AE_FMT_FLOAT, 48000, 2
+2026-08-17 22:44:49.361 T:42536    info <general>: [plugin.video.themoviedb.helper]
+                                                   CACHE: Initialising...
+                                                   C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\plugin.video.themoviedb.helper\database_07\ItemQueries.db
+                                                   database_07_ItemQueries.db_databaserowfactory_6.15.6
+2026-08-17 22:44:49.580 T:52332    info <general>: [service.trickplay] Playback started: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:49.650 T:62764    info <general>: CRendererDXVA::Configure: chosen conversion: P010 / YCBCR_STUDIO_G22_TOPLEFT_P2020 to R10G10B10A2_UNORM / RGB_FULL_G22_NONE_P709
+2026-08-17 22:44:49.650 T:62764    info <general>: DXVA::CEnumeratorHD::ProbeProcessorCaps: supported deinterlace methods: blend:yes, bob:yes, adaptive:yes, mocomp:yes.
+2026-08-17 22:44:49.661 T:62764 warning <general>: CRendererHQ::CheckVideoParameters: chosen scaling method 1 is not supported by renderer
+2026-08-17 22:44:49.823 T:62764    info <general>: Loading skin file: VideoFullScreen.xml, load type: KEEP_IN_MEMORY
+2026-08-17 22:44:49.846 T:48360    info <general>: ### Playback Resumer 2.2.0: onAVStarted
+2026-08-17 22:44:49.846 T:48360    info <general>: ### Playback Resumer 2.2.0: New playback - clearing legacy now playing details
+2026-08-17 22:44:49.857 T:63064    info <general>: ### Unpause Jumpback 3.0.8: onAVStarted.
+2026-08-17 22:44:49.857 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Current playback time is -0.099
+2026-08-17 22:44:49.857 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Checking exclusion for: 'nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv'.
+2026-08-17 22:44:49.857 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Not excluded: 'nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv'
+2026-08-17 22:44:49.949 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:49.949 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:49.949 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:49.949 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:49.949 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:49.950 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:49.950 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:49.981 T:66064 warning <general>: Skipped 9 duplicate messages..
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - jsonrpc]  JSON-RPC response: {"id":"VideoGetItem","jsonrpc":"2.0","result":{"item":{"episode":1,"file":"nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv","id":187596,"label":"Olivia","showtitle":"Sugar (2024)","title":"Olivia","type":"episode"}}}
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - playback]  showtitle: Sugar (2024), episode: 1
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Inferred playback type: episode
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  File: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv, Title: Olivia, Showtitle: Sugar (2024), Episode: 1
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Toast allowed  episode playback and enabled in settings
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Playback type: 'episode'
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Skip enabled for episodes: True
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Skip dialog enabled for episodes: True
+2026-08-17 22:44:49.981 T:66064    info <general>: [service.skippy - service]  Settings  show_dialogs: True, toast_movies: False, toast_episodes: True
+2026-08-17 22:44:50.041 T:55588    info <general>: CDVDVideoCodecFFmpeg::CDropControl: calculated diff time: 41727
+2026-08-17 22:44:50.095 T:66064    info <general>: [service.skippy - service]  New video detected: Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:50.096 T:66064    info <general>: [service.skippy - service]  New video detected  resetting monitor state
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  New video state cleared - recently_dismissed now has 0 items
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  Playback settings snapshot [skip & dialog]  enable_skip_movies=false, enable_skip_episodes=true, show_skip_dialog_movies=true, show_skip_dialog_episodes=true, skip_overlapping_segments=true, open_segment_editor_on_overlap=false, ignore_internal_edl_actions=true, rewind_threshold_seconds=8, skip_jump_offset_seconds=0, ask_dialog_debounce_ms=300, skip_dialog_mode=Full, skip_dialog_positions_full_minimal=BottomRight/BottomRight, show_progress_bar=true, progress_bar_countdown=true, progress_bar_style=progress_mid_pink_lightblue.png, progress_bar_height=16, smooth_progress_bar=true, progress_bar_updates_per_second=100, hide_ending_text=false, show_skip_button_focus_texture=true
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  Playback settings snapshot [keyword lists truncated]  custom_segment_keywords='intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,...' segment_always_skip='commercial,commercials,sponsor,sponsors,ad,ads' segment_ask_skip='intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on,be...' segment_never_skip='prologue,epilogue,main,credits,outro,closing,ending' edl_action_mapping='4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open,18:Behind the scenes,19:Featurette'
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  Playback settings snapshot [TV/movie sources & save online]  tv_use_local_chapter_edl=true, tv_use_online_segment_lookup=true, tv_segment_source_priority=LocalFirst, tv_online_merge_priority=TheIntroDBFirst, movie_use_local_chapter_edl=true, movie_use_online_segment_lookup=true, movie_segment_source_priority=LocalFirst, movie_online_merge_priority=TheIntroDBFirst, save_online_segments_to_chapters_xml=false, save_online_segments_format=Both, save_online_chapters_existing_policy=UpdateAllAsk, save_online_chapters_backup_before_overwrite=true, online_sidecar_snap_neighbor_start=false, online_sidecar_snap_neighbor_end=false, tv_prefetch_next_episode=true
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  Playback settings snapshot [API, toasts, logging]  tv_tmdb_resolve_missing_ids=true, tv_tmdb_api_key_set=true, tv_tmdb_use_helper_api_key=*** remote_api_failure_cooldown_seconds=120, toast_not_found_tv=true, toast_not_found_movie=false, toast_overlap=false, toast_skipped_segment=true, toast_segment_marker=true, enable_verbose_logging=true, skippy_log_detail_level=All
+2026-08-17 22:44:50.098 T:66064    info <general>: [service.skippy - service]  Segment parse and process for: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:50.099 T:66064    info <general>: [service.skippy - paths]  Video container extension: .mkv
+2026-08-17 22:44:50.099 T:66064    info <general>: [service.skippy - paths]  Fallback base path from player: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX
+2026-08-17 22:44:50.099 T:66064    info <general>: [service.skippy - paths]  Video container extension (EDL path): .mkv
+2026-08-17 22:44:50.099 T:66064    info <general>: [service.skippy - paths]  Fallback base path from player: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX
+2026-08-17 22:44:50.830 T:66064    info <general>: [service.skippy - segments]  Attempting chapter XML paths: ['nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1\\Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX_chapters.xml']
+2026-08-17 22:44:51.116 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:51.117 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:51.117 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:51.117 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:51.117 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:51.117 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:51.117 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:51.347 T:48360 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:51.347 T:48360    info <general>: ### Playback Resumer 2.2.0: Store.isExcluded(): Checking exclusion settings for [nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv]
+2026-08-17 22:44:51.350 T:22336    info <general>: [service.trickplay] Found 3 tile file(s) in nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10
+2026-08-17 22:44:51.350 T:22336    info <general>: [service.trickplay] Using shortest interval 10000ms at 320px (nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10, 3 tile file(s))
+2026-08-17 22:44:51.351 T:66064    info <general>: [service.skippy - segments]  Successfully read file: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1\Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX_chapters.xml
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: prologue [0.0-8.96] (xml)
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - segments]  Parsed XML segment: 00:00:00.00  00:00:08.96 | label='prologue'
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: intro [8.96-64.18] (xml)
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - segments]  Parsed XML segment: 00:00:08.96  00:01:04.18 | label='intro'
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: main [64.18-2875.33] (xml)
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - segments]  Parsed XML segment: 00:01:04.18  00:47:55.33 | label='main'
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: credits [2875.33-2947.15] (xml)
+2026-08-17 22:44:51.462 T:66064    info <general>: [service.skippy - segments]  Parsed XML segment: 00:47:55.33  00:49:07.15 | label='credits'
+2026-08-17 22:44:51.463 T:66064    info <general>: [service.skippy - service]  Total segments parsed from XML: 4
+2026-08-17 22:44:51.463 T:66064    info <general>: [service.skippy - service]  LocalFirst with local sidecar  deferring online segment lookup (dialog path)
+2026-08-17 22:44:51.463 T:66064    info <general>: [service.skippy - service]  LocalFirst  online probe scheduled in background (save/sync; dialog path uses local segments)
+2026-08-17 22:44:51.466 T:66064    info <general>: [service.skippy - service]  Episode segment summary: local=4 remote=0 embedded=0 priority=LocalFirst  using local (4 segs, sources ['xml'])
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - prefetch] prefetch: segment priority is LocalFirst (not Online first)  cleared store
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Pass 1: Filtering segments...
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Pass 1 complete. Filtered segments: 4
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Pass 2: Linking segments for progressive skipping and detecting overlaps/nested...
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Parsed 4 segments for playback_type: episode
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - playback]  Playhead moved during segment parse (0.00s  1.56s, parse took 1368ms)
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - playback]  Playback time: 1s
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Playback confirmed via getTime()  setting playback_ready = True
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Current state: prompted=0 items, recently_dismissed=0 items, skipped_to_nested=0 items
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Processing active segment: 'prologue' [0.0-8.96]
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Determining skip mode for: 'prologue'
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Matched in 'never' list: prologue
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Segment behavior: never
+2026-08-17 22:44:51.467 T:66064    info <general>: [service.skippy - service]  Skipping dialog for 'prologue' (never)
+2026-08-17 22:44:51.474 T:22336    info <general>: [service.trickplay] Sprite dimensions 3200x1800 from JPEG header (C:\Users\stone\AppData\Roaming\Kodi\cache\service.trickplay\39a2c5cb36a7a85ebd76f7bba6d8cced4224e767.jpg)
+2026-08-17 22:44:51.474 T:22336    info <general>: [service.trickplay] Sprite 0.jpg is 3200x1800 -> cell 320x180 (10x10 from folder)
+2026-08-17 22:44:51.474 T:22336    info <general>: [service.trickplay] Enriched trickplay: grid=10x10, interval=10000ms, thumb=320x180, count=295, tiles=3
+2026-08-17 22:44:51.528 T:22336    info <general>: [service.trickplay] Loaded trickplay for nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv (295 thumbs, 320x180, 3 tile file(s))
+2026-08-17 22:44:51.529 T:22336    info <general>: [service.trickplay] Scheduled local copies for 2 sprite tile(s) (priority 2)
+2026-08-17 22:44:51.529 T:22336    info <general>: [service.trickplay] Prefetch playhead follow index 0 ±12 (13 cell(s))
+2026-08-17 22:44:51.529 T:62664    info <general>: [service.trickplay] Prefetch local tile copy 1.jpg
+2026-08-17 22:44:51.660 T:62664    info <general>: [service.trickplay] Prefetch local tile copy 2.jpg
+2026-08-17 22:44:51.806 T:48360    info <general>: ### Playback Resumer 2.2.0: Kodi type: episode, dbid: 187596
+2026-08-17 22:44:51.807 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (1) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:44:51.941 T:49056    info <general>: [service.trickplay] Decoded sprite warm 1.jpg ok=True
+2026-08-17 22:44:51.966 T:62024    info <general>: [service.trickplay] Sprite dimensions 3200x1800 from JPEG header (C:\Users\stone\AppData\Roaming\Kodi\cache\service.trickplay\39a2c5cb36a7a85ebd76f7bba6d8cced4224e767.jpg)
+2026-08-17 22:44:51.966 T:62024    info <general>: [service.trickplay] Sprite 0.jpg is 3200x1800 -> cell 320x180 (10x10 from folder)
+2026-08-17 22:44:51.969 T:62024    info <general>: [service.trickplay] Sprite dimensions 3200x1800 from JPEG header (C:\Users\stone\AppData\Roaming\Kodi\cache\service.trickplay\6baf31c31c0c99de0afaf3edb4f44489cdf7080e.jpg)
+2026-08-17 22:44:51.969 T:62024    info <general>: [service.trickplay] Enriched trickplay: grid=10x10, interval=10000ms, thumb=320x180, count=295, tiles=3
+2026-08-17 22:44:51.969 T:62024    info <general>: [service.trickplay] Refined thumbnail count from last tile: 295
+2026-08-17 22:44:52.038 T:49056    info <general>: [service.trickplay] Decoded sprite warm 2.jpg ok=True
+2026-08-17 22:44:52.053 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 0 ±12 (13 cell(s))
+2026-08-17 22:44:52.135 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:52.135 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:52.136 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:52.136 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:52.136 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:52.136 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:52.136 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:52.164 T:52332 warning <general>: Skipped 35 duplicate messages..
+2026-08-17 22:44:52.164 T:52332    info <general>: [service.trickplay] Seek UI warm at 2s -> index 0
+2026-08-17 22:44:52.525 T:62764    info <general>: Loading skin file: DialogSeekBar.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - service]  Kodi playback path: nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - playback]  Playback time: 2s
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - service]  Playback state: is_playing=True, is_paused=False
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - playback]  showtitle: Sugar (2024), episode: 1
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - service]  Playback type: 'episode'
+2026-08-17 22:44:52.643 T:66064    info <general>: [service.skippy - service]  Settings  show_dialogs: True, toast_movies: False, toast_episodes: True
+2026-08-17 22:44:52.667 T:66064    info <general>: [service.skippy - service]  Current state: prompted=1 items, recently_dismissed=0 items, skipped_to_nested=0 items
+2026-08-17 22:44:52.667 T:66064    info <general>: [service.skippy - service]  Using cached processed segments (phase=0, count=4)
+2026-08-17 22:44:52.667 T:66064    info <general>: [service.skippy - playback]  Playback time: 2s
+2026-08-17 22:44:52.668 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 0 ±12 (13 cell(s))
+2026-08-17 22:44:52.764 T:52332    info <general>: [service.trickplay] Seek UI warm at 2s -> index 0
+2026-08-17 22:44:52.774 T:52332    info <general>: [service.trickplay] Preview 12s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (1,0) index 1
+2026-08-17 22:44:52.808 T:52332    info <general>: [service.trickplay] Preview slot 0 (460,750) 320x180 @ 12s (duration=2947s)
+2026-08-17 22:44:52.808 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/e1e89be8b8e62f6e84882d89a45a256772d9155f.jpg
+2026-08-17 22:44:52.874 T:52332    info <general>: [service.trickplay] Preview visible -> True
+2026-08-17 22:44:52.874 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 1 ±5 (2 cell(s))
+2026-08-17 22:44:53.046 T:52332    info <general>: [service.trickplay] Preview 13s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (1,0) index 1
+2026-08-17 22:44:53.065 T:52332    info <general>: [service.trickplay] Preview slot 0 (460,750) 320x180 @ 13s (duration=2947s)
+2026-08-17 22:44:53.065 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/e1e89be8b8e62f6e84882d89a45a256772d9155f.jpg
+2026-08-17 22:44:53.308 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 13430, seekOffset 10000
+2026-08-17 22:44:53.309 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (3) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:44:53.657 T:55588 warning <general>: CVideoPlayerVideo::OutputPicture - timeout waiting for buffer
+2026-08-17 22:44:53.808 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:53.819 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:53.820 T:59604    info <general>: [service.skippy - remote] playing item: type=episode id=187596 S=1 E=1 show='Sugar (2024)'
+2026-08-17 22:44:53.820 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:53.820 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:44:53.820 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:53.820 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:53.820 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:53.822 T:52332 warning <general>: Skipped 53 duplicate messages..
+2026-08-17 22:44:53.822 T:52332    info <general>: [service.trickplay] Seek event -> 13s
+2026-08-17 22:44:53.822 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:53.901 T:66064 warning <general>: Skipped 9 duplicate messages..
+2026-08-17 22:44:53.901 T:66064    info <general>: [service.skippy - playback]  Playback time: 14s
+2026-08-17 22:44:53.901 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 1 ±5 (7 cell(s))
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Processing active segment: 'intro' [8.96-64.18]
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Determining skip mode for: 'intro'
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Matched in 'ask' list: intro
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Segment behavior: ask
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Active segment: intro [8.96-64.18]  ask
+2026-08-17 22:44:53.925 T:66064    info <general>: [service.skippy - service]  Ask-skip behavior triggered for segment ID (9, 64) (intro)
+2026-08-17 22:44:53.953 T:66064    info <general>: [service.skippy - service]  Debouncing skip dialog for 300ms
+2026-08-17 22:44:54.063 T:52332    info <general>: [service.trickplay] Preview 24s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (2,0) index 2
+2026-08-17 22:44:54.084 T:52332    info <general>: [service.trickplay] Preview slot 1 (460,750) 320x180 @ 24s (duration=2947s)
+2026-08-17 22:44:54.085 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/31739b884fae33799bccd85a3d6498ad89e44cf4.jpg
+2026-08-17 22:44:54.152 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 2 ±5 (2 cell(s))
+2026-08-17 22:44:54.253 T:66064    info <general>: [service.skippy - service]  Using skip dialog (Full): SkipDialog_BottomRight.xml
+2026-08-17 22:44:54.255 T:66064    info <general>: [service.skippy - SkipDialog]  Loaded dialog layout: SkipDialog_BottomRight.xml (720p)
+2026-08-17 22:44:54.273 T:62764    info <general>: Loading skin file: C:\Users\stone\AppData\Roaming\Kodi\addons\service.skippy\resources\skins\default\1080i\SkipDialog_BottomRight.xml, load type: LOAD_ON_GUI_INIT
+2026-08-17 22:44:54.280 T:66064    info <general>: [service.skippy - SkipDialog]  onInit called  segment=intro [8.96-64.18] (xml)
+2026-08-17 22:44:54.284 T:66064    info <general>: [service.skippy - SkipDialog] Skip dialog font colour: raw='FFFFFFFF' resolved=FFFFFFFF kodi=0xFFFFFFFF
+2026-08-17 22:44:54.292 T:66064    info <general>: [service.skippy - SkipDialog]  Close button hidden per setting
+2026-08-17 22:44:54.292 T:66064    info <general>: [service.skippy - SkipDialog]  Dialog configured for normal skip to end of segment
+2026-08-17 22:44:54.296 T:66064   error <general>: EXCEPTION: Non-Existent Control 3040
+2026-08-17 22:44:54.296 T:66064   error <general>: EXCEPTION: Non-Existent Control 3042
+2026-08-17 22:44:54.296 T:66064   error <general>: EXCEPTION: Non-Existent Control 3041
+2026-08-17 22:44:54.296 T:66064   error <general>: EXCEPTION: Non-Existent Control 3043
+2026-08-17 22:44:54.308 T:59604    info <general>: [service.skippy - remote] TV TMDB: using series id 203744 for API (episode row had 3772125; TheIntroDB needs the show id)
+2026-08-17 22:44:54.308 T:59604    info <general>: [service.skippy - remote] Kodi library uniqueid keys for S01E01: ['imdb', 'sonarr', 'tmdb', 'trakt', 'tvdb', 'wikidata'] (tmdb=203744 imdb=tt20918504 show_imdb=tt20918504)
+2026-08-17 22:44:54.309 T:59604    info <general>: [service.skippy - remote] TMDB lookup request -> https://api.themoviedb.org/3/tv/203744/external_ids?api_key=***
+2026-08-17 22:44:54.317 T:66064    info <general>: [service.skippy - SkipDialog]  Progress seeded: 89% / 375px (countdown=True, playhead=14.84s)
+2026-08-17 22:44:54.317 T:66064    info <general>: [service.skippy - SkipDialog]  Dialog initialized: segment='intro', duration=55s
+2026-08-17 22:44:54.318 T:62828    info <general>: [service.skippy - SkipDialog]  Smooth bar 375px (89.36%, countdown=True, ups=100, raw: 'true')
+2026-08-17 22:44:54.381 T:66064    info <general>: [service.skippy - SkipDialog]  Focus set to control 3016 (minimal=False, hide_close=True, hide_skip_icon=True)
+2026-08-17 22:44:54.393 T:66064    info <general>: [service.skippy - SkipDialog]  Dialog onInit completed successfully
+2026-08-17 22:44:54.533 T:59604    info <general>: [service.skippy - remote] TV context: series IMDb from TMDB external_ids=tt16418808 (Kodi show_imdb matched episode tt20918504)
+2026-08-17 22:44:54.533 T:59604    info <general>: [service.skippy - remote] TV context: S01E01 tmdb_id=203744 tvdb_id=9206658 episode_imdb=tt20918504 show_imdb=tt16418808
+2026-08-17 22:44:54.533 T:59604    info <general>: [service.skippy - remote] TheIntroDB lookup request -> https://api.theintrodb.org/v3/media?season=1&episode=1&tmdb_id=203744&duration_ms=2947156
+2026-08-17 22:44:54.559 T:52332    info <general>: [service.trickplay] Preview 25s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (2,0) index 2
+2026-08-17 22:44:54.572 T:52332    info <general>: [service.trickplay] Preview slot 1 (460,750) 320x180 @ 25s (duration=2947s)
+2026-08-17 22:44:54.572 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/31739b884fae33799bccd85a3d6498ad89e44cf4.jpg
+2026-08-17 22:44:54.631 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 25052, seekOffset 10000
+2026-08-17 22:44:54.631 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (15) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:44:55.345 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:55.347 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:55.348 T:59604    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: intro [0.0-67.0] (theintrodb)
+2026-08-17 22:44:55.348 T:59604    info <general>: [service.skippy - remote] TheIntroDB: using 1 segment(s) [('intro', 0.0, 67.0)]
+2026-08-17 22:44:55.348 T:59604    info <general>: [service.skippy - remote] IntroDB.app lookup request -> https://api.introdb.app/segments?imdb_id=tt16418808&season=1&episode=1
+2026-08-17 22:44:55.358 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:55.380 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:55.380 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:55.392 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:55.396 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:55.523 T:52332 warning <general>: Skipped 4 duplicate messages..
+2026-08-17 22:44:55.523 T:52332    info <general>: [service.trickplay] Seek event -> 25s
+2026-08-17 22:44:55.527 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 2 ±5 (8 cell(s))
+2026-08-17 22:44:55.549 T:59604    info <general>: [service.skippy - SegmentItem]  New SegmentItem created: intro [1.0-67.0] (introdb)
+2026-08-17 22:44:55.549 T:59604    info <general>: [service.skippy - remote] IntroDB.app: using 1 segment(s) [('intro', 1.0, 67.0)]
+2026-08-17 22:44:55.549 T:59604    info <general>: [service.skippy - remote] merged remote (TV): TheIntroDB wins overlaps  1 segment(s) total (TheIntroDB=1, IntroDB.app=1 pre-merge)
+2026-08-17 22:44:55.553 T:59604    info <general>: [service.skippy - remote_probe] deferred probe complete: path='nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv' segments=1
+2026-08-17 22:44:55.683 T:52332    info <general>: [service.trickplay] Prefetch idle tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg
+2026-08-17 22:44:55.837 T:62828    info <general>: [service.skippy - SkipDialog]  Smooth bar 279px (66.42%, countdown=True, ups=100, raw: 'true')
+2026-08-17 22:44:56.426 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:56.427 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:56.427 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:56.427 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:56.427 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:56.427 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:56.427 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:57.342 T:62828 warning <general>: Skipped 3 duplicate messages..
+2026-08-17 22:44:57.342 T:62828    info <general>: [service.skippy - SkipDialog]  Smooth bar 267px (63.62%, countdown=True, ups=100, raw: 'true')
+2026-08-17 22:44:57.593 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:57.594 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:57.594 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:57.594 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:44:57.594 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:57.594 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:57.594 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:58.066 T:66064 warning <general>: Skipped 25 duplicate messages..
+2026-08-17 22:44:58.066 T:66064    info <general>: [service.skippy - SkipDialog]  User cancelled via action ID 10
+2026-08-17 22:44:58.087 T:66064    info <general>: [service.skippy - service] Skip dialog closed: response=False jump_to=65.18 seg=(9, 64)
+2026-08-17 22:44:58.088 T:66064    info <general>: [service.skippy - service]  User dismissed skip dialog for segment ID (9, 64)
+2026-08-17 22:44:58.088 T:66064    info <general>: [service.skippy - remote_probe] applying deferred probe: path='nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv' remote=1 local=4
+2026-08-17 22:44:58.503 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 3 ±5 (2 cell(s))
+2026-08-17 22:44:58.812 T:52332    info <general>: [service.trickplay] Prefetch idle tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg
+2026-08-17 22:44:58.889 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:44:58.890 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:44:58.890 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:44:58.890 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:58.890 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:44:58.890 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:44:59.426 T:52332 warning <general>: Skipped 26 duplicate messages..
+2026-08-17 22:44:59.426 T:52332    info <general>: [service.trickplay] Seek event -> 41s
+2026-08-17 22:44:59.426 T:52332    info <general>: [service.trickplay] Preview 41s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (4,0) index 4
+2026-08-17 22:44:59.452 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 41081, seekOffset 10000
+2026-08-17 22:44:59.452 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (31) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:44:59.934 T:55588 warning <general>: CVideoPlayerVideo::OutputPicture - timeout waiting for buffer
+2026-08-17 22:45:00.352 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:00.353 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:00.353 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:00.353 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:45:00.353 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:00.353 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:00.354 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:00.356 T:52332 warning <general>: Skipped 4 duplicate messages..
+2026-08-17 22:45:00.356 T:52332    info <general>: [service.trickplay] Preview slot 1 (460,750) 320x180 @ 41s (duration=2947s)
+2026-08-17 22:45:01.089 T:66064    info <general>: [service.skippy - remote] playing item: type=episode id=187596 S=1 E=1 show='Sugar (2024)'
+2026-08-17 22:45:01.089 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 51281, seekOffset 10000
+2026-08-17 22:45:01.089 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (41) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:45:01.358 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/99b9e1ba62e57e020e93a01deb944a126303b833.jpg
+2026-08-17 22:45:01.496 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 4 ±5 (10 cell(s))
+2026-08-17 22:45:01.594 T:66064    info <general>: [service.skippy - remote] TV TMDB: using series id 203744 for API (episode row had 3772125; TheIntroDB needs the show id)
+2026-08-17 22:45:01.594 T:66064    info <general>: [service.skippy - remote] Kodi library uniqueid keys for S01E01: ['imdb', 'sonarr', 'tmdb', 'trakt', 'tvdb', 'wikidata'] (tmdb=203744 imdb=tt20918504 show_imdb=tt20918504)
+2026-08-17 22:45:01.595 T:66064    info <general>: [service.skippy - remote] TMDB lookup request -> https://api.themoviedb.org/3/tv/203744/external_ids?api_key=***
+2026-08-17 22:45:01.607 T:52332    info <general>: [service.trickplay] Seek event -> 51s
+2026-08-17 22:45:01.623 T:52332    info <general>: [service.trickplay] Preview 51s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (5,0) index 5
+2026-08-17 22:45:01.664 T:52332    info <general>: [service.trickplay] Preview slot 2 (460,750) 320x180 @ 51s (duration=2947s)
+2026-08-17 22:45:01.664 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/9f99a63951309e6abf5d14f01d03dde65e449a98.jpg
+2026-08-17 22:45:01.690 T:66064    info <general>: [service.skippy - remote] TV context: series IMDb from TMDB external_ids=tt16418808 (Kodi show_imdb matched episode tt20918504)
+2026-08-17 22:45:01.690 T:66064    info <general>: [service.skippy - remote] TV context: S01E01 tmdb_id=203744 tvdb_id=9206658 episode_imdb=tt20918504 show_imdb=tt16418808
+2026-08-17 22:45:01.749 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 5 ±5 (11 cell(s))
+2026-08-17 22:45:01.786 T:52332    info <general>: [service.trickplay] Preview 42s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (4,0) index 4
+2026-08-17 22:45:01.794 T:52332    info <general>: [service.trickplay] Preview slot 1 (460,750) 320x180 @ 42s (duration=2947s)
+2026-08-17 22:45:01.803 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/99b9e1ba62e57e020e93a01deb944a126303b833.jpg
+2026-08-17 22:45:01.857 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 4 ±5 (1 cell(s))
+2026-08-17 22:45:01.870 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 52341, seekOffset 10000
+2026-08-17 22:45:01.870 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (42) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:45:01.892 T:55588 warning <general>: CVideoPlayerVideo::OutputPicture - timeout waiting for buffer
+2026-08-17 22:45:02.421 T:52332    info <general>: [service.trickplay] Seek event -> 52s
+2026-08-17 22:45:02.445 T:52332    info <general>: [service.trickplay] Preview 52s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (5,0) index 5
+2026-08-17 22:45:02.474 T:52332    info <general>: [service.trickplay] Preview slot 2 (460,750) 320x180 @ 52s (duration=2947s)
+2026-08-17 22:45:02.475 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/9f99a63951309e6abf5d14f01d03dde65e449a98.jpg
+2026-08-17 22:45:02.566 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 5 ±5 (11 cell(s))
+2026-08-17 22:45:02.819 T:4612  warning <general>: CPythonInvoker(19, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::Player,class XBMCAddon::xbmcgui::Dialog
+2026-08-17 22:45:02.877 T:52332    info <general>: [service.trickplay] Prefetch idle tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg
+2026-08-17 22:45:02.998 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:02.998 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:02.998 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:02.998 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:45:02.998 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:02.998 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:02.998 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:03.139 T:9904  warning <general>: Skipped 33 duplicate messages..
+2026-08-17 22:45:03.139 T:9904  warning <general>: CPythonInvoker(20, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::Player,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::PlayList
+2026-08-17 22:45:03.569 T:66064    info <general>: [service.skippy - sync_up] Sync upload declined by user
+2026-08-17 22:45:03.984 T:66064    info <general>: [service.skippy - playback]  Playhead moved during segment parse (14.42s  54.48s, parse took 414ms)
+2026-08-17 22:45:03.985 T:66064    info <general>: [service.skippy - playback]  Playback time: 54s
+2026-08-17 22:45:03.985 T:66064    info <general>: [service.skippy - service]  Current state: prompted=2 items, recently_dismissed=1 items, skipped_to_nested=0 items
+2026-08-17 22:45:03.985 T:66064    info <general>: [service.skippy - service]  Segment (9, 64) (intro) was dismissed  skipping ALL processing
+2026-08-17 22:45:04.047 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:04.047 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:04.047 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:04.047 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:04.047 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:04.085 T:52332 warning <general>: Skipped 3 duplicate messages..
+2026-08-17 22:45:04.085 T:52332    info <general>: [service.trickplay] Preview 64s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (6,0) index 6
+2026-08-17 22:45:04.113 T:52332    info <general>: [service.trickplay] Preview slot 2 (460,750) 320x180 @ 64s (duration=2947s)
+2026-08-17 22:45:04.113 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/80772483bee0567bbfd0e9d94daab4f94b560846.jpg
+2026-08-17 22:45:04.164 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 6 ±5 (2 cell(s))
+2026-08-17 22:45:04.301 T:52332    info <general>: [service.trickplay] Preview 84s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (8,0) index 8
+2026-08-17 22:45:04.316 T:52332    info <general>: [service.trickplay] Preview slot 3 (460,750) 320x180 @ 84s (duration=2947s)
+2026-08-17 22:45:04.316 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/06d8964c1a6c2e1b60b8c241b6a2535e82dc56b7.jpg
+2026-08-17 22:45:04.352 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 8 ±5 (3 cell(s))
+2026-08-17 22:45:04.656 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 5 ±5 (4 cell(s))
+2026-08-17 22:45:05.065 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 85348, seekOffset 30000
+2026-08-17 22:45:05.065 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (55) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:45:05.211 T:55588 warning <general>: CVideoPlayerVideo::OutputPicture - timeout waiting for buffer
+2026-08-17 22:45:05.367 T:66064    info <general>: [service.skippy - playback]  Playback time: 87s
+2026-08-17 22:45:05.368 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:05.368 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:05.368 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:05.368 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:45:05.368 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:05.368 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:05.369 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:05.370 T:66064 warning <general>: Skipped 6 duplicate messages..
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Removed nested segment (9, 64) (intro) from recently_dismissed after exit
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Current state: prompted=2 items, recently_dismissed=0 items, skipped_to_nested=0 items
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Processing active segment: 'main' [64.18-2875.33]
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Determining skip mode for: 'main'
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Matched in 'never' list: main
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Segment behavior: never
+2026-08-17 22:45:05.370 T:66064    info <general>: [service.skippy - service]  Skipping dialog for 'main' (never)
+2026-08-17 22:45:05.371 T:52332    info <general>: [service.trickplay] Seek event -> 85s
+2026-08-17 22:45:05.372 T:66064    info <general>: [service.skippy - playback]  Playback time: 87s
+2026-08-17 22:45:05.378 T:52332    info <general>: [service.trickplay] Preview 85s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (8,0) index 8
+2026-08-17 22:45:05.398 T:52332    info <general>: [service.trickplay] Preview slot 3 (460,750) 320x180 @ 85s (duration=2947s)
+2026-08-17 22:45:05.398 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/06d8964c1a6c2e1b60b8c241b6a2535e82dc56b7.jpg
+2026-08-17 22:45:05.466 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 8 ±5 (11 cell(s))
+2026-08-17 22:45:05.578 T:52332    info <general>: [service.trickplay] Preview 97s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (9,0) index 9
+2026-08-17 22:45:05.593 T:52332    info <general>: [service.trickplay] Preview slot 3 (460,750) 320x180 @ 97s (duration=2947s)
+2026-08-17 22:45:05.593 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/38f5c5f527a835ba6a3f965263bf408a7bc5177a.jpg
+2026-08-17 22:45:05.667 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 9 ±5 (2 cell(s))
+2026-08-17 22:45:05.828 T:52332    info <general>: [service.trickplay] Preview 117s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (1,1) index 11
+2026-08-17 22:45:05.844 T:52332    info <general>: [service.trickplay] Preview slot 4 (460,750) 320x180 @ 117s (duration=2947s)
+2026-08-17 22:45:05.844 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/b3ecea3f60f0b9d47d6930e220a47b5acc01ae90.jpg
+2026-08-17 22:45:05.884 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 11 ±5 (3 cell(s))
+2026-08-17 22:45:06.287 T:52332    info <general>: [service.trickplay] Preview 147s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (4,1) index 14
+2026-08-17 22:45:06.314 T:52332    info <general>: [service.trickplay] Preview slot 5 (460,750) 320x180 @ 147s (duration=2947s)
+2026-08-17 22:45:06.315 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/bb04cf0286d56701671b9309eb8b67c2786de0cd.jpg
+2026-08-17 22:45:06.353 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 14 ±5 (4 cell(s))
+2026-08-17 22:45:06.458 T:66064    info <general>: [service.skippy - playback]  Playback time: 87s
+2026-08-17 22:45:06.461 T:66064    info <general>: [service.skippy - service]  Current state: prompted=3 items, recently_dismissed=0 items, skipped_to_nested=0 items
+2026-08-17 22:45:06.474 T:66064    info <general>: [service.skippy - playback]  Playback time: 87s
+2026-08-17 22:45:06.613 T:52332    info <general>: [service.trickplay] Preview 148s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (4,1) index 14
+2026-08-17 22:45:06.627 T:52332    info <general>: [service.trickplay] Preview slot 5 (460,750) 320x180 @ 148s (duration=2947s)
+2026-08-17 22:45:06.627 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/bb04cf0286d56701671b9309eb8b67c2786de0cd.jpg
+2026-08-17 22:45:06.757 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:06.757 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:06.757 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:06.757 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:45:06.757 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:06.757 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:06.757 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:06.803 T:52332 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:45:06.803 T:52332    info <general>: [service.trickplay] Preview 268s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (6,2) index 26
+2026-08-17 22:45:06.821 T:52332    info <general>: [service.trickplay] Preview slot 9 (460,750) 320x180 @ 268s (duration=2947s)
+2026-08-17 22:45:06.822 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/409f390b3bec1fca24c0380883aa4ab70f041909.jpg
+2026-08-17 22:45:06.868 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 26 ±5 (12 cell(s))
+2026-08-17 22:45:06.995 T:52332    info <general>: [service.trickplay] Preview 388s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (8,3) index 38
+2026-08-17 22:45:07.011 T:52332    info <general>: [service.trickplay] Preview slot 13 (485,750) 320x180 @ 388s (duration=2947s)
+2026-08-17 22:45:07.011 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/d608bdbc7ce7d2983c26abbec657d1ae2690d233.jpg
+2026-08-17 22:45:07.054 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 38 ±5 (12 cell(s))
+2026-08-17 22:45:07.197 T:52332    info <general>: [service.trickplay] Preview 688s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg cell (8,6) index 68
+2026-08-17 22:45:07.210 T:52332    info <general>: [service.trickplay] Preview slot 23 (628,750) 320x180 @ 688s (duration=2947s)
+2026-08-17 22:45:07.210 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/ac88042dc67d525599aeec0aaad56a719f0313b5.jpg
+2026-08-17 22:45:07.255 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 68 ±5 (12 cell(s))
+2026-08-17 22:45:07.539 T:52332    info <general>: [service.trickplay] Prefetch idle tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/0.jpg
+2026-08-17 22:45:07.577 T:66064    info <general>: [service.skippy - playback]  Playback time: 89s
+2026-08-17 22:45:07.582 T:52332    info <general>: Skipped 1 duplicate messages..
+2026-08-17 22:45:07.582 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 8 ±5 (12 cell(s))
+2026-08-17 22:45:07.910 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:07.910 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:07.911 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:07.911 T:57256 warning <general>: Skipped 2 duplicate messages..
+2026-08-17 22:45:07.911 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:07.911 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:07.911 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:08.540 T:52332 warning <general>: Skipped 6 duplicate messages..
+2026-08-17 22:45:08.540 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 9 ±5 (2 cell(s))
+2026-08-17 22:45:08.662 T:66064    info <general>: [service.skippy - playback]  Playback time: 90s
+2026-08-17 22:45:08.873 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackSeek time 1890355, seekOffset 1800000
+2026-08-17 22:45:08.873 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating resume point as current time (90) is below Kodi's ignoresecondsatstart setting of 180
+2026-08-17 22:45:09.210 T:62764    info <general>: Loading skin file: VideoOSD.xml, load type: KEEP_IN_MEMORY
+2026-08-17 22:45:09.369 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:09.372 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:09.376 T:66064    info <general>: [service.skippy - playback]  Playhead moved during segment parse (90.14s  1892.54s, parse took 714ms)
+2026-08-17 22:45:09.376 T:66064    info <general>: [service.skippy - playback]  Playback time: 1892s
+2026-08-17 22:45:09.377 T:52332    info <general>: [service.trickplay] Seek event -> 1890s
+2026-08-17 22:45:09.377 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:09.377 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:45:09.377 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:09.377 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:09.381 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:09.427 T:52332 warning <general>: Skipped 44 duplicate messages..
+2026-08-17 22:45:09.427 T:52332    info <general>: [service.trickplay] Preview 1890s -> tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/1.jpg cell (9,8) index 189
+2026-08-17 22:45:09.451 T:52332    info <general>: [service.trickplay] Preview slot 64 (1215,750) 320x180 @ 1890s (duration=2947s)
+2026-08-17 22:45:09.451 T:52332    info <general>: [service.trickplay] Preview texture: special://profile/addon_data/service.trickplay/thumbs/89ef77f4f8d66bc3cec1b9ac0a4567d9d9da4ed5.jpg
+2026-08-17 22:45:09.525 T:52332    info <general>: [service.trickplay] Prefetch playhead follow index 189 ±5 (11 cell(s))
+2026-08-17 22:45:10.430 T:57256 warning <general>: Setting most video properties through ListItem.setInfo() is deprecated and might be removed in future Kodi versions. Please use the respective setter in InfoTagVideo.
+2026-08-17 22:45:10.430 T:57256 warning <general>: ListItem.setCast() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setCast().
+2026-08-17 22:45:10.430 T:57256 warning <general>: ListItem.setRating() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setRating().
+2026-08-17 22:45:10.430 T:57256 warning <general>: Skipped 1 duplicate messages..
+2026-08-17 22:45:10.430 T:57256 warning <general>: "resumetime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:10.430 T:57256 warning <general>: "totaltime" in ListItem.setProperty() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.setResumePoint().
+2026-08-17 22:45:10.431 T:57256 warning <general>: ListItem.addStreamInfo() is deprecated and might be removed in future Kodi versions. Please use InfoTagVideo.addVideoStream(), InfoTagVideo.addAudioStream() and InfoTagVideo.addSubtitleStream().
+2026-08-17 22:45:10.452 T:57256 warning <general>: Skipped 44 duplicate messages..
+2026-08-17 22:45:10.452 T:57256 warning <general>: CPythonInvoker(17, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmc::Player,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Dialog
+2026-08-17 22:45:10.473 T:66064    info <general>: [service.skippy - playback]  Playback time: 1893s
+2026-08-17 22:45:10.558 T:52332    info <general>: Skipped 1 duplicate messages..
+2026-08-17 22:45:10.558 T:52332    info <general>: [service.trickplay] Prefetch idle tile nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.trickplay/320 - 10x10/1.jpg
+2026-08-17 22:45:11.572 T:62764    info <general>: CVideoPlayer::CloseFile()
+2026-08-17 22:45:11.578 T:62764    info <general>: VideoPlayer: waiting for threads to exit
+2026-08-17 22:45:11.591 T:59280    info <general>: CVideoPlayer::OnExit()
+2026-08-17 22:45:11.591 T:66064   error <general>: EXCEPTION: Kodi is not playing any media file
+2026-08-17 22:45:11.591 T:59280    info <general>: Closing stream player 1
+2026-08-17 22:45:11.591 T:59280    info <general>: Waiting for audio thread to exit
+2026-08-17 22:45:11.595 T:66064    info <general>: [service.skippy - service]  player.getTime() failed  no media playing
+2026-08-17 22:45:11.608 T:52056    info <general>: thread end: CVideoPlayerAudio::OnExit()
+2026-08-17 22:45:11.608 T:59280    info <general>: Closing audio device
+2026-08-17 22:45:11.628 T:59280    info <general>: Deleting audio codec
+2026-08-17 22:45:11.628 T:59280    info <general>: Closing stream player 2
+2026-08-17 22:45:11.628 T:59280    info <general>: waiting for video thread to exit
+2026-08-17 22:45:11.661 T:55588 warning <general>: CVideoPlayerVideo::OutputPicture - timeout waiting for buffer
+2026-08-17 22:45:11.661 T:55588    info <general>: thread end: video_thread
+2026-08-17 22:45:11.664 T:59280    info <general>: deleting video codec
+2026-08-17 22:45:11.669 T:59280    info <general>: DXVA::CDecoder::Close: closing decoder.
+2026-08-17 22:45:11.669 T:59280    info <general>: DXVA: closing decoder context.
+2026-08-17 22:45:11.751 T:59280    info <general>: Closing stream player 3
+2026-08-17 22:45:11.810 T:62764    info <general>: VideoPlayer: finished waiting
+2026-08-17 22:45:11.810 T:62764    info <general>: CVideoPlayer::CloseFile()
+2026-08-17 22:45:11.810 T:62764    info <general>: VideoPlayer: waiting for threads to exit
+2026-08-17 22:45:11.810 T:62764    info <general>: VideoPlayer: finished waiting
+2026-08-17 22:45:11.974 T:17276    info <general>: Deleting settings information for files nfs://192.168.0.3/Media2/TV/Sugar (2024)/Season 1/Sugar.2024.S01E01.Olivia.2160p.ATVP.WEB-DL.DDP5.1.Atmos.DV.HDR.H.265-FLUX.mkv
+2026-08-17 22:45:12.392 T:24088   error <general>: EXCEPTION: Kodi is not playing any file
+2026-08-17 22:45:13.584 T:58080 warning <general>: CPythonInvoker(22, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::Player,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::PlayList
+2026-08-17 22:45:13.783 T:48360    info <general>: ### Playback Resumer 2.2.0: onPlayBackStopped
+2026-08-17 22:45:14.027 T:60852 warning <general>: CPythonInvoker(23, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::Player
+2026-08-17 22:45:14.903 T:48940 warning <general>: CPythonInvoker(24, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\plugin.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::Player,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::PlayList
+2026-08-17 22:45:15.004 T:62764    info <general>: Stopping the application...
+2026-08-17 22:45:15.004 T:62764    info <general>: Stopping player
+2026-08-17 22:45:15.004 T:62764    info <general>: Storing total System Uptime
+2026-08-17 22:45:15.005 T:62764    info <general>: Saving settings
+2026-08-17 22:45:15.008 T:62764    info <general>: Saving skin settings
+2026-08-17 22:45:15.010 T:62764    info <general>: Stopping all
+2026-08-17 22:45:15.664 T:62764    info <general>: ES: Stopping event server
+2026-08-17 22:45:15.664 T:62764    info <general>: [WS-Discovery]: terminating
+2026-08-17 22:45:15.666 T:62764    info <CWebserver[8080]>: Stopped
+2026-08-17 22:45:16.438 T:45044    info <general>: ES: UDP Event server stopped
+2026-08-17 22:45:16.451 T:42536    info <general>: CPythonInvoker(0, C:\Users\stone\AppData\Roaming\Kodi\addons\plugin.video.themoviedb.helper\resources\service.py): waiting on thread 8244
+2026-08-17 22:45:16.557 T:42536    info <general>: CPythonInvoker(0, C:\Users\stone\AppData\Roaming\Kodi\addons\plugin.video.themoviedb.helper\resources\service.py): waiting on thread 53796
+2026-08-17 22:45:16.692 T:53796    info <general>: Vacuuming databases: 0.241 sec
+2026-08-17 22:45:16.758 T:53796   error <general>: XFILE::CDirectory::GetDirectory - Error getting C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\plugin.video.themoviedb.helper\log_tagger\
+2026-08-17 22:45:16.769 T:53796   error <general>: XFILE::CDirectory::GetDirectory - Error getting C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\plugin.video.themoviedb.helper\log_library\
+2026-08-17 22:45:16.774 T:53796   error <general>: XFILE::CDirectory::GetDirectory - Error getting C:\Users\stone\AppData\Roaming\Kodi\userdata\addon_data\plugin.video.themoviedb.helper\timer_report\
+2026-08-17 22:45:16.830 T:48360    info <general>: ### Playback Resumer 2.2.0: Not updating Kodi native resume point because the file was stopped normally, so Kodi should do it itself
+2026-08-17 22:45:16.920 T:42536 warning <general>: CPythonInvoker(0, C:\Users\stone\AppData\Roaming\Kodi\addons\plugin.video.themoviedb.helper\resources\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\plugin.video.themoviedb.helper\resources\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:45:20.193 T:62004    info <general>: [ script.embuary.helper ] Service: Player monitor stopped
+2026-08-17 22:45:20.193 T:62004    info <general>: [ script.embuary.helper ] Service: Stopped
+2026-08-17 22:45:20.197 T:62004 warning <general>: CPythonInvoker(1, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.helper\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::PlayList,class XBMCAddon::xbmc::Player,class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:45:20.220 T:61460 warning <general>: CPythonInvoker(2, C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.info\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.embuary.info\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmc::Monitor,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.250 T:66272 warning <general>: CPythonInvoker(3, C:\Users\stone\AppData\Roaming\Kodi\addons\script.logviewer\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.logviewer\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:45:20.268 T:58660 warning <general>: CPythonInvoker(4, C:\Users\stone\AppData\Roaming\Kodi\addons\script.metadata.editor\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.metadata.editor\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Dialog,class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:45:20.311 T:63088    info <general>: PVR Artwork module wrapper finished
+2026-08-17 22:45:20.321 T:63088 warning <general>: CPythonInvoker(5, C:\Users\stone\AppData\Roaming\Kodi\addons\script.module.pvr.artwork\main.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.module.pvr.artwork\main.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmc::Monitor,class XBMCAddon::xbmc::Monitor,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.366 T:48360    info <general>: ### Playback Resumer 2.2.0: Finish Playback Resumer
+2026-08-17 22:45:20.370 T:48360 warning <general>: CPythonInvoker(6, C:\Users\stone\AppData\Roaming\Kodi\addons\script.service.playbackresumer\default.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.service.playbackresumer\default.py" has left several classes in memory that we couldn't clean up. The classes include: class PythonBindings::XBMCAddon_xbmc_Monitor_Director,class XBMCAddon::xbmcaddon::Addon,class PythonBindings::XBMCAddon_xbmc_Player_Director,class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.433 T:51296 warning <general>: CPythonInvoker(7, C:\Users\stone\AppData\Roaming\Kodi\addons\script.trakt\default.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.trakt\default.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::DialogProgress,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon
+2026-08-17 22:45:20.466 T:63064    info <general>: ### Unpause Jumpback 3.0.8: Finish Unpause Jumpback
+2026-08-17 22:45:20.471 T:63064 warning <general>: CPythonInvoker(8, C:\Users\stone\AppData\Roaming\Kodi\addons\script.xbmc.unpausejumpback\default.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\script.xbmc.unpausejumpback\default.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.487 T:62764    info <general>: CServiceAddonManager: failed to stop service.kodi.configarr (may have ended)
+2026-08-17 22:45:20.493 T:66064    info <general>: [service.skippy - service]  Abort requested  exiting monitor loop
+2026-08-17 22:45:20.503 T:66064 warning <general>: CPythonInvoker(10, C:\Users\stone\AppData\Roaming\Kodi\addons\service.skippy\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\service.skippy\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window,class PythonBindings::XBMCAddon_xbmc_Monitor_Director,class XBMCAddon::xbmc::Player
+2026-08-17 22:45:20.539 T:52332    info <general>: [service.trickplay] Service stopped
+2026-08-17 22:45:20.553 T:52332 warning <general>: CPythonInvoker(11, C:\Users\stone\AppData\Roaming\Kodi\addons\service.trickplay\service.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\service.trickplay\service.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmcgui::Window,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.614 T:24088    info <general>: [service.upnext] UpNextMonitor -> Service stopped
+2026-08-17 22:45:20.618 T:24088 warning <general>: CPythonInvoker(12, C:\Users\stone\AppData\Roaming\Kodi\addons\service.upnext\resources\lib\service_entry.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\service.upnext\resources\lib\service_entry.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmcaddon::Addon,class XBMCAddon::xbmc::Monitor,class XBMCAddon::xbmc::Monitor,class PythonBindings::XBMCAddon_xbmc_Player_Director,class PythonBindings::XBMCAddon_xbmc_Player_Director,class XBMCAddon::xbmcgui::Window
+2026-08-17 22:45:20.627 T:24088   error <general>: EXCEPTION: No valid addon id could be obtained. None was passed and the script wasn't executed in a normal Kodi manner.
+2026-08-17 22:45:20.632 T:62764    info <general>: CServiceAddonManager: failed to stop service.xbmc.versioncheck (may have ended)
+2026-08-17 22:45:20.636 T:66292 warning <general>: CPythonInvoker(14, C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\scripts\services.py): the python script "C:\Users\stone\AppData\Roaming\Kodi\addons\skin.estuary.modv2\scripts\services.py" has left several classes in memory that we couldn't clean up. The classes include: class XBMCAddon::xbmc::Monitor
+2026-08-17 22:45:20.721 T:62764    info <general>: Application stopped
+2026-08-17 22:45:20.939 T:62764    info <peripheral.joystick>: Disabling joystick interface "directinput"
+2026-08-17 22:45:20.939 T:62764    info <peripheral.joystick>: Disabling joystick interface "xinput"
+2026-08-17 22:45:20.940 T:62764    info <general>: ADDON: Dll Destroyed - Joystick Support
+2026-08-17 22:45:20.940 T:62764    info <general>: unload skin
+2026-08-17 22:45:21.001 T:62764    info <general>: Unloaded skin
+2026-08-17 22:45:21.084 T:62764    info <general>: unload sections
+2026-08-17 22:45:22.424 T:62764    info <general>: Exiting the application...

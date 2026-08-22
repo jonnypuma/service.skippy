@@ -1,5 +1,27 @@
 # Changelog
 
+## [6.5.2] - 2026-08-22
+
+### Fixed
+- **Embedded chapters fallback**: `Player.GetProperties` has no `chapters` property on Kodi Omega (invalid params, `embedded=0`). Playback now uses `Player.GetChapters` when the JSON-RPC method exists (Kodi 22 / Piers), then a bounded Matroska header read through VFS (works on NFS), then `mkvextract` for local files. Keyword matching is unchanged.
+- **Customize / settings**: Black Beveled minimal plate is `minimal_black_beveled.png` (the old `.jpg` name is no longer referenced).
+
+### Added
+- Remaining user-facing translations that were still English copies (Ask-dialog debounce help, ALL CAPS skip-dialog text, Greek neighbor-snap labels, and a few editor/marker strings). Texture names and Segment Editor / Segment Marker stay as product labels. English msgid text is unchanged.
+
+### Changed
+- **Sidecar probe**: after a confirmed miss (no chapter XML or EDL), Skippy waits **60s** before listing the folder again. Hits still refresh every **5s** so an edited sidecar is picked up. Writes still clear the probe cache immediately.
+
+## [6.5.1] - 2026-08-22
+
+### Added
+- **Minimal skip plates**: 3D Blue, 3D Glossy Blue, 3D Red Glossy, and Black Beveled in settings and the Customize skip-dialog preview.
+
+## [6.5.0] - 2026-08-17
+
+### Fixed
+- **Skip dialog lower-centre on windowed near-HD (Windows)**: When Kodi’s GUI was slightly under 1920×1080 (e.g. windowed `1902×973`), Skippy requested the `720p` skin and scaled the Full panel to X=`840`, while Kodi still loaded `1080i` XML (right edge X=`1260`) — so Bottom Right looked centred. Near-HD GUIs now request `1080i`, and WindowXML dialogs re-lock scale in `onInit` from loaded control widths if the folders still disagree.
+
 ## [6.4.2] - 2026-08-16
 
 ### Added

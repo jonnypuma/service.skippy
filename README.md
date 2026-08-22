@@ -327,7 +327,7 @@ Skippy must resolve the on-disk video path before it can load `.edl` / `chapters
 - **`get_video_file()`** treats **`Player.HasVideo`** like active playback when calling **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so sidecar parsing can start while Kodi is still starting the player.
 - **`Player.GetItem`** (JSON-RPC) no longer requires **title** / **label** to be present; if metadata is still loading, **file**-based heuristics still run (**SxxExx**, standalone **Exx** in the path, etc.) to infer movie vs episode for dialog and toast settings.
 - If JSON-RPC fails or returns an empty item, **playback type** falls back from the **resolved video path** so segment parsing and skip-dialog enablement are not skipped for the whole session.
-- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords.
+- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords (Kodi `Player.GetChapters` when available, otherwise a header read through VFS or local `mkvextract`).
 
 Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing missing sidecars on first play.
 

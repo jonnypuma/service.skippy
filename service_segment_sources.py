@@ -1,11 +1,9 @@
 """Chapter XML / EDL / embedded chapter parsing and segment source cache."""
 
 import copy
-import json
 import time
 import xml.etree.ElementTree as ET
 
-import xbmc
 import xbmcvfs
 
 from edl_format import parse_edl_line
@@ -16,6 +14,7 @@ from remote_segments import (
 )
 from segment_editor_parser import dedupe_overlapping_same_label_segments, normalize_matroska_chapter_xml_text
 from segment_item import SegmentItem
+from service_embedded_chapters import parse_embedded_chapters
 from service_online_policy import _normalize_segment_source_priority
 from service_deferred_remote_probe import (
     pop_deferred_remote_for_playback,
@@ -399,97 +398,6 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     return segments
 
 
-def parse_embedded_chapters(segment_player=None, player_id=None):
-    """
-    Parse chapters embedded in the video file via Kodi's JSON-RPC Player.GetItem chapters property.
-    Only returns segments whose label matches custom_segment_keywords.
-    """
-    pl = segment_player if segment_player is not None else xbmc.Player()
-    addon = get_addon()
-    if not addon:
-        return []
-
-    keywords_raw = addon_get_setting_text(addon, "custom_segment_keywords", "")
-    keywords = set(normalize_label(k) for k in keywords_raw.split(",") if k.strip())
-    if not keywords:
-        _log_seg_detail("📖 Embedded chapters: no custom_segment_keywords configured")
-        return []
-
-    try:
-        if player_id is None:
-            query = {
-                "jsonrpc": "2.0",
-                "id": "EmbeddedChapters",
-                "method": "Player.GetActivePlayers",
-            }
-            resp = json.loads(xbmc.executeJSONRPC(json.dumps(query)))
-            players = resp.get("result", [])
-            video_player = next((p for p in players if p.get("type") == "video"), None)
-            if not video_player:
-                _log_seg_detail("📖 Embedded chapters: no active video player")
-                return []
-            player_id = video_player.get("playerid")
-
-        if player_id is None:
-            _log_seg_detail("📖 Embedded chapters: no active video player")
-            return []
-
-        query_props = {
-            "jsonrpc": "2.0",
-            "id": "EmbeddedChaptersProps",
-            "method": "Player.GetProperties",
-            "params": {"playerid": player_id, "properties": ["chapters"]},
-        }
-        resp_props = json.loads(xbmc.executeJSONRPC(json.dumps(query_props)))
-        _log_seg_detail(
-            f"📖 Embedded chapters: Player.GetProperties response = {resp_props}"
-        )
-
-        chapters = resp_props.get("result", {}).get("chapters", [])
-        if not chapters:
-            _log_seg_detail("📖 Embedded chapters: no chapters array in response")
-            return []
-
-        log(f"📖 Embedded chapters: found {len(chapters)} chapter(s) in video")
-        segments = []
-        for i, ch in enumerate(chapters):
-            name = ch.get("name", "") or ch.get("label", "") or ""
-            start_sec = ch.get("time", 0)
-            label = normalize_label(name)
-
-            if label not in keywords:
-                _log_seg_detail(
-                    f"📖 Embedded chapter '{name}' (label='{label}') not in keywords — skipping"
-                )
-                continue
-
-            if i + 1 < len(chapters):
-                end_sec = chapters[i + 1].get("time", start_sec)
-            else:
-                try:
-                    end_sec = pl.getTotalTime()
-                except RuntimeError:
-                    end_sec = start_sec + 300
-
-            if end_sec > start_sec:
-                segments.append(
-                    SegmentItem(start_sec, end_sec, label, source="embedded")
-                )
-                log(f"📖 Embedded chapter matched: '{name}' [{start_sec}-{end_sec}]")
-
-        if segments:
-            log(f"✅ Total embedded chapters matched keywords: {len(segments)}")
-        else:
-            _log_seg_detail(
-                "📖 Embedded chapters: none matched custom_segment_keywords"
-            )
-        return segments
-
-    except Exception as e:
-        log(f"❌ Embedded chapters parse failed: {e}")
-        return []
-
-
 def _parse_source_segments_uncached(
     path,
     playback_type,
@@ -591,7 +499,9 @@ def _parse_source_segments_uncached(
         embedded_list = []
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
             embedded_list = parse_embedded_chapters(
-                segment_player, player_id=_embedded_player_id(segment_monitor)
+                segment_player,
+                player_id=_embedded_player_id(segment_monitor),
+                video_path=path,
             )
             if embedded_list:
                 parsed = embedded_list
@@ -729,7 +639,9 @@ def _parse_source_segments_uncached(
         embedded_list_m = []
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
             embedded_list_m = parse_embedded_chapters(
-                segment_player, player_id=_embedded_player_id(segment_monitor)
+                segment_player,
+                player_id=_embedded_player_id(segment_monitor),
+                video_path=path,
             )
             if embedded_list_m:
                 parsed = embedded_list_m
@@ -791,7 +703,9 @@ def _parse_source_segments_uncached(
                 segment_origin = "local"
         if not parsed and addon_get_bool(addon, "use_embedded_chapters_fallback", True):
             parsed = parse_embedded_chapters(
-                segment_player, player_id=_embedded_player_id(segment_monitor)
+                segment_player,
+                player_id=_embedded_player_id(segment_monitor),
+                video_path=path,
             )
             if parsed:
                 segment_origin = "embedded"

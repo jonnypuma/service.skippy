@@ -5,7 +5,11 @@ import unicodedata
 import xbmc
 import xbmcgui
 
-from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
+from addon_skin_resolution import (
+    init_window_xml_dialog,
+    reconcile_window_xml_skin_resolution,
+    scale_skin_coord,
+)
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
@@ -150,6 +154,17 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             except:
                 pass
             return
+
+        asked_res = getattr(self, "_skin_resolution", None)
+        locked = reconcile_window_xml_skin_resolution(
+            self, asked_res, control_ids=(3080, 3090)
+        )
+        if locked != asked_res:
+            log(
+                "Skin resolution re-locked: asked %s, controls imply %s"
+                % (asked_res, locked)
+            )
+            self._skin_resolution = locked
 
         duration = int(self.segment.end_seconds - self.segment.start_seconds)
         m, s = divmod(duration, 60)

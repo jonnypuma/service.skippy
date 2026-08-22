@@ -4,7 +4,11 @@ import os
 import xml.etree.ElementTree as ET
 
 from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log
-from skip_dialog_appearance import button_focus_nine_slice_border, is_minimal_skip_mode
+from skip_dialog_appearance import (
+    button_focus_nine_slice_border,
+    is_minimal_plate_filename,
+    is_minimal_skip_mode,
+)
 
 _SKIP_DIALOG_FULL_FILES = (
     "SkipDialog_BottomRight.xml",
@@ -104,7 +108,7 @@ def warm_skip_dialog_skin_textures(addon=None):
     mode = (addon_get_setting_text(ad, "skip_dialog_mode", "Full") or "Full").strip()
     if is_minimal_skip_mode(mode):
         plate = (addon_get_setting_text(ad, "minimal_button_style", "") or "").strip()
-        if not plate.endswith(".png"):
+        if not is_minimal_plate_filename(plate):
             plate = "minimal_rounded_gray_640.png"
         _update_minimal_skip_dialog_textures(plate)
         return

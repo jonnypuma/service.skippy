@@ -42,7 +42,12 @@ from segment_editor_utils import (
     log_error,
     set_editor_modal_open,
 )
-from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord, SKIN_RES_720P
+from addon_skin_resolution import (
+    init_window_xml_dialog,
+    reconcile_window_xml_skin_resolution,
+    scale_skin_coord,
+    SKIN_RES_720P,
+)
 from settings_utils import get_custom_segment_keyword_labels, normalize_label, get_localized
 
 
@@ -194,6 +199,31 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def onInit(self):
         try:
             log_always("onInit called")
+
+            asked = getattr(self, "_skin_resolution", None)
+            locked = reconcile_window_xml_skin_resolution(
+                self, asked, control_ids=(5000,)
+            )
+            if locked != asked:
+                log(
+                    "Skin resolution re-locked: asked %s, controls imply %s"
+                    % (asked, locked)
+                )
+                self._skin_resolution = locked
+                sc = lambda value: scale_skin_coord(value, locked)
+                self._list_top = sc(110)
+                self._list_item_height = sc(50)
+                self._list_height = sc(290)
+                self._start_curr_btn_left = sc(425)
+                self._end_curr_btn_left = sc(532)
+                self._snap_start_btn_left = sc(625)
+                self._snap_end_btn_left = sc(722)
+                self._merge_btn_left = sc(821)
+                self._split_btn_left = sc(898)
+                self._fix_btn_left = sc(953)
+                self._edit_btn_left = sc(1040)
+                self._delete_btn_left = sc(1095)
+                self._edit_delete_btn_height = sc(30)
 
             # Reinforce IPC flag once the WindowXML exists (helps RunScript callers that
             # check modal state vs. Kodi's fullscreen dialog stacking).

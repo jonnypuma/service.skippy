@@ -6,8 +6,12 @@ Kodi has two unrelated dialog systems in this addon. Do not mix their coordinate
 WindowXMLDialog (``720p`` / ``1080i`` skin folders)
     Segment editor, skip overlays, marker type picker.
     XML lives under ``resources/skins/default/<720p|1080i>/``.
-    On GUI height >= 1080 **or** width >= 1920, ``get_addon_skin_resolution()`` returns ``1080i``
-    and Kodi uses a **1920×1080** coordinate space (see ``1080i/SegmentEditorDialog.xml``).
+    On near-HD GUIs (width >= 1728 **or** height >= 900, including exact 1920×1080),
+    ``get_addon_skin_resolution()`` returns ``1080i`` and Kodi uses a **1920×1080**
+    coordinate space (see ``1080i/SegmentEditorDialog.xml``). Windowed near-HD (e.g.
+    1902×973) is treated as 1080i so Python scale matches the XML Kodi typically loads.
+    After the window exists, ``reconcile_window_xml_skin_resolution()`` can re-lock from
+    control widths if Kodi loaded a different folder than requested.
     Python list-row geometry in ``segment_editor_dialog.py`` uses ``scale_skin_coord()``
     to match the active skin folder.
 
@@ -308,6 +312,13 @@ def modal_base_size(resolution: str | None = None) -> tuple[int, int]:
     return lay.canvas_w, lay.canvas_h
 
 
+# Exact HD thresholds (historical).
+# Near-HD: windowed / DPI GUIs just under 1920×1080 still get 1080i XML from Kodi
+# (e.g. Windows windowed 1902×973). ~90% of 1920 / soft floor for height.
+_NEAR_W_1080 = 1728
+_NEAR_H_1080 = 900
+
+
 def get_addon_skin_resolution() -> str:
     """Skin folder for ``WindowXMLDialog`` only — not used by ``WindowDialog`` modals."""
     try:
@@ -315,7 +326,14 @@ def get_addon_skin_resolution() -> str:
         h = int(xbmcgui.getScreenHeight())
         # Width is often more reliable than height on Windows (fullscreen playback /
         # DPI scaling can report a reduced height while Kodi still loads 1080i XML).
-        if w >= _BASE_W_1080 or h >= _BASE_H_1080:
+        # Near-HD windowed sizes must also request 1080i or Python scale (720p X=840)
+        # fights a loaded 1080i layout (right edge X=1260) and the panel looks centred.
+        if (
+            w >= _BASE_W_1080
+            or h >= _BASE_H_1080
+            or w >= _NEAR_W_1080
+            or h >= _NEAR_H_1080
+        ):
             return SKIN_RES_1080I
     except Exception:
         pass
@@ -341,12 +359,91 @@ def scale_skin_coord(value, resolution: str | None = None) -> int:
     return int(round(float(value) * scale))
 
 
+def _control_reported_width(ctrl) -> int | None:
+    if ctrl is None:
+        return None
+    try:
+        w = ctrl.getWidth()
+        if w is not None and int(w) > 0:
+            return int(w)
+    except Exception:
+        pass
+    return None
+
+
+def infer_skin_resolution_from_widths(widths) -> str | None:
+    """
+    Infer ``720p`` vs ``1080i`` from loaded WindowXML control widths.
+
+    Full skip panel group 3080: 430 vs 645. Minimal chip 3090: 120 vs 180.
+    Segment editor list/panel: ~1140–1170 vs ~1710–1755.
+    """
+    for raw in widths or ():
+        if raw is None:
+            continue
+        try:
+            w = int(raw)
+        except (TypeError, ValueError):
+            continue
+        if w <= 0:
+            continue
+        # Full skip panel
+        if 580 <= w <= 720:
+            return SKIN_RES_1080I
+        if 390 <= w <= 480:
+            return SKIN_RES_720P
+        # Minimal skip chip
+        if 160 <= w <= 210:
+            return SKIN_RES_1080I
+        if 100 <= w <= 145:
+            return SKIN_RES_720P
+        # Segment editor main / list
+        if w >= 1500:
+            return SKIN_RES_1080I
+        if 1050 <= w <= 1250:
+            return SKIN_RES_720P
+    return None
+
+
+def reconcile_window_xml_skin_resolution(
+    window,
+    requested: str | None,
+    control_ids=None,
+) -> str:
+    """
+    Return the skin folder that matches controls Kodi actually loaded.
+
+    Call from ``onInit`` (controls exist) before Python repositions/scales layout.
+    If widths are unavailable, returns ``requested`` (or the current screen heuristic).
+    """
+    asked = (requested or "").strip() or get_addon_skin_resolution()
+    ids = control_ids
+    if ids is None:
+        # Skip full panel, minimal chip, editor list, customize mock stage (if present)
+        ids = (3080, 3090, 5000)
+    widths = []
+    for cid in ids:
+        try:
+            ctrl = window.getControl(int(cid))
+        except Exception:
+            continue
+        w = _control_reported_width(ctrl)
+        if w is not None:
+            widths.append(w)
+    inferred = infer_skin_resolution_from_widths(widths)
+    if inferred and inferred != asked:
+        return inferred
+    return asked
+
+
 def init_window_xml_dialog(dialog_cls, args) -> str:
     """Initialize ``WindowXMLDialog`` with ``720p`` or ``1080i`` — never for ``WindowDialog``.
 
     Returns the skin folder name passed to Kodi. Callers must reuse this value for
     ``scale_skin_coord()`` so Python layout matches the loaded XML (``getScreenHeight()``
-    can change between ``__init__`` and ``onInit`` on some platforms).
+    can change between ``__init__`` and ``onInit`` on some platforms). Prefer also calling
+    ``reconcile_window_xml_skin_resolution()`` in ``onInit`` when Kodi may load the other
+    folder (windowed near-HD on Windows).
     """
     res = get_addon_skin_resolution()
     if len(args) >= 3:

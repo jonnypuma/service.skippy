@@ -514,6 +514,8 @@ def main():
     MINIMAL_FN = (
         "minimal_rounded_gray_640.png|minimal_rectangular_aquamarine-blue_640.png|"
         "minimal_rectangular_blue_640.png|minimal_rectangular_yellow_640.png|"
+        "minimal_3d_blue.png|minimal_3d_glossy_blue.png|minimal_3d_red_glossy.png|"
+        "minimal_black_beveled.png|"
         "minimal_rounded_baby-purple_640.png|minimal_rounded_blue-red-gradient_640.png|"
         "minimal_rounded_bright-aqua_640.png|minimal_rounded_bright-blue-sky_640.png|"
         "minimal_rounded_bright-cyan_640.png|minimal_rounded_burnt-pink_640.png|"
@@ -530,6 +532,7 @@ def main():
     )
     MINIMAL_LB = (
         "Rounded Gray|Rectangular Aquamarine Blue|Rectangular Blue|Rectangular Yellow|"
+        "3D Blue|3D Glossy Blue|3D Red Glossy|Black Beveled|"
         "Rounded Baby Purple|Rounded Blue Red Gradient|Rounded Bright Aqua|"
         "Rounded Bright Blue Sky|Rounded Bright Cyan|Rounded Burnt Pink|Rounded Cranberry|"
         "Rounded Deep Pink|Rounded Greyish Blue|Rounded Languid Lavender|"

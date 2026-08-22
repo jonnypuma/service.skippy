@@ -10,8 +10,11 @@ from typing import Any, Optional
 from service_sidecar_paths import sidecar_hits_from_directory_listing, vfs_file_exists
 from settings_utils import log
 
-# Re-list at the same cadence as sidecar mtime checks so a newly added file is found.
-PROBE_MAX_AGE_S = 5.0
+# Hit cache matches sidecar mtime checks. Confirmed misses wait longer so NFS
+# directory listings are not repeated every few seconds during playback.
+PROBE_HIT_MAX_AGE_S = 5.0
+PROBE_MISS_MAX_AGE_S = 60.0
+PROBE_MAX_AGE_S = PROBE_HIT_MAX_AGE_S
 
 
 @dataclass(frozen=True)
@@ -62,14 +65,14 @@ def resolve_sidecar_paths(
     segment_monitor=None,
     *,
     force: bool = False,
-    max_age_s: float = PROBE_MAX_AGE_S,
+    max_age_s: float | None = None,
 ) -> SidecarProbeResult:
     """
     Return first existing chapter XML and EDL paths, caching per video.
 
     Uses a directory listing when possible so missing NFS candidates are never opened.
-    Cached negatives are re-listed after ``max_age_s`` so a sidecar added mid-playback
-    is still discovered.
+    Hits re-list after ``PROBE_HIT_MAX_AGE_S`` (sidecar mtime cadence). Confirmed
+    misses wait ``PROBE_MISS_MAX_AGE_S`` before listing again.
     """
     if not video_path:
         return SidecarProbeResult(None, None, probed=False)
@@ -77,10 +80,18 @@ def resolve_sidecar_paths(
     now = time.monotonic()
     if segment_monitor is not None and not force:
         cached = _probe_cache(segment_monitor).get(video_path)
+        ttl = max_age_s
+        if ttl is None and cached is not None and cached.probed:
+            if cached.chapter_path or cached.edl_path:
+                ttl = PROBE_HIT_MAX_AGE_S
+            else:
+                ttl = PROBE_MISS_MAX_AGE_S
+        if ttl is None:
+            ttl = PROBE_HIT_MAX_AGE_S
         if (
             cached is not None
             and cached.probed
-            and (now - float(cached.probed_at or 0.0)) < max_age_s
+            and (now - float(cached.probed_at or 0.0)) < float(ttl)
         ):
             return cached
 

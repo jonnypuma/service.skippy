@@ -17,6 +17,8 @@ REFACTORED_LOOP_MODULES = (
     "service_playback_context",
     "service_playback_state",
     "service_sidecar_probe_cache",
+    "service_embedded_chapters",
+    "mkv_chapter_parse",
     "service_main_loop",
     "remote_http",
     "remote_tmdb",

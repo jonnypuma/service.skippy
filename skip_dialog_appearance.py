@@ -510,9 +510,14 @@ def set_skip_info_label(control, label, text_argb, font="font10"):
     _set_control_label(control, label, text_argb, font)
 
 
+def is_minimal_plate_filename(name: str) -> bool:
+    n = (name or "").strip().lower()
+    return n.endswith(".png") or n.endswith(".jpg") or n.endswith(".jpeg")
+
+
 def minimal_plate_filename(settings) -> str:
     raw = (settings.get_text("minimal_button_style", "") or "").strip()
-    if raw.endswith(".png"):
+    if is_minimal_plate_filename(raw):
         return raw
     return "minimal_rounded_gray_640.png"
 

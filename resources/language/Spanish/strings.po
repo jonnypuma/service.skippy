@@ -215,7 +215,7 @@ msgstr "Color de fuente del diálogo de salto"
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
-msgstr "Skip dialog text in ALL CAPS"
+msgstr "Texto del diálogo de salto en MAYÚSCULAS"
 
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
@@ -283,7 +283,7 @@ msgstr "Antirebote del diálogo Preguntar (ms)"
 
 msgctxt "#32098"
 msgid "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
-msgstr "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
+msgstr "Milisegundos de espera antes de abrir un diálogo de pregunta (0-500, paso 10, valor 0). Déjelo en 0 salvo que los diálogos se abran dos veces. Las preguntas duplicadas también se bloquean con una espera del mismo segmento y el seguimiento de lo recién saltado."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"

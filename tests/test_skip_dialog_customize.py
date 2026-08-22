@@ -45,6 +45,8 @@ from skip_dialog_appearance import (
     format_skip_duration,
     is_compact_combined,
     is_compact_full_mode,
+    is_minimal_plate_filename,
+    minimal_plate_filename,
     mock_corner_pos,
     progress_display_percent_float,
     progress_mid_filename,
@@ -71,6 +73,7 @@ from skip_dialog_customize_ui import (
     ID_PROGRESS_STYLE,
     ID_FOCUS_STYLE,
     ID_SKIP_FORMAT,
+    MINIMAL_PLATES,
     MODES,
     PROGRESS_STYLES,
     _cycle,
@@ -508,6 +511,22 @@ class CustomizeNavAndStyleTests(unittest.TestCase):
         )
         self.assertTrue(reader.get_bool("progress_bar_countdown"))
         self.assertEqual(reader.get_int("progress_bar_height", 16, minimum=5, maximum=32), 20)
+
+    def test_new_minimal_plates_are_in_customize_picker(self):
+        stored = [pair[1] for pair in MINIMAL_PLATES]
+        self.assertIn("minimal_3d_blue.png", stored)
+        self.assertIn("minimal_3d_glossy_blue.png", stored)
+        self.assertIn("minimal_3d_red_glossy.png", stored)
+        self.assertIn("minimal_black_beveled.png", stored)
+
+    def test_minimal_plate_filename_accepts_png(self):
+        self.assertTrue(is_minimal_plate_filename("minimal_black_beveled.png"))
+        reader = DictSettingsReader(
+            {"minimal_button_style": "minimal_black_beveled.png"}
+        )
+        self.assertEqual(
+            minimal_plate_filename(reader), "minimal_black_beveled.png"
+        )
 
 
 class NineSliceFocusTextureTests(unittest.TestCase):

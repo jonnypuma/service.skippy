@@ -8,7 +8,11 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from addon_skin_resolution import init_window_xml_dialog, scale_skin_coord
+from addon_skin_resolution import (
+    init_window_xml_dialog,
+    reconcile_window_xml_skin_resolution,
+    scale_skin_coord,
+)
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
@@ -151,6 +155,10 @@ MINIMAL_PLATES = (
     ("Rectangular Aquamarine Blue", "minimal_rectangular_aquamarine-blue_640.png"),
     ("Rectangular Blue", "minimal_rectangular_blue_640.png"),
     ("Rectangular Yellow", "minimal_rectangular_yellow_640.png"),
+    ("3D Blue", "minimal_3d_blue.png"),
+    ("3D Glossy Blue", "minimal_3d_glossy_blue.png"),
+    ("3D Red Glossy", "minimal_3d_red_glossy.png"),
+    ("Black Beveled", "minimal_black_beveled.png"),
     ("Rounded Baby Purple", "minimal_rounded_baby-purple_640.png"),
     ("Rounded Blue Red Gradient", "minimal_rounded_blue-red-gradient_640.png"),
     ("Rounded Bright Aqua", "minimal_rounded_bright-aqua_640.png"),
@@ -433,6 +441,10 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 pass
 
     def onInit(self):
+        asked = getattr(self, "_skin_resolution", None)
+        locked = reconcile_window_xml_skin_resolution(self, asked)
+        if locked != asked:
+            self._skin_resolution = locked
         self._set_label(ID_TITLE, get_localized(self.addon, 44102, "Customize skip dialog"))
         self._set_label(ID_SAVE, get_localized(self.addon, 44103, "Save"))
         self._set_label(ID_CANCEL, get_localized(self.addon, 44104, "Cancel"))

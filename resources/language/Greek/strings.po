@@ -215,7 +215,7 @@ msgstr "Χρώμα γραμματοσειράς διαλόγου παράλει�
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
-msgstr "Skip dialog text in ALL CAPS"
+msgstr "Κείμενο διαλόγου παράλειψης με ΚΕΦΑΛΑΙΑ"
 
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
@@ -283,7 +283,7 @@ msgstr "Αντίκρουση διαλόγου Ερώτησης (ms)"
 
 msgctxt "#32098"
 msgid "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
-msgstr "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
+msgstr "Χιλιοστά του δευτερολέπτου αναμονής πριν ανοίξει διάλογος ερώτησης (0-500, βήμα 10, προεπιλογή 0). Αφήστε το 0 εκτός αν οι διάλογοι ανοίγουν δύο φορές. Τα διπλά ερωτήματα αποκλείονται επίσης από παύση για το ίδιο τμήμα και παρακολούθηση των μόλις παραλειφθέντων."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -467,7 +467,7 @@ msgstr "Ακύρωση"
 
 msgctxt "#32093"
 msgid "Snap neighbor start"
-msgstr "Snap neighbor start"
+msgstr "Ευθυγράμμιση αρχής γείτονα"
 
 msgctxt "#32094"
 msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
@@ -475,7 +475,7 @@ msgstr "Όταν το Update ή Update All αλλάζει χρόνους τμη�
 
 msgctxt "#32095"
 msgid "Snap neighbor end"
-msgstr "Snap neighbor end"
+msgstr "Ευθυγράμμιση τέλους γείτονα"
 
 msgctxt "#32096"
 msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
@@ -507,15 +507,15 @@ msgstr "Και τα δύο sidecars: Κανόνες Update All (αντιστοι
 
 msgctxt "#35026"
 msgid "[Neighbor snap]"
-msgstr "[Neighbor snap]"
+msgstr "[Ευθυγράμμιση γείτονα]"
 
 msgctxt "#35027"
 msgid "Snap neighbor start: %s"
-msgstr "Snap neighbor start: %s"
+msgstr "Ευθυγράμμιση αρχής γείτονα: %s"
 
 msgctxt "#35028"
 msgid "Snap neighbor end: %s"
-msgstr "Snap neighbor end: %s"
+msgstr "Ευθυγράμμιση τέλους γείτονα: %s"
 
 msgctxt "#35029"
 msgid "On"
@@ -1125,7 +1125,7 @@ msgstr "Παράλειψη στο επόμενο τμήμα στο %s"
 
 msgctxt "#40007"
 msgid "Skip to remaining %s at %s"
-msgstr "Skip to remaining %s at %s"
+msgstr "Παράλειψη στο υπόλοιπο %s στις %s"
 
 # Marker extras (#42000–42099)
 msgctxt "#42000"

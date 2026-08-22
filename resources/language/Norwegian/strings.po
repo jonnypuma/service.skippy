@@ -215,7 +215,7 @@ msgstr "Skriftfarge for hopp-dialog"
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
-msgstr "Skip dialog text in ALL CAPS"
+msgstr "Hopp-dialogtekst i STORE BOKSTAVER"
 
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
@@ -283,7 +283,7 @@ msgstr "Spør-dialog debounce (ms)"
 
 msgctxt "#32098"
 msgid "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
-msgstr "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
+msgstr "Millisekunder å vente før en spørre-dialog åpnes (0-500, trinn 10, standard 0). La stå på 0 med mindre dialoger åpnes to ganger. Duplikate spørsmål blokkeres også av en pause for samme segment og sporing av nettopp hoppet."
 
 msgctxt "#32028"
 msgid "Use local chapter / EDL files"
@@ -1464,7 +1464,7 @@ msgstr "Ingen segmenter tilgjengelig for valg."
 
 msgctxt "#41069"
 msgid "Segment %d: %s (%s -> %s)"
-msgstr "Segment %d: %s (%s -> %s)"
+msgstr "Segment %d: %s (%s → %s)"
 
 msgctxt "#41070"
 msgid "Select Segment (Start at End)"
