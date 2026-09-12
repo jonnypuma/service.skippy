@@ -1,6 +1,8 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
+**Version 6.6.0** (`addon.xml`). See `CHANGELOG.md` for the 6.6.0 fixes.
+
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
 During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment keywords** and **EDL action mapping**.
@@ -156,7 +158,7 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - Skip dialog modes: **Full** (panel with optional Close, progress bar, icons), **Compact Full** (pill cluster, no card/ending/icons, optional recap + thin bar), or **Minimal** (small corner chip + Skip only). Separate corner placement per mode. See **Skip dialog modes** below.
 - **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied in Python on dialog open (see **Skip dialog modes**). **May be overridden by the active Kodi skin or theme** — see **Supported Kodi versions and platforms** above.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
-- **Jump offset** (Advanced, **Global options**): **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
+- **Jump offset** (Advanced, **Global options**): **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). The Full / Compact Full **next jump** line uses the same destination. Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - **Skin-cooperative seek OSD hide** (opt-in setting **Hide OSD display during skip**): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
@@ -187,7 +189,7 @@ Under **Segment sources**, **TV episodes** and **Movies** each have **online API
 
 With **Local first** and online lookup enabled, TheIntroDB / IntroDB are always queried **in the background** — never on the blocking dialog path. When a local sidecar exists, playback uses it immediately; when it does not, the skip dialog appears as soon as the background fetch returns (while you are still inside the segment, if the network is fast enough). Background results also feed **Save online segments** and **Sync local → online** without delaying the first prompt when local data is present.
 
-**Seconds to pause remote API calls after errors** (same category) sets the **base** backoff per host (TheIntroDB, IntroDB.app, TMDB). After errors, wait time **doubles** on repeated failures (capped at one hour) until a call succeeds. **HTTP 429** responses may carry a **`Retry-After`** header; when the server sends it (as seconds), Skippy honors that wait (still capped). **HTTP 404** does not trigger backoff.
+**Seconds to pause remote API calls after errors** (same category) sets the **base** backoff per host (TheIntroDB, IntroDB.app, TMDB). After errors, wait time **doubles** on repeated failures (capped at one hour) until a call succeeds. **HTTP 429** responses may carry a **`Retry-After`** header; when the server sends it (as seconds), Skippy honors that wait (still capped). **HTTP 404** does not trigger backoff. Successful lookups and **HTTP 404** (no match) are cached for the rest of this title. Timeouts, 5xx, and host **cooldown** are **not** stored as an empty result — Skippy retries after backoff instead of treating the title as having no online segments.
 
 **Save online segments** (under **Online segments sidecar**) writes fetched windows to disk using your chosen format and overwrite/merge/update policies.
 
@@ -262,7 +264,7 @@ While a video is playing, the service polls about **once per second** and compar
 
 Segments are marked **prompted** as they are handled so the same interval is not processed repeatedly in the same pass.
 
-**Decline (Close) vs this file:** If you **dismiss** the ask dialog without skipping, that segment is stored in memory as **recently dismissed** for the **current playback of this file**, so the same prompt does not reappear after an ordinary **pause/resume**. That memory is cleared when you start a **different file**, after a **large backward seek** (see **Major Rewind Threshold** / `rewind_threshold_seconds`), or when the service detects a **genuine replay** from near the start (a full rewatch can show asks again). It is **not** cleared on simple pause/resume.
+**Decline (Close) vs this file:** If you **dismiss** the ask dialog without skipping, that segment is stored in memory as **recently dismissed** for the **current playback of this file**, so the same prompt does not reappear after an ordinary **pause/resume**. That memory is cleared when you start a **different file** (including when the path changes while paused — the reset runs when the new file actually plays), after a **large backward seek** (see **Major Rewind Threshold** / `rewind_threshold_seconds`), or when the service detects a **genuine replay** from near the start (a full rewatch can show asks again). It is **not** cleared on simple pause/resume.
 
 ---
 
@@ -327,7 +329,9 @@ Skippy must resolve the on-disk video path before it can load `.edl` / `chapters
 - **`get_video_file()`** treats **`Player.HasVideo`** like active playback when calling **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so sidecar parsing can start while Kodi is still starting the player.
 - **`Player.GetItem`** (JSON-RPC) no longer requires **title** / **label** to be present; if metadata is still loading, **file**-based heuristics still run (**SxxExx**, standalone **Exx** in the path, etc.) to infer movie vs episode for dialog and toast settings.
 - If JSON-RPC fails or returns an empty item, **playback type** falls back from the **resolved video path** so segment parsing and skip-dialog enablement are not skipped for the whole session.
-- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords (Kodi `Player.GetChapters` when available, otherwise a header read through VFS or local `mkvextract`).
+- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords (`Player.GetChapters` when it returns chapters, otherwise a header read through VFS or local `mkvextract`).
+
+**Sidecar folder probes:** After a confirmed miss (no chapter XML or EDL), Skippy waits **60 seconds** before listing the folder again. Hits refresh every **5 seconds** so an edited sidecar is picked up. Segment Editor and Segment Marker saves tell the playback service to drop that miss cache (and the matching parse snapshot) on the next tick, so a sidecar created mid-playback is seen without waiting out the 60s window.
 
 Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing missing sidecars on first play.
 
@@ -342,7 +346,7 @@ Filter `kodi.log` for `service.skippy` with **verbose logging** when diagnosing 
 
 Choices are stored per title, not per file: `addon_data/service.skippy/show_overrides/<kind>_tmdb_<id>.json` (for example `tv_tmdb_1396.json`), with the IMDb id as fallback when TMDB is missing. A different release, re-encode, or rename of the same movie or episode reuses the same file. Titles with no TMDB or IMDb id in Kodi's library cannot be keyed, so no prompt appears for them.
 
-The identity is read from Kodi's library metadata only — never from a network call — so the prompt never delays playback.
+The identity is read from Kodi's library metadata only — never from a network call. The yes/no prompt runs **after** any chained skip (for example recap → intro) so it does not freeze the playhead used for the next seek.
 
 **Manage saved auto-skips** lists every title that currently has an auto-skip rule (for example `Friends — Intro, Recap`). Select a title and confirm **Delete** to remove that entry so Skippy can ask again. **Clear saved per-title auto-skip choices** forgets every stored decision at once, including declines.
 
@@ -352,7 +356,7 @@ The identity is read from Kodi's library metadata only — never from a network 
 
 The **Statistics** category opens a modal with:
 
-- **Time saved** — sum of the playback time each skip actually jumped over.
+- **Time saved** — sum of the playback time each skip actually jumped over (playhead after seek vs before, when Kodi reports a landing time).
 - **Segments skipped** — total, plus a breakdown per segment type (Intro, Recap, Credits, …).
 - **Online segments downloaded / uploaded** — segments received from TheIntroDB / IntroDB.app lookups and accepted by an upload.
 

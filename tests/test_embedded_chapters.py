@@ -104,11 +104,12 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
 
         with patch("service_embedded_chapters.xbmc.executeJSONRPC", side_effect=rpc), patch(
             "service_embedded_chapters.parse_matroska_chapters_via_vfs", return_value=[]
-        ), patch(
+        ) as vfs, patch(
             "service_embedded_chapters.parse_embedded_chapters_via_mkvextract",
             return_value=None,
         ):
             segs = parse_embedded_chapters(player, player_id=1, video_path="nfs://x.mkv")
+        vfs.assert_not_called()
         self.assertEqual(
             [
                 (s.segment_type_label, s.start_seconds, s.end_seconds, s.source)
@@ -157,9 +158,10 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
         self.assertEqual(segs[0].segment_type_label, "intro")
         self.assertEqual(normalize_label("Intro"), "intro")
 
-    def test_get_chapters_empty_does_not_scan_vfs(self):
+    def test_get_chapters_empty_falls_back_to_vfs(self):
         player = MagicMock()
         player.getTotalTime.return_value = 100.0
+        rows = [{"name": "Intro", "start": 0.0, "end": 67.0}]
 
         def rpc(payload):
             data = json.loads(payload)
@@ -174,15 +176,17 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
             self.fail("unexpected method %s" % data["method"])
 
         with patch("service_embedded_chapters.xbmc.executeJSONRPC", side_effect=rpc), patch(
-            "service_embedded_chapters.parse_matroska_chapters_via_vfs", return_value=[]
+            "service_embedded_chapters.parse_matroska_chapters_via_vfs",
+            return_value=rows,
         ) as vfs, patch(
             "service_embedded_chapters.parse_embedded_chapters_via_mkvextract",
             return_value=None,
         ) as extract:
             segs = parse_embedded_chapters(player, player_id=1, video_path="nfs://x.mkv")
-        self.assertEqual(segs, [])
-        vfs.assert_not_called()
+        vfs.assert_called_once()
         extract.assert_not_called()
+        self.assertEqual(len(segs), 1)
+        self.assertEqual(segs[0].segment_type_label, "intro")
 
 
 if __name__ == "__main__":

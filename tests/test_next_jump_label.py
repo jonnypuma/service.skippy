@@ -80,5 +80,26 @@ class FormatNextJumpLabelTests(unittest.TestCase):
         )
 
 
+class ApplyJumpPropertiesOffsetTests(unittest.TestCase):
+    def test_next_jump_time_uses_seek_destination(self):
+        from segment_item import SegmentItem
+        from unittest.mock import MagicMock, patch
+
+        import skip_dialog_appearance as appearance
+
+        seg = SegmentItem(0.0, 50.0, "intro", source="xml")
+        seg.next_segment_start = 20.0
+        seg.next_segment_info = "nested segment 'recap'"
+        window = MagicMock()
+        with patch.object(
+            appearance,
+            "compute_skip_seek_destination_seconds",
+            return_value=18.0,
+        ):
+            label = appearance.apply_jump_properties(window, _Addon(), seg)
+        self.assertEqual(label, "Skip to Recap at 00:18")
+        window.setProperty.assert_any_call("next_jump_label", "Skip to Recap at 00:18")
+
+
 if __name__ == "__main__":
     unittest.main()

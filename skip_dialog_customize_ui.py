@@ -9,6 +9,7 @@ import xbmcgui
 import xbmcvfs
 
 from addon_skin_resolution import (
+    FULL_SKIP_PROBE_ID,
     init_window_xml_dialog,
     reconcile_window_xml_skin_resolution,
     scale_skin_coord,
@@ -442,7 +443,9 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 
     def onInit(self):
         asked = getattr(self, "_skin_resolution", None)
-        locked = reconcile_window_xml_skin_resolution(self, asked)
+        locked = reconcile_window_xml_skin_resolution(
+            self, asked, control_ids=(FULL_SKIP_PROBE_ID,)
+        )
         if locked != asked:
             self._skin_resolution = locked
         self._set_label(ID_TITLE, get_localized(self.addon, 44102, "Customize skip dialog"))
@@ -566,6 +569,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 playhead=MOCK_PLAYHEAD,
                 segment=segment,
                 scale_fn=self._sc,
+                place_focus_overlays=True,
             ) or panel_h
 
         stage_w = self._sc(MOCK_STAGE_W_720)

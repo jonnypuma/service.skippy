@@ -108,14 +108,15 @@ def handle_video_change(ctx: Any, video: str) -> None:
         is_paused_new = xbmc.getCondVisibility("Player.Paused")
     except RuntimeError:
         log(
-            "🚀 Video path changed but can't verify pause state - updating last_video only"
+            "🚀 Video path changed but can't verify pause state — not updating last_video"
         )
-        monitor.last_video = video
         return
 
     if is_paused_new or not is_playing_new:
-        log("🚀 Video path changed but paused - updating last_video only (not clearing state)")
-        monitor.last_video = video
+        log(
+            "🚀 Video path changed but paused — leaving last_video until playback "
+            "so dismiss/prompt state resets on the new title"
+        )
         return
 
     try:
@@ -125,7 +126,6 @@ def handle_video_change(ctx: Any, video: str) -> None:
         log(
             "🔕 CRITICAL: Cannot verify pause state during new video detection - NOT clearing"
         )
-        monitor.last_video = video
         return
 
     if final_new_paused or not final_new_playing:
@@ -134,7 +134,6 @@ def handle_video_change(ctx: Any, video: str) -> None:
             "(is_playing=%s, is_paused=%s)"
             % (final_new_playing, final_new_paused)
         )
-        monitor.last_video = video
         return
 
     log("🚀 New video detected: %s" % os.path.basename(video))

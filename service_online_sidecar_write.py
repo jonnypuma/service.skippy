@@ -60,16 +60,20 @@ from settings_utils import (
     log_service_detail,
     normalize_label,
 )
-
-
-def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
-
-
 from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
+from service_online_sidecar_merge import (
+    _finalize_sidecar_after_update_policy,
+    _merge_sidecar_segments,
+)
+
+# Sidecar / xbmcvfs file ops: catch expected failures without masking MemoryError etc.
+_VFS_IO_EXC = (OSError, IOError, RuntimeError, ValueError, TypeError, AttributeError)
+
 
 def _log_sidecar_detail(msg):
     log_service_detail(msg, tag="sidecar")
+
+
 def _segments_signature_for_save_compare(segments, time_decimals=3):
     """Stable sorted tuples for comparing segment lists (times + normalized label)."""
     if not segments:
@@ -325,7 +329,9 @@ def invalidate_segment_parse_cache_if_path(video_path, segment_monitor):
     if not video_path:
         return
     cache = segment_monitor.segment_parse_cache
-    if cache and cache.get("path") == video_path:
+    from service_sidecar_paths import vfs_paths_match
+
+    if cache and vfs_paths_match(cache.get("path"), video_path):
         _log_sidecar_detail(
             "Clearing segment parse cache after online sidecar save for this file"
         )

@@ -103,6 +103,43 @@ class SidecarProbeCacheTests(unittest.TestCase):
             resolve_sidecar_paths(video, self.monitor)
             self.assertEqual(listing.call_count, 2)
 
+    def test_runscript_invalidation_clears_miss_cache(self):
+        from service_sidecar_probe_cache import (
+            consume_sidecar_probe_invalidation,
+            request_sidecar_probe_invalidation,
+            resolve_sidecar_paths,
+        )
+
+        listed = (None, None, [], [], 12, 2)
+        props = {}
+
+        class _Win:
+            def __init__(self, *_a, **_k):
+                pass
+
+            def setProperty(self, key, value):
+                props[key] = value
+
+            def getProperty(self, key):
+                return props.get(key, "")
+
+            def clearProperty(self, key):
+                props.pop(key, None)
+
+        self.monitor.segment_parse_cache = {"path": "/media/show.mkv", "segments": []}
+        with patch(
+            "service_sidecar_probe_cache.sidecar_hits_from_directory_listing",
+            return_value=listed,
+        ) as listing, patch("xbmcgui.Window", _Win):
+            video = "/media/show.mkv"
+            resolve_sidecar_paths(video, self.monitor)
+            self.assertEqual(listing.call_count, 1)
+            request_sidecar_probe_invalidation(video)
+            self.assertTrue(consume_sidecar_probe_invalidation(self.monitor))
+            self.assertIsNone(self.monitor.segment_parse_cache)
+            resolve_sidecar_paths(video, self.monitor)
+            self.assertEqual(listing.call_count, 2)
+
     def test_listing_hit_used_without_exists_fallback(self):
         from service_sidecar_probe_cache import resolve_sidecar_paths
 
@@ -137,8 +174,78 @@ class DirectoryListingMatchTests(unittest.TestCase):
                     "/media/.chapters/show.edl",
                 ]
             )
-        self.assertEqual([p.replace("\\", "/") for p in found], ["/media/show.edl"])
+        self.assertEqual(found, ["/media/show.edl"])
         self.assertEqual(unknown, [])
+
+    def test_vfs_join_keeps_nfs_forward_slashes(self):
+        from service_sidecar_paths import vfs_join, vfs_paths_match
+
+        self.assertEqual(
+            vfs_join("nfs://server/share", ".chapters", "show.edl"),
+            "nfs://server/share/.chapters/show.edl",
+        )
+        self.assertTrue(
+            vfs_paths_match(
+                r"nfs://server/share/show.mkv",
+                r"nfs://server/share\show.mkv",
+            )
+        )
+
+    def test_nfs_jellyfin_sidecar_candidates_have_no_backslashes(self):
+        from service_sidecar_paths import _chapter_xml_paths_to_try
+
+        paths = _chapter_xml_paths_to_try("nfs://server/share/show.mkv")
+        self.assertTrue(paths)
+        self.assertTrue(all("\\" not in p for p in paths))
+        self.assertIn("nfs://server/share/.chapters/show_chapters.xml", paths)
+
+
+class ProbeInvalidationPathMatchTests(unittest.TestCase):
+    def setUp(self):
+        install_kodi_stubs()
+        from unittest.mock import MagicMock
+
+        self.monitor = MagicMock()
+        self.monitor.sidecar_probe_cache = {}
+
+    def test_invalidation_matches_backslash_variant(self):
+        from service_sidecar_probe_cache import (
+            consume_sidecar_probe_invalidation,
+            request_sidecar_probe_invalidation,
+            resolve_sidecar_paths,
+        )
+
+        listed = (None, None, [], [], 12, 2)
+        props = {}
+
+        class _Win:
+            def __init__(self, *_a, **_k):
+                pass
+
+            def setProperty(self, key, value):
+                props[key] = value
+
+            def getProperty(self, key):
+                return props.get(key, "")
+
+            def clearProperty(self, key):
+                props.pop(key, None)
+
+        playback = "nfs://server/share/show.mkv"
+        editor = r"nfs://server/share\show.mkv"
+        self.monitor.segment_parse_cache = {"path": playback, "segments": []}
+        with patch(
+            "service_sidecar_probe_cache.sidecar_hits_from_directory_listing",
+            return_value=listed,
+        ) as listing, patch("xbmcgui.Window", _Win):
+            resolve_sidecar_paths(playback, self.monitor)
+            self.assertEqual(listing.call_count, 1)
+            request_sidecar_probe_invalidation(editor)
+            self.assertTrue(consume_sidecar_probe_invalidation(self.monitor))
+            self.assertIsNone(self.monitor.segment_parse_cache)
+            self.assertEqual(self.monitor.sidecar_probe_cache, {})
+            resolve_sidecar_paths(playback, self.monitor)
+            self.assertEqual(listing.call_count, 2)
 
 
 if __name__ == "__main__":

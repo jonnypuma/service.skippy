@@ -1,5 +1,40 @@
 # Changelog
 
+## [6.6.4] - 2026-09-12
+
+### Fixed
+- **Embedded chapters on Piers**: an empty `Player.GetChapters` list no longer skips VFS/`mkvextract`. Kodi 22 can report no chapters at start of playback; Skippy now reads the Matroska header (then local `mkvextract`) in that case. A non-empty GetChapters result is still used as-is.
+- **Skip dialog off vs auto-skip**: turning skip dialogs off no longer blocks Always-skip. Ask is still suppressed; Never is unchanged.
+- **Sidecar probe invalidation**: editor/marker writes match the playing file after slash-normalizing VFS paths (`nfs://…\file` vs `nfs://…/file`). Sidecar candidates on Windows join with `/` so NFS/SMB URIs are not mixed with backslashes.
+
+## [6.6.3] - 2026-09-03
+
+### Fixed
+- **Segment Editor 720p canvas**: `720p/SegmentEditorDialog.xml` now uses a **1280×720** coordinate space (and matching fullscreen overlay) instead of 1920×1080 with 720p panel coords.
+- **WindowXML init fallback**: if Kodi rejects the 4-argument constructor, Python still records the heuristic skin folder (`1080i` on near-HD) instead of always claiming `720p`. Skip dialog open logs `asked` / `locked` plus GUI screen size.
+
+## [6.6.2] - 2026-09-03
+
+### Fixed
+- **Skip dialog log spam**: Full layout no longer `getControl`s Customize-only 9-slice overlays (3040–3043) during playback. Those IDs exist only in `SkipDialogCustomize.xml`; looking them up on the live dialog logged `Non-Existent Control` every time the skip UI opened.
+- **720p skip XML canvas**: Full and Minimal skip dialogs in the `720p` skin folder now declare a **1280×720** `<coordinates>` block (matching their `posx` values) instead of 1920×1080.
+
+## [6.6.1] - 2026-09-03
+
+### Fixed
+- **Skip dialog corner placement**: Full layout no longer overwrites the card group's left position in Python (that is what pulled Bottom Right toward centre when 720p scale met 1080i XML). Height still follows ending text / progress / jump rows. Skin-folder re-lock now measures image widths that exist in that XML — Full/Customize backdrop **3081**, Minimal plate **3021**, editor list **5000** — instead of missing group IDs that logged `Non-Existent Control` on every open.
+
+## [6.6.0] - 2026-08-30
+
+### Fixed
+- **Save online sidecars**: merge / update / overwrite against an existing file no longer `NameError`s after the save-module split (`_merge_sidecar_segments`, `_finalize_sidecar_after_update_policy`, `_VFS_IO_EXC` in write/preview).
+- **Online lookup cache**: failed fetches and host cooldown (`fetch_remote_json` returning `None`) are not stored as a permanent empty result for the title. HTTP **404** still caches as no match.
+- **Sidecar probe miss**: Segment Editor and Segment Marker writes notify the playback service to drop the 60s miss cache (and parse snapshot) via a Home window property, so a sidecar created mid-playback is picked up on the next tick.
+- **Per-title auto-skip**: the yes/no prompt runs after skip-chain, not between seek and the next nested/abutting skip.
+- **Title change while paused**: Skippy no longer advances `last_video` without resetting dismiss/prompt state. The session resets when the new file actually plays.
+- **Next jump line**: Full / Compact Full jump times include **Jump offset**, matching the seek target.
+- **Statistics**: time saved uses the playhead after `seekTime` when Kodi reports it, not only the planned destination.
+
 ## [6.5.2] - 2026-08-22
 
 ### Fixed

@@ -146,15 +146,16 @@ def _rows_from_mkvextract(video_path):
 def _load_embedded_chapter_rows(segment_player, player_id, video_path):
     resolved_id = _resolve_player_id(player_id)
     jsonrpc_rows = _rows_from_get_chapters(resolved_id, segment_player)
-    if jsonrpc_rows is not None:
-        if jsonrpc_rows:
-            log(
-                "Embedded chapters: using Player.GetChapters (%d chapter(s))"
-                % len(jsonrpc_rows)
-            )
-        else:
-            _log_detail("Embedded chapters: Player.GetChapters returned no chapters")
+    if jsonrpc_rows:
+        log(
+            "Embedded chapters: using Player.GetChapters (%d chapter(s))"
+            % len(jsonrpc_rows)
+        )
         return jsonrpc_rows
+    if jsonrpc_rows is not None:
+        _log_detail(
+            "Embedded chapters: Player.GetChapters returned no chapters — trying file fallbacks"
+        )
 
     path = _playing_path(segment_player, video_path)
     if not path:
@@ -216,9 +217,10 @@ def _segments_from_rows(rows, keywords, segment_player):
 def parse_embedded_chapters(segment_player=None, player_id=None, video_path=None):
     """Return keyword-matched segments muxed in the current file.
 
-    Prefers ``Player.GetChapters`` (Kodi 22+). On Omega and NFS, falls back to a
-    bounded Matroska header read through VFS, then ``mkvextract`` for local files.
-    Does not call ``Player.GetProperties`` with ``chapters`` (not a valid property).
+    Prefers ``Player.GetChapters`` (Kodi 22+) when it returns chapters. An empty
+    list or a missing method falls back to a bounded Matroska header read through
+    VFS, then ``mkvextract`` for local files. Does not call ``Player.GetProperties``
+    with ``chapters`` (not a valid property).
     """
     addon = get_addon()
     if not addon:

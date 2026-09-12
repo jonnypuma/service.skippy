@@ -699,7 +699,7 @@ class CompactFullLayoutTests(unittest.TestCase):
         controls[3081].setVisible.assert_called_with(True)
         controls[3012].setWidth.assert_called_with(290)
 
-    def test_layout_pins_right_panel_inside_canvas(self):
+    def test_layout_keeps_xml_panel_x(self):
         window = MagicMock()
         props = {"hide_ending_text": "false", "show_next_jump": "false"}
         window.setProperty.side_effect = lambda key, value: props.__setitem__(key, value)
@@ -713,7 +713,7 @@ class CompactFullLayoutTests(unittest.TestCase):
 
         window.getControl.side_effect = _get_control
         panel = _get_control(3080)
-        panel.getPosition.return_value = [895, 620]
+        panel.getPosition.return_value = [1260, 930]
         settings = DictSettingsReader(
             {
                 "skip_dialog_mode": "Full",
@@ -724,8 +724,31 @@ class CompactFullLayoutTests(unittest.TestCase):
         )
         seg = build_customize_mock_segment(True)
         apply_full_skip_layout(window, settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value)
-        controls[3080].setPosition.assert_called_with(840, 620)
-        controls[3080].setWidth.assert_called_with(FULL_SKIP_PANEL_W_720)
+        controls[3080].setPosition.assert_not_called()
+        controls[3080].setWidth.assert_not_called()
+        controls[3080].setHeight.assert_called()
+        probed = [call.args[0] for call in window.getControl.call_args_list]
+        for cid in (3040, 3041, 3042, 3043):
+            self.assertNotIn(cid, probed)
+        overlay_settings = DictSettingsReader(
+            {
+                "skip_dialog_mode": "Full",
+                "hide_close_button": False,
+                "show_progress_bar": False,
+                "skip_dialog_position": "BottomRight",
+            }
+        )
+        apply_full_skip_layout(
+            window,
+            overlay_settings,
+            MOCK_PLAYHEAD,
+            seg,
+            scale_fn=lambda value: value,
+            place_focus_overlays=True,
+        )
+        overlay_ids = [call.args[0] for call in window.getControl.call_args_list]
+        self.assertIn(3040, overlay_ids)
+        self.assertIn(3043, overlay_ids)
         left_settings = DictSettingsReader(
             {
                 "skip_dialog_mode": "Full",
@@ -734,11 +757,10 @@ class CompactFullLayoutTests(unittest.TestCase):
                 "skip_dialog_position": "BottomLeft",
             }
         )
-        controls[3080].getPosition.return_value = [10, 620]
         apply_full_skip_layout(
             window, left_settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value
         )
-        controls[3080].setPosition.assert_called_with(10, 620)
+        controls[3080].setPosition.assert_not_called()
 
 
 class CombinedCompactLayoutTests(unittest.TestCase):
@@ -876,6 +898,26 @@ class CombinedCompactLayoutTests(unittest.TestCase):
                 self.assertIn("<posx>%s</posx>" % expected_x, snippet)
                 self.assertIn("<width>%s</width>" % (430 if folder == "720p" else 645), snippet)
                 self.assertLessEqual(expected_x + (430 if folder == "720p" else 645), canvas)
+                if folder == "720p":
+                    coord = text.split("</coordinates>", 1)[0]
+                    self.assertIn("<width>1280</width>", coord)
+                    self.assertIn("<height>720</height>", coord)
+                    self.assertNotIn("<width>1920</width>", coord)
+
+    def test_minimal_720p_xml_uses_1280_canvas(self):
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        for name in (
+            "Minimal_Skip_Dialog_BottomRight.xml",
+            "Minimal_Skip_Dialog_BottomLeft.xml",
+            "Minimal_Skip_Dialog_TopRight.xml",
+            "Minimal_Skip_Dialog_TopLeft.xml",
+        ):
+            path = os.path.join(root, "resources", "skins", "default", "720p", name)
+            with open(path, encoding="utf-8") as handle:
+                text = handle.read()
+            coord = text.split("</coordinates>", 1)[0]
+            self.assertIn("<width>1280</width>", coord, path)
+            self.assertIn("<height>720</height>", coord, path)
 
     def test_skip_dialogs_drop_progress_endcaps(self):
         root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

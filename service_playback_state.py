@@ -49,6 +49,7 @@ def init_playback_session(monitor: Any) -> None:
     monitor.last_skipped_seg_bounds = None
     monitor.last_ask_seg_id = None
     monitor.last_ask_mono = None
+    monitor.pending_per_show_override = None
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
@@ -76,6 +77,7 @@ def reset_playback_session(monitor: Any, *, clear_deferred, log_prefix: str, log
     clear_last_skipped_segment(monitor)
     monitor.last_ask_seg_id = None
     monitor.last_ask_mono = None
+    monitor.pending_per_show_override = None
     monitor._last_log_state.clear()
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None

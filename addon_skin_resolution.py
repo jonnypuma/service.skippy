@@ -371,12 +371,30 @@ def _control_reported_width(ctrl) -> int | None:
     return None
 
 
+# Images (not groups): Full backdrop 3081, Minimal plate 3021. Editor list 5000.
+FULL_SKIP_PROBE_ID = 3081
+MINIMAL_SKIP_PROBE_ID = 3021
+EDITOR_LIST_PROBE_ID = 5000
+
+
+def probe_control_ids_for_xml(xml_filename) -> tuple:
+    """Control IDs that exist in that WindowXML and report a usable getWidth()."""
+    name = os.path.basename(str(xml_filename or "")).lower()
+    if name.startswith("minimal_skip"):
+        return (MINIMAL_SKIP_PROBE_ID,)
+    if name.startswith("skipdialog"):
+        return (FULL_SKIP_PROBE_ID,)
+    if name.startswith("segmenteditor"):
+        return (EDITOR_LIST_PROBE_ID,)
+    return ()
+
+
 def infer_skin_resolution_from_widths(widths) -> str | None:
     """
     Infer ``720p`` vs ``1080i`` from loaded WindowXML control widths.
 
-    Full skip panel group 3080: 430 vs 645. Minimal chip 3090: 120 vs 180.
-    Segment editor list/panel: ~1140–1170 vs ~1710–1755.
+    Full skip backdrop 3081: 430 vs 645. Minimal plate 3021: 120 vs 180.
+    Segment editor list 5000: ~1140 vs ~1710.
     """
     for raw in widths or ():
         if raw is None:
@@ -417,10 +435,7 @@ def reconcile_window_xml_skin_resolution(
     If widths are unavailable, returns ``requested`` (or the current screen heuristic).
     """
     asked = (requested or "").strip() or get_addon_skin_resolution()
-    ids = control_ids
-    if ids is None:
-        # Skip full panel, minimal chip, editor list, customize mock stage (if present)
-        ids = (3080, 3090, 5000)
+    ids = control_ids if control_ids is not None else ()
     widths = []
     for cid in ids:
         try:
@@ -434,6 +449,14 @@ def reconcile_window_xml_skin_resolution(
     if inferred and inferred != asked:
         return inferred
     return asked
+
+
+def gui_screen_size() -> tuple[int, int]:
+    """Kodi GUI pixels for logs (not WindowDialog 1280×720 canvas)."""
+    try:
+        return int(xbmcgui.getScreenWidth()), int(xbmcgui.getScreenHeight())
+    except Exception:
+        return 0, 0
 
 
 def init_window_xml_dialog(dialog_cls, args) -> str:
@@ -453,4 +476,4 @@ def init_window_xml_dialog(dialog_cls, args) -> str:
         except TypeError:
             pass
     dialog_cls.__init__(*args)
-    return SKIN_RES_720P
+    return res

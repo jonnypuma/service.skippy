@@ -10,7 +10,13 @@ from tests.kodi_stubs import install_kodi_stubs
 install_kodi_stubs()
 
 from segment_item import SegmentItem
-import service_loop_skip as mod
+
+
+def skipmod():
+    """Use the live module — ``import_fresh`` in other tests may have replaced it."""
+    import service_loop_skip
+
+    return service_loop_skip
 
 
 def _seg_id(seg):
@@ -59,9 +65,9 @@ class JustSkippedHelperTests(unittest.TestCase):
         monitor = MagicMock()
         monitor.last_skipped_seg_id = (0, 65)
         monitor.last_skipped_seg_bounds = (0.0, 65.0)
-        self.assertTrue(mod.should_ignore_as_just_skipped(monitor, (0, 65), 64.5))
-        self.assertFalse(mod.should_ignore_as_just_skipped(monitor, (65, 127), 64.5))
-        mod.clear_last_skipped_if_outside(monitor, 66.0)
+        self.assertTrue(skipmod().should_ignore_as_just_skipped(monitor, (0, 65), 64.5))
+        self.assertFalse(skipmod().should_ignore_as_just_skipped(monitor, (65, 127), 64.5))
+        skipmod().clear_last_skipped_if_outside(monitor, 66.0)
         self.assertIsNone(monitor.last_skipped_seg_id)
         self.assertIsNone(monitor.last_skipped_seg_bounds)
 
@@ -69,10 +75,10 @@ class JustSkippedHelperTests(unittest.TestCase):
         monitor = MagicMock()
         monitor.last_ask_seg_id = (0, 65)
         monitor.last_ask_mono = time.monotonic()
-        self.assertTrue(mod.ask_same_seg_on_cooldown(monitor, (0, 65)))
-        self.assertFalse(mod.ask_same_seg_on_cooldown(monitor, (65, 127)))
+        self.assertTrue(skipmod().ask_same_seg_on_cooldown(monitor, (0, 65)))
+        self.assertFalse(skipmod().ask_same_seg_on_cooldown(monitor, (65, 127)))
         monitor.last_ask_mono = time.monotonic() - 1.0
-        self.assertFalse(mod.ask_same_seg_on_cooldown(monitor, (0, 65)))
+        self.assertFalse(skipmod().ask_same_seg_on_cooldown(monitor, (0, 65)))
 
 
 class JustSkippedProcessTests(unittest.TestCase):
@@ -82,7 +88,7 @@ class JustSkippedProcessTests(unittest.TestCase):
         monitor = _base_monitor([recap])
         # Simulate prompted cleared (e.g. false rewind) but still inside after skip.
         monitor.prompted = set()
-        mod.mark_last_skipped_segment(monitor, recap, _seg_id(recap))
+        skipmod().mark_last_skipped_segment(monitor, recap, _seg_id(recap))
 
         ctx = _base_ctx(monitor)
         player = ctx.player
@@ -96,7 +102,7 @@ class JustSkippedProcessTests(unittest.TestCase):
                         return_value=65.0,
                     ):
                         with patch("service_loop_skip.mark_skippy_skipping") as mskip:
-                            mod.process_segment_skips(
+                            skipmod().process_segment_skips(
                                 ctx,
                                 video="/v.mkv",
                                 playback_type="episode",
@@ -112,7 +118,7 @@ class JustSkippedProcessTests(unittest.TestCase):
         recap = SegmentItem(0.0, 65.0, "recap", source="xml")
         intro = SegmentItem(65.0, 127.0, "intro", source="xml")
         monitor = _base_monitor([recap, intro])
-        mod.mark_last_skipped_segment(monitor, recap, _seg_id(recap))
+        skipmod().mark_last_skipped_segment(monitor, recap, _seg_id(recap))
         # Still exactly at recap end (inside bounds) — intro must still run.
         monitor.prompted = {_seg_id(recap)}
 
@@ -153,7 +159,7 @@ class JustSkippedProcessTests(unittest.TestCase):
                                                 "service_loop_skip.get_home_window",
                                                 return_value=MagicMock(),
                                             ):
-                                                mod.process_segment_skips(
+                                                skipmod().process_segment_skips(
                                                     ctx,
                                                     video="/v.mkv",
                                                     playback_type="episode",
@@ -169,7 +175,7 @@ class JustSkippedProcessTests(unittest.TestCase):
         parent = SegmentItem(0.0, 200.0, "recap", source="xml")
         nested = SegmentItem(50.0, 80.0, "intro", source="xml")
         monitor = _base_monitor([parent, nested])
-        mod.mark_last_skipped_segment(monitor, parent, _seg_id(parent))
+        skipmod().mark_last_skipped_segment(monitor, parent, _seg_id(parent))
         monitor.prompted = {_seg_id(parent)}
 
         dialog = MagicMock()
@@ -207,7 +213,7 @@ class JustSkippedProcessTests(unittest.TestCase):
                                                 "service_loop_skip.get_home_window",
                                                 return_value=MagicMock(),
                                             ):
-                                                mod.process_segment_skips(
+                                                skipmod().process_segment_skips(
                                                     ctx,
                                                     video="/v.mkv",
                                                     playback_type="episode",
@@ -224,7 +230,7 @@ class JustSkippedProcessTests(unittest.TestCase):
         a = SegmentItem(0.0, 100.0, "recap", source="xml")
         b = SegmentItem(80.0, 150.0, "intro", source="xml")
         monitor = _base_monitor([a, b])
-        mod.mark_last_skipped_segment(monitor, a, _seg_id(a))
+        skipmod().mark_last_skipped_segment(monitor, a, _seg_id(a))
         monitor.prompted = {_seg_id(a)}
 
         dialog = MagicMock()
@@ -260,7 +266,7 @@ class JustSkippedProcessTests(unittest.TestCase):
                                                 "service_loop_skip.get_home_window",
                                                 return_value=MagicMock(),
                                             ):
-                                                mod.process_segment_skips(
+                                                skipmod().process_segment_skips(
                                                     ctx,
                                                     video="/v.mkv",
                                                     playback_type="episode",
@@ -300,7 +306,7 @@ class AskCooldownProcessTests(unittest.TestCase):
                                 "service_loop_skip.get_home_window",
                                 return_value=MagicMock(),
                             ):
-                                mod.process_segment_skips(
+                                skipmod().process_segment_skips(
                                     ctx,
                                     video="/v.mkv",
                                     playback_type="episode",
@@ -349,7 +355,7 @@ class AskCooldownProcessTests(unittest.TestCase):
                                             "service_loop_skip.get_home_window",
                                             return_value=MagicMock(),
                                         ):
-                                            mod.process_segment_skips(
+                                            skipmod().process_segment_skips(
                                                 ctx,
                                                 video="/v.mkv",
                                                 playback_type="episode",
@@ -424,7 +430,7 @@ class AskChainUpdatedTests(unittest.TestCase):
                                             with patch(
                                                 "service_loop_skip.mark_skippy_skipping"
                                             ):
-                                                mod.process_segment_skips(
+                                                skipmod().process_segment_skips(
                                                     ctx,
                                                     video="/v.mkv",
                                                     playback_type="episode",

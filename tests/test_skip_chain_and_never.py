@@ -152,6 +152,220 @@ class AskChainTests(unittest.TestCase):
         self.assertEqual(mock_sleep.call_args_list[0].args[0], 300)
 
 
+class PerShowOverrideAfterChainTests(unittest.TestCase):
+    @patch("service_loop_skip.maybe_prompt_per_show_override")
+    @patch("service_loop_skip.SkipDialog")
+    @patch("service_loop_skip.xbmc.sleep")
+    def test_override_prompt_runs_after_chain(
+        self, mock_sleep, mock_dialog_cls, mock_prompt
+    ):
+        import service_loop_skip as mod
+
+        recap = SegmentItem(0.0, 65.0, "recap", source="xml")
+        intro = SegmentItem(65.0, 127.0, "intro", source="xml")
+
+        order = []
+
+        def seek(_t):
+            order.append("seek")
+
+        def prompt(*_a, **_k):
+            order.append("prompt")
+
+        mock_prompt.side_effect = prompt
+
+        dialog = MagicMock()
+        dialog._skippy_dialog_result = 66.0
+        mock_dialog_cls.return_value = dialog
+
+        monitor = MagicMock()
+        monitor.playback_ready = True
+        monitor.prompted = set()
+        monitor.recently_dismissed = set()
+        monitor.skipped_to_nested_segment = {}
+        monitor.cleared_parent_dismissals = set()
+        monitor.skip_dialog_modal_active = False
+        monitor.skippy_skipping_since = 1.0
+        monitor.last_skipped_seg_id = None
+        monitor.last_skipped_seg_bounds = None
+        monitor.last_ask_seg_id = None
+        monitor.last_ask_mono = None
+        monitor.pending_per_show_override = None
+        monitor.current_segments = [recap, intro]
+        monitor._last_log_state = {}
+
+        player = MagicMock()
+        player.isPlayingVideo.return_value = True
+        player.isPlaying.return_value = True
+        player.getTime.return_value = 66.0
+        player.seekTime.side_effect = seek
+
+        ctx = MagicMock()
+        ctx.monitor = monitor
+        ctx.player = player
+        ctx.icon_path = ""
+        ctx.log_if_changed = MagicMock()
+        ctx.should_suppress_segment_dialog = MagicMock(return_value=False)
+        ctx.is_nested_segment = MagicMock(return_value=False)
+        ctx.skip_dialog_layout_suffix = MagicMock(return_value="BottomRight")
+        ctx.warm_skip_dialog_skin_textures = MagicMock()
+
+        addon = MagicMock()
+        addon.getAddonInfo.return_value = "/addon"
+
+        with patch("service_loop_skip.get_addon", return_value=addon), patch(
+            "service_loop_skip.get_user_skip_mode", return_value="ask"
+        ), patch(
+            "service_loop_skip.is_skip_enabled", return_value=True
+        ), patch(
+            "service_loop_skip.compute_skip_seek_destination_seconds",
+            side_effect=lambda seg, _a: float(seg.end_seconds) + 1.0,
+        ), patch(
+            "service_loop_skip.addon_get_int", return_value=0
+        ), patch(
+            "service_loop_skip.addon_get_setting_text", return_value="Full"
+        ), patch(
+            "service_loop_skip.addon_get_bool", return_value=False
+        ), patch(
+            "service_loop_skip.xbmc.getCondVisibility", return_value=False
+        ), patch(
+            "service_loop_skip.get_home_window", return_value=MagicMock()
+        ), patch(
+            "service_loop_skip.mark_skippy_skipping"
+        ):
+            mod.process_segment_skips(
+                ctx,
+                video="/v.mkv",
+                playback_type="episode",
+                show_dialogs=True,
+                current_time=1.0,
+                major_rewind_detected=False,
+            )
+
+        self.assertGreaterEqual(order.count("seek"), 1)
+        self.assertEqual(order[-1], "prompt")
+        self.assertEqual(mock_prompt.call_count, 1)
+
+
+class PausedTitleChangeTests(unittest.TestCase):
+    def test_paused_path_change_does_not_advance_last_video(self):
+        import service_loop_playback as mod
+
+        monitor = MagicMock()
+        monitor.last_video = "/old.mkv"
+        monitor.recently_dismissed = {(0, 10)}
+        monitor.prompted = {(0, 10)}
+
+        ctx = MagicMock()
+        ctx.monitor = monitor
+        ctx.player.isPlayingVideo.return_value = True
+
+        with patch("service_loop_playback.xbmc.getCondVisibility", return_value=True):
+            mod.handle_video_change(ctx, "/new.mkv")
+
+        self.assertEqual(monitor.last_video, "/old.mkv")
+        self.assertEqual(monitor.recently_dismissed, {(0, 10)})
+
+
+class DialogsOffStillAutoSkipTests(unittest.TestCase):
+    def test_auto_skip_runs_when_dialogs_disabled(self):
+        import service_loop_skip as mod
+
+        intro = SegmentItem(0.0, 60.0, "intro", source="xml")
+        monitor = MagicMock()
+        monitor.playback_ready = True
+        monitor.prompted = set()
+        monitor.recently_dismissed = set()
+        monitor.skipped_to_nested_segment = {}
+        monitor.cleared_parent_dismissals = set()
+        monitor.last_skipped_seg_id = None
+        monitor.last_skipped_seg_bounds = None
+        monitor.current_segments = [intro]
+        monitor._last_log_state = {}
+
+        player = MagicMock()
+        player.isPlaying.return_value = True
+        player.getTime.return_value = 60.0
+
+        ctx = MagicMock()
+        ctx.monitor = monitor
+        ctx.player = player
+        ctx.icon_path = ""
+        ctx.log_if_changed = MagicMock()
+        ctx.should_suppress_segment_dialog = MagicMock(return_value=False)
+        ctx.is_nested_segment = MagicMock(return_value=False)
+
+        with patch("service_loop_skip.get_addon", return_value=MagicMock()), patch(
+            "service_loop_skip.get_user_skip_mode", return_value="auto"
+        ), patch("service_loop_skip.is_skip_enabled", return_value=True), patch(
+            "service_loop_skip.compute_skip_seek_destination_seconds",
+            return_value=61.0,
+        ), patch("service_loop_skip.mark_skippy_skipping"), patch(
+            "service_loop_skip.addon_get_bool", return_value=False
+        ):
+            mod.process_segment_skips(
+                ctx,
+                video="/v.mkv",
+                playback_type="episode",
+                show_dialogs=False,
+                current_time=1.0,
+                major_rewind_detected=False,
+            )
+
+        player.seekTime.assert_called_once_with(61.0)
+        self.assertIn((0, 60), monitor.prompted)
+
+    @patch("service_loop_skip.SkipDialog")
+    def test_ask_does_not_open_when_dialogs_disabled(self, mock_dialog_cls):
+        import service_loop_skip as mod
+
+        intro = SegmentItem(0.0, 60.0, "intro", source="xml")
+        monitor = MagicMock()
+        monitor.playback_ready = True
+        monitor.prompted = set()
+        monitor.recently_dismissed = set()
+        monitor.skipped_to_nested_segment = {}
+        monitor.last_skipped_seg_id = None
+        monitor.last_skipped_seg_bounds = None
+        monitor.current_segments = [intro]
+        monitor._last_log_state = {}
+
+        player = MagicMock()
+        ctx = MagicMock()
+        ctx.monitor = monitor
+        ctx.player = player
+        ctx.log_if_changed = MagicMock()
+        ctx.should_suppress_segment_dialog = MagicMock(return_value=False)
+
+        with patch("service_loop_skip.get_addon", return_value=MagicMock()), patch(
+            "service_loop_skip.get_user_skip_mode", return_value="ask"
+        ), patch("service_loop_skip.is_skip_enabled", return_value=True), patch(
+            "service_loop_skip.compute_skip_seek_destination_seconds",
+            return_value=61.0,
+        ):
+            mod.process_segment_skips(
+                ctx,
+                video="/v.mkv",
+                playback_type="episode",
+                show_dialogs=False,
+                current_time=1.0,
+                major_rewind_detected=False,
+            )
+
+        mock_dialog_cls.assert_not_called()
+        player.seekTime.assert_not_called()
+        self.assertIn((0, 60), monitor.prompted)
+
+
+class ResolvedSeekLandTests(unittest.TestCase):
+    def test_prefers_actual_playhead(self):
+        import service_loop_skip as mod
+
+        self.assertEqual(mod._resolved_seek_land(100.0, 97.4), 97.4)
+        self.assertEqual(mod._resolved_seek_land(100.0, -1), 100.0)
+        self.assertEqual(mod._resolved_seek_land(100.0, None), 100.0)
+
+
 class ResetKeepsPlaybackCacheTests(unittest.TestCase):
     def test_reset_does_not_clear_playback_context(self):
         import service_loop_playback as mod

@@ -70,6 +70,17 @@ def _record_skip_stats(segment, position_before, jump_to) -> None:
     record_skip(getattr(segment, "segment_type_label", ""), saved)
 
 
+def _resolved_seek_land(jump_to, actual_time) -> float:
+    """Prefer the playhead after seekTime; fall back to the requested target."""
+    try:
+        actual = float(actual_time)
+    except (TypeError, ValueError):
+        actual = -1.0
+    if actual >= 0.0:
+        return actual
+    return float(jump_to)
+
+
 def _skipped_bounds(monitor):
     bounds = getattr(monitor, "last_skipped_seg_bounds", None)
     if not isinstance(bounds, (tuple, list)) or len(bounds) != 2:
@@ -237,19 +248,17 @@ def process_segment_skips(
             "🧪 Segment behavior: %s" % behavior,
         )
 
-        if not show_dialogs:
-            ctx.log_if_changed(
-                "dialogs_disabled_%s" % (seg_id,),
-                "🚫 Dialogs disabled — suppressing segment %s" % (seg_id,),
-            )
-            monitor.prompted.add(seg_id)
-            continue
         if behavior == "never":
             ctx.log_if_changed(
                 "never_%s" % (seg_id,),
                 "🚫 Skipping dialog for '%s' (never)" % segment.segment_type_label,
             )
             # Mark prompted so we do not re-resolve skip mode every monitor tick.
+            monitor.prompted.add(seg_id)
+            continue
+
+        if not is_skip_enabled(playback_type):
+            log("🚫 Skipping disabled for %s — segment %s" % (playback_type, seg_id))
             monitor.prompted.add(seg_id)
             continue
 
@@ -264,11 +273,6 @@ def process_segment_skips(
             ),
         )
 
-        if not is_skip_enabled(playback_type):
-            log("🚫 Skipping disabled for %s — segment %s" % (playback_type, seg_id))
-            monitor.prompted.add(seg_id)
-            continue
-
         jump_to = compute_skip_seek_destination_seconds(segment, addon)
 
         if behavior == "auto":
@@ -276,6 +280,13 @@ def process_segment_skips(
             if landed is not None:
                 land_time = landed
                 break
+        elif not show_dialogs:
+            ctx.log_if_changed(
+                "dialogs_disabled_%s" % (seg_id,),
+                "🚫 Skip dialogs disabled — suppressing ask for segment %s" % (seg_id,),
+            )
+            monitor.prompted.add(seg_id)
+            continue
         elif behavior == "ask":
             landed = _handle_ask_skip(
                 ctx,
@@ -310,6 +321,12 @@ def process_segment_skips(
             _chain_depth=_chain_depth + 1,
             _skip_ask_debounce=True,
         )
+
+    if _chain_depth == 0:
+        pending = getattr(monitor, "pending_per_show_override", None)
+        if isinstance(pending, tuple) and len(pending) >= 2:
+            monitor.pending_per_show_override = None
+            maybe_prompt_per_show_override(ctx, addon, pending[0], pending[1])
 
 
 def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
@@ -357,7 +374,9 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None
     mark_last_skipped_segment(monitor, segment, seg_id)
     if seg_id not in monitor.prompted:
         monitor.prompted.add(seg_id)
-    _record_skip_stats(segment, position_before, land)
+    _record_skip_stats(
+        segment, position_before, _resolved_seek_land(jump_to, actual_time)
+    )
     _maybe_show_skip_toast(ctx, addon, segment, "auto")
     log("⚡ Auto-skipped to %s" % jump_to)
     return land
@@ -501,10 +520,12 @@ def _handle_ask_skip(
             land = float(jump_to)
             monitor.last_time = land
             mark_last_skipped_segment(monitor, segment, seg_id)
-            _record_skip_stats(segment, position_before, land)
+            _record_skip_stats(
+                segment, position_before, _resolved_seek_land(jump_to, actual_time)
+            )
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
-            maybe_prompt_per_show_override(ctx, addon, segment, video)
+            monitor.pending_per_show_override = (segment, video)
             return land
         elif response is False:
             log("🙅 User dismissed skip dialog for segment ID %s" % (seg_id,))

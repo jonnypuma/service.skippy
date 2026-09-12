@@ -60,21 +60,21 @@ from settings_utils import (
     log_service_detail,
     normalize_label,
 )
-
-
-def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
-
-
 from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
-
-def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
-
 from service_online_sidecar_merge import (
+    _finalize_sidecar_after_update_policy,
+    _neighbor_snap_flags_for_policy,
+    _pick_best_local_index_for_online,
+    _sidecar_update_plan,
     _source_display_name,
     _summarize_online_by_source,
 )
+
+
+def _log_sidecar_detail(msg):
+    log_service_detail(msg, tag="sidecar")
+
+
 def _lines_for_sidecar_preview_items(final_items, max_rows=36):
     lines = []
     if not final_items:

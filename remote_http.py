@@ -285,9 +285,10 @@ def fetch_remote_json(url, source_name, extra_headers=None):
     except HTTPError as exc:
         if exc.code == 404:
             _rlog(f"{source_name} lookup returned 404 (no metadata match)")
-        else:
-            _rlog(f"{source_name} lookup failed with HTTP {exc.code}")
-            _remote_fetch_begin_failure_cooldown(bucket, source_name, exc)
+            # Cacheable empty: callers treat {} as “API said no match”, not a transport miss.
+            return {}
+        _rlog(f"{source_name} lookup failed with HTTP {exc.code}")
+        _remote_fetch_begin_failure_cooldown(bucket, source_name, exc)
         return None
     except URLError as exc:
         _rlog(f"{source_name} lookup failed: {exc.reason}")

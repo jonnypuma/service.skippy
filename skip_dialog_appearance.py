@@ -19,6 +19,7 @@ from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    compute_skip_seek_destination_seconds,
     get_localized,
 )
 from skip_dialog_window_ui import _argb_to_kodi
@@ -28,6 +29,8 @@ FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 
 FULL_SKIP_PANEL_GROUP_ID = 3080
 FULL_SKIP_PANEL_BACKDROP_ID = 3081
+# 9-slice focus overlays — only in SkipDialogCustomize.xml, not live SkipDialog_*.xml
+CUSTOMIZE_SKIP_FOCUS_OVERLAY_IDS = (3040, 3042, 3041, 3043)
 FULL_SKIP_PANEL_W_720 = 430
 FULL_SKIP_MARGIN_720 = 5
 FULL_SKIP_PROGRESS_BAR_WIDTH = FULL_SKIP_PANEL_W_720 - (FULL_SKIP_MARGIN_720 * 2)
@@ -143,20 +146,6 @@ def skip_dialog_panel_left_720(align_right: bool) -> int:
     if align_right:
         return SKIP_DIALOG_CANVAS_W_720 - FULL_SKIP_PANEL_W_720 - SKIP_DIALOG_SCREEN_MARGIN_720
     return SKIP_DIALOG_SCREEN_MARGIN_720
-
-
-def _control_y(ctrl):
-    try:
-        pos = ctrl.getPosition()
-        if isinstance(pos, (list, tuple)) and len(pos) >= 2:
-            return int(pos[1])
-    except Exception:
-        pass
-    try:
-        return int(ctrl.getY())
-    except Exception:
-        pass
-    return None
 
 
 def skip_progress_bar_width_720(settings) -> int:
@@ -597,10 +586,13 @@ def apply_jump_label(window, text, control_id=3011):
 
 
 def apply_jump_properties(window, addon, segment, all_caps: bool = False) -> Optional[str]:
+    next_start = getattr(segment, "next_segment_start", None)
+    if next_start is not None:
+        next_start = compute_skip_seek_destination_seconds(segment, addon)
     jump_str = format_next_jump_label(
         addon,
         getattr(segment, "next_segment_info", None),
-        getattr(segment, "next_segment_start", None),
+        next_start,
     )
     if jump_str:
         jump_str = apply_skip_dialog_caps(jump_str, all_caps)
@@ -638,8 +630,8 @@ def _place_ctrl(ctrl, x, y, w=None, h=None):
             pass
 
 
-def _layout_full_skip_buttons(window, sc, compact, hide_close, align_right):
-    """Place Skip/Close and Customize focus overlays; return (content_left, content_w)."""
+def _layout_full_skip_buttons(window, sc, compact, hide_close, align_right, place_focus_overlays=False):
+    """Place Skip/Close and optional Customize focus overlays; return (content_left, content_w)."""
     if compact:
         content_w = sc(COMPACT_SKIP_CONTENT_W_720)
         panel_w = sc(FULL_SKIP_PANEL_W_720)
@@ -665,10 +657,12 @@ def _layout_full_skip_buttons(window, sc, compact, hide_close, align_right):
     _place_ctrl(_safe_control(window, 3013), close_x, btn_top, close_w, btn_h)
     _place_ctrl(_safe_control(window, 3015), wide_x, btn_top, wide_w, btn_h)
     _place_ctrl(_safe_control(window, 3016), wide_x, btn_top, wide_w, btn_h)
-    for cid in (3040, 3042):
-        _place_ctrl(_safe_control(window, cid), skip_x, btn_top, skip_w, btn_h)
-    for cid in (3041, 3043):
-        _place_ctrl(_safe_control(window, cid), wide_x, btn_top, wide_w, btn_h)
+    if place_focus_overlays:
+        for cid in CUSTOMIZE_SKIP_FOCUS_OVERLAY_IDS:
+            if cid in (3040, 3042):
+                _place_ctrl(_safe_control(window, cid), skip_x, btn_top, skip_w, btn_h)
+            else:
+                _place_ctrl(_safe_control(window, cid), wide_x, btn_top, wide_w, btn_h)
     try:
         if hide_close:
             window._skip_btn_geom = (wide_x, btn_top, wide_w, btn_h)
@@ -686,6 +680,7 @@ def apply_full_skip_layout(
     segment,
     scale_fn: Callable[[int], int],
     log_fn: Optional[Callable[[str], None]] = None,
+    place_focus_overlays: bool = False,
 ):
     """Stack optional Full rows, set panel height, seed progress from playhead."""
     sc = scale_fn
@@ -711,7 +706,7 @@ def apply_full_skip_layout(
     window.setProperty("skippy_combined_slice", "true" if sliced else "false")
 
     content_left, progress_bar_width = _layout_full_skip_buttons(
-        window, sc, compact, hide_close, align_right
+        window, sc, compact, hide_close, align_right, place_focus_overlays
     )
     CONTENT_TOP = sc(33) if compact else sc(41)
     GAP_AFTER_JUMP = sc(5)
@@ -761,17 +756,12 @@ def apply_full_skip_layout(
         panel = _safe_control(window, FULL_SKIP_PANEL_GROUP_ID)
         backdrop = _safe_control(window, FULL_SKIP_PANEL_BACKDROP_ID)
         if panel:
-            panel_y = _control_y(panel)
-            if panel_y is not None:
-                _place_ctrl(
-                    panel,
-                    sc(skip_dialog_panel_left_720(align_right)),
-                    panel_y,
-                    sc(FULL_SKIP_PANEL_W_720),
-                    total_h,
-                )
-            else:
+            # Keep XML posx/width (corner file already placed the group).
+            # Only height follows ending text / progress / jump rows.
+            try:
                 panel.setHeight(total_h)
+            except Exception:
+                pass
         if backdrop:
             _place_ctrl(backdrop, 0, 0, sc(FULL_SKIP_PANEL_W_720), total_h)
             try:

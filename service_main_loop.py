@@ -19,6 +19,7 @@ from service_loop_toast import (
     try_show_online_segments_applied_toast,
 )
 from service_playback_context import refresh_playback_context
+from service_sidecar_probe_cache import consume_sidecar_probe_invalidation
 from service_skip_seek_property import (
     skippy_seek_grace_active,
     tick_skippy_skipping_property,
@@ -290,6 +291,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
         current_time = playback.current_time
         playback_type = playback.playback_type
         show_dialogs = playback.show_dialogs
+        consume_sidecar_probe_invalidation(ctx.monitor)
 
         if playback.is_paused or not playback.is_playing:
             # After Skippy seekTime, Kodi often reports Paused briefly; keep skip

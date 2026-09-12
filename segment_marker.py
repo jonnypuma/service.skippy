@@ -388,9 +388,12 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
 
     def __init__(self, *args, **kwargs):
         try:
-            init_window_xml_dialog(super(SegmentTypePickerDialog, self), args)
+            self._skin_resolution = init_window_xml_dialog(
+                super(SegmentTypePickerDialog, self), args
+            )
         except Exception:
             super().__init__(*args)
+            self._skin_resolution = None
         addon = get_addon()
         self.title = kwargs.get(
             "title", get_localized(addon, 36010, "Choose segment type")
@@ -899,6 +902,12 @@ def save_to_edl(video_path, start, end, label, perm_setting, addon, policy=None,
 
         apply_file_permissions(edl_path, perm_setting)
         log(f"Saved segment to EDL: {edl_path}")
+        try:
+            from service_sidecar_probe_cache import request_sidecar_probe_invalidation
+
+            request_sidecar_probe_invalidation(video_path)
+        except Exception:
+            pass
         return True
     except Exception as e:
         log(f"Failed to save EDL: {e}")
@@ -1020,6 +1029,12 @@ def save_to_chapters_xml(
 
         apply_file_permissions(xml_path, perm_setting)
         log(f"Saved segment to chapters.xml: {xml_path}")
+        try:
+            from service_sidecar_probe_cache import request_sidecar_probe_invalidation
+
+            request_sidecar_probe_invalidation(video_path)
+        except Exception:
+            pass
         return True
     except Exception as e:
         log(f"Failed to save chapters.xml: {e}")

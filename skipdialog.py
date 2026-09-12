@@ -6,7 +6,9 @@ import xbmc
 import xbmcgui
 
 from addon_skin_resolution import (
+    gui_screen_size,
     init_window_xml_dialog,
+    probe_control_ids_for_xml,
     reconcile_window_xml_skin_resolution,
     scale_skin_coord,
 )
@@ -119,6 +121,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         try:
             self._skin_resolution = init_window_xml_dialog(super(SkipDialog, self), args)
+            self._xml_layout = args[0] if args else ""
             self.segment = kwargs.get("segment", None)
             self._minimal_mode = False
             self._compact_mode = False
@@ -157,7 +160,9 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         asked_res = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
-            self, asked_res, control_ids=(3080, 3090)
+            self,
+            asked_res,
+            control_ids=probe_control_ids_for_xml(getattr(self, "_xml_layout", "")),
         )
         if locked != asked_res:
             log(
@@ -165,6 +170,17 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 % (asked_res, locked)
             )
             self._skin_resolution = locked
+        sw, sh = gui_screen_size()
+        log(
+            "Skin layout: xml=%s asked=%s locked=%s screen=%sx%s"
+            % (
+                getattr(self, "_xml_layout", ""),
+                asked_res,
+                getattr(self, "_skin_resolution", None),
+                sw,
+                sh,
+            )
+        )
 
         duration = int(self.segment.end_seconds - self.segment.start_seconds)
         m, s = divmod(duration, 60)

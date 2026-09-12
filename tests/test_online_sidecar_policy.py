@@ -2,7 +2,7 @@
 """Online sidecar save policy normalization + merge/update helpers."""
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from tests.kodi_stubs import install_kodi_stubs
 
@@ -132,6 +132,56 @@ class OnlineSidecarMergeUpdateTests(unittest.TestCase):
         labels = [s.segment_type_label for s in updated]
         self.assertEqual(labels, ["intro"])
         self.assertEqual(updated[0].end_seconds, 50.0)
+
+
+class OnlineSidecarWriteSplitTests(unittest.TestCase):
+    def test_write_module_defines_split_helpers(self):
+        import service_online_sidecar_write as write_mod
+
+        self.assertTrue(callable(write_mod._merge_sidecar_segments))
+        self.assertTrue(callable(write_mod._finalize_sidecar_after_update_policy))
+        self.assertTrue(isinstance(write_mod._VFS_IO_EXC, tuple))
+        self.assertIn(OSError, write_mod._VFS_IO_EXC)
+
+    def test_preview_module_defines_update_helpers(self):
+        import service_online_sidecar_preview as preview_mod
+
+        self.assertTrue(callable(preview_mod._sidecar_update_plan))
+        self.assertTrue(callable(preview_mod._finalize_sidecar_after_update_policy))
+        self.assertTrue(callable(preview_mod._pick_best_local_index_for_online))
+
+    def test_merge_unchanged_check_does_not_nameerror(self):
+        from service_online_sidecar_write import _chapter_xml_save_content_unchanged
+
+        online = [SegmentItem(200.0, 230.0, "preview", source="theintrodb")]
+        existing = [SegmentItem(0.0, 60.0, "intro", source="edl")]
+        with patch(
+            "service_online_sidecar_write._find_existing_sidecar_chapter_xml_path",
+            return_value="/media/show_chapters.xml",
+        ), patch(
+            "service_online_sidecar_write.safe_file_read",
+            return_value="<Chapters/>",
+        ), patch(
+            "service_online_sidecar_write._parse_chapter_xml_string",
+            return_value=existing,
+        ):
+            unchanged = _chapter_xml_save_content_unchanged(
+                "/media/show.mkv", online, _SAVE_CHAPTERS_MERGE
+            )
+        self.assertFalse(unchanged)
+
+    def test_backup_does_not_nameerror(self):
+        from service_online_sidecar_write import _backup_sidecar_file
+
+        addon = MagicMock()
+        with patch(
+            "service_online_sidecar_write.addon_get_bool", return_value=True
+        ), patch(
+            "service_online_sidecar_write.xbmcvfs.exists", return_value=False
+        ), patch(
+            "service_online_sidecar_write.xbmcvfs.copy", return_value=True
+        ):
+            _backup_sidecar_file(addon, "/media/show_chapters.xml")
 
 
 if __name__ == "__main__":

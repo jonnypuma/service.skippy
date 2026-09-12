@@ -828,6 +828,14 @@ def save_segments(video_path, segments, save_format=None):
     elif save_format == SAVE_FORMAT_EDL:
         edl_success = save_edl(video_path, segments)
 
+    if edl_success or xml_success:
+        try:
+            from service_sidecar_probe_cache import request_sidecar_probe_invalidation
+
+            request_sidecar_probe_invalidation(video_path)
+        except Exception:
+            pass
+
     return edl_success, xml_success
 
 
@@ -869,4 +877,11 @@ def delete_segment_files(video_path, save_format=None):
                 log(f"Deleted empty segment file: {path}")
             except Exception as err:
                 log(f"Failed to delete {path}: {err}")
+    if deleted:
+        try:
+            from service_sidecar_probe_cache import request_sidecar_probe_invalidation
+
+            request_sidecar_probe_invalidation(video_path)
+        except Exception:
+            pass
     return deleted

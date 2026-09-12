@@ -16,6 +16,45 @@ from settings_utils import get_addon, log, log_service_detail
 # Jellyfin Kodi plugin (chapters/edl exporter) may place exports under this folder beside the video.
 _JF_CHAPTERS_SUBDIR = ".chapters"
 
+
+def vfs_norm_path(path):
+    """Slash-normalize a VFS/network path (Windows ``os.path.join`` injects ``\\``)."""
+    if not path:
+        return ""
+    s = str(path).strip().replace("\\", "/")
+    if len(s) > 1:
+        s = s.rstrip("/")
+    return s
+
+
+def vfs_join(*parts):
+    """Join VFS path segments with ``/`` so ``nfs://`` / ``smb://`` stay valid on Windows."""
+    cleaned = []
+    for part in parts:
+        if part is None or part == "":
+            continue
+        piece = str(part).replace("\\", "/")
+        if not cleaned:
+            cleaned.append(piece.rstrip("/") if len(piece) > 1 else piece)
+        else:
+            cleaned.append(piece.strip("/"))
+    return "/".join(cleaned)
+
+
+def vfs_paths_match(path_a, path_b):
+    """True when two playback/sidecar paths are the same after slash (and VFS translate) normalize."""
+    if not path_a or not path_b:
+        return False
+    na, nb = vfs_norm_path(path_a), vfs_norm_path(path_b)
+    if na == nb:
+        return True
+    try:
+        ta = vfs_norm_path(xbmcvfs.translatePath(str(path_a).strip()) or "")
+        tb = vfs_norm_path(xbmcvfs.translatePath(str(path_b).strip()) or "")
+    except Exception:
+        return False
+    return bool(ta and tb and ta == tb)
+
 # Deduplicate high-frequency path detail lines (sidecar checks every few seconds).
 _last_paths_detail = {}
 
@@ -35,10 +74,11 @@ def _dedupe_paths(paths):
     seen = set()
     result = []
     for path in paths:
-        if not path or path in seen:
+        key = vfs_norm_path(path)
+        if not key or key in seen:
             continue
-        seen.add(path)
-        result.append(path)
+        seen.add(key)
+        result.append(key)
     return result
 
 
@@ -91,16 +131,16 @@ def _chapter_xml_paths_to_try(video_path):
         stem = os.path.basename(base)
         if not parent or not stem:
             continue
-        subdir = os.path.join(parent, _JF_CHAPTERS_SUBDIR)
+        subdir = vfs_join(parent, _JF_CHAPTERS_SUBDIR)
         for s in suffixes:
-            paths_to_try.append(os.path.join(subdir, f"{stem}{s}"))
+            paths_to_try.append(vfs_join(subdir, f"{stem}{s}"))
 
     paths_to_try = _dedupe_paths(paths_to_try)
 
     # 3) Directory chapters.xml beside the media file (no basename match)
     vp_parent = os.path.dirname(video_path)
     if vp_parent:
-        chap = os.path.join(vp_parent, "chapters.xml")
+        chap = vfs_join(vp_parent, "chapters.xml")
         if chap not in set(paths_to_try):
             paths_to_try.append(chap)
 
@@ -162,7 +202,7 @@ def existing_paths_from_listing(candidate_paths):
         file_map, _dirs = idx
         listed = file_map.get(name.lower())
         if listed:
-            found.append(os.path.join(parent, listed))
+            found.append(vfs_join(parent, listed))
     return _dedupe_paths(found), _dedupe_paths(unknown)
 
 
@@ -239,7 +279,7 @@ def _edl_paths_to_try(video_path):
         parent = os.path.dirname(base)
         stem = os.path.basename(base)
         if parent and stem:
-            paths_to_try.append(os.path.join(parent, _JF_CHAPTERS_SUBDIR, f"{stem}.edl"))
+            paths_to_try.append(vfs_join(parent, _JF_CHAPTERS_SUBDIR, f"{stem}.edl"))
     return _dedupe_paths(paths_to_try)
 
 

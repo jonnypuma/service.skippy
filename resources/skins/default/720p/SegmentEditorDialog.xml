@@ -4,8 +4,8 @@
     <system>1</system>
     <posx>0</posx>
     <posy>0</posy>
-    <width>1920</width>
-    <height>1080</height>
+    <width>1280</width>
+    <height>720</height>
   </coordinates>
 
   <zorder>1</zorder>
@@ -27,8 +27,8 @@
     <control type="image">
       <left>0</left>
       <top>0</top>
-      <width>1920</width>
-      <height>1080</height>
+      <width>1280</width>
+      <height>720</height>
       <texture>white.png</texture>
       <colordiffuse>F0000000</colordiffuse>
       <visible>String.IsEqual(Window.Property(EnableFullscreenOverlay),true)</visible>

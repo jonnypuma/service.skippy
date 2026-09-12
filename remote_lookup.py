@@ -230,8 +230,12 @@ def fetch_theintrodb_segments(context, total_time):
         "TheIntroDB",
         extra_headers=extra_headers or None,
     )
+    if payload is None:
+        _rlog(
+            "TheIntroDB: no JSON payload (HTTP error, timeout, or cooldown — not cached)"
+        )
+        return None
     if not payload:
-        _rlog("TheIntroDB: no JSON payload (HTTP error, timeout, or empty body — see messages above)")
         return []
     segs = _theintrodb_segment_entries(payload, total_time)
     if segs:
@@ -265,6 +269,9 @@ def fetch_introdb_segments(context, total_time):
         ),
         "IntroDB.app",
     )
+    if payload is None:
+        _rlog("IntroDB.app: lookup failed or cooldown active — not cached")
+        return None
     if not isinstance(payload, dict):
         _rlog("IntroDB.app: response was not a JSON object (got %s)" % type(payload).__name__)
         return []
@@ -325,6 +332,35 @@ def merge_remote_segments(primary_segs, secondary_segs):
     return sorted(out, key=lambda s: s.start_seconds)
 
 
+def _merge_remote_sources_for_cache(cache, key, the_segs, intro_segs, introdb_primary):
+    """Merge TheIntroDB + IntroDB.app. Cache only when both fetches completed (not cooldown/error).
+
+    ``None`` from a fetch means the request was skipped or failed. Empty list is a
+    real no-match (including HTTP 404) and is cacheable.
+    """
+    incomplete = the_segs is None or intro_segs is None
+    the_list = the_segs if the_segs is not None else []
+    intro_list = intro_segs if intro_segs is not None else []
+    if introdb_primary:
+        merged = merge_remote_segments(intro_list, the_list)
+    else:
+        merged = merge_remote_segments(the_list, intro_list)
+    if incomplete:
+        _rlog(
+            "not caching remote merge: a source fetch failed or is in cooldown "
+            "(TheIntroDB=%s, IntroDB.app=%s)"
+            % (
+                "miss" if the_segs is None else len(the_list),
+                "miss" if intro_segs is None else len(intro_list),
+            )
+        )
+        return list(merged)
+    cache[key] = merged
+    if merged:
+        record_online_segments_downloaded(len(merged))
+    return list(merged)
+
+
 def _online_merge_introdb_primary(playback_kind):
     """
     playback_kind: 'tv' or 'movie' — which setting key to read.
@@ -372,25 +408,27 @@ def fetch_remote_movie_segments(total_time, cache, snapshot=None):
 
     the_segs = fetch_theintrodb_segments(context, tt)
     intro_segs = fetch_introdb_segments(context, tt)
-    if _online_merge_introdb_primary("movie"):
-        merged = merge_remote_segments(intro_segs, the_segs)
+    introdb_primary = _online_merge_introdb_primary("movie")
+    the_n = "miss" if the_segs is None else len(the_segs)
+    intro_n = "miss" if intro_segs is None else len(intro_segs)
+    if introdb_primary:
         _rlog(
-            "Remote movie segments: merge order IntroDB.app primary (TheIntroDB=%d, IntroDB=%d pre-merge)"
-            % (len(the_segs), len(intro_segs))
+            "Remote movie segments: merge order IntroDB.app primary (TheIntroDB=%s, IntroDB=%s pre-merge)"
+            % (the_n, intro_n)
         )
     else:
-        merged = merge_remote_segments(the_segs, intro_segs)
         _rlog(
-            "Remote movie segments: merge order TheIntroDB primary (TheIntroDB=%d, IntroDB=%d pre-merge)"
-            % (len(the_segs), len(intro_segs))
+            "Remote movie segments: merge order TheIntroDB primary (TheIntroDB=%s, IntroDB=%s pre-merge)"
+            % (the_n, intro_n)
         )
-    cache[key] = merged
+    merged = _merge_remote_sources_for_cache(
+        cache, key, the_segs, intro_segs, introdb_primary
+    )
     if merged:
         _rlog("TheIntroDB/IntroDB merge (movie): using %d segment(s)" % len(merged))
-        record_online_segments_downloaded(len(merged))
     else:
         _rlog("TheIntroDB/IntroDB merge (movie): empty")
-    return list(merged)
+    return merged
 
 
 def fetch_remote_tv_segments_core(item, total_time, cache):
@@ -421,29 +459,25 @@ def fetch_remote_tv_segments_core(item, total_time, cache):
 
     the_segs = fetch_theintrodb_segments(context, tt)
     intro_segs = fetch_introdb_segments(context, tt)
-    if _online_merge_introdb_primary("tv"):
-        merged = merge_remote_segments(intro_segs, the_segs)
+    introdb_primary = _online_merge_introdb_primary("tv")
+    merged = _merge_remote_sources_for_cache(
+        cache, key, the_segs, intro_segs, introdb_primary
+    )
+    the_n = "miss" if the_segs is None else len(the_segs)
+    intro_n = "miss" if intro_segs is None else len(intro_segs)
+    if introdb_primary:
         _rlog(
             "merged remote (TV): IntroDB.app wins overlaps — %d segment(s) total "
-            "(TheIntroDB=%d, IntroDB.app=%d pre-merge)"
-            % (len(merged), len(the_segs), len(intro_segs))
+            "(TheIntroDB=%s, IntroDB.app=%s pre-merge)"
+            % (len(merged), the_n, intro_n)
         )
     else:
-        merged = merge_remote_segments(the_segs, intro_segs)
         _rlog(
             "merged remote (TV): TheIntroDB wins overlaps — %d segment(s) total "
-            "(TheIntroDB=%d, IntroDB.app=%d pre-merge)"
-            % (len(merged), len(the_segs), len(intro_segs))
+            "(TheIntroDB=%s, IntroDB.app=%s pre-merge)"
+            % (len(merged), the_n, intro_n)
         )
-    cache[key] = merged
-    if merged:
-        record_online_segments_downloaded(len(merged))
-    else:
-        _rlog(
-            "merged remote (TV): empty (TheIntroDB=%d, IntroDB.app=%d segments before merge)"
-            % (len(the_segs), len(intro_segs))
-        )
-    return list(merged)
+    return merged
 
 
 def _try_tv_prefetch_handoff(item, cache):
