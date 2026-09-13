@@ -794,10 +794,13 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         self.assertEqual(props["hide_close_button"], "true")
         self.assertEqual(props["skippy_combined_slice"], "false")
         controls[3081].setVisible.assert_called_with(False)
-        controls[3012].setWidth.assert_called_with(COMPACT_SKIP_CONTENT_W_720)
+        # Compact + combined hides the close button and the icon, so 3016 is the
+        # only skip variant the skin shows; the others are left untouched.
+        controls[3016].setWidth.assert_called_with(COMPACT_SKIP_CONTENT_W_720)
+        self.assertNotIn(3012, controls)
         controls[3014].setVisible.assert_called_with(False)
-        controls[COMBINED_TRACK_ID].setVisible.assert_called_with(True)
-        controls[COMBINED_TRACK_SLICE_ID].setVisible.assert_called_with(False)
+        controls[COMBINED_TRACK_ID].setWidth.assert_called_with(COMPACT_SKIP_CONTENT_W_720)
+        self.assertNotIn(COMBINED_TRACK_SLICE_ID, controls)
         controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(75)
         self.assertEqual(window._skip_progress_bar_width, COMPACT_SKIP_CONTENT_W_720)
 
@@ -827,10 +830,12 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         seg = build_customize_mock_segment(False)
         apply_full_skip_layout(window, settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value)
         self.assertEqual(props["skippy_combined_slice"], "true")
-        controls[COMBINED_TRACK_ID].setVisible.assert_called_with(False)
-        controls[COMBINED_TRACK_SLICE_ID].setVisible.assert_called_with(True)
-        controls[COMBINED_FILL_STRETCH_ID].setVisible.assert_called_with(False)
-        controls[COMBINED_FILL_SLICE_ID].setVisible.assert_called_with(True)
+        # Sliced style: only the nine-slice track and fill are positioned. The
+        # stretched pair stays untouched because the skin hides it.
+        self.assertTrue(controls[COMBINED_TRACK_SLICE_ID].setWidth.called)
+        self.assertTrue(controls[COMBINED_FILL_SLICE_ID].setWidth.called)
+        self.assertNotIn(COMBINED_TRACK_ID, controls)
+        self.assertNotIn(COMBINED_FILL_STRETCH_ID, controls)
         apply_mock_textures(window, settings, False)
         controls[COMBINED_TRACK_SLICE_ID].setColorDiffuse.assert_called_with("66FFFFFF")
 
@@ -866,7 +871,10 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         self.assertEqual(props["hide_close_button"], "true")
         controls[3081].setVisible.assert_called_with(True)
         controls[3014].setVisible.assert_called_with(False)
-        controls[3016].setWidth.assert_called_with(FULL_SKIP_PROGRESS_BAR_WIDTH)
+        # Combined hides close but keeps the skip icon here, so 3015 is the visible
+        # variant and 3016 is never touched.
+        controls[3015].setWidth.assert_called_with(FULL_SKIP_PROGRESS_BAR_WIDTH)
+        self.assertNotIn(3016, controls)
         controls[COMBINED_TRACK_ID].setPosition.assert_called_with(
             FULL_SKIP_MARGIN_720, 10
         )

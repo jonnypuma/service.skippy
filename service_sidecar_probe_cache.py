@@ -54,6 +54,18 @@ def _probe_cache_get(cache: dict, video_path: str):
     return None
 
 
+def sidecar_probe_stamp(segment_monitor, video_path: str) -> Optional[float]:
+    """Return the cached probe's ``probed_at`` without probing, or ``None`` when absent.
+
+    A changed stamp means the sidecars were re-listed (a write invalidated the cache),
+    which is the only case where a sidecar signature can go stale mid-parse.
+    """
+    if segment_monitor is None or not video_path:
+        return None
+    hit = _probe_cache_get(_probe_cache(segment_monitor), video_path)
+    return None if hit is None else hit.probed_at
+
+
 def _probe_cache_store(cache: dict, video_path: str, result) -> None:
     for key in _matching_probe_keys(cache, video_path):
         cache.pop(key, None)

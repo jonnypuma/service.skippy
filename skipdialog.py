@@ -220,32 +220,6 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         if self._minimal_mode:
             log(f"🖼️ Minimal plate (XML patched in service): {_minimal_plate_filename(addon)}")
-        try:
-            playhead = xbmc.Player().getTime()
-        except Exception:
-            playhead = self.segment.start_seconds
-        duration_str = skip_duration_for_playhead(
-            playhead,
-            self.segment,
-            AddonSettingsReader(addon),
-        ) if addon else duration_str
-        label = apply_skip_dialog_caps(
-            _build_skip_button_label(self.segment, self._skip_fmt, duration_str, addon),
-            self._skip_all_caps,
-        )
-        text_color = self._skip_text_color_argb
-        for cid in FULL_SKIP_BUTTON_IDS:
-            try:
-                _set_skip_button_label(self.getControl(cid), label, text_color)
-            except Exception:
-                pass
-
-        self.setProperty("countdown", "")
-
-        self.setProperty(
-            "ending_text",
-            apply_skip_dialog_caps(ending_text_for_segment(addon, self.segment), self._skip_all_caps),
-        )
 
         hide_ending_text = addon_get_bool(addon, "hide_ending_text", False) if addon else False
         hide_close = False
@@ -265,14 +239,46 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 hide_skip_icon = addon_get_bool(addon, "hide_skip_icon", False) if addon else False
             self.setProperty("hide_skip_icon", "true" if hide_skip_icon else "false")
             if hide_close:
-                try:
-                    self.getControl(3013).setVisible(False)
-                    log("🚫 Close button hidden per setting")
-                except Exception as e:
-                    log(f"⚠️ Error hiding close button: {e}")
+                log("🚫 Close button hidden per setting (skin visibility condition)")
         else:
             self.setProperty("hide_close_button", "true")
             self.setProperty("hide_skip_icon", "true")
+
+        # Each control call blocks for a frame, so only touch the one skip button
+        # variant the skin can show (SkipDialog_*.xml <visible> conditions).
+        self._skip_button_ids = (
+            (3012,)
+            if self._minimal_mode
+            else (_full_skip_focus_id(hide_close, hide_skip_icon),)
+        )
+        self._close_button_visible = not self._minimal_mode and not hide_close
+
+        try:
+            playhead = xbmc.Player().getTime()
+        except Exception:
+            playhead = self.segment.start_seconds
+        duration_str = skip_duration_for_playhead(
+            playhead,
+            self.segment,
+            AddonSettingsReader(addon),
+        ) if addon else duration_str
+        label = apply_skip_dialog_caps(
+            _build_skip_button_label(self.segment, self._skip_fmt, duration_str, addon),
+            self._skip_all_caps,
+        )
+        text_color = self._skip_text_color_argb
+        for cid in self._skip_button_ids:
+            try:
+                _set_skip_button_label(self.getControl(cid), label, text_color)
+            except Exception:
+                pass
+
+        self.setProperty("countdown", "")
+
+        self.setProperty(
+            "ending_text",
+            apply_skip_dialog_caps(ending_text_for_segment(addon, self.segment), self._skip_all_caps),
+        )
 
         self._closing = False
         self.response = None
@@ -477,7 +483,9 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             getattr(self, "_skip_all_caps", False),
         )
         text_color = getattr(self, "_skip_text_color_argb", None) or "FF6E6E6E"
-        ids = (3012,) if self._minimal_mode else FULL_SKIP_BUTTON_IDS
+        ids = getattr(self, "_skip_button_ids", None) or (
+            (3012,) if self._minimal_mode else FULL_SKIP_BUTTON_IDS
+        )
         for cid in ids:
             try:
                 _set_skip_button_label(self.getControl(cid), label, text_color)
@@ -519,21 +527,22 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 c = self.getControl(3012)
                 _set_skip_button_label(c, c.getLabel() or "", text_color)
                 return
-            for cid in FULL_SKIP_BUTTON_IDS:
+            for cid in getattr(self, "_skip_button_ids", FULL_SKIP_BUTTON_IDS):
                 try:
                     c = self.getControl(cid)
                     _set_skip_button_label(c, c.getLabel() or "", text_color)
                 except Exception:
                     pass
-            try:
-                c = self.getControl(3013)
-                close_lbl = apply_skip_dialog_caps(
-                    get_localized(get_addon(), 40001, "Close"),
-                    getattr(self, "_skip_all_caps", False),
-                )
-                _set_skip_button_label(c, close_lbl, text_color)
-            except Exception:
-                pass
+            if getattr(self, "_close_button_visible", True):
+                try:
+                    c = self.getControl(3013)
+                    close_lbl = apply_skip_dialog_caps(
+                        get_localized(get_addon(), 40001, "Close"),
+                        getattr(self, "_skip_all_caps", False),
+                    )
+                    _set_skip_button_label(c, close_lbl, text_color)
+                except Exception:
+                    pass
             try:
                 if self.getProperty("show_next_jump") == "true":
                     c = self.getControl(3011)

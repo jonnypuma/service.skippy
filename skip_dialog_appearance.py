@@ -630,7 +630,9 @@ def _place_ctrl(ctrl, x, y, w=None, h=None):
             pass
 
 
-def _layout_full_skip_buttons(window, sc, compact, hide_close, align_right, place_focus_overlays=False):
+def _layout_full_skip_buttons(
+    window, sc, compact, hide_close, align_right, place_focus_overlays=False, hide_skip_icon=False
+):
     """Place Skip/Close and optional Customize focus overlays; return (content_left, content_w)."""
     if compact:
         content_w = sc(COMPACT_SKIP_CONTENT_W_720)
@@ -653,10 +655,22 @@ def _layout_full_skip_buttons(window, sc, compact, hide_close, align_right, plac
         close_x, close_w = sc(345), sc(80)
         wide_x, wide_w = left0, content_w
 
-    _place_ctrl(_safe_control(window, 3012), skip_x, btn_top, skip_w, btn_h)
-    _place_ctrl(_safe_control(window, 3013), close_x, btn_top, close_w, btn_h)
-    _place_ctrl(_safe_control(window, 3015), wide_x, btn_top, wide_w, btn_h)
-    _place_ctrl(_safe_control(window, 3016), wide_x, btn_top, wide_w, btn_h)
+    # Each control call waits for a rendered frame, so place only the buttons the
+    # skin can actually show. The preview window toggles these live, so it still
+    # places every variant.
+    if place_focus_overlays:
+        _place_ctrl(_safe_control(window, 3012), skip_x, btn_top, skip_w, btn_h)
+        _place_ctrl(_safe_control(window, 3013), close_x, btn_top, close_w, btn_h)
+        _place_ctrl(_safe_control(window, 3015), wide_x, btn_top, wide_w, btn_h)
+        _place_ctrl(_safe_control(window, 3016), wide_x, btn_top, wide_w, btn_h)
+    else:
+        active_id = full_skip_focus_id(hide_close, hide_skip_icon)
+        if active_id == 3012:
+            _place_ctrl(_safe_control(window, 3012), skip_x, btn_top, skip_w, btn_h)
+        else:
+            _place_ctrl(_safe_control(window, active_id), wide_x, btn_top, wide_w, btn_h)
+        if not hide_close:
+            _place_ctrl(_safe_control(window, 3013), close_x, btn_top, close_w, btn_h)
     if place_focus_overlays:
         for cid in CUSTOMIZE_SKIP_FOCUS_OVERLAY_IDS:
             if cid in (3040, 3042):
@@ -705,8 +719,10 @@ def apply_full_skip_layout(
     window.setProperty("skippy_combined_fill", focus_file)
     window.setProperty("skippy_combined_slice", "true" if sliced else "false")
 
+    # Mirrors the dialog's own resolution so the placed button is the visible one.
+    hide_skip_icon = True if compact else settings.get_bool("hide_skip_icon", False)
     content_left, progress_bar_width = _layout_full_skip_buttons(
-        window, sc, compact, hide_close, align_right, place_focus_overlays
+        window, sc, compact, hide_close, align_right, place_focus_overlays, hide_skip_icon
     )
     CONTENT_TOP = sc(33) if compact else sc(41)
     GAP_AFTER_JUMP = sc(5)
@@ -813,36 +829,20 @@ def apply_full_skip_layout(
                 window._last_smooth_fill_w = init_w
             except Exception:
                 pass
-            track = _safe_control(window, COMBINED_TRACK_ID)
-            track_slice = _safe_control(window, COMBINED_TRACK_SLICE_ID)
-            stretch = _safe_control(window, COMBINED_FILL_STRETCH_ID)
-            slice_fill = _safe_control(window, COMBINED_FILL_SLICE_ID)
-            for ctrl, show in ((track, not sliced), (track_slice, sliced)):
-                _place_ctrl(ctrl, skip_x, btn_top, skip_w, btn_h)
-                if ctrl:
-                    try:
-                        ctrl.setImage(focus_file)
-                        ctrl.setVisible(show)
-                    except Exception:
-                        pass
-                    try:
-                        ctrl.setColorDiffuse("66FFFFFF")
-                    except Exception:
-                        pass
-            _place_ctrl(stretch, skip_x, btn_top, init_w, btn_h)
-            _place_ctrl(slice_fill, skip_x, btn_top, init_w, btn_h)
-            if stretch:
-                try:
-                    stretch.setImage(focus_file)
-                    stretch.setVisible(not sliced)
-                except Exception:
-                    pass
-            if slice_fill:
-                try:
-                    slice_fill.setImage(focus_file)
-                    slice_fill.setVisible(sliced)
-                except Exception:
-                    pass
+            # The sliced and stretched variants are mutually exclusive in the skin,
+            # so only the pair that can be shown is touched.
+            track = _safe_control(
+                window, COMBINED_TRACK_SLICE_ID if sliced else COMBINED_TRACK_ID
+            )
+            active_fill = _safe_control(
+                window, COMBINED_FILL_SLICE_ID if sliced else COMBINED_FILL_STRETCH_ID
+            )
+            # Texture, colordiffuse and visibility all come from the skin XML via
+            # skippy_combined_fill / skippy_combined_slice, so only geometry is set
+            # here. Setting the texture from Python would also drop the nine-slice
+            # border the sliced variants declare.
+            _place_ctrl(track, skip_x, btn_top, skip_w, btn_h)
+            _place_ctrl(active_fill, skip_x, btn_top, init_w, btn_h)
             bg = _safe_control(window, SMOOTH_PROGRESS_BG_ID)
             fill = _safe_control(window, SMOOTH_PROGRESS_FILL_ID)
             if bg:

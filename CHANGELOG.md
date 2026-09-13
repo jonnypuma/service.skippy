@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.7.0] - 2026-09-13
+
+### Changed
+- **Faster skip dialog on network shares**: the uncached segment parse dropped from ~1.3s to ~0.6s on NFS by removing redundant round trips. The sidecar probe lists each directory once for both chapter XML and EDL candidates instead of twice; `_sidecar_signature` and `parse_chapters` skip the `exists()` call on paths a directory listing already confirmed; and the post-parse signature is only recomputed when a sidecar write invalidated the probe cache during the parse.
+- **Skip dialog layout**: Full layout places and repaints only the button variants the skin can actually show, instead of every variant. Each GUI control call waits for a rendered frame, so this cut dialog `onInit` roughly in half on Amlogic devices.
+
 ## [6.6.4] - 2026-09-12
 
 ### Fixed

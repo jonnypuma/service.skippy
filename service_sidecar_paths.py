@@ -165,15 +165,16 @@ def _listdir_index(parent):
     return file_map, dir_set
 
 
-def existing_paths_from_listing(candidate_paths):
+def existing_paths_from_listing(candidate_paths, shared_indexes=None):
     """Split candidates into listed hits vs unknown (listdir failed for that parent).
 
     Missing files in a successful listing are dropped (no ``exists`` / ``File``).
     A missing ``.chapters`` directory is treated as empty, not unknown.
+    Pass ``shared_indexes`` to reuse listings across calls (NFS listdir is slow).
     """
     found = []
     unknown = []
-    indexes = {}
+    indexes = shared_indexes if shared_indexes is not None else {}
     jf_lower = _JF_CHAPTERS_SUBDIR.lower()
 
     def index_for(parent):
@@ -210,8 +211,11 @@ def sidecar_hits_from_directory_listing(video_path):
     """First listed chapter XML and EDL paths, plus candidates listdir could not decide."""
     chapter_candidates = _chapter_xml_paths_to_try(video_path)
     edl_candidates = _edl_paths_to_try(video_path)
-    found_ch, unknown_ch = existing_paths_from_listing(chapter_candidates)
-    found_edl, unknown_edl = existing_paths_from_listing(edl_candidates)
+    # Chapter and EDL candidates live in the same directories, so both passes share
+    # one listing per parent instead of re-listing over the network.
+    shared_indexes = {}
+    found_ch, unknown_ch = existing_paths_from_listing(chapter_candidates, shared_indexes)
+    found_edl, unknown_edl = existing_paths_from_listing(edl_candidates, shared_indexes)
     return (
         found_ch[0] if found_ch else None,
         found_edl[0] if found_edl else None,
@@ -328,6 +332,7 @@ def _safe_stat_value(stat_obj, name):
 
 def _sidecar_signature(video_path, segment_monitor=None):
     """Return existing sidecar paths with mtime/size so edits during playback can refresh parsing."""
+    probe = None
     if segment_monitor is not None:
         from service_sidecar_probe_cache import resolve_sidecar_paths
 
@@ -337,23 +342,23 @@ def _sidecar_signature(video_path, segment_monitor=None):
 
     signature = []
     watch_paths = _sidecar_paths_to_watch(video_path)
-    if segment_monitor is not None:
-        from service_sidecar_probe_cache import resolve_sidecar_paths
-
-        probe = resolve_sidecar_paths(video_path, segment_monitor)
-        if probe.probed:
-            watch_paths = [
-                p
-                for p in watch_paths
-                if p
-                in (
-                    probe.chapter_path,
-                    probe.edl_path,
-                )
-            ]
+    # Probe-confirmed paths came from a directory listing, so an extra exists() before
+    # the stat is a wasted network round trip.
+    probe_confirmed = False
+    if probe is not None and probe.probed:
+        probe_confirmed = True
+        watch_paths = [
+            p
+            for p in watch_paths
+            if p
+            in (
+                probe.chapter_path,
+                probe.edl_path,
+            )
+        ]
     for path in watch_paths:
         try:
-            if not xbmcvfs.exists(path):
+            if not probe_confirmed and not xbmcvfs.exists(path):
                 continue
             stat_obj = xbmcvfs.Stat(path)
             signature.append(

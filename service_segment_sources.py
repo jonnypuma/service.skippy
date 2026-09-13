@@ -217,6 +217,7 @@ def _parse_chapter_xml_string(xml_data):
 
 def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
     paths_to_try = _chapter_xml_paths_to_try(video_path)
+    probe_confirmed = False
 
     if segment_monitor is not None:
         from service_sidecar_probe_cache import resolve_sidecar_paths
@@ -229,6 +230,7 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
             return None
         if probe.probed and probe.chapter_path:
             paths_to_try = [probe.chapter_path]
+            probe_confirmed = True
 
     _log_seg_detail(f"🔍 Attempting chapter XML paths: {paths_to_try}")
 
@@ -263,11 +265,13 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
             continue
         seen_paths.add(path)
         try:
-            exists_result = False
-            try:
-                exists_result = xbmcvfs.exists(path)
-            except Exception:
-                pass
+            # The probe already listed this path in its directory, so skip the stat.
+            exists_result = probe_confirmed
+            if not exists_result:
+                try:
+                    exists_result = xbmcvfs.exists(path)
+                except Exception:
+                    pass
             if not exists_result:
                 continue
             f = xbmcvfs.File(path)
@@ -750,7 +754,10 @@ def get_cached_source_segments(
 
         log("🔄 Sidecar file change detected — reparsing segments")
 
+    from service_sidecar_probe_cache import sidecar_probe_stamp
+
     sidecar_sig_before = _sidecar_signature(path, segment_monitor)
+    probe_stamp_before = sidecar_probe_stamp(segment_monitor, path)
     parsed, segment_origin = _parse_source_segments_uncached(
         path,
         playback_type,
@@ -759,7 +766,13 @@ def get_cached_source_segments(
         on_remote_segments_saved,
         on_local_to_online_sync_check,
     )
-    sidecar_sig_after = _sidecar_signature(path, segment_monitor)
+    # Only a sidecar write during the parse can stale the signature, and every writer
+    # invalidates the probe cache. An unchanged probe stamp means we can reuse the
+    # signature instead of paying for another round of stats over the network.
+    if sidecar_probe_stamp(segment_monitor, path) == probe_stamp_before:
+        sidecar_sig_after = sidecar_sig_before
+    else:
+        sidecar_sig_after = _sidecar_signature(path, segment_monitor)
     segment_monitor.segment_parse_cache = {
         "path": path,
         "playback_type": playback_type,
