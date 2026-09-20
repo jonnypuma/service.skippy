@@ -1,5 +1,20 @@
 # Changelog
 
+## [6.8.0] - 2026-09-20
+
+### Changed
+- **Sidecar parse**: EDL reads skip the extra `exists()` when the directory listing already named the file (same as chapter XML). `update_monitor=True` no longer re-stats a probe-confirmed XML before the read. Parse-cache hits and mtime watch paths slash-normalize like probe invalidation, so `nfs://…\file` vs `nfs://…/file` reuse the cache instead of reparsing; signature stats use the probe’s real sidecar paths.
+
+### Fixed
+- **Skip click log**: the dialog logs the same destination the service seeks to (nested start or end+1, plus Jump offset).
+- **Nested skip bookkeeping**: matching the landing segment allows a 50ms start-time difference so a float mismatch cannot drop parent/nested rewind tracking.
+- **Skip dialog layout**: Full without Combined fill no longer `setVisible(False)` on the four combined-fill images the skin already hides.
+
+### Removed
+- Unused `PROBE_MAX_AGE_S` alias (hit/miss TTLs remain `PROBE_HIT_MAX_AGE_S` / `PROBE_MISS_MAX_AGE_S`).
+- Unused `_sidecar_chapter_xml_exists` (discovery is `_find_existing_sidecar_chapter_xml_path`).
+- Unused `SkipDialog.xml` (720p and 1080i). Playback already opens `SkipDialog_{Corner}.xml`; the unnamed file was a leftover default and was still texture-patched on settings change.
+
 ## [6.7.0] - 2026-09-13
 
 ### Changed

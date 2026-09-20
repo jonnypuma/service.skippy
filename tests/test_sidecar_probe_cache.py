@@ -248,5 +248,77 @@ class ProbeInvalidationPathMatchTests(unittest.TestCase):
             self.assertEqual(listing.call_count, 2)
 
 
+class SidecarSignatureWatchPathTests(unittest.TestCase):
+    def setUp(self):
+        install_kodi_stubs()
+
+    def test_stats_probe_path_when_listdir_spelling_differs(self):
+        import types
+        from unittest.mock import MagicMock
+
+        from service_sidecar_paths import _sidecar_signature
+        from service_sidecar_probe_cache import SidecarProbeResult
+
+        listed = "nfs://server/share/Show_chapters.xml"
+        probe = SidecarProbeResult(chapter_path=listed, edl_path=None, probed=True)
+        stat_paths = []
+
+        def fake_stat(path):
+            stat_paths.append(path)
+            return types.SimpleNamespace(st_mtime=lambda: 1, st_size=lambda: 2)
+
+        with patch(
+            "service_sidecar_probe_cache.resolve_sidecar_paths", return_value=probe
+        ), patch("service_sidecar_paths.xbmcvfs.Stat", side_effect=fake_stat), patch(
+            "service_sidecar_paths.xbmcvfs.exists"
+        ) as exists:
+            sig = _sidecar_signature("nfs://server/share/show.mkv", MagicMock())
+        exists.assert_not_called()
+        self.assertEqual(stat_paths, [listed])
+        self.assertEqual(sig[0][0], listed)
+
+
+class ParseCachePathMatchTests(unittest.TestCase):
+    def setUp(self):
+        install_kodi_stubs()
+
+    def test_cache_hit_slash_normalized_path(self):
+        import time
+        from unittest.mock import MagicMock
+
+        from segment_item import SegmentItem
+        from service_segment_sources import get_cached_source_segments
+
+        monitor = MagicMock()
+        seg = SegmentItem(0.0, 10.0, "intro", source="xml")
+        monitor.segment_parse_cache = {
+            "path": r"nfs://server/share\show.mkv",
+            "playback_type": "episode",
+            "settings_signature": ("sig",),
+            "last_sidecar_check": time.time(),
+            "segment_file_found": True,
+            "segments": [seg],
+        }
+        with patch(
+            "service_segment_sources.get_addon", return_value=MagicMock()
+        ), patch(
+            "service_segment_sources._source_settings_signature", return_value=("sig",)
+        ), patch(
+            "service_segment_sources._sidecar_signature"
+        ) as sig:
+            result = get_cached_source_segments(
+                "nfs://server/share/show.mkv",
+                "episode",
+                segment_monitor=monitor,
+                segment_player=MagicMock(),
+                on_remote_segments_saved=lambda *a, **k: None,
+                sidecar_mtime_check_interval=5.0,
+            )
+        sig.assert_not_called()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].start_seconds, 0.0)
+        self.assertTrue(monitor.segment_file_found)
+
+
 if __name__ == "__main__":
     unittest.main()

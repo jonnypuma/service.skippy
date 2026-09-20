@@ -341,21 +341,21 @@ def _sidecar_signature(video_path, segment_monitor=None):
             return tuple()
 
     signature = []
-    watch_paths = _sidecar_paths_to_watch(video_path)
     # Probe-confirmed paths came from a directory listing, so an extra exists() before
-    # the stat is a wasted network round trip.
-    probe_confirmed = False
-    if probe is not None and probe.probed:
-        probe_confirmed = True
-        watch_paths = [
-            p
-            for p in watch_paths
-            if p
-            in (
-                probe.chapter_path,
-                probe.edl_path,
-            )
-        ]
+    # the stat is a wasted network round trip. Stat the probe's real paths (listdir
+    # spelling) rather than intersecting with constructed candidates — a slash or
+    # case difference would otherwise leave watch_paths empty and freeze mtime refresh.
+    probe_confirmed = bool(probe is not None and probe.probed)
+    if probe_confirmed:
+        watch_paths = []
+        for p in (probe.chapter_path, probe.edl_path):
+            if not p:
+                continue
+            if any(vfs_paths_match(p, existing) for existing in watch_paths):
+                continue
+            watch_paths.append(p)
+    else:
+        watch_paths = _sidecar_paths_to_watch(video_path)
     for path in watch_paths:
         try:
             if not probe_confirmed and not xbmcvfs.exists(path):
@@ -379,15 +379,6 @@ def _sidecar_signature(video_path, segment_monitor=None):
             _log_paths_detail(f"⚠ Could not stat sidecar path {path}: {e}")
             signature.append((path, None, None))
     return tuple(signature)
-
-
-def _sidecar_chapter_xml_exists(video_path):
-    chapter_path, _edl, unknown_ch, _unknown_edl, _cc, _ec = (
-        sidecar_hits_from_directory_listing(video_path)
-    )
-    if chapter_path:
-        return True
-    return any(vfs_file_exists(p) for p in unknown_ch)
 
 
 def playback_path_supports_sidecar_chapters_xml(video_path):

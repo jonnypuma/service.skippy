@@ -446,7 +446,6 @@ class CustomizeNavAndStyleTests(unittest.TestCase):
     def test_ending_text_xml_is_white(self):
         root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         names = (
-            "SkipDialog.xml",
             "SkipDialog_BottomRight.xml",
             "SkipDialog_BottomLeft.xml",
             "SkipDialog_TopRight.xml",
@@ -671,6 +670,10 @@ class CompactFullLayoutTests(unittest.TestCase):
         controls[3012].setWidth.assert_called_with(skip_w)
         controls[3014].setHeight.assert_called_with(COMPACT_PROGRESS_H_720)
         self.assertEqual(window._skip_progress_bar_width, COMPACT_SKIP_CONTENT_W_720)
+        self.assertNotIn(COMBINED_TRACK_ID, controls)
+        self.assertNotIn(COMBINED_FILL_STRETCH_ID, controls)
+        self.assertNotIn(COMBINED_FILL_SLICE_ID, controls)
+        self.assertNotIn(COMBINED_TRACK_SLICE_ID, controls)
 
     def test_full_layout_restores_card(self):
         window = MagicMock()
@@ -890,7 +893,6 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         self.assertEqual(skip_dialog_panel_left_720(True), 840)
         root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         right_files = (
-            "SkipDialog.xml",
             "SkipDialog_BottomRight.xml",
             "SkipDialog_TopRight.xml",
         )
@@ -929,19 +931,27 @@ class CombinedCompactLayoutTests(unittest.TestCase):
 
     def test_skip_dialogs_drop_progress_endcaps(self):
         root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        names = (
+            "SkipDialog_BottomRight.xml",
+            "SkipDialog_BottomLeft.xml",
+            "SkipDialog_TopRight.xml",
+            "SkipDialog_TopLeft.xml",
+        )
         for folder in ("720p", "1080i"):
-            path = os.path.join(root, "resources", "skins", "default", folder, "SkipDialog.xml")
-            with open(path, encoding="utf-8") as handle:
-                text = handle.read()
-            self.assertIn("<textureleft>-</textureleft>", text)
-            self.assertIn("<textureright>-</textureright>", text)
-            self.assertNotIn("progress_left.png", text)
-            self.assertIn('id="3050"', text)
-            self.assertIn('id="3053"', text)
-            self.assertIn(
-                '<texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>',
-                text,
-            )
+            for name in names:
+                path = os.path.join(root, "resources", "skins", "default", folder, name)
+                with open(path, encoding="utf-8") as handle:
+                    text = handle.read()
+                self.assertIn("<textureleft>-</textureleft>", text, path)
+                self.assertIn("<textureright>-</textureright>", text, path)
+                self.assertNotIn("progress_left.png", text, path)
+                self.assertIn('id="3050"', text, path)
+                self.assertIn('id="3053"', text, path)
+                self.assertIn(
+                    '<texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>',
+                    text,
+                    path,
+                )
 
 
 class CustomizeImportIsolationTests(unittest.TestCase):

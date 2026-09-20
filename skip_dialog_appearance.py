@@ -50,12 +50,6 @@ COMBINED_FILL_STRETCH_ID = 3051
 COMBINED_FILL_SLICE_ID = 3052
 COMBINED_TRACK_SLICE_ID = 3053
 COMBINED_SLICE_MIN_W = 24
-COMBINED_IMAGE_IDS = (
-    COMBINED_TRACK_ID,
-    COMBINED_FILL_STRETCH_ID,
-    COMBINED_FILL_SLICE_ID,
-    COMBINED_TRACK_SLICE_ID,
-)
 DURATION_FORMAT_1M30S = "1m30s"
 DURATION_FORMAT_MMSS = "mm:ss"
 DURATION_CONTENT_TOTAL = "total"
@@ -861,13 +855,7 @@ def apply_full_skip_layout(
                 % (init_w, skip_w, countdown, float(current))
             )
         else:
-            for cid in COMBINED_IMAGE_IDS:
-                ctrl = _safe_control(window, cid)
-                if ctrl:
-                    try:
-                        ctrl.setVisible(False)
-                    except Exception:
-                        pass
+            # Combined fill images are already hidden by skippy_combined in the skin.
             if show_separate_progress and progress:
                 py = bottom
                 progress.setPosition(LEFT_MARGIN, py)

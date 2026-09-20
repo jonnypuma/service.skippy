@@ -15,7 +15,6 @@ _SKIP_DIALOG_FULL_FILES = (
     "SkipDialog_BottomLeft.xml",
     "SkipDialog_TopLeft.xml",
     "SkipDialog_TopRight.xml",
-    "SkipDialog.xml",
 )
 _FULL_MODE_PROGRESS_ID = "3014"
 _FULL_MODE_SMOOTH_FILL_ID = "3031"

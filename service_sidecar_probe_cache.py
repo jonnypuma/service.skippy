@@ -18,7 +18,6 @@ from settings_utils import log
 # directory listings are not repeated every few seconds during playback.
 PROBE_HIT_MAX_AGE_S = 5.0
 PROBE_MISS_MAX_AGE_S = 60.0
-PROBE_MAX_AGE_S = PROBE_HIT_MAX_AGE_S
 
 
 @dataclass(frozen=True)

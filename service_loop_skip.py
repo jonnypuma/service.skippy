@@ -329,13 +329,25 @@ def process_segment_skips(
             maybe_prompt_per_show_override(ctx, addon, pending[0], pending[1])
 
 
+# next_segment_start is assigned from start_seconds in-process; allow a tiny
+# float gap so nested rewind bookkeeping is not dropped on a rounding mismatch.
+_NESTED_START_MATCH_S = 0.05
+
+
+def _segment_start_times_match(left, right, tol=_NESTED_START_MATCH_S) -> bool:
+    try:
+        return abs(float(left) - float(right)) <= float(tol)
+    except (TypeError, ValueError):
+        return False
+
+
 def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
     monitor = ctx.monitor
     if segment.next_segment_start is None:
         return
     target_segment = None
     for seg in monitor.current_segments:
-        if seg.start_seconds == segment.next_segment_start:
+        if _segment_start_times_match(seg.start_seconds, segment.next_segment_start):
             target_segment = seg
             break
     if not target_segment or not ctx.is_nested_segment(segment, target_segment):

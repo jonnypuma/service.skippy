@@ -31,6 +31,7 @@ from service_sidecar_paths import (
     _edl_paths_to_try,
     _sidecar_signature,
     local_chapter_or_edl_file_exists,
+    vfs_paths_match,
 )
 from settings_utils import (
     addon_get_bool,
@@ -114,16 +115,17 @@ def _invoke_local_to_online_sync(
     )
 
 
-def safe_file_read(*paths):
+def safe_file_read(*paths, skip_exists=False):
     for path in paths:
         if not path:
             continue
         _log_seg_detail(f"📂 Attempting to read: {path}")
-        from service_sidecar_paths import vfs_file_exists
+        if not skip_exists:
+            from service_sidecar_paths import vfs_file_exists
 
-        if not vfs_file_exists(path):
-            _log_seg_detail(f"📂 skip missing path (no File): {path}")
-            continue
+            if not vfs_file_exists(path):
+                _log_seg_detail(f"📂 skip missing path (no File): {path}")
+                continue
         try:
             f = xbmcvfs.File(path)
             content = f.read()
@@ -239,25 +241,31 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
             raise TypeError(
                 "parse_chapters(..., update_monitor=True) requires segment_monitor="
             )
-        any_xml = False
-        seen_exist = set()
-        for path in paths_to_try:
-            if not path or path in seen_exist:
-                continue
-            seen_exist.add(path)
-            try:
-                if xbmcvfs.exists(path):
-                    any_xml = True
-                    break
-            except Exception:
-                continue
-        segment_monitor.segment_file_found = any_xml
-        if not any_xml:
-            log("🚫 No chapter XML file found — segment_file_found set to False")
-            return None
-        _log_seg_detail(
-            "✅ Chapter XML sidecar present — segment_file_found set to True"
-        )
+        if probe_confirmed:
+            segment_monitor.segment_file_found = True
+            _log_seg_detail(
+                "✅ Chapter XML sidecar present — segment_file_found set to True"
+            )
+        else:
+            any_xml = False
+            seen_exist = set()
+            for path in paths_to_try:
+                if not path or path in seen_exist:
+                    continue
+                seen_exist.add(path)
+                try:
+                    if xbmcvfs.exists(path):
+                        any_xml = True
+                        break
+                except Exception:
+                    continue
+            segment_monitor.segment_file_found = any_xml
+            if not any_xml:
+                log("🚫 No chapter XML file found — segment_file_found set to False")
+                return None
+            _log_seg_detail(
+                "✅ Chapter XML sidecar present — segment_file_found set to True"
+            )
 
     seen_paths = set()
     for path in paths_to_try:
@@ -331,6 +339,7 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
 
 def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     paths_to_try = _edl_paths_to_try(video_path)
+    probe_confirmed = False
 
     if segment_monitor is not None:
         from service_sidecar_probe_cache import resolve_sidecar_paths
@@ -343,9 +352,10 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
             return []
         if probe.probed and probe.edl_path:
             paths_to_try = [probe.edl_path]
+            probe_confirmed = True
 
     _log_seg_detail(f"🔍 Attempting EDL paths: {paths_to_try}")
-    edl_data = safe_file_read(*paths_to_try)
+    edl_data = safe_file_read(*paths_to_try, skip_exists=probe_confirmed)
     if not edl_data:
         if update_monitor:
             if segment_monitor is None:
@@ -737,7 +747,7 @@ def get_cached_source_segments(
 
     if (
         cache
-        and cache.get("path") == path
+        and vfs_paths_match(cache.get("path"), path)
         and cache.get("playback_type") == playback_type
         and cache.get("settings_signature") == settings_sig
     ):

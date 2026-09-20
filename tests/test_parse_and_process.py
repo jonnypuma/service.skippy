@@ -67,6 +67,83 @@ class ParseAndProcessTests(unittest.TestCase):
         parent_map = build_nested_parent_map([parent, child])
         self.assertEqual(parent_map[(10, 50)], (0, 100))
 
+    def test_parse_edl_skips_exists_when_probe_confirmed(self):
+        from unittest.mock import MagicMock
+
+        from service_sidecar_probe_cache import SidecarProbeResult
+        from service_segment_sources import parse_edl
+
+        monitor = MagicMock()
+        probe = SidecarProbeResult(
+            chapter_path=None, edl_path="/media/show.edl", probed=True
+        )
+
+        class _File:
+            def read(self):
+                return "0 60 5\n"
+
+            def close(self):
+                return None
+
+        with patch(
+            "service_sidecar_probe_cache.resolve_sidecar_paths", return_value=probe
+        ), patch("service_sidecar_paths.vfs_file_exists") as exists, patch(
+            "service_segment_sources.xbmcvfs.File", return_value=_File()
+        ), patch(
+            "service_segment_sources.get_edl_type_map", return_value={5: "Intro"}
+        ), patch(
+            "service_segment_sources.get_addon", return_value=None
+        ):
+            segments = parse_edl(
+                "/media/show.mkv", update_monitor=False, segment_monitor=monitor
+            )
+        exists.assert_not_called()
+        self.assertEqual(
+            [(s.start_seconds, s.end_seconds, s.segment_type_label) for s in segments],
+            [(0.0, 60.0, "intro")],
+        )
+
+    def test_parse_chapters_skips_exists_when_probe_confirmed(self):
+        from unittest.mock import MagicMock
+
+        from service_sidecar_probe_cache import SidecarProbeResult
+        from service_segment_sources import parse_chapters
+
+        xml_text = (
+            '<?xml version="1.0"?>'
+            "<Chapters><EditionEntry><ChapterAtom>"
+            "<ChapterTimeStart>00:00:00.000000000</ChapterTimeStart>"
+            "<ChapterTimeEnd>00:00:10.000000000</ChapterTimeEnd>"
+            "<ChapterDisplay><ChapterString>Intro</ChapterString></ChapterDisplay>"
+            "</ChapterAtom></EditionEntry></Chapters>"
+        )
+        monitor = MagicMock()
+        probe = SidecarProbeResult(
+            chapter_path="/media/show_chapters.xml", edl_path=None, probed=True
+        )
+
+        class _File:
+            def read(self):
+                return xml_text
+
+            def close(self):
+                return None
+
+        with patch(
+            "service_sidecar_probe_cache.resolve_sidecar_paths", return_value=probe
+        ), patch("service_segment_sources.xbmcvfs.exists") as exists, patch(
+            "service_segment_sources.xbmcvfs.File", return_value=_File()
+        ):
+            segments = parse_chapters(
+                "/media/show.mkv", update_monitor=True, segment_monitor=monitor
+            )
+        exists.assert_not_called()
+        self.assertTrue(monitor.segment_file_found)
+        self.assertEqual(
+            [(s.start_seconds, s.end_seconds, s.segment_type_label) for s in segments],
+            [(0.0, 10.0, "intro")],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

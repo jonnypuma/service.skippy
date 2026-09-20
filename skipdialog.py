@@ -17,6 +17,7 @@ from settings_utils import (
     addon_get_bool,
     addon_get_int,
     addon_get_setting_text,
+    compute_skip_seek_destination_seconds,
     get_addon,
     get_localized,
     skippy_log_effective_detail_level,
@@ -291,7 +292,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         if jump_str:
             log(
                 "⏭️ Dialog configured for jump to next segment at %ss: %s"
-                % (self.segment.next_segment_start, jump_str)
+                % (
+                    compute_skip_seek_destination_seconds(self.segment, addon),
+                    jump_str,
+                )
             )
         else:
             log("➡️ Dialog configured for normal skip to end of segment")
@@ -579,7 +583,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
     def onClick(self, controlId):
         cid = _normalize_control_id(controlId)
         if cid in FULL_SKIP_BUTTON_IDS:
-            result = self.segment.next_segment_start or self.segment.end_seconds + 1.0
+            result = compute_skip_seek_destination_seconds(self.segment, get_addon())
             log(f"🖱️ User clicked skip → skipping to {result}s")
         else:
             result = False
