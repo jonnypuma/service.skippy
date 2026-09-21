@@ -30,7 +30,12 @@ def invalidate_settings_cache():
     _addon_cached_at = 0.0
     _log_level_cached = None
     _log_level_cached_at = 0.0
-    _skip_mode_lists_cache.clear()
+    try:
+        from segment_types import invalidate_catalog_cache
+
+        invalidate_catalog_cache()
+    except Exception:
+        pass
 
 
 def _redact_secrets_for_log(msg):
@@ -502,6 +507,7 @@ def log_playback_settings_snapshot(addon=None):
             "save_online_segments_to_chapters_xml=%s" % bo("save_online_segments_to_chapters_xml", False),
             "save_online_segments_format=%s" % tx("save_online_segments_format", "Both"),
             "save_online_chapters_existing_policy=%s" % tx("save_online_chapters_existing_policy", "SkipIfExists"),
+            "save_online_fill_missing_types=%s" % bo("save_online_fill_missing_types", False),
             "save_online_chapters_backup_before_overwrite=%s" % bo("save_online_chapters_backup_before_overwrite", True),
             "online_sidecar_snap_neighbor_start=%s" % bo("online_sidecar_snap_neighbor_start", False),
             "online_sidecar_snap_neighbor_end=%s" % bo("online_sidecar_snap_neighbor_end", False),
@@ -524,16 +530,17 @@ def log_playback_settings_snapshot(addon=None):
             "skippy_log_detail_level=%s" % detail,
         ]
     )
-    kw = _playback_snap_trim(tx("custom_segment_keywords", ""), 160)
-    always = _playback_snap_trim(tx("segment_always_skip", ""), 100)
-    ask = _playback_snap_trim(tx("segment_ask_skip", ""), 100)
-    never = _playback_snap_trim(tx("segment_never_skip", ""), 100)
-    edl_map = _playback_snap_trim(tx("edl_action_mapping", ""), 200)
+    try:
+        from segment_types import catalog_snapshot_text
+
+        catalog_snap = catalog_snapshot_text()
+    except Exception:
+        catalog_snap = ""
 
     log("📋 Playback settings snapshot [skip & dialog] — %s" % part_skip)
     log(
-        "📋 Playback settings snapshot [keyword lists truncated] — custom_segment_keywords=%r segment_always_skip=%r segment_ask_skip=%r segment_never_skip=%r edl_action_mapping=%r"
-        % (kw, always, ask, never, edl_map)
+        "📋 Playback settings snapshot [segment types truncated] — %r"
+        % catalog_snap
     )
     log("📋 Playback settings snapshot [TV/movie sources & save online] — %s" % part_sources)
     log("📋 Playback settings snapshot [API, toasts, logging] — %s" % part_api)
@@ -552,17 +559,15 @@ def normalize_label(label):
     return unicodedata.normalize("NFKC", label or "").strip().lower()
 
 
-# Must stay in sync with ``resources/settings.xml`` default for ``custom_segment_keywords``.
-_DEFAULT_CUSTOM_SEGMENT_KEYWORDS = (
-    "intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,"
-    "commercial,commercials,preview,next time on,next on,sneak peek,last time on,"
-    "last on,previously on,closing,ending,behind the scenes,behind-the-scenes,bts,featurette"
-)
-
-
 def format_segment_label_for_ui(label):
-    """Format comma-list keywords for picker display (title-like when all lowercase)."""
-    value = (label or "").strip()
+    """Display name from the segment-types catalog, or a title-cased fallback."""
+    try:
+        from segment_types import display_label_for
+
+        return display_label_for(label)
+    except Exception:
+        pass
+    value = (label or "").strip().replace("_", " ")
     if not value:
         return value
     if any(ch.isupper() for ch in value):
@@ -572,34 +577,27 @@ def format_segment_label_for_ui(label):
 
 def get_custom_segment_keyword_labels(addon=None):
     """
-    Ordered unique labels from **Segment keywords to watch for** (comma-separated).
+    Ordered unique display names from the segment-types catalog.
     Shared by Segment Marker and Segment Editor label pickers.
     """
-    if addon:
-        raw = addon_get_setting_text(
-            addon,
-            "custom_segment_keywords",
-            _DEFAULT_CUSTOM_SEGMENT_KEYWORDS,
-        )
-        if raw is None or not str(raw).strip():
-            raw = _DEFAULT_CUSTOM_SEGMENT_KEYWORDS
-    else:
-        raw = _DEFAULT_CUSTOM_SEGMENT_KEYWORDS
-    keywords = [k.strip() for k in str(raw).split(",") if k.strip()]
-    if not keywords:
-        keywords = [
-            k.strip()
-            for k in _DEFAULT_CUSTOM_SEGMENT_KEYWORDS.split(",")
-            if k.strip()
+    try:
+        from segment_types import get_custom_segment_keyword_labels as catalog_labels
+
+        return catalog_labels(addon)
+    except Exception:
+        return [
+            "Intro",
+            "Recap",
+            "Commercial",
+            "Prologue",
+            "Preview",
+            "Credits",
+            "Epilogue",
+            "Behind the scenes",
+            "Featurette",
+            "Main",
+            "Segment",
         ]
-    seen = set()
-    unique = []
-    for k in keywords:
-        kl = normalize_label(k)
-        if kl not in seen:
-            seen.add(kl)
-            unique.append(format_segment_label_for_ui(k))
-    return unique
 
 
 # Last values logged for skip / skip-dialog settings (service polls these frequently).
@@ -657,116 +655,54 @@ def is_skip_dialog_enabled(playback_type):
         return enabled
     return False
 
-_SKIP_MODE_KEYS = ("segment_always_skip", "segment_ask_skip", "segment_never_skip")
-# Parsed keyword sets keyed on the raw setting strings, so edits apply immediately
-# while the service loop stops re-normalizing ~75 keywords per active segment.
-_skip_mode_lists_cache = {}
-
-
-def _skip_mode_keyword_sets(addon):
-    raws = tuple(addon_get_setting_text(addon, key, "") or "" for key in _SKIP_MODE_KEYS)
-    cached = _skip_mode_lists_cache.get(raws)
-    if cached is not None:
-        return cached
-    parsed = tuple(
-        set(normalize_label(x) for x in raw.split(",") if x.strip()) for raw in raws
-    )
-    for key, raw in zip(_SKIP_MODE_KEYS, raws):
-        if not raw.strip():
-            log_service_detail(f"⚠ Setting '{key}' is empty")
-    if len(_skip_mode_lists_cache) > 8:
-        _skip_mode_lists_cache.clear()
-    _skip_mode_lists_cache[raws] = parsed
-    return parsed
-
-
 def get_user_skip_mode(label):
+    """Skip mode from the segment-types catalog. Unmatched labels Never skip."""
     title = normalize_label(label)
     log_service_detail(f"🔍 Determining skip mode for: '{title}'")
+    try:
+        from segment_types import get_user_skip_mode as catalog_skip_mode
 
-    addon = get_addon()
-    if not addon:
-        return "ask"  # During update/uninstall, default to ask
-
-    always, ask, never = _skip_mode_keyword_sets(addon)
-
-    if not always and not ask and not never:
-        log("⚠️ All skip mode lists are empty — using default behavior: ask")
-
-    if title in always:
-        log_service_detail(f"⚡ Matched in 'always' list: {title}")
-        return "auto"
-    if title in ask:
-        log_service_detail(f"❓ Matched in 'ask' list: {title}")
-        return "ask"
-    if title in never:
-        log_service_detail(f"🚫 Matched in 'never' list: {title}")
-        return "never"
-
-    log_service_detail(f"🕳️ No skip mode match found for: {title} → using default: ask")
-    return "ask"
-
-# Must stay in sync with ``resources/settings.xml`` default for ``edl_action_mapping``.
-_DEFAULT_EDL_ACTION_MAPPING = (
-    "4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,"
-    "12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open"
-)
-
-
-def _parse_edl_type_map_pairs(raw):
-    """Parse mapping string into action_int -> normalized label."""
-    mapping = {}
-    for pair in [entry.strip() for entry in (raw or "").split(",") if ":" in entry]:
-        try:
-            action, label = pair.split(":", 1)
-            action_int = int(action.strip())
-            mapping[action_int] = normalize_label(label)
-        except Exception:
-            pass
-    return mapping
-
-
-def _parse_edl_label_to_action_pairs(raw):
-    """Last entry wins for duplicate labels in the same string."""
-    label_to_action = {}
-    for pair in [entry.strip() for entry in (raw or "").split(",") if ":" in entry]:
-        try:
-            action, label = pair.split(":", 1)
-            label_to_action[normalize_label(label)] = int(action.strip())
-        except Exception:
-            pass
-    return label_to_action
+        mode = catalog_skip_mode(label)
+    except Exception:
+        mode = "never"
+    if mode == "auto":
+        log_service_detail(f"⚡ Catalog skip mode always for: {title}")
+    elif mode == "ask":
+        log_service_detail(f"❓ Catalog skip mode ask for: {title}")
+    else:
+        log_service_detail(f"🚫 Catalog skip mode never for: {title}")
+    return mode
 
 
 def get_edl_type_map():
-    """action int -> normalized label; user mapping overlays addon defaults."""
-    addon = get_addon()
-    if not addon:
-        return {}
-    raw = addon_get_setting_text(addon, "edl_action_mapping", "") or ""
-    log(f"🔁 Raw EDL mapping string: {raw}")
-    base = _parse_edl_type_map_pairs(_DEFAULT_EDL_ACTION_MAPPING)
-    user = _parse_edl_type_map_pairs(raw)
-    merged = {**base, **user}
-    log(
-        "🔁 EDL action map: %d type(s) merged (%d from user string)"
-        % (len(merged), len(user))
-    )
-    return merged
+    """EDL action int -> canonical type id (catalog write numbers + read aliases)."""
+    try:
+        from segment_types import get_edl_type_map as catalog_edl_type_map
+
+        mapping = catalog_edl_type_map()
+    except Exception:
+        mapping = {}
+    log("🔁 EDL action map: %d type(s) from segment catalog" % len(mapping))
+    return mapping
 
 
 def get_edl_label_to_action_map():
-    """
-    Normalized label -> EDL action int; user mapping overlays addon defaults
-    (same merge as get_edl_type_map) so legacy installs get e.g. Outro → 13.
-    """
-    addon = get_addon()
-    if not addon:
+    """Normalized label / alias -> catalog write EDL number."""
+    try:
+        from segment_types import get_edl_label_to_action_map as catalog_edl_labels
+
+        return catalog_edl_labels()
+    except Exception:
         return {}
-    raw = addon_get_setting_text(addon, "edl_action_mapping", "") or ""
-    base = _parse_edl_label_to_action_pairs(_DEFAULT_EDL_ACTION_MAPPING)
-    user = _parse_edl_label_to_action_pairs(raw)
-    return {**base, **user}
+
+
+def edl_write_action(label, action_type=None):
+    try:
+        from segment_types import edl_write_action as catalog_edl_write
+
+        return catalog_edl_write(label, action_type)
+    except Exception:
+        return 4
 
 
 # This function has been updated to use the correct API for Kodi v21.2 Omega

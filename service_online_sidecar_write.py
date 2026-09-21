@@ -53,8 +53,8 @@ from service_sidecar_paths import (
 from settings_utils import (
     addon_get_bool,
     addon_get_setting_text,
+    edl_write_action,
     get_addon,
-    get_edl_label_to_action_map,
     get_edl_type_map,
     log,
     log_service_detail,
@@ -122,20 +122,12 @@ def _edl_action_triples_from_raw(edl_data, ignore_internal, type_map):
 
 def _edl_action_triples_from_segments(segments, time_decimals=3):
     """Same EDL triples we would write for segments (label -> action like save_edl)."""
-    label_to_action = get_edl_label_to_action_map()
     rows = []
     for seg in segments:
-        seg_label = getattr(seg, "segment_type_label", None) or "segment"
-        if seg_label in label_to_action:
-            action = label_to_action[seg_label]
-        elif getattr(seg, "action_type", None) is not None:
-            action = seg.action_type
-        else:
-            action = 4
-        try:
-            action = int(action)
-        except (TypeError, ValueError):
-            action = 4
+        action = edl_write_action(
+            getattr(seg, "segment_type_label", None) or "segment",
+            getattr(seg, "action_type", None),
+        )
         rows.append(
             (
                 round(float(seg.start_seconds), time_decimals),
@@ -264,6 +256,23 @@ def _edl_save_content_unchanged(video_path, segments, policy):
     return _edl_file_triples_match_segments(existing_path, segments)
 
 
+def _sidecar_xml_chapter_string(label):
+    """ChapterString for online sidecar writes: catalog display name when known."""
+    try:
+        from segment_types import display_label_for, resolve_segment_type
+
+        if resolve_segment_type(label):
+            return display_label_for(label)
+    except Exception:
+        pass
+    bucket = remote_payload_label_to_online_bucket(label)
+    if bucket:
+        return bucket[:1].upper() + bucket[1:]
+    if isinstance(label, str) and label.strip():
+        return label
+    return "segment"
+
+
 def _build_chapters_xml_tree(segment_items):
     root = ET.Element("Chapters")
     edition = ET.SubElement(root, "EditionEntry")
@@ -272,9 +281,8 @@ def _build_chapters_xml_tree(segment_items):
         ET.SubElement(atom, "ChapterTimeStart").text = seconds_to_hms(seg.start_seconds)
         ET.SubElement(atom, "ChapterTimeEnd").text = seconds_to_hms(seg.end_seconds)
         disp = ET.SubElement(atom, "ChapterDisplay")
-        lab = seg.segment_type_label or "segment"
-        ET.SubElement(disp, "ChapterString").text = (
-            lab if isinstance(lab, str) else str(lab)
+        ET.SubElement(disp, "ChapterString").text = _sidecar_xml_chapter_string(
+            seg.segment_type_label
         )
     try:
         ET.indent(root, space="  ")

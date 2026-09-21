@@ -1,11 +1,11 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 6.6.0** (`addon.xml`). See `CHANGELOG.md` for the 6.6.0 fixes.
+**Version 7.0.0** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog.
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
-During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment keywords** and **EDL action mapping**.
+During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment types** catalog (skip mode, aliases, and EDL number).
 <img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
 <img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
 
@@ -72,7 +72,7 @@ service.skippy/
 │   │   ├── Norwegian/ / Swedish/ / Danish/ / Italian/ / Greek/
 │   └── skins/default/
 │       ├── Font.xml / colors/defaults.xml
-│       ├── 720p/ + 1080i/          # SkipDialog*, Minimal_Skip_*, SegmentEditor*, Marker pickers
+│       ├── 720p/ + 1080i/          # SkipDialog*, Minimal_Skip_*, SegmentEditor*, SegmentTypesEditor, Marker pickers
 │       └── media/                  # Button / progress / minimal plate textures
 ├── tests/                          # Offline unit tests (omitted from install ZIP via export-ignore)
 └── tools/                          # Dev helpers only (omitted from install ZIP)
@@ -231,11 +231,11 @@ When saving marked segments, **How to save marked segments** controls how Skippy
 
 ## Segment Editor
 
-Enable **Segment Editor** under its own settings category (below **Segment Marker**). While a video is playing, use the configured shortcut (**CTRL+SHIFT+E** by default) or remote to open the editor. Label pick lists come from **Segment keywords to watch for** (`custom_segment_keywords`); EDL types use **`edl_action_mapping`** from **Segment Settings**.
+Enable **Segment Editor** under its own settings category (below **Segment Marker**). While a video is playing, use the configured shortcut (**CTRL+SHIFT+E** by default) or remote to open the editor. Label pick lists and EDL numbers come from **Segment types and skip behavior** (`segment_types.json` in the add-on profile).
 
 Editor saves use **`userdata/keymaps/skippy_editor.xml`** — independent of the marker keymap. Use **Discover remote button (editor)** and **Update editor keymap now** in the editor category. Optional **Full-screen dark overlay** dims the video behind the editor panel.
 
-**Embedded chapters**: If no sidecar exists, **Use embedded chapters fallback** (Segment Settings) lets playback use Matroska chapters from the file when they match your keywords. In the editor, opening with no segments can offer to **import embedded chapters** from the current file.
+**Embedded chapters**: If no sidecar exists, **Use embedded chapters fallback** (Segment Settings) lets playback use Matroska chapters from the file. Known types match by alias; unknown names are still kept as segments (Never skip). In the editor, opening with no segments can offer to **import embedded chapters** from the current file.
 
 **Overlapping segments**: With **Ignore overlapping segments** off, **Open Segment Editor when overlaps are detected** (Segment Settings) can launch the editor once per file when overlapping or nested segments remain after parse. Per-row **Fix overlap** in the editor trims the selected segment manually.
 
@@ -329,7 +329,7 @@ Skippy must resolve the on-disk video path before it can load `.edl` / `chapters
 - **`get_video_file()`** treats **`Player.HasVideo`** like active playback when calling **`getPlayingFile()`**, not only **`isPlayingVideo()`**, so sidecar parsing can start while Kodi is still starting the player.
 - **`Player.GetItem`** (JSON-RPC) no longer requires **title** / **label** to be present; if metadata is still loading, **file**-based heuristics still run (**SxxExx**, standalone **Exx** in the path, etc.) to infer movie vs episode for dialog and toast settings.
 - If JSON-RPC fails or returns an empty item, **playback type** falls back from the **resolved video path** so segment parsing and skip-dialog enablement are not skipped for the whole session.
-- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file when labels match your keywords (`Player.GetChapters` when it returns chapters, otherwise a header read through VFS or local `mkvextract`).
+- With no local sidecar and no online segments, **Use embedded chapters fallback** can load **embedded Matroska chapters** from the file (`Player.GetChapters` when it returns chapters, otherwise a header read through VFS or local `mkvextract`). Known types match by alias; unknown names are kept.
 
 **Sidecar folder probes:** After a confirmed miss (no chapter XML or EDL), Skippy waits **60 seconds** before listing the folder again. Hits refresh every **5 seconds** so an edited sidecar is picked up. Segment Editor and Segment Marker saves tell the playback service to drop that miss cache (and the matching parse snapshot) on the next tick, so a sidecar created mid-playback is seen without waiting out the 60s window.
 
@@ -396,14 +396,10 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 
 | Category: | Segment Settings |
 | ----------------------------- | ------------------------------------------------------------------------------- |
-| custom_segment_keywords | Comma-separated list of labels (case-insensitive) the skipper should monitor |
-| segment_always_skip | Comma-separated list of segment labels to skip automatically |
-| segment_ask_skip | Comma-separated list of labels to prompt for skipping |
-| segment_never_skip | Comma-separated list of labels to never skip |
-| ignore_internal_edl_actions | Ignore internal EDL action types not in mapping (default: true) |
-| edl_action_mapping | Map .edl action codes to skip labels (e.g. 4:intro,5:credits) |
+| settings_action_edit_segment_types | Button: edit segment types, skip mode (Always / Ask / Never), aliases, and EDL numbers |
+| ignore_internal_edl_actions | Ignore EDL action types not in the segment-types catalog (default: true) |
 | skip_overlapping_segments | Ignore overlapping segments to help avoid redundant or conflicting skips |
-| use_embedded_chapters_fallback | When no sidecar/online segments, use embedded Matroska chapters that match keywords |
+| use_embedded_chapters_fallback | When no sidecar/online segments, use embedded Matroska chapters |
 | open_segment_editor_on_overlap | Open Segment Editor once per file when overlaps/nesting remain (requires editor enabled; **Ignore overlapping segments** off) |
 | tv_prefetch_next_episode | **Online first** only: prefetch online segments for the library next TV episode |
 | sync_local_to_online | Expert upload: **Ask** to upload local segment types missing online (requires upload keys) |

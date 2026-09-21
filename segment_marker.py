@@ -518,7 +518,7 @@ def discover_remote_button(addon):
 
 
 def get_segment_keywords(addon):
-    """Return list of segment type labels from custom_segment_keywords setting."""
+    """Return list of segment type display names from the catalog."""
     try:
         return get_custom_segment_keyword_labels(addon)
     except Exception:
@@ -774,7 +774,7 @@ def marker_selected_sidecars_exist(video_path, save_format):
 def get_edl_action_for_label(addon, label):
     """
     Reverse lookup: find EDL action type for a given label.
-    Uses merged defaults + ``edl_action_mapping`` (same as save_edl / service).
+    Uses the segment-types catalog (same as save_edl / service).
     Returns action_type int, or 4 (generic segment) if not found.
     """
     try:

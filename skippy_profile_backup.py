@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Backup and restore profile data: upload history, title autoskip, statistics.
+"""Backup and restore profile data: upload history, title autoskip, statistics,
+and the segment-types catalog.
 
 Restore merges into the local profile (upload fingerprints union; title overrides
-merge per key; statistics take the larger counter values). Legacy
-``skippy_upload_history_backup_v1`` files (history only) still restore.
+merge per key; statistics take the larger counter values; segment types
+replace-or-merge by type id). Legacy ``skippy_upload_history_backup_v1`` files
+(history only) still restore. 6.x settings backups may still contain old comma
+keyword / skip-list / EDL-map keys; those are one-way input for
+``segment_types.ensure_catalog()`` on a first 7.0 catalog create, not this file.
 """
 from __future__ import annotations
 
@@ -26,6 +30,7 @@ from settings_backup import (
     _write_json_file,
 )
 from skippy_stats import load_statistics, merge_statistics_from_backup
+from segment_types import export_catalog, merge_catalog_from_backup
 
 SCHEMA = "skippy_profile_data_backup_v1"
 LEGACY_SCHEMA = "skippy_upload_history_backup_v1"
@@ -87,6 +92,7 @@ def export_to_path(addon, dest_json_path: str) -> dict:
     )
     overrides = export_all_overrides()
     stats = load_statistics()
+    catalog = export_catalog()
     payload = {
         "schema": SCHEMA,
         "addon_id": ADDON_ID,
@@ -97,12 +103,15 @@ def export_to_path(addon, dest_json_path: str) -> dict:
         "show_overrides": overrides,
         "override_title_count": len(overrides),
         "statistics": stats,
+        "segment_types": catalog,
+        "segment_type_count": len(catalog.get("types") or []),
     }
     _write_json_file(dest_json_path, payload)
     return {
         "fingerprints": fingerprint_count,
         "override_titles": len(overrides),
         "skip_total": int((stats.get("skips") or {}).get("total") or 0),
+        "segment_types": len(catalog.get("types") or []),
     }
 
 
@@ -128,6 +137,7 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
         "override_segments_added": 0,
         "override_segments_updated": 0,
         "stats_merged": False,
+        "segment_types_merged": False,
     }
 
     raw_history = data.get("online_upload_submissions")
@@ -147,6 +157,10 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
         if "statistics" in data:
             summary["stats_merged"] = bool(
                 merge_statistics_from_backup(data.get("statistics"))
+            )
+        if "segment_types" in data:
+            summary["segment_types_merged"] = bool(
+                merge_catalog_from_backup(data.get("segment_types"))
             )
 
     ver = data.get("addon_version_exported") or "?"

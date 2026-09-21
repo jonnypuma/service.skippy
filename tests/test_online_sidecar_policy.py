@@ -133,6 +133,56 @@ class OnlineSidecarMergeUpdateTests(unittest.TestCase):
         self.assertEqual(labels, ["intro"])
         self.assertEqual(updated[0].end_seconds, 50.0)
 
+    def test_fill_missing_adds_outro_as_credits(self):
+        from service_online_sidecar_save import _fill_missing_online_types
+
+        local = [SegmentItem(0.0, 60.0, "intro", source="xml")]
+        online = [
+            SegmentItem(0.0, 50.0, "intro", source="introdb"),
+            SegmentItem(500.0, 560.0, "outro", source="introdb"),
+        ]
+        combined, added = _fill_missing_online_types(local, online)
+        self.assertEqual(len(added), 1)
+        self.assertEqual(added[0].segment_type_label, "credits")
+        labels = [s.segment_type_label for s in combined]
+        self.assertEqual(labels, ["intro", "credits"])
+        intro = next(s for s in combined if s.segment_type_label == "intro")
+        self.assertEqual(intro.end_seconds, 60.0)
+
+    def test_fill_missing_adds_one_row_per_type(self):
+        from service_online_sidecar_save import _fill_missing_online_types
+
+        local = [SegmentItem(0.0, 60.0, "intro", source="xml")]
+        online = [
+            SegmentItem(500.0, 540.0, "outro", source="introdb"),
+            SegmentItem(510.0, 570.0, "credits", source="theintrodb"),
+        ]
+        _combined, added = _fill_missing_online_types(local, online)
+        self.assertEqual(len(added), 1)
+        self.assertEqual(added[0].segment_type_label, "credits")
+        self.assertEqual(added[0].start_seconds, 500.0)
+
+    def test_fill_missing_skips_when_local_already_has_credits(self):
+        from service_online_sidecar_save import _fill_missing_online_types
+
+        local = [
+            SegmentItem(0.0, 60.0, "intro", source="xml"),
+            SegmentItem(500.0, 540.0, "credits", source="xml"),
+        ]
+        online = [SegmentItem(510.0, 570.0, "outro", source="introdb")]
+        combined, added = _fill_missing_online_types(local, online)
+        self.assertEqual(added, [])
+        self.assertEqual(len(combined), 2)
+
+    def test_merge_maps_outro_label_to_credits(self):
+        local = [SegmentItem(0.0, 60.0, "intro", source="edl")]
+        online = [SegmentItem(200.0, 230.0, "outro", source="introdb")]
+        merged = _merge_sidecar_segments(local, online)
+        self.assertEqual(
+            [s.segment_type_label for s in merged],
+            ["intro", "credits"],
+        )
+
 
 class OnlineSidecarWriteSplitTests(unittest.TestCase):
     def test_write_module_defines_split_helpers(self):
@@ -182,6 +232,14 @@ class OnlineSidecarWriteSplitTests(unittest.TestCase):
             "service_online_sidecar_write.xbmcvfs.copy", return_value=True
         ):
             _backup_sidecar_file(addon, "/media/show_chapters.xml")
+
+    def test_xml_write_uses_title_case_credits(self):
+        from service_online_sidecar_write import _sidecar_xml_chapter_string
+
+        self.assertEqual(_sidecar_xml_chapter_string("outro"), "Credits")
+        self.assertEqual(_sidecar_xml_chapter_string("credits"), "Credits")
+        self.assertEqual(_sidecar_xml_chapter_string("intro"), "Intro")
+        self.assertEqual(_sidecar_xml_chapter_string("prologue"), "Prologue")
 
 
 if __name__ == "__main__":

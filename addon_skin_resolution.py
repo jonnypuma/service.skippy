@@ -375,6 +375,7 @@ def _control_reported_width(ctrl) -> int | None:
 FULL_SKIP_PROBE_ID = 3081
 MINIMAL_SKIP_PROBE_ID = 3021
 EDITOR_LIST_PROBE_ID = 5000
+SEGMENT_TYPES_LIST_PROBE_ID = 5210
 
 
 def probe_control_ids_for_xml(xml_filename) -> tuple:
@@ -386,6 +387,8 @@ def probe_control_ids_for_xml(xml_filename) -> tuple:
         return (FULL_SKIP_PROBE_ID,)
     if name.startswith("segmenteditor"):
         return (EDITOR_LIST_PROBE_ID,)
+    if name.startswith("segmenttypeseditor"):
+        return (SEGMENT_TYPES_LIST_PROBE_ID,)
     return ()
 
 
@@ -419,6 +422,11 @@ def infer_skin_resolution_from_widths(widths) -> str | None:
         if w >= 1500:
             return SKIN_RES_1080I
         if 1050 <= w <= 1250:
+            return SKIN_RES_720P
+        # Segment types editor list 5210: 960 vs 1440
+        if 1350 <= w <= 1499:
+            return SKIN_RES_1080I
+        if 880 <= w <= 1020:
             return SKIN_RES_720P
     return None
 

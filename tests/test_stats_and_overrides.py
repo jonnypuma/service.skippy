@@ -380,20 +380,22 @@ class GlobalAutoskipIntactTests(unittest.TestCase):
             )
 
     def test_global_always_skip_unaffected_when_per_title_enabled(self):
-        """Keyword Always skip is decided before per-title; no override must not demote it."""
+        """Catalog Always skip is decided before per-title; no override must not demote it."""
         import settings_utils
+        from segment_types import seeded_builtin_types, set_catalog_for_tests, set_skip_mode
 
         settings_utils.invalidate_settings_cache()
-        values = {
-            "segment_always_skip": "intro",
-            "segment_ask_skip": "recap",
-            "segment_never_skip": "credits",
-        }
-        addon = type("_A", (), {"getSetting": lambda _self, key: values.get(key, "")})()
-        with patch.object(settings_utils, "get_addon", return_value=addon):
+        types = seeded_builtin_types()
+        set_skip_mode(types, "intro", "auto")
+        set_skip_mode(types, "recap", "ask")
+        set_skip_mode(types, "credits", "never")
+        set_catalog_for_tests(types)
+        try:
             self.assertEqual(settings_utils.get_user_skip_mode("intro"), "auto")
             self.assertEqual(settings_utils.get_user_skip_mode("recap"), "ask")
             self.assertEqual(settings_utils.get_user_skip_mode("credits"), "never")
+        finally:
+            set_catalog_for_tests(None)
 
 
 if __name__ == "__main__":

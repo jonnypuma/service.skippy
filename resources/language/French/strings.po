@@ -6,6 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 # Categories
+
 msgctxt "#30000"
 msgid "Segment Settings"
 msgstr "Paramètres de segment"
@@ -27,6 +28,7 @@ msgid "Debug Logging"
 msgstr "Journalisation de débogage"
 
 # Segment Settings
+
 msgctxt "#31000"
 msgid "Segment Keywords to Watch For"
 msgstr "Mots-clés de segment"
@@ -72,12 +74,12 @@ msgid "Use embedded chapters as fallback"
 msgstr "Utiliser les chapitres intégrés en secours"
 
 msgctxt "#31009"
-msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
-msgstr "Lorsqu'aucun fichier annexe (chapters.xml / .edl) ou segment en ligne n'est trouvé, analyser les chapitres intégrés dans le fichier vidéo (MKV, MP4). Seuls les chapitres correspondant à vos mots-clés de segment personnalisés sont utilisés."
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
 
 msgctxt "#31010"
-msgid "Segment Keywords"
-msgstr "Mots-clés de segment"
+msgid "Segment types"
+msgstr "Segment types"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -88,6 +90,7 @@ msgid "When TV segment priority is Online first and TV online lookup is on, Skip
 msgstr "Lorsque la priorité de segment TV est En ligne d'abord et que la recherche TV en ligne est activée, Skippy résout l'épisode suivant de la bibliothèque (même série : épisode suivant de la saison ou premier épisode de la saison suivante) et télécharge les segments intro/récap en ligne fusionnés en arrière-plan. Les segments ne s'appliquent que lorsque vous démarrez ce fichier exact (chemin + ids doivent correspondre). La journalisation détaillée (Tous les détails) enregistre le planning de préchargement, le stockage et le transfert. Non utilisé pour Local d'abord. Ne précharge jamais les fichiers annexes locaux."
 
 # Dialog Settings
+
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Style de focus de bouton"
@@ -196,6 +199,14 @@ msgctxt "#32103"
 msgid "Skip duration content"
 msgstr "Contenu de la durée du saut"
 
+msgctxt "#32104"
+msgid "Add missing online types to existing sidecar"
+msgstr "Ajouter les types en ligne manquants au sidecar existant"
+
+msgctxt "#32105"
+msgid "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+msgstr "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+
 msgctxt "#32023"
 msgid "Minimal plate style"
 msgstr "Style de plaque minimal"
@@ -211,7 +222,6 @@ msgstr "Format de l'étiquette de saut minimal"
 msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Couleur de police du dialogue de saut"
-
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
@@ -538,6 +548,7 @@ msgid "When both local files and online lookup are enabled for movies: prefer se
 msgstr "Lorsque les fichiers locaux et la recherche en ligne sont activés pour les films : préférer les segments de la source choisie lorsqu'elle a des données ; sinon utiliser l'autre. En ligne d'abord attend la recherche réseau avant que le premier dialogue de saut puisse apparaître (généralement quelques secondes, jusqu'à environ 10 secondes lors d'un démarrage à froid ou d'un réseau lent). Local d'abord utilise les données du fichier annexe immédiatement lorsqu'elles sont présentes."
 
 # Toast Settings
+
 msgctxt "#33000"
 msgid "Enable missing segment file toast for TV Episodes"
 msgstr "Activer la notification de fichier de segment manquant pour les épisodes TV"
@@ -571,6 +582,7 @@ msgid "Show a one-shot notification when deferred online segment lookup updates 
 msgstr "Afficher une notification unique lorsque la recherche de segment en ligne différée met à jour la chronologie de lecture (par ex. Local d'abord sans fichier annexe local)."
 
 # Debug Settings
+
 msgctxt "#34000"
 msgid "Enable Verbose Logging"
 msgstr "Activer la journalisation détaillée"
@@ -588,6 +600,7 @@ msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDi
 msgstr "Erreurs uniquement : Skippy n'émet aucune INFO de routine (service, recherche distante, SkipDialog, SegmentItem). Normal : flux de service principal sans bruit par boucle. Tous les détails : ajoute les traces de tick SegmentItem (is_active, debounce) plus les internes de service détaillés (JSON-RPC pour la notification de fichier manquant, sondes de chemin, chaque ligne XML/EDL). Les lignes Skippy LOGERROR apparaissent toujours lorsqu'elles sont utilisées."
 
 # Segment Marker Settings
+
 msgctxt "#30005"
 msgid "Segment Marker"
 msgstr "Marqueur de segment"
@@ -1093,6 +1106,7 @@ msgstr "Marqueur de segment annulé."
 # ---------------------------------------------------------------------------
 
 # Skip dialog (#40000–40099)
+
 msgctxt "#40000"
 msgid "Skip"
 msgstr "Ignorer"
@@ -1126,11 +1140,13 @@ msgid "Skip to remaining %s at %s"
 msgstr "Aller au %s restant a %s"
 
 # Marker extras (#42000–42099)
+
 msgctxt "#42000"
 msgid "Close the Segment Editor before using the Segment Marker."
 msgstr "Fermez le Segment Editor avant d'utiliser le Segment Marker."
 
 # Toasts / common (#43000–43099)
+
 msgctxt "#43000"
 msgid "Skippy"
 msgstr "Skippy"
@@ -1184,6 +1200,7 @@ msgid "No local segment data found for this %s."
 msgstr "Aucune donnée de segment locale trouvée pour ce %s."
 
 # Segment Editor (#41000–41199)
+
 msgctxt "#41000"
 msgid "Segment Editor"
 msgstr "Segment Editor"
@@ -1767,3 +1784,71 @@ msgstr "Oui"
 msgctxt "#44106"
 msgid "No"
 msgstr "Non"
+
+msgctxt "#32106"
+msgid "Segment types and skip behavior"
+msgstr "Segment types and skip behavior"
+
+msgctxt "#32107"
+msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+
+msgctxt "#45001"
+msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+
+msgctxt "#45005"
+msgid "EDL"
+msgstr "EDL"
+
+msgctxt "#45006"
+msgid "Aliases"
+msgstr "Aliases"
+
+msgctxt "#45007"
+msgid "Delete"
+msgstr "Delete"
+
+msgctxt "#45008"
+msgid "Add type"
+msgstr "Add type"
+
+msgctxt "#45011"
+msgid "Type name"
+msgstr "Type name"
+
+msgctxt "#45012"
+msgid "Built-in types cannot be deleted."
+msgstr "Built-in types cannot be deleted."
+
+msgctxt "#45013"
+msgid "Delete this custom type?"
+msgstr "Delete this custom type?"
+
+msgctxt "#45016"
+msgid "Add alias"
+msgstr "Add alias"
+
+msgctxt "#45017"
+msgid "Remove alias"
+msgstr "Remove alias"
+
+msgctxt "#45018"
+msgid "Edit aliases"
+msgstr "Edit aliases"
+
+msgctxt "#45019"
+msgid "Skip mode"
+msgstr "Skip mode"
+
+msgctxt "#45020"
+msgid "Choose EDL number"
+msgstr "Choose EDL number"
+
+msgctxt "#45022"
+msgid "Could not save segment types."
+msgstr "Could not save segment types."
+
+msgctxt "#45023"
+msgid "Segment types saved."
+msgstr "Segment types saved."

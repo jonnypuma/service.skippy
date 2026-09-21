@@ -164,6 +164,17 @@ def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None
     if not norm:
         return None
     n = norm.strip()
+    try:
+        from segment_types import resolve_segment_type
+
+        type_row = resolve_segment_type(n)
+    except Exception:
+        type_row = None
+    if type_row is not None:
+        bucket = type_row.get("online_bucket")
+        if not bucket:
+            return None
+        return bucket, _introdb_for_tidb(bucket)
     for phrase, tidb in _PHRASE_MAP:
         if phrase in n:
             return tidb, _introdb_for_tidb(tidb)

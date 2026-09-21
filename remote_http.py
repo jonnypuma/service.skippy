@@ -41,6 +41,19 @@ REMOTE_SEGMENT_PAYLOAD_KEYS = (
     "commercial",
 )
 
+# IntroDB.app uses ``outro`` for end-of-show; Skippy stores and skips that as credits.
+_REMOTE_PAYLOAD_TO_LOCAL_LABEL = {
+    "outro": "credits",
+}
+
+
+def local_label_for_remote_payload_key(segment_name):
+    """Map an API payload key to Skippy's local label (outro → credits)."""
+    key = (segment_name or "").strip().lower()
+    if not key:
+        return "segment"
+    return _REMOTE_PAYLOAD_TO_LOCAL_LABEL.get(key, key)
+
 
 def _rlog(msg):
     """Verbose Normal/All only; tag [service.skippy - remote] for kodi.log filtering."""

@@ -74,6 +74,9 @@ class ProfileDataBackupFileTests(unittest.TestCase):
                 ):
                     skippy_stats.clear_cache()
                     per_show_overrides.clear_cache()
+                    from segment_types import set_catalog_for_tests
+
+                    set_catalog_for_tests(None)
                     skippy_stats.record_skip("Intro", 30.0)
                     skippy_stats.record_online_segment_uploaded()
                     per_show_overrides.save_override(
@@ -99,6 +102,8 @@ class ProfileDataBackupFileTests(unittest.TestCase):
                     self.assertEqual(payload["schema"], SCHEMA)
                     self.assertIn("show_overrides", payload)
                     self.assertIn("statistics", payload)
+                    self.assertIn("segment_types", payload)
+                    self.assertGreaterEqual(len(payload["segment_types"].get("types") or []), 11)
                     self.assertEqual(
                         payload["show_overrides"]["tv_tmdb_1396"]["segments"]["intro"],
                         "auto",

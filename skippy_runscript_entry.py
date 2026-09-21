@@ -82,6 +82,11 @@ def main():
 
             show_skip_dialog_customize()
             return
+        if command == "edit_segment_types":
+            from segment_types_editor_ui import show_segment_types_editor
+
+            show_segment_types_editor()
+            return
         if command == "clear_show_overrides":
             from per_show_overrides import clear_all_overrides
             from settings_utils import get_localized, notify_skippy

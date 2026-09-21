@@ -149,55 +149,23 @@ def main():
     cat = ET.SubElement(section, "category", id="segments", label="30000")
 
     g = ET.SubElement(cat, "group", id="g_seg_keywords", label="31010")
-    string_setting(
+    action_setting(
         g,
-        "custom_segment_keywords",
+        "settings_action_edit_segment_types",
         0,
-        "31000",
-        "Comma-separated list of chapterstrings (case-insensitive) the skipper should monitor.",
-        default="intro,recap,main,credits,outro,prologue,epilogue,ad,ads,sponsor,sponsors,commercial,commercials,preview,next time on,next on,sneak peek,last time on,last on,previously on,closing,ending,behind the scenes,behind-the-scenes,bts,featurette",
+        "32106",
+        "32107",
+        "RunScript(service.skippy,edit_segment_types)",
     )
 
     g = ET.SubElement(cat, "group", id="g_seg1", label="31001")
-    string_setting(
-        g,
-        "segment_always_skip",
-        0,
-        "31002",
-        "Subset of your segment keywords that should skip automatically.",
-        default="commercial,commercials,sponsor,sponsors,ad,ads",
-    )
-    string_setting(
-        g,
-        "segment_ask_skip",
-        0,
-        "31003",
-        "Subset that should prompt you before skipping.",
-        default="intro,recap,segment,preview,next time on,next on,sneak peek,last time on,last on,previously on,behind the scenes,behind-the-scenes,bts,featurette",
-    )
-    string_setting(
-        g,
-        "segment_never_skip",
-        0,
-        "31004",
-        "Subset to always play, never skip.",
-        default="prologue,epilogue,main,credits,outro,closing,ending",
-    )
     bool_setting(
         g,
         "ignore_internal_edl_actions",
         1,
         "31005",
-        "Skippy will ignore any EDL segment whose action type is not explicitly mapped in edl_action_mapping. This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'.",
+        "Skippy will ignore any EDL segment whose action type is not mapped in Segment types (including legacy read aliases). This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'.",
         True,
-    )
-    string_setting(
-        g,
-        "edl_action_mapping",
-        1,
-        "31006",
-        "Format: action_type:label. Example: 4:Segment,5:Intro,6:Ad,7:Credits",
-        default="4:Segment,5:Intro,6:Ad,7:Commercial,8:Credits,9:Recap,10:Prologue,11:Epilogue,12:Main,13:Outro,14:Unknown,15:Preview,16:Sponsor,17:Cold_open,18:Behind the scenes,19:Featurette",
     )
     bool_setting(
         g,
@@ -240,6 +208,15 @@ def main():
             "Skip if exists|Overwrite (no prompt)|Overwrite (ask first)|Merge with existing|Update (no prompt)|Update (ask first)|Update All (no prompt)|Update All (ask first)",
             "SkipIfExists|OverwriteSilent|OverwriteAsk|Merge|UpdateSilent|UpdateAsk|UpdateAllSilent|UpdateAllAsk",
         ),
+    )
+    bool_setting(
+        g,
+        "save_online_fill_missing_types",
+        2,
+        "32104",
+        "32105",
+        False,
+        vis=[("save_online_segments_to_chapters_xml", "true")],
     )
     bool_setting(
         g, "save_online_chapters_backup_before_overwrite", 2, "32071", "32072", True

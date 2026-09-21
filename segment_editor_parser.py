@@ -9,7 +9,8 @@ import unicodedata
 
 from edl_format import EDL_DEFAULT_ACTION, parse_edl_line
 from segment_editor_utils import get_addon, log
-from settings_utils import get_edl_label_to_action_map, get_edl_type_map
+from segment_types import edl_write_action
+from settings_utils import get_edl_type_map
 
 # Re-exported: editor/marker/upload modules import these from here.
 from time_format import hms_to_seconds, seconds_to_edl, seconds_to_hms  # noqa: F401
@@ -677,23 +678,12 @@ def save_edl(video_path, segments):
     log(f"Saving {len(segments)} segments to: {output_path}")
 
     try:
-        label_to_action = get_edl_label_to_action_map()
-    except Exception:
-        label_to_action = {}
-
-    try:
         lines = []
         for seg in segments:
-            seg_label = seg.segment_type_label
-            if seg_label in label_to_action:
-                action = label_to_action[seg_label]
-            elif seg.action_type is not None:
-                try:
-                    action = int(seg.action_type)
-                except (TypeError, ValueError):
-                    action = 4
-            else:
-                action = 4
+            action = edl_write_action(
+                getattr(seg, "segment_type_label", None),
+                getattr(seg, "action_type", None),
+            )
             lines.append(f"{seg.start_seconds:.3f}\t{seg.end_seconds:.3f}\t{action}")
 
         content = "\n".join(lines) + "\n"

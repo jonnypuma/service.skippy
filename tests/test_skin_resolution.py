@@ -71,6 +71,7 @@ class SkinResolutionTests(unittest.TestCase):
             EDITOR_LIST_PROBE_ID,
             FULL_SKIP_PROBE_ID,
             MINIMAL_SKIP_PROBE_ID,
+            SEGMENT_TYPES_LIST_PROBE_ID,
             probe_control_ids_for_xml,
         )
 
@@ -89,6 +90,10 @@ class SkinResolutionTests(unittest.TestCase):
         self.assertEqual(
             probe_control_ids_for_xml("SegmentEditorDialog.xml"),
             (EDITOR_LIST_PROBE_ID,),
+        )
+        self.assertEqual(
+            probe_control_ids_for_xml("SegmentTypesEditor.xml"),
+            (SEGMENT_TYPES_LIST_PROBE_ID,),
         )
         self.assertEqual(probe_control_ids_for_xml("other.xml"), ())
 

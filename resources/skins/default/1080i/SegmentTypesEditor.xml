@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>5210</defaultcontrol>
+  <animation type="WindowOpen">
+    <effect type="fade" start="0" end="100" time="200" />
+  </animation>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="200" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture>white.png</texture>
+      <colordiffuse>D0000000</colordiffuse>
+    </control>
+
+    <control type="group">
+      <left>210</left>
+      <top>60</top>
+      <width>1500</width>
+      <height>960</height>
+
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1500</width>
+        <height>960</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0222222</colordiffuse>
+      </control>
+
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1500</width>
+        <height>120</height>
+        <texture>white.png</texture>
+        <colordiffuse>E0000000</colordiffuse>
+      </control>
+
+      <control type="label" id="5200">
+        <left>30</left>
+        <top>15</top>
+        <width>1440</width>
+        <height>54</height>
+        <label>Segment types and skip behavior</label>
+        <font>font16</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label" id="5201">
+        <left>30</left>
+        <top>69</top>
+        <width>1440</width>
+        <height>42</height>
+        <label>Always / Ask / Never and EDL number for each type.</label>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+
+      <control type="list" id="5210">
+        <left>30</left>
+        <top>132</top>
+        <width>1440</width>
+        <height>576</height>
+        <onup>5210</onup>
+        <ondown>5220</ondown>
+        <onleft>5210</onleft>
+        <onright>5220</onright>
+        <itemlayout width="1440" height="72">
+          <control type="label">
+            <left>24</left>
+            <top>6</top>
+            <width>750</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>780</left>
+            <top>6</top>
+            <width>630</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font12</font>
+            <textcolor>FFC0C0C0</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1440" height="72">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1440</width>
+            <height>72</height>
+            <texture>button_focus.png</texture>
+          </control>
+          <control type="label">
+            <left>24</left>
+            <top>6</top>
+            <width>750</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>780</left>
+            <top>6</top>
+            <width>630</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <control type="button" id="5220">
+        <left>30</left>
+        <top>720</top>
+        <width>330</width>
+        <height>54</height>
+        <label>Skip mode</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5210</onup>
+        <ondown>5230</ondown>
+        <onleft>5223</onleft>
+        <onright>5221</onright>
+      </control>
+      <control type="button" id="5221">
+        <left>375</left>
+        <top>720</top>
+        <width>210</width>
+        <height>54</height>
+        <label>EDL</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5210</onup>
+        <ondown>5230</ondown>
+        <onleft>5220</onleft>
+        <onright>5222</onright>
+      </control>
+      <control type="button" id="5222">
+        <left>600</left>
+        <top>720</top>
+        <width>330</width>
+        <height>54</height>
+        <label>Aliases</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5210</onup>
+        <ondown>5231</ondown>
+        <onleft>5221</onleft>
+        <onright>5223</onright>
+      </control>
+      <control type="button" id="5223">
+        <left>945</left>
+        <top>720</top>
+        <width>270</width>
+        <height>54</height>
+        <label>Delete</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5210</onup>
+        <ondown>5232</ondown>
+        <onleft>5222</onleft>
+        <onright>5220</onright>
+      </control>
+
+      <control type="image">
+        <left>0</left>
+        <top>792</top>
+        <width>1500</width>
+        <height>168</height>
+        <texture>white.png</texture>
+        <colordiffuse>E0000000</colordiffuse>
+      </control>
+
+      <control type="button" id="5230">
+        <left>30</left>
+        <top>834</top>
+        <width>330</width>
+        <height>60</height>
+        <label>Add type</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5220</onup>
+        <ondown>5210</ondown>
+        <onleft>5232</onleft>
+        <onright>5231</onright>
+      </control>
+      <control type="button" id="5231">
+        <left>780</left>
+        <top>834</top>
+        <width>315</width>
+        <height>60</height>
+        <label>Save</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5222</onup>
+        <ondown>5210</ondown>
+        <onleft>5230</onleft>
+        <onright>5232</onright>
+      </control>
+      <control type="button" id="5232">
+        <left>1125</left>
+        <top>834</top>
+        <width>315</width>
+        <height>60</height>
+        <label>Cancel</label>
+        <font>font12</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <aligny>center</aligny>
+        <onup>5223</onup>
+        <ondown>5210</ondown>
+        <onleft>5231</onleft>
+        <onright>5230</onright>
+      </control>
+    </control>
+  </controls>
+</window>

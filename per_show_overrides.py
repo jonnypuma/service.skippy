@@ -48,6 +48,18 @@ def _store_path(key: str) -> str | None:
     return profile_path(OVERRIDES_DIRNAME, "%s.json" % key)
 
 
+def _canonical_override_key(segment_label) -> str:
+    try:
+        from segment_types import canonical_type_id
+
+        key = canonical_type_id(segment_label)
+        if key:
+            return key
+    except Exception:
+        pass
+    return normalize_label(segment_label)
+
+
 def load_overrides(key: str) -> dict:
     """``{normalized_label: mode}`` for one title (cached; empty when nothing saved)."""
     if not key:
@@ -62,7 +74,7 @@ def load_overrides(key: str) -> dict:
         if isinstance(raw, dict):
             for label, mode in raw.items():
                 if mode in (MODE_AUTO, MODE_DECLINED):
-                    segments[normalize_label(label)] = mode
+                    segments[_canonical_override_key(label)] = mode
     _cache[key] = segments
     return segments
 
@@ -71,7 +83,11 @@ def lookup_override(key: str, segment_label) -> str | None:
     """Saved mode for this title + segment type, or None."""
     if not key:
         return None
-    return load_overrides(key).get(normalize_label(segment_label))
+    segments = load_overrides(key)
+    needle = _canonical_override_key(segment_label)
+    if needle in segments:
+        return segments[needle]
+    return segments.get(normalize_label(segment_label))
 
 
 def save_override(key: str, segment_label, mode: str, title: str = "") -> bool:
@@ -86,7 +102,14 @@ def save_override(key: str, segment_label, mode: str, title: str = "") -> bool:
     segments = payload.get("segments")
     if not isinstance(segments, dict):
         segments = {}
-    segments[normalize_label(segment_label)] = mode
+    store_key = _canonical_override_key(segment_label)
+    segments[store_key] = mode
+    # Drop leftover alias keys for the same type.
+    for old_key in list(segments):
+        if old_key == store_key:
+            continue
+        if _canonical_override_key(old_key) == store_key:
+            del segments[old_key]
     payload["schema"] = SCHEMA
     payload["key"] = key
     payload["segments"] = segments
@@ -164,7 +187,7 @@ def list_title_entries(*, auto_only: bool = True) -> list[dict]:
         auto_labels = []
         declined_labels = []
         for label, mode in raw.items():
-            normalized = normalize_label(label)
+            normalized = _canonical_override_key(label)
             if not normalized:
                 continue
             if mode == MODE_AUTO:
@@ -209,7 +232,7 @@ def export_all_overrides() -> dict[str, dict]:
         segments = {}
         for label, mode in raw.items():
             if mode in (MODE_AUTO, MODE_DECLINED):
-                normalized = normalize_label(label)
+                normalized = _canonical_override_key(label)
                 if normalized:
                     segments[normalized] = mode
         if not segments:
@@ -253,7 +276,7 @@ def merge_overrides_from_backup(incoming) -> tuple[int, int, int]:
         incoming_segments = {}
         for label, mode in raw_segments.items():
             if mode in (MODE_AUTO, MODE_DECLINED):
-                normalized = normalize_label(label)
+                normalized = _canonical_override_key(label)
                 if normalized:
                     incoming_segments[normalized] = mode
         if not incoming_segments:
@@ -267,7 +290,7 @@ def merge_overrides_from_backup(incoming) -> tuple[int, int, int]:
         local_normalized = {}
         for label, mode in segments.items():
             if mode in (MODE_AUTO, MODE_DECLINED):
-                normalized = normalize_label(label)
+                normalized = _canonical_override_key(label)
                 if normalized:
                     local_normalized[normalized] = mode
 

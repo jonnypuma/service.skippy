@@ -162,14 +162,16 @@ def _source_settings_signature(addon, playback_type):
         keys = ()
     shared = (
         "use_embedded_chapters_fallback",
-        "custom_segment_keywords",
         "ignore_internal_edl_actions",
-        "edl_action_mapping",
         "save_online_segments_to_chapters_xml",
         "save_online_segments_format",
         "save_online_chapters_existing_policy",
     )
-    return tuple((key, addon_get_setting_text(addon, key, "")) for key in keys + shared)
+    from segment_types import catalog_stamp
+
+    return tuple((key, addon_get_setting_text(addon, key, "")) for key in keys + shared) + (
+        ("segment_types", catalog_stamp()),
+    )
 
 
 def _clone_segments(segments):

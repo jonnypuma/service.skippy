@@ -32,7 +32,11 @@ def install_kodi_stubs(*, addon=None):
     """
     if addon is None:
         addon = MagicMock()
-        addon.getAddonInfo = lambda _key: "w:/fake/addon"
+        def _addon_info(key):
+            if key == "profile":
+                return ""
+            return "w:/fake/addon"
+        addon.getAddonInfo = _addon_info
         addon.getSetting = lambda _key: "false"
         addon.getLocalizedString = lambda _key: ""
 

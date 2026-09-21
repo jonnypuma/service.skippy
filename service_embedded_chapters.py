@@ -10,8 +10,8 @@ import xbmc
 from mkv_chapter_parse import parse_matroska_chapters_via_vfs
 from segment_editor_parser import parse_embedded_chapters_via_mkvextract
 from segment_item import SegmentItem
+from segment_types import resolve_segment_type
 from settings_utils import (
-    addon_get_setting_text,
     get_addon,
     log,
     log_service_detail,
@@ -176,7 +176,7 @@ def _load_embedded_chapter_rows(segment_player, player_id, video_path):
     return []
 
 
-def _segments_from_rows(rows, keywords, segment_player):
+def _segments_from_rows(rows, segment_player):
     if not rows:
         return []
     ordered = sorted(rows, key=lambda item: float(item.get("start") or 0.0))
@@ -196,26 +196,29 @@ def _segments_from_rows(rows, keywords, segment_player):
                 end_sec = start_sec + 300.0
         else:
             end_sec = float(end_sec)
-        if label not in keywords:
+        type_row = resolve_segment_type(label)
+        if type_row:
+            stored = type_row["id"]
+        else:
+            stored = label
             _log_detail(
-                "Embedded chapter '%s' (label='%s') not in keywords — skipping"
+                "Embedded chapter '%s' (label='%s') is not a known type — keeping as Never"
                 % (name, label)
             )
-            continue
         if end_sec > start_sec:
             segments.append(
-                SegmentItem(start_sec, end_sec, label, source="embedded")
+                SegmentItem(start_sec, end_sec, stored, source="embedded")
             )
-            log("Embedded chapter matched: '%s' [%s-%s]" % (name, start_sec, end_sec))
+            log("Embedded chapter kept: '%s' [%s-%s]" % (name, start_sec, end_sec))
     if segments:
-        log("Total embedded chapters matched keywords: %d" % len(segments))
+        log("Total embedded chapters kept: %d" % len(segments))
     else:
-        _log_detail("Embedded chapters: none matched custom_segment_keywords")
+        _log_detail("Embedded chapters: none usable")
     return segments
 
 
 def parse_embedded_chapters(segment_player=None, player_id=None, video_path=None):
-    """Return keyword-matched segments muxed in the current file.
+    """Return muxed chapters as segments (unknown names are kept, Never skip).
 
     Prefers ``Player.GetChapters`` (Kodi 22+) when it returns chapters. An empty
     list or a missing method falls back to a bounded Matroska header read through
@@ -225,14 +228,9 @@ def parse_embedded_chapters(segment_player=None, player_id=None, video_path=None
     addon = get_addon()
     if not addon:
         return []
-    keywords_raw = addon_get_setting_text(addon, "custom_segment_keywords", "")
-    keywords = set(normalize_label(k) for k in keywords_raw.split(",") if k.strip())
-    if not keywords:
-        _log_detail("Embedded chapters: no custom_segment_keywords configured")
-        return []
     try:
         rows = _load_embedded_chapter_rows(segment_player, player_id, video_path)
-        return _segments_from_rows(rows, keywords, segment_player)
+        return _segments_from_rows(rows, segment_player)
     except Exception as exc:
         log("Embedded chapters parse failed: %s" % exc)
         return []

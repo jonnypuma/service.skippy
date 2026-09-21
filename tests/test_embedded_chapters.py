@@ -79,6 +79,14 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
             if key == "custom_segment_keywords"
             else "false"
         )
+        from segment_types import seeded_builtin_types, set_catalog_for_tests
+
+        set_catalog_for_tests(seeded_builtin_types())
+
+    def tearDown(self):
+        from segment_types import set_catalog_for_tests
+
+        set_catalog_for_tests(None)
 
     def test_get_chapters_maps_keyword_matches(self):
         player = MagicMock()
@@ -117,6 +125,7 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
             ],
             [
                 ("intro", 0.0, 67.0, "embedded"),
+                ("main", 67.0, 8500.0, "embedded"),
                 ("credits", 8500.0, 8700.0, "embedded"),
             ],
         )
@@ -187,6 +196,39 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
         extract.assert_not_called()
         self.assertEqual(len(segs), 1)
         self.assertEqual(segs[0].segment_type_label, "intro")
+
+    def test_unknown_embedded_names_are_kept(self):
+        player = MagicMock()
+        player.getTotalTime.return_value = 100.0
+
+        def rpc(payload):
+            data = json.loads(payload)
+            if data["method"] == "Player.GetChapters":
+                return json.dumps(
+                    {
+                        "jsonrpc": "2.0",
+                        "id": "EmbeddedChaptersList",
+                        "result": {
+                            "chapters": [
+                                {"index": 1, "name": "Scene 7", "time": 0},
+                                {"index": 2, "name": "Opening", "time": 40},
+                            ]
+                        },
+                    }
+                )
+            self.fail("unexpected method %s" % data["method"])
+
+        with patch("service_embedded_chapters.xbmc.executeJSONRPC", side_effect=rpc), patch(
+            "service_embedded_chapters.parse_matroska_chapters_via_vfs", return_value=[]
+        ), patch(
+            "service_embedded_chapters.parse_embedded_chapters_via_mkvextract",
+            return_value=None,
+        ):
+            segs = parse_embedded_chapters(player, player_id=1, video_path="nfs://x.mkv")
+        self.assertEqual(
+            [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in segs],
+            [("scene 7", 0.0, 40.0), ("intro", 40.0, 100.0)],
+        )
 
 
 if __name__ == "__main__":

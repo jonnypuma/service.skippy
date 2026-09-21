@@ -6,6 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 # Categories
+
 msgctxt "#30000"
 msgid "Segment Settings"
 msgstr "Segment-instellingen"
@@ -27,6 +28,7 @@ msgid "Debug Logging"
 msgstr "Debug-logboek"
 
 # Segment Settings
+
 msgctxt "#31000"
 msgid "Segment Keywords to Watch For"
 msgstr "Segment-zoekwoorden"
@@ -72,12 +74,12 @@ msgid "Use embedded chapters as fallback"
 msgstr "Ingesloten hoofdstukken als fallback gebruiken"
 
 msgctxt "#31009"
-msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
-msgstr "Wanneer geen begeleidend bestand (chapters.xml / .edl) of online-segmenten worden gevonden, worden in het videobestand ingesloten hoofdstukken uitgelezen (MKV, MP4). Alleen hoofdstukken die overeenkomen met uw aangepaste segment-zoekwoorden worden gebruikt."
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
 
 msgctxt "#31010"
-msgid "Segment Keywords"
-msgstr "Segment-zoekwoorden"
+msgid "Segment types"
+msgstr "Segment types"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -88,6 +90,7 @@ msgid "When TV segment priority is Online first and TV online lookup is on, Skip
 msgstr "Wanneer TV-segmentprioriteit is ingesteld op \"Online eerst\" en TV online-zoeken is ingeschakeld, zoekt Skippy de volgende bibliotheekaflevering (zelfde serie: volgende aflevering in seizoen, of eerste aflevering van volgend seizoen) en downloadt samengevoegde online intro-/recap-segmenten op de achtergrond. Segmenten worden alleen toegepast wanneer u exact dat bestand start (pad + id's moeten overeenkomen). Uitgebreide logboekregistratie (Alle details) registreert vooraf-ophaal-schema, opslag en overdracht. Niet gebruikt voor Lokaal eerst. Haalt nooit lokale begeleidende bestanden vooraf op."
 
 # Dialog Settings
+
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Knop-focusstijl"
@@ -196,6 +199,14 @@ msgctxt "#32103"
 msgid "Skip duration content"
 msgstr "Inhoud overslaan-duur"
 
+msgctxt "#32104"
+msgid "Add missing online types to existing sidecar"
+msgstr "Ontbrekende online typen toevoegen aan bestaande sidecar"
+
+msgctxt "#32105"
+msgid "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+msgstr "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+
 msgctxt "#32023"
 msgid "Minimal plate style"
 msgstr "Minimale plaatstijl"
@@ -211,7 +222,6 @@ msgstr "Formaat van minimaal overslaan-label"
 msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Letterkleur van overslaan-dialoog"
-
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
@@ -538,6 +548,7 @@ msgid "When both local files and online lookup are enabled for movies: prefer se
 msgstr "Wanneer zowel lokale bestanden als online-zoeken zijn ingeschakeld voor films: geef voorkeur aan segmenten van de gekozen bron wanneer deze gegevens heeft; gebruik anders de andere. Online eerst wacht op netwerk-zoeken voordat de eerste overslaan-dialoog kan verschijnen (doorgaans een paar seconden, tot ongeveer 10 seconden bij een koude start of traag netwerk). Lokaal eerst gebruikt begeleidende gegevens onmiddellijk wanneer aanwezig."
 
 # Toast Settings
+
 msgctxt "#33000"
 msgid "Enable missing segment file toast for TV Episodes"
 msgstr "Melding voor ontbrekend segmentbestand voor TV-afleveringen inschakelen"
@@ -571,6 +582,7 @@ msgid "Show a one-shot notification when deferred online segment lookup updates 
 msgstr "Toont een eenmalige melding wanneer uitgestelde online-segment-zoeken de afspeeltijdlijn bijwerkt (bijv. Lokaal eerst zonder lokaal begeleidend bestand)."
 
 # Debug Settings
+
 msgctxt "#34000"
 msgid "Enable Verbose Logging"
 msgstr "Uitgebreide logboekregistratie inschakelen"
@@ -588,6 +600,7 @@ msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDi
 msgstr "Alleen fouten: Skippy geeft geen routine-INFO uit (service, externe zoeken, SkipDialog, SegmentItem). Normaal: hoofd-service-flow zonder lus-ruis. Alle details: voegt SegmentItem-tick-traces toe (is_active, debounce) plus uitgebreide service-internals (JSON-RPC voor ontbrekend-bestand-melding, pad-probes, elke XML/EDL-regel). Skippy-LOGERROR-regels verschijnen nog steeds wanneer gebruikt."
 
 # Segment Marker Settings
+
 msgctxt "#30005"
 msgid "Segment Marker"
 msgstr "Segment-marker"
@@ -1093,6 +1106,7 @@ msgstr "Segment-marker geannuleerd."
 # ---------------------------------------------------------------------------
 
 # Skip dialog (#40000–40099)
+
 msgctxt "#40000"
 msgid "Skip"
 msgstr "Overslaan"
@@ -1126,11 +1140,13 @@ msgid "Skip to remaining %s at %s"
 msgstr "Spring naar resterende %s om %s"
 
 # Marker extras (#42000–42099)
+
 msgctxt "#42000"
 msgid "Close the Segment Editor before using the Segment Marker."
 msgstr "Sluit de Segment Editor voordat u de Segment Marker gebruikt."
 
 # Toasts / common (#43000–43099)
+
 msgctxt "#43000"
 msgid "Skippy"
 msgstr "Skippy"
@@ -1184,6 +1200,7 @@ msgid "No local segment data found for this %s."
 msgstr "Geen lokale segmentgegevens gevonden voor deze %s."
 
 # Segment Editor (#41000–41199)
+
 msgctxt "#41000"
 msgid "Segment Editor"
 msgstr "Segment Editor"
@@ -1767,3 +1784,71 @@ msgstr "Ja"
 msgctxt "#44106"
 msgid "No"
 msgstr "Nee"
+
+msgctxt "#32106"
+msgid "Segment types and skip behavior"
+msgstr "Segment types and skip behavior"
+
+msgctxt "#32107"
+msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+
+msgctxt "#45001"
+msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+
+msgctxt "#45005"
+msgid "EDL"
+msgstr "EDL"
+
+msgctxt "#45006"
+msgid "Aliases"
+msgstr "Aliases"
+
+msgctxt "#45007"
+msgid "Delete"
+msgstr "Delete"
+
+msgctxt "#45008"
+msgid "Add type"
+msgstr "Add type"
+
+msgctxt "#45011"
+msgid "Type name"
+msgstr "Type name"
+
+msgctxt "#45012"
+msgid "Built-in types cannot be deleted."
+msgstr "Built-in types cannot be deleted."
+
+msgctxt "#45013"
+msgid "Delete this custom type?"
+msgstr "Delete this custom type?"
+
+msgctxt "#45016"
+msgid "Add alias"
+msgstr "Add alias"
+
+msgctxt "#45017"
+msgid "Remove alias"
+msgstr "Remove alias"
+
+msgctxt "#45018"
+msgid "Edit aliases"
+msgstr "Edit aliases"
+
+msgctxt "#45019"
+msgid "Skip mode"
+msgstr "Skip mode"
+
+msgctxt "#45020"
+msgid "Choose EDL number"
+msgstr "Choose EDL number"
+
+msgctxt "#45022"
+msgid "Could not save segment types."
+msgstr "Could not save segment types."
+
+msgctxt "#45023"
+msgid "Segment types saved."
+msgstr "Segment types saved."

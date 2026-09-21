@@ -1,5 +1,25 @@
 # Changelog
 
+## [7.0.0] - 2026-09-21
+
+### Changed
+- **Segment types catalog**: skip mode, aliases, and EDL numbers live in one JSON catalog (`addon_data/service.skippy/segment_types.json`) edited from a single **Segment types and skip behavior** dialog. Comma-separated keyword / always-ask-never / EDL mapping fields are removed from settings.
+- **Unknown labels Never skip** (breaking): a chapter that matches no type is still a segment, but skip mode is Never instead of Ask.
+- **Credits / Outro** and **Commercial / Ad / Sponsor** are one type each. **Cold open** is an alias of **Prologue**, not Intro.
+- **EDL write** always uses the type’s primary number (legacy 6/16 → 7, 13 → 8, 17 → 10). Old numbers still parse.
+- 6.x settings backups can still hold the old comma strings for a one-way import the first time the catalog is created. Profile-data backup now includes `segment_types`.
+
+### Added
+- WindowXML **Segment types** editor (720p and 1080i): Always / Ask / Never per type, EDL number, aliases, add/delete custom types.
+
+## [6.9.0] - 2026-09-21
+
+### Fixed
+- **IntroDB.app outro**: downloaded outro windows are treated as **credits** (skip dialog, matching, and sidecar save). Chapter XML writes **Credits**, not `outro`.
+
+### Added
+- **Add missing online types to existing sidecar**: when **Save online segments** is on and a local `.edl` / chapters.xml already exists, an optional toggle still appends intro/recap/credits/preview windows that the file does not already have (by type). Existing local times are not changed. Works with **Skip if exists**. Overwrite still replaces the file; **Update All** already inserts missing types.
+
 ## [6.8.0] - 2026-09-20
 
 ### Changed

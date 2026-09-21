@@ -71,21 +71,19 @@ class SettingsCacheTests(unittest.TestCase):
             xbmcaddon.Addon = original
         self.assertEqual(len(built), 2)
 
-    def test_skip_mode_keyword_sets_are_memoized(self):
-        settings_utils.invalidate_settings_cache()
-        values = {
-            "segment_always_skip": "ad,ads",
-            "segment_ask_skip": "intro,recap",
-            "segment_never_skip": "credits",
-        }
-        addon = type("_A", (), {"getSetting": lambda _self, key: values.get(key, "")})()
-        first = settings_utils._skip_mode_keyword_sets(addon)
-        self.assertIs(settings_utils._skip_mode_keyword_sets(addon), first)
+    def test_catalog_stamp_changes_when_skip_lists_would_have(self):
+        from segment_types import catalog_stamp, seeded_builtin_types, set_catalog_for_tests
 
-        values["segment_ask_skip"] = "intro,recap,preview"
-        second = settings_utils._skip_mode_keyword_sets(addon)
-        self.assertIsNot(second, first)
-        self.assertIn("preview", second[1])
+        settings_utils.invalidate_settings_cache()
+        types = seeded_builtin_types()
+        set_catalog_for_tests(types)
+        first = catalog_stamp()
+        for row in types:
+            if row["id"] == "intro":
+                row["skip_mode"] = "never"
+        set_catalog_for_tests(types)
+        self.assertNotEqual(catalog_stamp(), first)
+        set_catalog_for_tests(None)
 
 
 class LogTagAndLevelTests(unittest.TestCase):

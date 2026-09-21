@@ -53,8 +53,8 @@ from settings_utils import get_custom_segment_keyword_labels, normalize_label, g
 
 def _select_segment_label_from_list(options):
     """
-    Skinned list (same as Segment Marker) so every keyword from custom_segment_keywords
-    is shown. xbmcgui.Dialog().select() can omit or mishandle items on some platforms.
+    Skinned list (same as Segment Marker) so every catalog type is shown.
+    xbmcgui.Dialog().select() can omit or mishandle items on some platforms.
 
     Returns:
         int: index of selection (0 = Custom..., -1 = user cancelled the picker)

@@ -6,6 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 # Categories
+
 msgctxt "#30000"
 msgid "Segment Settings"
 msgstr "Ρυθμίσεις Τμημάτων"
@@ -27,6 +28,7 @@ msgid "Debug Logging"
 msgstr "Καταγραφή Αποσφαλμάτωσης"
 
 # Segment Settings
+
 msgctxt "#31000"
 msgid "Segment Keywords to Watch For"
 msgstr "Λέξεις-Κλειδιά Τμημάτων προς Παρακολούθηση"
@@ -72,12 +74,12 @@ msgid "Use embedded chapters as fallback"
 msgstr "Χρήση ενσωματωμένων κεφαλαίων ως εναλλακτική"
 
 msgctxt "#31009"
-msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
-msgstr "Όταν δεν βρεθεί sidecar (chapters.xml / .edl) ή διαδικτυακά τμήματα, ανάλυση κεφαλαίων ενσωματωμένων στο αρχείο βίντεο (MKV, MP4). Μόνο κεφάλαια που ταιριάζουν με τις προσαρμοσμένες λέξεις-κλειδιά τμημάτων χρησιμοποιούνται."
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
 
 msgctxt "#31010"
-msgid "Segment Keywords"
-msgstr "Λέξεις-Κλειδιά Τμημάτων"
+msgid "Segment types"
+msgstr "Segment types"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -88,6 +90,7 @@ msgid "When TV segment priority is Online first and TV online lookup is on, Skip
 msgstr "Όταν η προτεραιότητα τμημάτων TV είναι Online first και η διαδικτυακή αναζήτηση TV είναι ενεργή, το Skippy επιλύει το επόμενο επεισόδιο βιβλιοθήκης (ίδια σειρά: επόμενο επεισόδιο στη σεζόν ή πρώτο επεισόδιο της επόμενης σεζόν) και κατεβάζει συγχωνευμένα διαδικτυακά τμήματα intro/recap στο παρασκήνιο. Τα τμήματα εφαρμόζονται μόνο όταν ξεκινάτε ακριβώς αυτό το αρχείο (διαδρομή + αναγνωριστικά πρέπει να ταιριάζουν). Η λεπτομερής καταγραφή (Όλες οι λεπτομέρειες) καταγράφει το πρόγραμμα προφόρτωσης, αποθήκευση και μετάδοση. Δεν χρησιμοποιείται για Local first. Δεν προφορτώνει ποτέ τοπικά sidecars."
 
 # Dialog Settings
+
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Στυλ Εστίασης Κουμπιού"
@@ -196,6 +199,14 @@ msgctxt "#32103"
 msgid "Skip duration content"
 msgstr "Περιεχόμενο διάρκειας παράλειψης"
 
+msgctxt "#32104"
+msgid "Add missing online types to existing sidecar"
+msgstr "Add missing online types to existing sidecar"
+
+msgctxt "#32105"
+msgid "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+msgstr "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+
 msgctxt "#32023"
 msgid "Minimal plate style"
 msgstr "Στυλ πλάκας ελάχιστης λειτουργίας"
@@ -211,7 +222,6 @@ msgstr "Μορφή ετικέτας παράλειψης ελάχιστης λε
 msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Χρώμα γραμματοσειράς διαλόγου παράλειψης"
-
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
@@ -538,6 +548,7 @@ msgid "When both local files and online lookup are enabled for movies: prefer se
 msgstr "Όταν και τα τοπικά αρχεία και η διαδικτυακή αναζήτηση είναι ενεργοποιημένα για ταινίες: προτίμηση τμημάτων από την επιλεγμένη πηγή όταν έχει δεδομένα· διαφορετικά χρήση της άλλης. Το Online first περιμένει τη διαδικτυακή αναζήτηση πριν εμφανιστεί ο πρώτος διάλογος παράλειψης (συνήθως μερικά δευτερόλεπτα, έως περίπου 10 δευτερόλεπτα σε κρύα εκκίνηση ή αργό δίκτυο). Το Local first χρησιμοποιεί δεδομένα sidecar άμεσα όταν υπάρχουν."
 
 # Toast Settings
+
 msgctxt "#33000"
 msgid "Enable missing segment file toast for TV Episodes"
 msgstr "Ενεργοποίηση toast αρχείου τμήματος που λείπει για Επεισόδια TV"
@@ -571,6 +582,7 @@ msgid "Show a one-shot notification when deferred online segment lookup updates 
 msgstr "Εμφάνιση μίας ειδοποίησης όταν η αναβληθείσα διαδικτυακή αναζήτηση τμήματος ενημερώνει τη χρονολογία αναπαραγωγής (π.χ. Local first χωρίς τοπικό sidecar)."
 
 # Debug Settings
+
 msgctxt "#34000"
 msgid "Enable Verbose Logging"
 msgstr "Ενεργοποίηση Λεπτομερούς Καταγραφής"
@@ -588,6 +600,7 @@ msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDi
 msgstr "Μόνο σφάλματα: Το Skippy δεν εκπέμπει συνηθισμένα INFO (service, remote lookup, SkipDialog, SegmentItem). Κανονικό: κύρια ροή υπηρεσίας χωρίς θόρυβο ανά βρόχο. Όλες οι λεπτομέρειες: προσθέτει ίχνη tick του SegmentItem (is_active, debounce) συν λεπτομερή εσωτερικά υπηρεσίας (JSON-RPC για toast αρχείου που λείπει, έλεγχοι διαδρομής, κάθε γραμμή XML/EDL). Οι γραμμές LOGERROR του Skippy εμφανίζονται ακόμα όταν χρησιμοποιούνται."
 
 # Segment Marker Settings
+
 msgctxt "#30005"
 msgid "Segment Marker"
 msgstr "Segment Marker"
@@ -964,8 +977,6 @@ msgctxt "#36003"
 msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
 msgstr "Όταν ενεργοποιηθεί, τα τμήματα αποθηκεύονται αμέσως μετά την επιλογή του τύπου τμήματος χωρίς προτροπή επιβεβαίωσης."
 
-
-
 msgctxt "#36006"
 msgid "Saved file permissions"
 msgstr "Δικαιώματα αποθηκευμένου αρχείου"
@@ -1095,6 +1106,7 @@ msgstr "Ο segment marker ακυρώθηκε."
 # ---------------------------------------------------------------------------
 
 # Skip dialog (#40000–40099)
+
 msgctxt "#40000"
 msgid "Skip"
 msgstr "Παράλειψη"
@@ -1128,11 +1140,13 @@ msgid "Skip to remaining %s at %s"
 msgstr "Παράλειψη στο υπόλοιπο %s στις %s"
 
 # Marker extras (#42000–42099)
+
 msgctxt "#42000"
 msgid "Close the Segment Editor before using the Segment Marker."
 msgstr "Κλείστε τον Segment Editor πριν χρησιμοποιήσετε τον Segment Marker."
 
 # Toasts / common (#43000–43099)
+
 msgctxt "#43000"
 msgid "Skippy"
 msgstr "Skippy"
@@ -1186,6 +1200,7 @@ msgid "No local segment data found for this %s."
 msgstr "Δεν βρέθηκαν τοπικά δεδομένα τμήματος για αυτό το %s."
 
 # Segment Editor (#41000–41199)
+
 msgctxt "#41000"
 msgid "Segment Editor"
 msgstr "Segment Editor"
@@ -1769,3 +1784,71 @@ msgstr "Ναι"
 msgctxt "#44106"
 msgid "No"
 msgstr "Όχι"
+
+msgctxt "#32106"
+msgid "Segment types and skip behavior"
+msgstr "Segment types and skip behavior"
+
+msgctxt "#32107"
+msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+
+msgctxt "#45001"
+msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+
+msgctxt "#45005"
+msgid "EDL"
+msgstr "EDL"
+
+msgctxt "#45006"
+msgid "Aliases"
+msgstr "Aliases"
+
+msgctxt "#45007"
+msgid "Delete"
+msgstr "Delete"
+
+msgctxt "#45008"
+msgid "Add type"
+msgstr "Add type"
+
+msgctxt "#45011"
+msgid "Type name"
+msgstr "Type name"
+
+msgctxt "#45012"
+msgid "Built-in types cannot be deleted."
+msgstr "Built-in types cannot be deleted."
+
+msgctxt "#45013"
+msgid "Delete this custom type?"
+msgstr "Delete this custom type?"
+
+msgctxt "#45016"
+msgid "Add alias"
+msgstr "Add alias"
+
+msgctxt "#45017"
+msgid "Remove alias"
+msgstr "Remove alias"
+
+msgctxt "#45018"
+msgid "Edit aliases"
+msgstr "Edit aliases"
+
+msgctxt "#45019"
+msgid "Skip mode"
+msgstr "Skip mode"
+
+msgctxt "#45020"
+msgid "Choose EDL number"
+msgstr "Choose EDL number"
+
+msgctxt "#45022"
+msgid "Could not save segment types."
+msgstr "Could not save segment types."
+
+msgctxt "#45023"
+msgid "Segment types saved."
+msgstr "Segment types saved."

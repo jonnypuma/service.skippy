@@ -70,6 +70,46 @@ from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
 
 def _log_sidecar_detail(msg):
     log_service_detail(msg, tag="sidecar")
+
+
+def _canonical_online_label(label):
+    """outro → credits; other recognized API keys stay as-is."""
+    bucket = remote_payload_label_to_online_bucket(label)
+    return bucket or (label or "segment")
+
+
+def _fill_missing_online_types(existing_items, online_items):
+    """
+    Keep every local row. Append online windows whose canonical type
+    (intro/recap/credits/preview) is not already present locally.
+    Returns ``(combined_list, added_items)``.
+    """
+    present = set()
+    for e in existing_items or []:
+        bucket = local_label_to_online_bucket(e.segment_type_label)
+        if bucket:
+            present.add(bucket)
+    added = []
+    for o in sorted(online_items or [], key=lambda s: float(s.start_seconds)):
+        bucket = remote_payload_label_to_online_bucket(o.segment_type_label)
+        if not bucket or bucket in present:
+            continue
+        added.append(
+            SegmentItem(
+                float(o.start_seconds),
+                float(o.end_seconds),
+                bucket,
+                source=getattr(o, "source", None) or "online",
+            )
+        )
+        present.add(bucket)
+    if not added:
+        return list(existing_items or []), []
+    merged = list(existing_items or []) + added
+    merged.sort(key=lambda s: float(s.start_seconds))
+    return dedupe_overlapping_same_label_segments(merged), added
+
+
 def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
     """Keep all existing; add online segments that do not overlap any kept window (by time)."""
     merged = list(existing_items)
@@ -85,7 +125,7 @@ def _merge_sidecar_segments(existing_items, online_items, tol=1.5):
             SegmentItem(
                 o.start_seconds,
                 o.end_seconds,
-                o.segment_type_label or "segment",
+                _canonical_online_label(o.segment_type_label),
                 source=o.source or "online",
             )
         )
@@ -372,7 +412,7 @@ def _insert_unmatched_with_neighbor_snaps(base_list, unmatched, snap_start, snap
         n = SegmentItem(
             float(u.start_seconds),
             float(u.end_seconds),
-            u.segment_type_label or "segment",
+            _canonical_online_label(u.segment_type_label),
             source=getattr(u, "source", None) or "online",
         )
         items.append(n)

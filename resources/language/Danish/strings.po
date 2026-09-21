@@ -6,6 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 # Categories
+
 msgctxt "#30000"
 msgid "Segment Settings"
 msgstr "Segmentindstillinger"
@@ -27,6 +28,7 @@ msgid "Debug Logging"
 msgstr "Fejlfindingslog"
 
 # Segment Settings
+
 msgctxt "#31000"
 msgid "Segment Keywords to Watch For"
 msgstr "Segmentnøgleord at overvåge"
@@ -72,12 +74,12 @@ msgid "Use embedded chapters as fallback"
 msgstr "Brug indlejrede kapitler som backup"
 
 msgctxt "#31009"
-msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Only chapters matching your custom segment keywords are used."
-msgstr "Når ingen sidecar-fil (chapters.xml / .edl) eller onlinesegmenter findes, parse kapitler indlejret i videofilen (MKV, MP4). Kun kapitler der matcher dine tilpassede segmentnøgleord bruges."
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
 
 msgctxt "#31010"
-msgid "Segment Keywords"
-msgstr "Segmentnøgleord"
+msgid "Segment types"
+msgstr "Segment types"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -88,6 +90,7 @@ msgid "When TV segment priority is Online first and TV online lookup is on, Skip
 msgstr "Når TV-segmentprioritet er Online først og TV-onlineopslag er aktiveret, løser Skippy det næste biblioteksafsnit (samme serie: næste afsnit i sæsonen, eller første afsnit i næste sæson) og downloader flettede intro/resumé-segmenter i baggrunden. Segmenter gælder kun, når du starter præcis den fil (sti + ID skal matche). Detaljeret logning (Alle detaljer) logger forudhentnings-tidsplan, opbevaring og overdragelse. Bruges ikke til Lokal først. Forudhenter aldrig lokale sidecar-filer."
 
 # Dialog Settings
+
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Knap fokusstil"
@@ -196,6 +199,14 @@ msgctxt "#32103"
 msgid "Skip duration content"
 msgstr "Indhold af springvarighed"
 
+msgctxt "#32104"
+msgid "Add missing online types to existing sidecar"
+msgstr "Tilføj manglende onlinetyper til eksisterende sidecar"
+
+msgctxt "#32105"
+msgid "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+msgstr "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+
 msgctxt "#32023"
 msgid "Minimal plate style"
 msgstr "Minimal pladestil"
@@ -211,7 +222,6 @@ msgstr "Minimalt springetiketformat"
 msgctxt "#32026"
 msgid "Skip dialog font color"
 msgstr "Springdialog skrifttypefarve"
-
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
@@ -538,6 +548,7 @@ msgid "When both local files and online lookup are enabled for movies: prefer se
 msgstr "Når både lokale filer og onlineopslag er aktiveret for film: foretræk segmenter fra den valgte kilde når den har data; ellers brug den anden. Online først venter på netværksopslag før den første springdialog kan vises (typisk få sekunder, op til ca. 10 sekunder ved kold start eller langsomt netværk). Lokal først bruger sidecar-data straks når til stede."
 
 # Toast Settings
+
 msgctxt "#33000"
 msgid "Enable missing segment file toast for TV Episodes"
 msgstr "Aktiver påmindelse for manglende segmentfil for TV-afsnit"
@@ -571,6 +582,7 @@ msgid "Show a one-shot notification when deferred online segment lookup updates 
 msgstr "Vis en engangspåmindelse når udskudt onlinesegmentopslag opdaterer afspilningslinjen (f.eks. Lokal først uden lokal sidecar)."
 
 # Debug Settings
+
 msgctxt "#34000"
 msgid "Enable Verbose Logging"
 msgstr "Aktiver detaljeret logning"
@@ -588,6 +600,7 @@ msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDi
 msgstr "Kun fejl: Skippy udsender ingen rutin-INFO (tjeneste, fjerntopslag, SkipDialog, SegmentItem). Normal: hovedtjeneste-flow uden støj pr. løkke. Alle detaljer: tilføjer SegmentItem tick-spor (is_active, debounce) plus detaljerede tjenesteinterne detaljer (JSON-RPC for manglende-fil-påmindelse, sti-sonder, hver XML/EDL-linje). Skippys LOGERROR-linjer vises stadig når brugt."
 
 # Segment Marker Settings
+
 msgctxt "#30005"
 msgid "Segment Marker"
 msgstr "Segmentmarkør"
@@ -1093,6 +1106,7 @@ msgstr "Segmentmarkør annulleret."
 # ---------------------------------------------------------------------------
 
 # Skip dialog (#40000–40099)
+
 msgctxt "#40000"
 msgid "Skip"
 msgstr "Spring over"
@@ -1126,11 +1140,13 @@ msgid "Skip to remaining %s at %s"
 msgstr "Hop til resterende %s ved %s"
 
 # Marker extras (#42000–42099)
+
 msgctxt "#42000"
 msgid "Close the Segment Editor before using the Segment Marker."
 msgstr "Luk Segment Editor før du bruger Segment Marker."
 
 # Toasts / common (#43000–43099)
+
 msgctxt "#43000"
 msgid "Skippy"
 msgstr "Skippy"
@@ -1184,6 +1200,7 @@ msgid "No local segment data found for this %s."
 msgstr "Ingen lokale segmentdata fundet for denne %s."
 
 # Segment Editor (#41000–41199)
+
 msgctxt "#41000"
 msgid "Segment Editor"
 msgstr "Segment Editor"
@@ -1767,3 +1784,71 @@ msgstr "Ja"
 msgctxt "#44106"
 msgid "No"
 msgstr "Nej"
+
+msgctxt "#32106"
+msgid "Segment types and skip behavior"
+msgstr "Segment types and skip behavior"
+
+msgctxt "#32107"
+msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+
+msgctxt "#45001"
+msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+
+msgctxt "#45005"
+msgid "EDL"
+msgstr "EDL"
+
+msgctxt "#45006"
+msgid "Aliases"
+msgstr "Aliases"
+
+msgctxt "#45007"
+msgid "Delete"
+msgstr "Delete"
+
+msgctxt "#45008"
+msgid "Add type"
+msgstr "Add type"
+
+msgctxt "#45011"
+msgid "Type name"
+msgstr "Type name"
+
+msgctxt "#45012"
+msgid "Built-in types cannot be deleted."
+msgstr "Built-in types cannot be deleted."
+
+msgctxt "#45013"
+msgid "Delete this custom type?"
+msgstr "Delete this custom type?"
+
+msgctxt "#45016"
+msgid "Add alias"
+msgstr "Add alias"
+
+msgctxt "#45017"
+msgid "Remove alias"
+msgstr "Remove alias"
+
+msgctxt "#45018"
+msgid "Edit aliases"
+msgstr "Edit aliases"
+
+msgctxt "#45019"
+msgid "Skip mode"
+msgstr "Skip mode"
+
+msgctxt "#45020"
+msgid "Choose EDL number"
+msgstr "Choose EDL number"
+
+msgctxt "#45022"
+msgid "Could not save segment types."
+msgstr "Could not save segment types."
+
+msgctxt "#45023"
+msgid "Segment types saved."
+msgstr "Segment types saved."

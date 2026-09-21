@@ -36,6 +36,7 @@ from remote_http import (
     _rlog,
     _safe_log_url,
     fetch_remote_json,
+    local_label_for_remote_payload_key,
 )
 from remote_library import (
     build_movie_context,
@@ -128,6 +129,7 @@ def _theintrodb_segment_entries(payload, total_time):
         except (TypeError, ValueError):
             tt_hint = None
     for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
+        local_name = local_label_for_remote_payload_key(segment_name)
         entries = _theintrodb_normalize_segment_field(payload.get(segment_name))
         for entry in entries:
             if not isinstance(entry, dict):
@@ -135,7 +137,7 @@ def _theintrodb_segment_entries(payload, total_time):
             end_ms_raw = entry.get("end_ms")
             if end_ms_raw is None:
                 # v3: credits/preview may omit end (= through end of media)
-                if segment_name not in ("credits", "preview"):
+                if local_name not in ("credits", "preview"):
                     continue
                 if tt_hint is None or tt_hint <= 0:
                     continue
@@ -166,7 +168,7 @@ def _theintrodb_segment_entries(payload, total_time):
                     SegmentItem(
                         window[0],
                         window[1],
-                        segment_name,
+                        local_name,
                         source="theintrodb",
                     )
                 )
@@ -249,6 +251,33 @@ def fetch_theintrodb_segments(context, total_time):
     return segs
 
 
+def _introdb_segment_entries(payload, total_time):
+    """Parse IntroDB.app payload keys into SegmentItems (outro stored as credits)."""
+    out = []
+    if not isinstance(payload, dict):
+        return out
+    for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
+        val = payload.get(segment_name)
+        if val is None:
+            continue
+        local_name = local_label_for_remote_payload_key(segment_name)
+        entries = val if isinstance(val, list) else [val]
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            window = normalize_remote_segment_window(entry, total_time)
+            if window:
+                out.append(
+                    SegmentItem(
+                        window[0],
+                        window[1],
+                        local_name,
+                        source="introdb",
+                    )
+                )
+    return out
+
+
 def fetch_introdb_segments(context, total_time):
     imdb_id = context.get("show_imdb_id")
     if not imdb_id:
@@ -276,36 +305,7 @@ def fetch_introdb_segments(context, total_time):
         _rlog("IntroDB.app: response was not a JSON object (got %s)" % type(payload).__name__)
         return []
 
-    out = []
-    for segment_name in REMOTE_SEGMENT_PAYLOAD_KEYS:
-        val = payload.get(segment_name)
-        if val is None:
-            continue
-        if isinstance(val, list):
-            for entry in val:
-                if not isinstance(entry, dict):
-                    continue
-                window = normalize_remote_segment_window(entry, total_time)
-                if window:
-                    out.append(
-                        SegmentItem(
-                            window[0],
-                            window[1],
-                            segment_name,
-                            source="introdb",
-                        )
-                    )
-        else:
-            window = normalize_remote_segment_window(val, total_time)
-            if window:
-                out.append(
-                    SegmentItem(
-                        window[0],
-                        window[1],
-                        segment_name,
-                        source="introdb",
-                    )
-                )
+    out = _introdb_segment_entries(payload, total_time)
     if out:
         _rlog("IntroDB.app: using %d segment(s) %s" % (len(out), [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in out]))
     else:

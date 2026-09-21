@@ -147,6 +147,8 @@ def _online_sidecar_save_allowed(addon, video_path, segments):
 
 from service_online_sidecar_merge import (  # noqa: F401
     _apply_neighbor_snap_trims,
+    _canonical_online_label,
+    _fill_missing_online_types,
     _finalize_sidecar_after_update_policy,
     _insert_unmatched_with_neighbor_snaps,
     _merge_sidecar_segments,
@@ -201,81 +203,104 @@ def _maybe_save_online_segments_chapters_xml(
             log("⚠️ Could not save chapters.xml: %s" % e)
         return
 
+    fill_missing = addon_get_bool(addon, "save_online_fill_missing_types", False)
+    fill_only = False
+
     if policy == _SAVE_CHAPTERS_SKIP_IF_EXISTS:
-        log(
-            "Skipping save chapters.xml: file exists and policy is skip (%s)"
-            % existing_path
-        )
-        return
-
-    raw = safe_file_read(existing_path)
-    existing_items = _parse_chapter_xml_string(raw) if raw else []
-    items_to_write = list(segments)
-
-    if policy == _SAVE_CHAPTERS_MERGE:
-        if not existing_items and raw:
-            log("⚠️ Merge skipped: could not parse existing chapter XML; not writing")
+        if not fill_missing:
+            log(
+                "Skipping save chapters.xml: file exists and policy is skip (%s)"
+                % existing_path
+            )
             return
-        items_to_write = _merge_sidecar_segments(existing_items, segments)
-        if _segments_signature_for_save_compare(
-            items_to_write
-        ) == _segments_signature_for_save_compare(existing_items):
-            _log_sidecar_detail(
-                "Skipping save chapters.xml: merged online data matches existing file"
+        raw = safe_file_read(existing_path)
+        existing_items = _parse_chapter_xml_string(raw) if raw else []
+        if not existing_items and raw:
+            log(
+                "⚠️ Fill missing types skipped: could not parse existing chapter XML"
+            )
+            return
+        items_to_write, added = _fill_missing_online_types(existing_items, segments)
+        if not added:
+            log(
+                "Skipping save chapters.xml: file exists and no missing online types (%s)"
+                % existing_path
             )
             return
         log(
-            "Merging online segments into existing chapter XML → %d chapter atom(s)"
-            % len(items_to_write)
+            "Adding %d missing online type(s) to existing chapter XML"
+            % len(added)
         )
-    elif policy in (
-        _SAVE_CHAPTERS_UPDATE_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ASK,
-        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
-    ):
-        if not existing_items and raw:
-            log("⚠️ Update skipped: could not parse existing chapter XML; not writing")
-            return
-        items_to_write = _finalize_sidecar_after_update_policy(
-            list(existing_items), segments, policy, addon
-        )
-        if _segments_signature_for_save_compare(
-            items_to_write
-        ) == _segments_signature_for_save_compare(existing_items):
-            _log_sidecar_detail(
-                "Skipping save chapters.xml: no changes from online update policy"
+        fill_only = True
+    else:
+        raw = safe_file_read(existing_path)
+        existing_items = _parse_chapter_xml_string(raw) if raw else []
+        items_to_write = list(segments)
+
+        if policy == _SAVE_CHAPTERS_MERGE:
+            if not existing_items and raw:
+                log("⚠️ Merge skipped: could not parse existing chapter XML; not writing")
+                return
+            items_to_write = _merge_sidecar_segments(existing_items, segments)
+            if _segments_signature_for_save_compare(
+                items_to_write
+            ) == _segments_signature_for_save_compare(existing_items):
+                _log_sidecar_detail(
+                    "Skipping save chapters.xml: merged online data matches existing file"
+                )
+                return
+            log(
+                "Merging online segments into existing chapter XML → %d chapter atom(s)"
+                % len(items_to_write)
             )
-            return
-        if policy in (
+        elif policy in (
+            _SAVE_CHAPTERS_UPDATE_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ASK,
             _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
             _SAVE_CHAPTERS_UPDATE_ALL_ASK,
         ):
+            if not existing_items and raw:
+                log("⚠️ Update skipped: could not parse existing chapter XML; not writing")
+                return
+            items_to_write = _finalize_sidecar_after_update_policy(
+                list(existing_items), segments, policy, addon
+            )
+            if _segments_signature_for_save_compare(
+                items_to_write
+            ) == _segments_signature_for_save_compare(existing_items):
+                _log_sidecar_detail(
+                    "Skipping save chapters.xml: no changes from online update policy"
+                )
+                return
+            if policy in (
+                _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+                _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+            ):
+                log(
+                    "Update All: chapter XML from online → %d chapter atom(s)"
+                    % len(items_to_write)
+                )
+            else:
+                log(
+                    "Updating matched segments in chapter XML from online → %d chapter atom(s)"
+                    % len(items_to_write)
+                )
+        elif policy in (
+            _SAVE_CHAPTERS_OVERWRITE_SILENT,
+            _SAVE_CHAPTERS_OVERWRITE_ASK,
+        ):
+            items_to_write = list(segments)
+            if _sidecar_list_matches_online(existing_items, items_to_write):
+                _log_sidecar_detail(
+                    "Skipping save chapters.xml: online segments match existing file"
+                )
+                return
             log(
-                "Update All: chapter XML from online → %d chapter atom(s)"
+                "Overwriting existing chapter XML with %d online segment(s)"
                 % len(items_to_write)
             )
-        else:
-            log(
-                "Updating matched segments in chapter XML from online → %d chapter atom(s)"
-                % len(items_to_write)
-            )
-    elif policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        items_to_write = list(segments)
-        if _sidecar_list_matches_online(existing_items, items_to_write):
-            _log_sidecar_detail(
-                "Skipping save chapters.xml: online segments match existing file"
-            )
-            return
-        log(
-            "Overwriting existing chapter XML with %d online segment(s)"
-            % len(items_to_write)
-        )
 
-    if policy == _SAVE_CHAPTERS_OVERWRITE_ASK and not skip_overwrite_prompt:
+    if not fill_only and policy == _SAVE_CHAPTERS_OVERWRITE_ASK and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
             video_path,
             segments,
@@ -318,14 +343,18 @@ def _maybe_save_online_segments_chapters_xml(
             return
         _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
 
-    if existing_path and policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-        _SAVE_CHAPTERS_MERGE,
-        _SAVE_CHAPTERS_UPDATE_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ASK,
-        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    if existing_path and (
+        fill_only
+        or policy
+        in (
+            _SAVE_CHAPTERS_OVERWRITE_SILENT,
+            _SAVE_CHAPTERS_OVERWRITE_ASK,
+            _SAVE_CHAPTERS_MERGE,
+            _SAVE_CHAPTERS_UPDATE_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ASK,
+            _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+        )
     ):
         _backup_sidecar_file(addon, existing_path)
 
@@ -363,88 +392,107 @@ def _maybe_save_online_segments_edl(
             log("⚠️ Could not save EDL: %s" % e)
         return
 
+    fill_missing = addon_get_bool(addon, "save_online_fill_missing_types", False)
+    fill_only = False
+
     if policy == _SAVE_CHAPTERS_SKIP_IF_EXISTS:
-        log(
-            "Skipping save EDL: file exists and policy is skip (%s)"
-            % existing_path
-        )
-        return
-
-    existing_items = parse_edl(video_path, update_monitor=False)
-    items_to_video = list(segments)
-
-    if policy == _SAVE_CHAPTERS_MERGE:
+        if not fill_missing:
+            log(
+                "Skipping save EDL: file exists and policy is skip (%s)"
+                % existing_path
+            )
+            return
+        existing_items = parse_edl(video_path, update_monitor=False)
         if not existing_items:
             raw = safe_file_read(existing_path)
             if raw and str(raw).strip():
-                log("⚠️ Merge skipped: could not read/parse existing EDL; not writing")
+                log("⚠️ Fill missing types skipped: could not read/parse existing EDL")
                 return
-            items_to_video = _merge_sidecar_segments([], segments)
-        else:
-            items_to_video = _merge_sidecar_segments(existing_items, segments)
-        if _segments_signature_for_save_compare(
-            items_to_video
-        ) == _segments_signature_for_save_compare(existing_items):
-            _log_sidecar_detail(
-                "Skipping save EDL: merged online data matches existing file"
+        items_to_video, added = _fill_missing_online_types(existing_items, segments)
+        if not added:
+            log(
+                "Skipping save EDL: file exists and no missing online types (%s)"
+                % existing_path
             )
             return
-        log(
-            "Merging online segments into existing EDL → %d entr(y/ies)"
-            % len(items_to_video)
-        )
-    elif policy in (
-        _SAVE_CHAPTERS_UPDATE_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ASK,
-        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
-    ):
-        if not existing_items:
-            raw = safe_file_read(existing_path)
-            if raw and str(raw).strip():
-                log("⚠️ Update skipped: could not read/parse existing EDL; not writing")
+        log("Adding %d missing online type(s) to existing EDL" % len(added))
+        fill_only = True
+    else:
+        existing_items = parse_edl(video_path, update_monitor=False)
+        items_to_video = list(segments)
+
+        if policy == _SAVE_CHAPTERS_MERGE:
+            if not existing_items:
+                raw = safe_file_read(existing_path)
+                if raw and str(raw).strip():
+                    log("⚠️ Merge skipped: could not read/parse existing EDL; not writing")
+                    return
+                items_to_video = _merge_sidecar_segments([], segments)
+            else:
+                items_to_video = _merge_sidecar_segments(existing_items, segments)
+            if _segments_signature_for_save_compare(
+                items_to_video
+            ) == _segments_signature_for_save_compare(existing_items):
+                _log_sidecar_detail(
+                    "Skipping save EDL: merged online data matches existing file"
+                )
                 return
-            items_to_video = _finalize_sidecar_after_update_policy(
-                [], segments, policy, addon
+            log(
+                "Merging online segments into existing EDL → %d entr(y/ies)"
+                % len(items_to_video)
             )
-        else:
-            items_to_video = _finalize_sidecar_after_update_policy(
-                list(existing_items), segments, policy, addon
-            )
-        if _segments_signature_for_save_compare(
-            items_to_video
-        ) == _segments_signature_for_save_compare(existing_items):
-            _log_sidecar_detail(
-                "Skipping save EDL: no changes from online update policy"
-            )
-            return
-        if policy in (
+        elif policy in (
+            _SAVE_CHAPTERS_UPDATE_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ASK,
             _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
             _SAVE_CHAPTERS_UPDATE_ALL_ASK,
         ):
+            if not existing_items:
+                raw = safe_file_read(existing_path)
+                if raw and str(raw).strip():
+                    log("⚠️ Update skipped: could not read/parse existing EDL; not writing")
+                    return
+                items_to_video = _finalize_sidecar_after_update_policy(
+                    [], segments, policy, addon
+                )
+            else:
+                items_to_video = _finalize_sidecar_after_update_policy(
+                    list(existing_items), segments, policy, addon
+                )
+            if _segments_signature_for_save_compare(
+                items_to_video
+            ) == _segments_signature_for_save_compare(existing_items):
+                _log_sidecar_detail(
+                    "Skipping save EDL: no changes from online update policy"
+                )
+                return
+            if policy in (
+                _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+                _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+            ):
+                log(
+                    "Update All: EDL from online → %d entr(y/ies)"
+                    % len(items_to_video)
+                )
+            else:
+                log(
+                    "Updating matched segments in existing EDL from online → %d entr(y/ies)"
+                    % len(items_to_video)
+                )
+        elif policy in (
+            _SAVE_CHAPTERS_OVERWRITE_SILENT,
+            _SAVE_CHAPTERS_OVERWRITE_ASK,
+        ):
+            items_to_video = list(segments)
+            if _edl_file_triples_match_segments(existing_path, items_to_video):
+                _log_sidecar_detail(
+                    "Skipping save EDL: on-disk EDL actions/times match online segments"
+                )
+                return
             log(
-                "Update All: EDL from online → %d entr(y/ies)"
+                "Overwriting existing EDL with %d online segment(s)"
                 % len(items_to_video)
             )
-        else:
-            log(
-                "Updating matched segments in existing EDL from online → %d entr(y/ies)"
-                % len(items_to_video)
-            )
-    elif policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-    ):
-        items_to_video = list(segments)
-        if _edl_file_triples_match_segments(existing_path, items_to_video):
-            _log_sidecar_detail(
-                "Skipping save EDL: on-disk EDL actions/times match online segments"
-            )
-            return
-        log(
-            "Overwriting existing EDL with %d online segment(s)"
-            % len(items_to_video)
-        )
 
     if policy == _SAVE_CHAPTERS_OVERWRITE_ASK and not skip_overwrite_prompt:
         detail = _build_sidecar_ask_detail(
@@ -489,14 +537,18 @@ def _maybe_save_online_segments_edl(
             return
         _suppress_online_sidecar_save_prompt(video_path, segment_monitor)
 
-    if existing_path and policy in (
-        _SAVE_CHAPTERS_OVERWRITE_SILENT,
-        _SAVE_CHAPTERS_OVERWRITE_ASK,
-        _SAVE_CHAPTERS_MERGE,
-        _SAVE_CHAPTERS_UPDATE_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ASK,
-        _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
-        _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+    if existing_path and (
+        fill_only
+        or policy
+        in (
+            _SAVE_CHAPTERS_OVERWRITE_SILENT,
+            _SAVE_CHAPTERS_OVERWRITE_ASK,
+            _SAVE_CHAPTERS_MERGE,
+            _SAVE_CHAPTERS_UPDATE_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ASK,
+            _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
+            _SAVE_CHAPTERS_UPDATE_ALL_ASK,
+        )
     ):
         _backup_sidecar_file(addon, existing_path)
 

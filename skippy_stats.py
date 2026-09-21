@@ -108,7 +108,12 @@ def _flush() -> None:
 
 def record_skip(segment_label, seconds_saved=0.0) -> None:
     """Count one skip and the playback time it saved."""
-    label = normalize_label(segment_label) or "segment"
+    try:
+        from segment_types import canonical_type_id
+
+        label = canonical_type_id(segment_label) or "segment"
+    except Exception:
+        label = normalize_label(segment_label) or "segment"
     with _lock:
         load_statistics()
         _cache["skips"]["total"] += 1
