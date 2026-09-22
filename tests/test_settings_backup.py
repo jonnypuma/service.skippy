@@ -9,6 +9,7 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from unittest.mock import patch
 
 from tests.kodi_stubs import install_kodi_stubs
 
@@ -105,6 +106,16 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
             self.assertEqual(set(data["settings"].keys()), set(persisted))
             self.assertEqual(data["settings"]["enable_verbose_logging"], "true")
             self.assertEqual(data["settings"]["rewind_threshold_seconds"], "15")
+            self.assertEqual(data["segment_types"]["schema"], "skippy_segment_types_v1")
+            self.assertGreaterEqual(len(data["segment_types"]["types"]), 11)
+            for retired in (
+                "segment_always_skip",
+                "segment_ask_skip",
+                "segment_never_skip",
+                "custom_segment_keywords",
+                "edl_action_mapping",
+            ):
+                self.assertNotIn(retired, data["settings"])
 
     def test_import_restores_overlapping_keys_and_skips_unknown(self):
         import settings_backup as sb
@@ -153,13 +164,143 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "rt.json")
-            sb.export_to_path(src, path)
-            applied, bad, _ = sb.import_from_path(dst, path)
+
+            def _profile_path(*parts):
+                return os.path.join(tmp, *parts)
+
+            with patch("segment_types.profile_path", side_effect=_profile_path):
+                from segment_types import set_catalog_for_tests
+
+                set_catalog_for_tests(None)
+                sb.export_to_path(src, path)
+                applied, bad, _ = sb.import_from_path(dst, path)
 
         self.assertEqual(applied, len(persisted))
         self.assertEqual(bad, 0)
         for k in persisted:
             self.assertEqual(dst.getSetting(k), original[k], k)
+
+    def test_settings_backup_roundtrips_segment_catalog(self):
+        import settings_backup as sb
+        from segment_types import (
+            ensure_catalog,
+            get_user_skip_mode,
+            save_catalog,
+            seeded_builtin_types,
+            set_catalog_for_tests,
+            set_skip_mode,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "settings.json")
+
+            def _profile_path(*parts):
+                return os.path.join(tmp, *parts)
+
+            with patch("segment_types.profile_path", side_effect=_profile_path):
+                set_catalog_for_tests(None)
+                types = seeded_builtin_types()
+                self.assertIsNone(set_skip_mode(types, "intro", "never"))
+                types.append(
+                    {
+                        "id": "hook",
+                        "label": "Hook",
+                        "skip_mode": "ask",
+                        "edl_action": 40,
+                        "aliases": ["Hook"],
+                        "builtin": False,
+                        "online_bucket": None,
+                        "edl_read_aliases": [],
+                    }
+                )
+                self.assertTrue(save_catalog(types))
+                addon = FakeAddon({"enable_verbose_logging": "true"})
+                sb.export_to_path(addon, path)
+
+                # Other device: stock catalog plus a custom type the backup does not have.
+                fresh = seeded_builtin_types()
+                fresh.append(
+                    {
+                        "id": "only here",
+                        "label": "Only here",
+                        "skip_mode": "never",
+                        "edl_action": 41,
+                        "aliases": ["Only here"],
+                        "builtin": False,
+                        "online_bucket": None,
+                        "edl_read_aliases": [],
+                    }
+                )
+                self.assertTrue(save_catalog(fresh))
+                applied, bad, note = sb.import_from_path(addon, path)
+                set_catalog_for_tests(None)
+                live = {t["id"]: t for t in ensure_catalog()}
+                self.assertEqual(bad, 0)
+                self.assertIn("Segment types merged", note)
+                self.assertGreater(applied, 0)
+                self.assertEqual(live["intro"]["skip_mode"], "never")
+                self.assertEqual(get_user_skip_mode("opening"), "never")
+                self.assertEqual(live["hook"]["edl_action"], 40)
+                self.assertIn("only here", live)
+
+    def test_pre_7_settings_backup_applies_skip_lists_to_catalog(self):
+        import settings_backup as sb
+        from segment_types import ensure_catalog, save_catalog, seeded_builtin_types, set_catalog_for_tests
+
+        persisted, _, _ = _xml_setting_ids()
+        sample = persisted[0]
+        addon = FakeAddon({k: "old" for k in persisted})
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "legacy-settings.json")
+
+            def _profile_path(*parts):
+                return os.path.join(tmp, *parts)
+
+            with patch("segment_types.profile_path", side_effect=_profile_path):
+                set_catalog_for_tests(None)
+                types = seeded_builtin_types()
+                types.append(
+                    {
+                        "id": "localhook",
+                        "label": "Localhook",
+                        "skip_mode": "ask",
+                        "edl_action": 30,
+                        "aliases": ["Localhook"],
+                        "builtin": False,
+                        "online_bucket": None,
+                        "edl_read_aliases": [],
+                    }
+                )
+                self.assertTrue(save_catalog(types))
+                payload = {
+                    "schema": sb.SCHEMA,
+                    "addon_id": sb.ADDON_ID,
+                    "addon_version_exported": "6.9.0",
+                    "settings": {
+                        sample: "new-value",
+                        "segment_always_skip": "intro",
+                        "segment_ask_skip": "cold open",
+                        "custom_segment_keywords": "myhook",
+                        "edl_action_mapping": "21:myhook",
+                        "not_a_real_setting_xyz": "nope",
+                    },
+                }
+                with open(path, "w", encoding="utf-8") as fp:
+                    json.dump(payload, fp)
+                applied, bad, note = sb.import_from_path(addon, path)
+                live = {t["id"]: t for t in ensure_catalog()}
+
+        self.assertEqual(addon.getSetting(sample), "new-value")
+        self.assertNotIn("segment_always_skip", addon._store)
+        self.assertEqual(bad, 1)
+        self.assertGreaterEqual(applied, 5)
+        self.assertIn("Legacy skip lists applied", note)
+        self.assertEqual(live["intro"]["skip_mode"], "auto")
+        self.assertEqual(live["prologue"]["skip_mode"], "ask")
+        self.assertEqual(live["myhook"]["edl_action"], 21)
+        self.assertEqual(live["localhook"]["skip_mode"], "ask")
+        self.assertEqual(live["recap"]["skip_mode"], "ask")
 
     def test_rejects_wrong_schema(self):
         import settings_backup as sb

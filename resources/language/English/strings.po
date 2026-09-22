@@ -27,33 +27,18 @@ msgid "Debug Logging"
 msgstr "Debug Logging"
 
 # Segment Settings
-msgctxt "#31000"
-msgid "Segment Keywords to Watch For"
-msgstr "Segment Keywords to Watch For"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Skip Behavior Preferences"
 
-msgctxt "#31002"
-msgid "Always Skip These"
-msgstr "Always Skip These"
 
-msgctxt "#31003"
-msgid "Ask to Skip These"
-msgstr "Ask to Skip These"
 
-msgctxt "#31004"
-msgid "Never Skip These"
-msgstr "Never Skip These"
 
 msgctxt "#31005"
 msgid "Ignore unmapped EDL actions"
 msgstr "Ignore unmapped EDL actions"
 
-msgctxt "#31006"
-msgid "EDL Action Type Mapping"
-msgstr "EDL Action Type Mapping"
 
 msgctxt "#31007"
 msgid "Ignore overlapping segments"
@@ -673,16 +658,16 @@ msgid "Back up settings to JSON…"
 msgstr "Back up settings to JSON…"
 
 msgctxt "#38001"
-msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
-msgstr "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
 
 msgctxt "#38002"
 msgid "Restore settings from JSON…"
 msgstr "Restore settings from JSON…"
 
 msgctxt "#38003"
-msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
-msgstr "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
+msgstr "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
 
 msgctxt "#38004"
 msgid "The operation could not be completed."
@@ -693,8 +678,8 @@ msgid "Saved %s"
 msgstr "Saved %s"
 
 msgctxt "#38006"
-msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
-msgstr "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
+msgstr "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
 
 msgctxt "#38007"
 msgid "This file is not a valid Skippy backup."
@@ -709,24 +694,24 @@ msgid "Back up profile data to JSON…"
 msgstr "Back up profile data to JSON…"
 
 msgctxt "#38010"
-msgid "Export upload fingerprints, per-title auto-skip rules, and statistics from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
-msgstr "Export upload fingerprints, per-title auto-skip rules, and statistics from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgstr "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
 
 msgctxt "#38011"
 msgid "Restore profile data from JSON (merge)…"
 msgstr "Restore profile data from JSON (merge)…"
 
 msgctxt "#38012"
-msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values."
-msgstr "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values."
+msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
+msgstr "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
 
 msgctxt "#38013"
-msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter."
-msgstr "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter."
+msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
+msgstr "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
 
 msgctxt "#38014"
-msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s."
-msgstr "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s."
+msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
+msgstr "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
 
 msgctxt "#38015"
 msgid "Pause during online lookup"

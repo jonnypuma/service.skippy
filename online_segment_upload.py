@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import re
 import unicodedata
 from contextlib import closing
 from urllib.error import HTTPError, URLError
@@ -64,52 +63,6 @@ def _up_log_info(msg: str) -> None:
     xbmc.log("[service.skippy - online upload] %s" % safe, xbmc.LOGINFO)
 
 
-# Longer phrases first (substring safety). Value is TheIntroDB segment name.
-_PHRASE_MAP = (
-    ("previously on", "recap"),
-    ("last time on", "recap"),
-    ("next time on", "preview"),
-    ("sneak peek", "preview"),
-    ("cold open", "intro"),
-    ("last on", "recap"),
-    ("next on", "preview"),
-)
-
-_TOKEN_TIDB = {
-    "intro": "intro",
-    "opening": "intro",
-    "title": "intro",
-    "titles": "intro",
-    "beginning": "intro",
-    "teaser": "preview",
-    "recap": "recap",
-    "previously": "recap",
-    "credits": "credits",
-    "outro": "credits",
-    "closing": "credits",
-    "ending": "credits",
-    "preview": "preview",
-}
-
-_TOKEN_SKIP = frozenset(
-    {
-        "commercial",
-        "commercials",
-        "ad",
-        "ads",
-        "sponsor",
-        "sponsors",
-        "segment",
-        "unknown",
-        "interruption",
-        # Library-style labels that must not be mapped to intro/credits/outro online:
-        "prologue",
-        "epilogue",
-        "main",
-    }
-)
-
-
 def _addon_version():
     try:
         return xbmcaddon.Addon(ADDON_ID).getAddonInfo("version") or "0"
@@ -157,9 +110,12 @@ def _http_post_json(url: str, headers: dict, payload: dict) -> tuple[int, dict |
 def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None] | None:
     """
     Map a normalized label to (TheIntroDB segment, IntroDB segment).
-    TheIntroDB allows intro / recap / credits / preview; IntroDB.app only
-    intro / recap / outro (credits → outro; preview is not accepted).
-    Returns None if this segment should not be uploaded (ads, unknown, etc.).
+
+    Exact catalog alias only. A longer name such as "cold open extended" does not
+    match the alias "cold open" and is not uploaded. TheIntroDB allows intro /
+    recap / credits / preview; IntroDB.app only intro / recap / outro
+    (credits → outro; preview is not accepted). Returns None when the label is
+    not an uploadable type.
     """
     if not norm:
         return None
@@ -170,22 +126,12 @@ def classify_segment_label_normalized(norm: str) -> tuple[str | None, str | None
         type_row = resolve_segment_type(n)
     except Exception:
         type_row = None
-    if type_row is not None:
-        bucket = type_row.get("online_bucket")
-        if not bucket:
-            return None
-        return bucket, _introdb_for_tidb(bucket)
-    for phrase, tidb in _PHRASE_MAP:
-        if phrase in n:
-            return tidb, _introdb_for_tidb(tidb)
-    toks = [t.strip().lower() for t in re.split(r"[^\w]+", n) if t.strip()]
-    if any(t in _TOKEN_SKIP for t in toks):
+    if type_row is None:
         return None
-    for tok in toks:
-        if tok in _TOKEN_TIDB:
-            tidb = _TOKEN_TIDB[tok]
-            return tidb, _introdb_for_tidb(tidb)
-    return None
+    bucket = type_row.get("online_bucket")
+    if not bucket:
+        return None
+    return bucket, _introdb_for_tidb(bucket)
 
 
 def _introdb_for_tidb(tidb: str) -> str | None:

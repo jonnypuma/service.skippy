@@ -353,11 +353,13 @@ def countdown_mmss(remaining_seconds) -> str:
 
 
 def display_segment_label(label):
-    """Humanize normalized labels without destroying intentional capitalization."""
-    label = (label or "").strip()
-    if not label:
-        return label
-    return label if any(char.isupper() for char in label) else label.title()
+    """Catalog display name when the label is a known type; otherwise a readable fallback."""
+    from settings_utils import format_segment_label_for_ui
+
+    shown = format_segment_label_for_ui(label)
+    if shown:
+        return shown
+    return (label or "").strip()
 
 
 def format_next_jump_label(addon, next_segment_info, next_segment_start):
@@ -506,7 +508,9 @@ def minimal_plate_filename(settings) -> str:
 
 
 def build_skip_button_label(segment, format_setting, duration_str, addon=None):
-    typ = (getattr(segment, "segment_type_label", None) or "segment").title()
+    typ = display_segment_label(
+        getattr(segment, "segment_type_label", None) or "segment"
+    )
     if format_setting == "Skip":
         return get_localized(addon, 40000, "Skip")
     if format_setting == "Skip + Type":
@@ -565,7 +569,7 @@ def progress_mid_filename(settings) -> str:
 def ending_text_for_segment(addon, segment) -> str:
     raw = getattr(segment, "segment_type_label", None) or ""
     if raw and raw.lower() != "segment":
-        segment_type = raw.title()
+        segment_type = display_segment_label(raw)
     else:
         segment_type = "Segment"
     return get_localized(addon, 40004, "%s ending in:", segment_type)

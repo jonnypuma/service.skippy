@@ -29,33 +29,18 @@ msgstr "Registro de depuración"
 
 # Segment Settings
 
-msgctxt "#31000"
-msgid "Segment Keywords to Watch For"
-msgstr "Palabras clave de segmentos a detectar"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Preferencias de comportamiento de salto"
 
-msgctxt "#31002"
-msgid "Always Skip These"
-msgstr "Saltar siempre estos"
 
-msgctxt "#31003"
-msgid "Ask to Skip These"
-msgstr "Preguntar para saltar estos"
 
-msgctxt "#31004"
-msgid "Never Skip These"
-msgstr "Nunca saltar estos"
 
 msgctxt "#31005"
 msgid "Ignore unmapped EDL actions"
 msgstr "Ignorar acciones EDL no asignadas"
 
-msgctxt "#31006"
-msgid "EDL Action Type Mapping"
-msgstr "Mapeo de tipos de acción EDL"
 
 msgctxt "#31007"
 msgid "Ignore overlapping segments"
@@ -75,11 +60,11 @@ msgstr "Usar capítulos incrustados como respaldo"
 
 msgctxt "#31009"
 msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
-msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "Si no hay un archivo sidecar (chapters.xml / .edl) ni segmentos en línea, Skippy lee los capítulos incrustados en el archivo de vídeo (MKV, MP4). Los tipos conocidos se reconocen por alias; los nombres de capítulo desconocidos siguen siendo segmentos (Nunca saltar)."
 
 msgctxt "#31010"
 msgid "Segment types"
-msgstr "Segment types"
+msgstr "Tipos de segmento"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -678,16 +663,16 @@ msgid "Back up settings to JSON…"
 msgstr "Respaldar configuración a JSON…"
 
 msgctxt "#38001"
-msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
-msgstr "Exporta cada opción de Skippy desde este dispositivo (todas las filas sin acción en la configuración del complemento, incluidas las claves de API). Elija una carpeta con permisos de escritura; se crea un archivo skippy-settings-backup-*.json con marca de tiempo."
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Exporta cada opción de Skippy desde este dispositivo (todas las filas sin acción en la configuración del complemento, incluidas las claves de API) y el catálogo de tipos de segmento. Elija una carpeta con permisos de escritura; se crea un archivo skippy-settings-backup-*.json con marca de tiempo."
 
 msgctxt "#38002"
 msgid "Restore settings from JSON…"
 msgstr "Restaurar configuración desde JSON…"
 
 msgctxt "#38003"
-msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
-msgstr "Seleccione un archivo .json de respaldo de Skippy. Solo se cambian las claves presentes en el archivo; otras opciones permanecen como en este dispositivo. Las claves de versiones de complemento más nuevas que no existen aquí se omiten."
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
+msgstr "Seleccione un archivo .json de respaldo de Skippy. Solo se cambian las claves presentes en el archivo; otras opciones permanecen como en este dispositivo. El catálogo de tipos de segmento del archivo se combina. Un respaldo anterior a la 7.0 aplica sus listas de salto antiguas y el mapa EDL al catálogo. Las claves que no existen aquí se omiten."
 
 msgctxt "#38004"
 msgid "The operation could not be completed."
@@ -698,8 +683,8 @@ msgid "Saved %s"
 msgstr "Guardado %s"
 
 msgctxt "#38006"
-msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
-msgstr "¿Restaurar configuración desde este respaldo? Los valores en el archivo sobrescriben las opciones coincidentes de Skippy en este dispositivo. Las opciones no listadas en el archivo permanecen sin cambios."
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
+msgstr "¿Restaurar la configuración desde este respaldo? Los valores del archivo sobrescriben las opciones de Skippy coincidentes en este dispositivo. El catálogo de tipos de segmento se combina cuando el archivo incluye uno. Las opciones que no están en el archivo no cambian."
 
 msgctxt "#38007"
 msgid "This file is not a valid Skippy backup."
@@ -714,24 +699,24 @@ msgid "Back up profile data to JSON…"
 msgstr "Respaldar datos de perfil en JSON…"
 
 msgctxt "#38010"
-msgid "Export upload fingerprints, per-title auto-skip rules, and statistics from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
-msgstr "Exporta las huellas de subida, las reglas de omisión automática por título y las estadísticas de este dispositivo. Elige una carpeta con permiso de escritura; se crea un archivo con marca de tiempo skippy-profile-data-backup-*.json. Los archivos antiguos skippy-upload-history-backup-*.json siguen restaurándose."
+msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgstr "Exporta huellas de subida, reglas de salto automático por título, estadísticas y el catálogo de tipos de segmento de este dispositivo. Elija una carpeta con permisos de escritura; se crea un archivo skippy-profile-data-backup-*.json con marca de tiempo. Los archivos antiguos skippy-upload-history-backup-*.json siguen restaurándose."
 
 msgctxt "#38011"
 msgid "Restore profile data from JSON (merge)…"
 msgstr "Restaurar datos de perfil desde JSON (fusionar)…"
 
 msgctxt "#38012"
-msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values."
-msgstr "Selecciona un archivo .json de copia de Skippy (datos de perfil o historial de subida antiguo). Las huellas de subida se fusionan; las reglas de omisión automática por título se fusionan; las estadísticas conservan los valores más altos."
+msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
+msgstr "Seleccione un archivo .json de respaldo de datos de perfil de Skippy (o del historial de subidas antiguo). Las huellas de subida se combinan; las reglas de salto automático por título se combinan; las estadísticas conservan los contadores más altos; los tipos de segmento se combinan por tipo."
 
 msgctxt "#38013"
-msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter."
-msgstr "¿Fusionar los datos de perfil de esta copia? Las huellas de subida existentes se conservan; las nuevas se añaden. Las reglas de omisión automática por título se fusionan. Las estadísticas conservan los valores más altos de cada contador."
+msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
+msgstr "¿Combinar los datos de perfil de este respaldo? Las huellas de subida existentes se conservan; se añaden las nuevas. Las reglas de salto automático por título se combinan. Las estadísticas conservan el valor más alto de cada contador. Los tipos de segmento se combinan por tipo."
 
 msgctxt "#38014"
-msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s."
-msgstr "Fusionado: %d huella(s) nueva(s) (%d ya presentes); %d omisión(es) automática(s) por título; %d regla(s) de segmento; estadísticas %s."
+msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
+msgstr "Combinado: %d huella(s) nueva(s) (%d ya presentes); %d salto(s) automático(s) por título; %d regla(s) de segmento; estadísticas %s; tipos de segmento %s."
 
 msgctxt "#38015"
 msgid "Pause during online lookup"
@@ -1787,15 +1772,15 @@ msgstr "No"
 
 msgctxt "#32106"
 msgid "Segment types and skip behavior"
-msgstr "Segment types and skip behavior"
+msgstr "Tipos de segmento y comportamiento de salto"
 
 msgctxt "#32107"
 msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
-msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edita el catálogo de tipos de segmento: modo de salto (Siempre / Preguntar / Nunca), número EDL y alias. Los tipos integrados no se pueden eliminar. Las etiquetas sin asignar o desconocidas nunca se saltan, pero siguen siendo segmentos."
 
 msgctxt "#45001"
 msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
-msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Siempre / Preguntar / Nunca y número EDL de cada tipo. Los tipos integrados no se pueden eliminar."
 
 msgctxt "#45005"
 msgid "EDL"
@@ -1803,52 +1788,52 @@ msgstr "EDL"
 
 msgctxt "#45006"
 msgid "Aliases"
-msgstr "Aliases"
+msgstr "Alias"
 
 msgctxt "#45007"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Eliminar"
 
 msgctxt "#45008"
 msgid "Add type"
-msgstr "Add type"
+msgstr "Añadir tipo"
 
 msgctxt "#45011"
 msgid "Type name"
-msgstr "Type name"
+msgstr "Nombre del tipo"
 
 msgctxt "#45012"
 msgid "Built-in types cannot be deleted."
-msgstr "Built-in types cannot be deleted."
+msgstr "Los tipos integrados no se pueden eliminar."
 
 msgctxt "#45013"
 msgid "Delete this custom type?"
-msgstr "Delete this custom type?"
+msgstr "¿Eliminar este tipo personalizado?"
 
 msgctxt "#45016"
 msgid "Add alias"
-msgstr "Add alias"
+msgstr "Añadir alias"
 
 msgctxt "#45017"
 msgid "Remove alias"
-msgstr "Remove alias"
+msgstr "Quitar alias"
 
 msgctxt "#45018"
 msgid "Edit aliases"
-msgstr "Edit aliases"
+msgstr "Editar alias"
 
 msgctxt "#45019"
 msgid "Skip mode"
-msgstr "Skip mode"
+msgstr "Modo de salto"
 
 msgctxt "#45020"
 msgid "Choose EDL number"
-msgstr "Choose EDL number"
+msgstr "Elegir número EDL"
 
 msgctxt "#45022"
 msgid "Could not save segment types."
-msgstr "Could not save segment types."
+msgstr "No se pudieron guardar los tipos de segmento."
 
 msgctxt "#45023"
 msgid "Segment types saved."
-msgstr "Segment types saved."
+msgstr "Tipos de segmento guardados."

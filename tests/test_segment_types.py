@@ -114,6 +114,34 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(by_id["myhook"]["skip_mode"], "never")
         self.assertEqual(by_id["myhook"]["edl_action"], 20)
 
+    def test_migration_reads_profile_settings_xml(self):
+        """Removed setting ids are empty via getSetting; the profile file still has them."""
+        addon = _LegacyAddon({})
+        with tempfile.TemporaryDirectory() as tmp:
+            settings_path = os.path.join(tmp, "settings.xml")
+            with open(settings_path, "w", encoding="utf-8") as handle:
+                handle.write(
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
+                    "<settings version=\"2\">\n"
+                    "    <setting id=\"segment_always_skip\" default=\"false\">intro</setting>\n"
+                    "    <setting id=\"segment_ask_skip\">recap</setting>\n"
+                    "    <setting id=\"custom_segment_keywords\">intro,myhook</setting>\n"
+                    "    <setting id=\"edl_action_mapping\" value=\"21:myhook\" />\n"
+                    "</settings>\n"
+                )
+
+            def _profile_path(*parts):
+                return os.path.join(tmp, *parts)
+
+            with patch("segment_types.profile_path", side_effect=_profile_path):
+                types = migrate_from_legacy_settings(addon)
+        by_id = {t["id"]: t for t in types}
+        self.assertEqual(by_id["intro"]["skip_mode"], "auto")
+        self.assertEqual(by_id["recap"]["skip_mode"], "ask")
+        self.assertIn("myhook", by_id)
+        self.assertEqual(by_id["myhook"]["edl_action"], 21)
+        self.assertEqual(addon.getSetting("segment_always_skip"), "")
+
 
 class CatalogApiTests(unittest.TestCase):
     def tearDown(self):
@@ -171,7 +199,64 @@ class CatalogApiTests(unittest.TestCase):
         )
         self.assertEqual(classify_segment_label_normalized("outro")[0], "credits")
         self.assertIsNone(classify_segment_label_normalized("cold open"))
+        self.assertIsNone(classify_segment_label_normalized("cold open extended"))
+        self.assertIsNone(classify_segment_label_normalized("previously on lost"))
         self.assertIsNone(classify_segment_label_normalized("ads"))
+        self.assertEqual(classify_segment_label_normalized("previously on")[0], "recap")
+        self.assertEqual(classify_segment_label_normalized("opening theme")[0], "intro")
+
+    def test_display_name_for_underscore_id(self):
+        set_catalog_for_tests(seeded_builtin_types())
+        from settings_utils import format_segment_label_for_ui
+        from skip_dialog_appearance import build_skip_button_label, ending_text_for_segment
+
+        self.assertEqual(
+            format_segment_label_for_ui("behind_the_scenes"), "Behind the scenes"
+        )
+        seg = type("_S", (), {"segment_type_label": "behind_the_scenes"})()
+        self.assertEqual(
+            build_skip_button_label(seg, "Skip + Type", "", None),
+            "Skip Behind the scenes",
+        )
+        self.assertIn("Behind the scenes", ending_text_for_segment(None, seg))
+
+    def test_stats_fold_alias_into_type_id(self):
+        set_catalog_for_tests(seeded_builtin_types())
+        import skippy_profile_store
+        import skippy_stats
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "statistics.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(
+                    {
+                        "schema": "skippy_statistics_v1",
+                        "since_utc": "2026-01-01T00:00:00Z",
+                        "skips": {
+                            "total": 3,
+                            "seconds_saved": 1,
+                            "by_type": {
+                                "behind the scenes": 2,
+                                "behind_the_scenes": 1,
+                            },
+                        },
+                        "online": {
+                            "segments_downloaded": 0,
+                            "segments_uploaded": 0,
+                        },
+                    },
+                    handle,
+                )
+            with patch.object(skippy_profile_store, "profile_dir", return_value=tmp):
+                skippy_stats.clear_cache()
+                stats = skippy_stats.load_statistics()
+                self.assertEqual(stats["skips"]["by_type"].get("behind_the_scenes"), 3)
+                self.assertNotIn("behind the scenes", stats["skips"]["by_type"])
+                with open(path, encoding="utf-8") as handle:
+                    saved = json.load(handle)
+                self.assertEqual(saved["skips"]["by_type"]["behind_the_scenes"], 3)
+                self.assertNotIn("behind the scenes", saved["skips"]["by_type"])
+            skippy_stats.clear_cache()
 
 
 class OverrideAndStampTests(unittest.TestCase):
@@ -229,6 +314,9 @@ class BackupAndSkinTests(unittest.TestCase):
                     skippy_stats.clear_cache()
                     per_show_overrides.clear_cache()
                     types = seeded_builtin_types()
+                    for type_row in types:
+                        if type_row["id"] == "featurette":
+                            type_row["skip_mode"] = "auto"
                     self.assertTrue(save_catalog(types))
                     addon = MagicMock()
                     addon.getAddonInfo.side_effect = lambda k: {
@@ -258,11 +346,121 @@ class BackupAndSkinTests(unittest.TestCase):
                     )
                     with open(backup_path, "w", encoding="utf-8") as fp:
                         json.dump(payload, fp)
+                    from segment_types import add_custom_type
+
+                    live_types = ensure_catalog()
+                    added, err = add_custom_type(live_types, "Only here")
+                    self.assertIsNone(err)
+                    self.assertIsNotNone(added)
+                    self.assertTrue(save_catalog(live_types))
                     summary, _ = import_merge_from_path(addon, backup_path)
                     self.assertTrue(summary["segment_types_merged"])
-                    live = {t["id"] for t in ensure_catalog()}
+                    live = {t["id"]: t for t in ensure_catalog()}
                     self.assertIn("hook", live)
+                    self.assertEqual(live["hook"]["edl_action"], 40)
                     self.assertIn("featurette", live)
+                    self.assertEqual(live["featurette"]["skip_mode"], "auto")
+                    self.assertIn("only here", live)
+
+    def test_profile_restore_folds_stat_and_override_aliases(self):
+        from skippy_profile_backup import SCHEMA as PROFILE_SCHEMA
+        from skippy_profile_backup import import_merge_from_path
+        import skippy_profile_store
+        import skippy_stats
+        import per_show_overrides
+
+        with tempfile.TemporaryDirectory() as tmp:
+            prof = os.path.join(tmp, "profile")
+            os.makedirs(prof)
+            backup_path = os.path.join(tmp, "backup.json")
+            with patch.object(skippy_profile_store, "profile_dir", return_value=prof):
+                with patch(
+                    "online_segment_upload._history_path",
+                    return_value=os.path.join(prof, "online_upload_submissions.json"),
+                ):
+                    set_catalog_for_tests(None)
+                    skippy_stats.clear_cache()
+                    per_show_overrides.clear_cache()
+                    self.assertTrue(save_catalog(seeded_builtin_types()))
+                    with open(skippy_stats._stats_path(), "w", encoding="utf-8") as handle:
+                        json.dump(
+                            {
+                                "schema": "skippy_statistics_v1",
+                                "since_utc": "2026-01-01T00:00:00Z",
+                                "skips": {
+                                    "total": 4,
+                                    "seconds_saved": 8,
+                                    "by_type": {"behind the scenes": 4},
+                                },
+                                "online": {
+                                    "segments_downloaded": 0,
+                                    "segments_uploaded": 0,
+                                },
+                            },
+                            handle,
+                        )
+                    payload = {
+                        "schema": PROFILE_SCHEMA,
+                        "addon_id": "service.skippy",
+                        "addon_version_exported": "6.8.0",
+                        "online_upload_submissions": {
+                            "v": 1,
+                            "theintrodb": [],
+                            "introdb": [],
+                        },
+                        "show_overrides": {
+                            "tv_tmdb_1": {
+                                "schema": "skippy_show_overrides_v1",
+                                "key": "tv_tmdb_1",
+                                "title": "Show",
+                                "segments": {
+                                    "Opening": "auto",
+                                    "cold open": "declined",
+                                },
+                            }
+                        },
+                        "statistics": {
+                            "schema": "skippy_statistics_v1",
+                            "since_utc": "2026-01-02T00:00:00Z",
+                            "skips": {
+                                "total": 3,
+                                "seconds_saved": 5,
+                                "by_type": {
+                                    "behind the scenes": 2,
+                                    "cold open": 1,
+                                },
+                            },
+                            "online": {
+                                "segments_downloaded": 0,
+                                "segments_uploaded": 0,
+                            },
+                        },
+                    }
+                    with open(backup_path, "w", encoding="utf-8") as handle:
+                        json.dump(payload, handle)
+                    addon = MagicMock()
+                    addon.getAddonInfo.return_value = "7.0.1"
+                    summary, _note = import_merge_from_path(addon, backup_path)
+                    self.assertFalse(summary["segment_types_merged"])
+                    self.assertTrue(summary["stats_merged"])
+                    self.assertEqual(summary["override_titles"], 1)
+                    self.assertEqual(
+                        per_show_overrides.lookup_override("tv_tmdb_1", "intro"),
+                        "auto",
+                    )
+                    self.assertEqual(
+                        per_show_overrides.lookup_override("tv_tmdb_1", "opening"),
+                        "auto",
+                    )
+                    self.assertEqual(
+                        per_show_overrides.lookup_override("tv_tmdb_1", "prologue"),
+                        "declined",
+                    )
+                    stats = skippy_stats.load_statistics()
+                    self.assertEqual(stats["skips"]["by_type"]["behind_the_scenes"], 4)
+                    self.assertEqual(stats["skips"]["by_type"]["prologue"], 1)
+                    self.assertNotIn("behind the scenes", stats["skips"]["by_type"])
+                    self.assertNotIn("cold open", stats["skips"]["by_type"])
 
     def test_editor_xml_ids(self):
         root = os.path.dirname(os.path.dirname(__file__))

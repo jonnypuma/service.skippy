@@ -54,8 +54,6 @@ from settings_utils import (
     addon_get_bool,
     addon_get_setting_text,
     get_addon,
-    get_edl_label_to_action_map,
-    get_edl_type_map,
     log,
     log_service_detail,
     normalize_label,

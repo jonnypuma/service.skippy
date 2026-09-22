@@ -52,6 +52,32 @@ def _as_float(value, default=0.0) -> float:
         return default
 
 
+def _stats_type_key(label) -> str:
+    """Canonical type id when the label is a known alias, else the normalized text."""
+    norm = normalize_label(label)
+    if not norm:
+        return ""
+    try:
+        from segment_types import canonical_type_id
+
+        return canonical_type_id(label) or norm
+    except Exception:
+        return norm
+
+
+def _fold_by_type(raw) -> dict:
+    """Sum counts that are aliases of the same type (behind the scenes + behind_the_scenes)."""
+    folded = {}
+    if not isinstance(raw, dict):
+        return folded
+    for label, count in raw.items():
+        key = _stats_type_key(label)
+        if not key:
+            continue
+        folded[key] = folded.get(key, 0) + _as_int(count)
+    return folded
+
+
 def _normalized(data) -> dict:
     stats = _empty_stats()
     if not isinstance(data, dict):
@@ -64,10 +90,7 @@ def _normalized(data) -> dict:
         stats["skips"]["seconds_saved"] = _as_float(skips.get("seconds_saved"))
         by_type = skips.get("by_type")
         if isinstance(by_type, dict):
-            for label, count in by_type.items():
-                key = normalize_label(label)
-                if key:
-                    stats["skips"]["by_type"][key] = _as_int(count)
+            stats["skips"]["by_type"] = _fold_by_type(by_type)
     online = data.get("online")
     if isinstance(online, dict):
         stats["online"]["segments_downloaded"] = _as_int(
@@ -86,7 +109,16 @@ def load_statistics() -> dict:
     global _cache
     with _lock:
         if _cache is None:
-            _cache = _normalized(read_json(_stats_path(), default=None))
+            raw = read_json(_stats_path(), default=None)
+            _cache = _normalized(raw)
+            raw_skips = raw.get("skips") if isinstance(raw, dict) else None
+            raw_by = (
+                raw_skips.get("by_type")
+                if isinstance(raw_skips, dict)
+                else None
+            )
+            if isinstance(raw_by, dict) and raw_by != _cache["skips"]["by_type"]:
+                _flush()
         return {
             "schema": _cache["schema"],
             "since_utc": _cache["since_utc"],

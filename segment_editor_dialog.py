@@ -48,7 +48,12 @@ from addon_skin_resolution import (
     scale_skin_coord,
     SKIN_RES_720P,
 )
-from settings_utils import get_custom_segment_keyword_labels, normalize_label, get_localized
+from settings_utils import (
+    format_segment_label_for_ui,
+    get_custom_segment_keyword_labels,
+    normalize_label,
+    get_localized,
+)
 
 
 def _select_segment_label_from_list(options):
@@ -95,13 +100,8 @@ def _select_segment_label_from_list(options):
 
 
 def _format_segment_label_list_display(label):
-    """Capitalize first character for segment list display only; leaves rest unchanged."""
-    if label is None:
-        return label
-    s = str(label)
-    if not s:
-        return label
-    return s[0].upper() + s[1:]
+    """Catalog display name for the segment list (Behind the scenes, not behind_the_scenes)."""
+    return format_segment_label_for_ui(label)
 
 
 # Floating list-row action buttons (must match SegmentEditorDialog.xml).

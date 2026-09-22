@@ -48,7 +48,7 @@ class FormatNextJumpLabelTests(unittest.TestCase):
         )
         self.assertEqual(
             format_next_jump_label(_Addon(), "nested segment 'Behind-the-Scenes'", 20.0),
-            "Skip to Behind-the-Scenes at 00:20",
+            "Skip to Behind the scenes at 00:20",
         )
 
     def test_formats_hours_only_when_needed(self):

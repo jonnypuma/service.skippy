@@ -29,33 +29,18 @@ msgstr "Καταγραφή Αποσφαλμάτωσης"
 
 # Segment Settings
 
-msgctxt "#31000"
-msgid "Segment Keywords to Watch For"
-msgstr "Λέξεις-Κλειδιά Τμημάτων προς Παρακολούθηση"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Προτιμήσεις Συμπεριφοράς Παράλειψης"
 
-msgctxt "#31002"
-msgid "Always Skip These"
-msgstr "Πάντα Παράλειψη Αυτών"
 
-msgctxt "#31003"
-msgid "Ask to Skip These"
-msgstr "Ερώτηση για Παράλειψη Αυτών"
 
-msgctxt "#31004"
-msgid "Never Skip These"
-msgstr "Ποτέ Παράλειψη Αυτών"
 
 msgctxt "#31005"
 msgid "Ignore unmapped EDL actions"
 msgstr "Αγνόηση μη αντιστοιχισμένων ενεργειών EDL"
 
-msgctxt "#31006"
-msgid "EDL Action Type Mapping"
-msgstr "Αντιστοίχιση Τύπου Ενέργειας EDL"
 
 msgctxt "#31007"
 msgid "Ignore overlapping segments"
@@ -75,11 +60,11 @@ msgstr "Χρήση ενσωματωμένων κεφαλαίων ως εναλλ
 
 msgctxt "#31009"
 msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
-msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "Όταν δεν υπάρχει sidecar (chapters.xml / .edl) ούτε διαδικτυακά τμήματα, το Skippy διαβάζει ενσωματωμένα κεφάλαια από το αρχείο βίντεο (MKV, MP4). Οι γνωστοί τύποι αναγνωρίζονται από ψευδώνυμα· τα άγνωστα ονόματα κεφαλαίων παραμένουν τμήματα (Ποτέ παράλειψη)."
 
 msgctxt "#31010"
 msgid "Segment types"
-msgstr "Segment types"
+msgstr "Τύποι τμημάτων"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -678,16 +663,16 @@ msgid "Back up settings to JSON…"
 msgstr "Αντίγραφο ασφαλείας ρυθμίσεων σε JSON…"
 
 msgctxt "#38001"
-msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
-msgstr "Εξαγωγή κάθε επιλογής Skippy από αυτή τη συσκευή (όλες οι μη ενεργές σειρές στις ρυθμίσεις πρόσθετου, συμπεριλαμβανομένων τυχόν κλειδιών API). Επιλέξτε έναν φάκελο εγγράψιμο· δημιουργείται ένα αρχείο skippy-settings-backup-*.json με χρονοσήμανση."
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Εξαγωγή κάθε επιλογής Skippy από αυτή τη συσκευή (όλες οι μη ενεργές σειρές στις ρυθμίσεις πρόσθετου, συμπεριλαμβανομένων τυχόν κλειδιών API) και του καταλόγου τύπων τμήματος. Επιλέξτε έναν εγγράψιμο φάκελο· δημιουργείται ένα αρχείο skippy-settings-backup-*.json με χρονοσήμανση."
 
 msgctxt "#38002"
 msgid "Restore settings from JSON…"
 msgstr "Επαναφορά ρυθμίσεων από JSON…"
 
 msgctxt "#38003"
-msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
-msgstr "Επιλέξτε ένα αρχείο αντιγράφου ασφαλείας .json του Skippy. Μόνο κλειδιά παρόντα στο αρχείο αλλάζουν· άλλες επιλογές παραμένουν ως στη συσκευή αυτή. Κλειδιά από νεότερες εκδόσεις πρόσθετου που δεν υπάρχουν εδώ παραλείπονται."
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
+msgstr "Επιλέξτε ένα αρχείο αντιγράφου ασφαλείας .json του Skippy. Μόνο κλειδιά παρόντα στο αρχείο αλλάζουν· άλλες επιλογές παραμένουν ως στη συσκευή αυτή. Ο κατάλογος τύπων τμήματος στο αρχείο συγχωνεύεται. Ένα αντίγραφο πριν από την 7.0 εφαρμόζει τις παλιές λίστες παράλειψης και τον χάρτη EDL στον κατάλογο. Κλειδιά που δεν υπάρχουν εδώ παραλείπονται."
 
 msgctxt "#38004"
 msgid "The operation could not be completed."
@@ -698,8 +683,8 @@ msgid "Saved %s"
 msgstr "Αποθηκεύτηκε %s"
 
 msgctxt "#38006"
-msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
-msgstr "Επαναφορά ρυθμίσεων από αυτό το αντίγραφο ασφαλείας; Οι τιμές στο αρχείο αντικαθιστούν τις αντίστοιχες επιλογές Skippy σε αυτή τη συσκευή. Οι επιλογές που δεν αναφέρονται στο αρχείο παραμένουν αμετάβλητες."
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
+msgstr "Επαναφορά ρυθμίσεων από αυτό το αντίγραφο; Οι τιμές στο αρχείο αντικαθιστούν τις αντίστοιχες επιλογές Skippy σε αυτή τη συσκευή. Ο κατάλογος τύπων τμήματος συγχωνεύεται όταν το αρχείο περιέχει έναν. Επιλογές που δεν αναφέρονται στο αρχείο μένουν ως έχουν."
 
 msgctxt "#38007"
 msgid "This file is not a valid Skippy backup."
@@ -714,24 +699,24 @@ msgid "Back up profile data to JSON…"
 msgstr "Αντίγραφο δεδομένων προφίλ σε JSON…"
 
 msgctxt "#38010"
-msgid "Export upload fingerprints, per-title auto-skip rules, and statistics from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
-msgstr "Εξάγει αποτυπώματα αποστολής, κανόνες αυτόματης παράλειψης ανά τίτλο και στατιστικά από αυτή τη συσκευή. Επιλέξτε έναν εγγράψιμο φάκελο· δημιουργείται αρχείο με χρονική σήμανση skippy-profile-data-backup-*.json. Τα παλαιότερα skippy-upload-history-backup-*.json εξακολουθούν να επαναφέρονται."
+msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgstr "Εξαγωγή αποτυπωμάτων μεταφόρτωσης, κανόνων αυτόματης παράλειψης ανά τίτλο, στατιστικών και του καταλόγου τύπων τμήματος από αυτή τη συσκευή. Επιλέξτε έναν εγγράψιμο φάκελο· δημιουργείται ένα αρχείο skippy-profile-data-backup-*.json με χρονοσήμανση. Τα παλαιότερα αρχεία skippy-upload-history-backup-*.json εξακολουθούν να επαναφέρονται."
 
 msgctxt "#38011"
 msgid "Restore profile data from JSON (merge)…"
 msgstr "Επαναφορά δεδομένων προφίλ από JSON (συγχώνευση)…"
 
 msgctxt "#38012"
-msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values."
-msgstr "Επιλέξτε αρχείο .json αντιγράφου Skippy (δεδομένα προφίλ ή παλαιό ιστορικό αποστολής). Τα αποτυπώματα αποστολής συγχωνεύονται· οι κανόνες αυτόματης παράλειψης ανά τίτλο συγχωνεύονται· τα στατιστικά κρατούν τις μεγαλύτερες τιμές μετρητών."
+msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
+msgstr "Επιλέξτε ένα αρχείο .json αντιγράφου δεδομένων προφίλ Skippy (ή παλαιού ιστορικού μεταφόρτωσης). Τα αποτυπώματα μεταφόρτωσης συγχωνεύονται· οι κανόνες αυτόματης παράλειψης ανά τίτλο συγχωνεύονται· τα στατιστικά κρατούν τις μεγαλύτερες τιμές· οι τύποι τμήματος συγχωνεύονται ανά τύπο."
 
 msgctxt "#38013"
-msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter."
-msgstr "Συγχώνευση δεδομένων προφίλ από αυτό το αντίγραφο; Τα υπάρχοντα αποτυπώματα αποστολής διατηρούνται· τα νέα προστίθενται. Οι κανόνες αυτόματης παράλειψης ανά τίτλο συγχωνεύονται. Τα στατιστικά κρατούν τις μεγαλύτερες τιμές για κάθε μετρητή."
+msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
+msgstr "Συγχώνευση δεδομένων προφίλ από αυτό το αντίγραφο; Τα υπάρχοντα αποτυπώματα μεταφόρτωσης μένουν· προστίθενται νέα. Οι κανόνες αυτόματης παράλειψης ανά τίτλο συγχωνεύονται. Τα στατιστικά κρατούν τη μεγαλύτερη τιμή κάθε μετρητή. Οι τύποι τμήματος συγχωνεύονται ανά τύπο."
 
 msgctxt "#38014"
-msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s."
-msgstr "Συγχωνεύτηκαν: %d νέα αποτυπώματα (%d ήδη παρόντα)· %d αυτόματη/ές παράλειψη/εις τίτλου· %d κανόνας/ες τμήματος· στατιστικά %s."
+msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
+msgstr "Συγχωνεύτηκαν: %d νέα αποτυπώματα (%d ήδη υπάρχουν)· %d αυτόματες παραλείψεις τίτλου· %d κανόνες τμήματος· στατιστικά %s· τύποι τμήματος %s."
 
 msgctxt "#38015"
 msgid "Pause during online lookup"
@@ -1787,15 +1772,15 @@ msgstr "Όχι"
 
 msgctxt "#32106"
 msgid "Segment types and skip behavior"
-msgstr "Segment types and skip behavior"
+msgstr "Τύποι τμημάτων και συμπεριφορά παράλειψης"
 
 msgctxt "#32107"
 msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
-msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Επεξεργασία του καταλόγου τύπων τμήματος: λειτουργία παράλειψης (Πάντα / Ερώτηση / Ποτέ), αριθμός EDL και ψευδώνυμα. Οι ενσωματωμένοι τύποι δεν διαγράφονται. Οι μη αντιστοιχισμένες και άγνωστες ετικέτες δεν παραλείπονται ποτέ, αλλά παραμένουν τμήματα."
 
 msgctxt "#45001"
 msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
-msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Πάντα / Ερώτηση / Ποτέ και αριθμός EDL για κάθε τύπο. Οι ενσωματωμένοι τύποι δεν διαγράφονται."
 
 msgctxt "#45005"
 msgid "EDL"
@@ -1803,52 +1788,52 @@ msgstr "EDL"
 
 msgctxt "#45006"
 msgid "Aliases"
-msgstr "Aliases"
+msgstr "Ψευδώνυμα"
 
 msgctxt "#45007"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Διαγραφή"
 
 msgctxt "#45008"
 msgid "Add type"
-msgstr "Add type"
+msgstr "Προσθήκη τύπου"
 
 msgctxt "#45011"
 msgid "Type name"
-msgstr "Type name"
+msgstr "Όνομα τύπου"
 
 msgctxt "#45012"
 msgid "Built-in types cannot be deleted."
-msgstr "Built-in types cannot be deleted."
+msgstr "Οι ενσωματωμένοι τύποι δεν διαγράφονται."
 
 msgctxt "#45013"
 msgid "Delete this custom type?"
-msgstr "Delete this custom type?"
+msgstr "Διαγραφή αυτού του προσαρμοσμένου τύπου;"
 
 msgctxt "#45016"
 msgid "Add alias"
-msgstr "Add alias"
+msgstr "Προσθήκη ψευδώνυμου"
 
 msgctxt "#45017"
 msgid "Remove alias"
-msgstr "Remove alias"
+msgstr "Αφαίρεση ψευδώνυμου"
 
 msgctxt "#45018"
 msgid "Edit aliases"
-msgstr "Edit aliases"
+msgstr "Επεξεργασία ψευδωνύμων"
 
 msgctxt "#45019"
 msgid "Skip mode"
-msgstr "Skip mode"
+msgstr "Λειτουργία παράλειψης"
 
 msgctxt "#45020"
 msgid "Choose EDL number"
-msgstr "Choose EDL number"
+msgstr "Επιλογή αριθμού EDL"
 
 msgctxt "#45022"
 msgid "Could not save segment types."
-msgstr "Could not save segment types."
+msgstr "Δεν ήταν δυνατή η αποθήκευση των τύπων τμήματος."
 
 msgctxt "#45023"
 msgid "Segment types saved."
-msgstr "Segment types saved."
+msgstr "Οι τύποι τμήματος αποθηκεύτηκαν."

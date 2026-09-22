@@ -23,6 +23,7 @@ from settings_utils import (
     addon_get_int,
     addon_get_setting_text,
     compute_skip_seek_destination_seconds,
+    format_segment_label_for_ui,
     get_addon,
     get_localized,
     get_user_skip_mode,
@@ -571,7 +572,7 @@ def _maybe_show_skip_toast(ctx: Any, addon, segment, reason: str) -> None:
         xbmcgui.Dialog().notification(
             heading=get_localized(addon, 43003, "Skipped"),
             message=get_localized(
-                addon, 43004, "%s skipped", segment.segment_type_label.title()
+                addon, 43004, "%s skipped", format_segment_label_for_ui(segment.segment_type_label)
             ),
             icon=ctx.icon_path,
             time=2000,

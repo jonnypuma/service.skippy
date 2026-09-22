@@ -4,10 +4,10 @@ and the segment-types catalog.
 
 Restore merges into the local profile (upload fingerprints union; title overrides
 merge per key; statistics take the larger counter values; segment types
-replace-or-merge by type id). Legacy ``skippy_upload_history_backup_v1`` files
-(history only) still restore. 6.x settings backups may still contain old comma
-keyword / skip-list / EDL-map keys; those are one-way input for
-``segment_types.ensure_catalog()`` on a first 7.0 catalog create, not this file.
+replace-or-merge by type id). A built-in missing from the file keeps the local
+row. Legacy ``skippy_upload_history_backup_v1`` files (history only) still
+restore. A 6.x *settings* backup is restored by ``settings_backup`` (old comma
+lists are applied to the catalog there).
 """
 from __future__ import annotations
 
@@ -177,17 +177,24 @@ def _format_restore_summary(addon, summary: dict) -> str:
         38020 if summary.get("stats_merged") else 38021,
         "updated" if summary.get("stats_merged") else "unchanged",
     )
+    types_word = get_localized(
+        addon,
+        38020 if summary.get("segment_types_merged") else 38021,
+        "updated" if summary.get("segment_types_merged") else "unchanged",
+    )
     return get_localized(
         addon,
         38014,
         "Merged: %d new fingerprint(s) (%d already present); "
-        "%d title auto-skip(s); %d segment rule(s); statistics %s.",
+        "%d title auto-skip(s); %d segment rule(s); statistics %s; "
+        "segment types %s.",
         int(summary.get("history_added") or 0),
         int(summary.get("history_already") or 0),
         int(summary.get("override_titles") or 0),
         int(summary.get("override_segments_added") or 0)
         + int(summary.get("override_segments_updated") or 0),
         stats_word,
+        types_word,
     )
 
 
@@ -208,11 +215,12 @@ def run_backup_ui(addon, icon_path: str, log_fn) -> None:
         xbmcgui.Dialog().ok(ADDON_ID, "%s\n%s" % (addon.getLocalizedString(38004), e))
         return
     log_fn(
-        "profile data backup wrote fingerprints=%s override_titles=%s skips=%s to %s"
+        "profile data backup wrote fingerprints=%s override_titles=%s skips=%s segment_types=%s to %s"
         % (
             counts.get("fingerprints"),
             counts.get("override_titles"),
             counts.get("skip_total"),
+            counts.get("segment_types"),
             dest,
         )
     )

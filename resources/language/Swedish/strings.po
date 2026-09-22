@@ -29,33 +29,18 @@ msgstr "Felsökningsloggning"
 
 # Segment Settings
 
-msgctxt "#31000"
-msgid "Segment Keywords to Watch For"
-msgstr "Segmentnyckelord att bevaka"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Hoppa-över beteende"
 
-msgctxt "#31002"
-msgid "Always Skip These"
-msgstr "Hoppa alltid över dessa"
 
-msgctxt "#31003"
-msgid "Ask to Skip These"
-msgstr "Fråga om att hoppa över dessa"
 
-msgctxt "#31004"
-msgid "Never Skip These"
-msgstr "Hoppa aldrig över dessa"
 
 msgctxt "#31005"
 msgid "Ignore unmapped EDL actions"
 msgstr "Ignorera omappade EDL-åtgärder"
 
-msgctxt "#31006"
-msgid "EDL Action Type Mapping"
-msgstr "EDL-åtgärdstypmappning"
 
 msgctxt "#31007"
 msgid "Ignore overlapping segments"
@@ -75,11 +60,11 @@ msgstr "Använd inbäddade kapitel som reserv"
 
 msgctxt "#31009"
 msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
-msgstr "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "När ingen sidecar (chapters.xml / .edl) eller online-segment finns, läser Skippy inbäddade kapitel i videofilen (MKV, MP4). Kända typer matchas via alias; okända kapitelnamn behålls som segment (Hoppa aldrig över)."
 
 msgctxt "#31010"
 msgid "Segment types"
-msgstr "Segment types"
+msgstr "Segmenttyper"
 
 msgctxt "#31013"
 msgid "Prefetch next episode"
@@ -678,16 +663,16 @@ msgid "Back up settings to JSON…"
 msgstr "Säkerhetskopiera inställningar till JSON…"
 
 msgctxt "#38001"
-msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys). Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
-msgstr "Exportera alla Skippy-alternativ från denna enhet (alla icke-åtgärdsrader i tilläggets inställningar, inklusive alla API-nycklar). Välj en skrivbar mapp; en tidsstämplad skippy-settings-backup-*.json-fil skapas."
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Exportera alla Skippy-alternativ från denna enhet (alla icke-åtgärdsrader i tilläggets inställningar, inklusive alla API-nycklar) och katalogen med segmenttyper. Välj en skrivbar mapp; en tidsstämplad skippy-settings-backup-*.json-fil skapas."
 
 msgctxt "#38002"
 msgid "Restore settings from JSON…"
 msgstr "Återställ inställningar från JSON…"
 
 msgctxt "#38003"
-msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. Keys from newer add-on versions that do not exist here are skipped."
-msgstr "Välj en Skippy-säkerhetskopia .json-fil. Endast nycklar som finns i filen ändras; andra alternativ förblir som på denna enhet. Nycklar från nyare tilläggsversioner som inte finns här hoppas över."
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
+msgstr "Välj en Skippy-säkerhetskopia .json-fil. Endast nycklar som finns i filen ändras; andra alternativ förblir som på denna enhet. Katalogen med segmenttyper i filen slås ihop. En säkerhetskopia från före 7.0 lägger sina gamla hoppa-över-listor och EDL-kartan i katalogen. Nycklar som inte finns här hoppas över."
 
 msgctxt "#38004"
 msgid "The operation could not be completed."
@@ -698,8 +683,8 @@ msgid "Saved %s"
 msgstr "Sparade %s"
 
 msgctxt "#38006"
-msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. Options not listed in the file are left unchanged."
-msgstr "Återställ inställningar från denna säkerhetskopia? Värden i filen skriver över matchande Skippy-alternativ på denna enhet. Alternativ som inte finns listade i filen lämnas oförändrade."
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
+msgstr "Återställ inställningar från den här säkerhetskopian? Värden i filen skriver över matchande Skippy-alternativ på den här enheten. Katalogen med segmenttyper slås ihop när filen innehåller en. Alternativ som inte finns i filen lämnas oförändrade."
 
 msgctxt "#38007"
 msgid "This file is not a valid Skippy backup."
@@ -714,24 +699,24 @@ msgid "Back up profile data to JSON…"
 msgstr "Säkerhetskopiera profildata till JSON…"
 
 msgctxt "#38010"
-msgid "Export upload fingerprints, per-title auto-skip rules, and statistics from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
-msgstr "Exporterar uppladdningsfingeravtryck, autoskip-regler per titel och statistik från den här enheten. Välj en skrivbar mapp; en tidsstämplad fil skippy-profile-data-backup-*.json skapas. Äldre skippy-upload-history-backup-*.json-filer kan fortfarande återställas."
+msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgstr "Exportera uppladdningsfingeravtryck, regler för automatiskt hopp per titel, statistik och katalogen med segmenttyper från den här enheten. Välj en skrivbar mapp; en tidsstämplad skippy-profile-data-backup-*.json-fil skapas. Äldre skippy-upload-history-backup-*.json-filer kan fortfarande återställas."
 
 msgctxt "#38011"
 msgid "Restore profile data from JSON (merge)…"
 msgstr "Återställ profildata från JSON (slå ihop)…"
 
 msgctxt "#38012"
-msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values."
-msgstr "Välj en Skippy-profildata- (eller äldre uppladdningshistorik-) säkerhetskopierings-.json-fil. Uppladdningsfingeravtryck slås ihop; autoskip-regler per titel slås ihop; statistiken behåller de högre räknarvärdena."
+msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
+msgstr "Välj en Skippy-profil- (eller äldre uppladdningshistorik-) säkerhetskopia i .json. Uppladdningsfingeravtryck slås ihop; regler för automatiskt hopp per titel slås ihop; statistiken behåller de högre räknarna; segmenttyper slås ihop per typ."
 
 msgctxt "#38013"
-msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter."
-msgstr "Slå ihop profildata från den här säkerhetskopian? Befintliga uppladdningsfingeravtryck behålls; nya läggs till. Autoskip-regler per titel slås ihop. Statistiken behåller de högre värdena för varje räknare."
+msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
+msgstr "Slå ihop profildata från den här säkerhetskopian? Befintliga uppladdningsfingeravtryck finns kvar; nya läggs till. Regler för automatiskt hopp per titel slås ihop. Statistiken behåller det högre värdet för varje räknare. Segmenttyper slås ihop per typ."
 
 msgctxt "#38014"
-msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s."
-msgstr "Sammanslaget: %d nya fingeravtryck (%d redan närvarande); %d titel-autoskip(s); %d segmentregel/regler; statistik %s."
+msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
+msgstr "Sammanfogat: %d nya fingeravtryck (%d redan finns); %d titel-autohopp; %d segmentregler; statistik %s; segmenttyper %s."
 
 msgctxt "#38015"
 msgid "Pause during online lookup"
@@ -1787,15 +1772,15 @@ msgstr "Nej"
 
 msgctxt "#32106"
 msgid "Segment types and skip behavior"
-msgstr "Segment types and skip behavior"
+msgstr "Segmenttyper och hoppa-över-beteende"
 
 msgctxt "#32107"
 msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
-msgstr "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Redigera katalogen med segmenttyper: hoppa-över-läge (Alltid / Fråga / Aldrig), EDL-nummer och alias. Inbyggda typer kan inte tas bort. Otilldelade och okända etiketter hoppas aldrig över, men förblir segment."
 
 msgctxt "#45001"
 msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
-msgstr "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Alltid / Fråga / Aldrig och EDL-nummer för varje typ. Inbyggda typer kan inte tas bort."
 
 msgctxt "#45005"
 msgid "EDL"
@@ -1803,52 +1788,52 @@ msgstr "EDL"
 
 msgctxt "#45006"
 msgid "Aliases"
-msgstr "Aliases"
+msgstr "Alias"
 
 msgctxt "#45007"
 msgid "Delete"
-msgstr "Delete"
+msgstr "Ta bort"
 
 msgctxt "#45008"
 msgid "Add type"
-msgstr "Add type"
+msgstr "Lägg till typ"
 
 msgctxt "#45011"
 msgid "Type name"
-msgstr "Type name"
+msgstr "Typnamn"
 
 msgctxt "#45012"
 msgid "Built-in types cannot be deleted."
-msgstr "Built-in types cannot be deleted."
+msgstr "Inbyggda typer kan inte tas bort."
 
 msgctxt "#45013"
 msgid "Delete this custom type?"
-msgstr "Delete this custom type?"
+msgstr "Ta bort den här egna typen?"
 
 msgctxt "#45016"
 msgid "Add alias"
-msgstr "Add alias"
+msgstr "Lägg till alias"
 
 msgctxt "#45017"
 msgid "Remove alias"
-msgstr "Remove alias"
+msgstr "Ta bort alias"
 
 msgctxt "#45018"
 msgid "Edit aliases"
-msgstr "Edit aliases"
+msgstr "Redigera alias"
 
 msgctxt "#45019"
 msgid "Skip mode"
-msgstr "Skip mode"
+msgstr "Hoppa-över-läge"
 
 msgctxt "#45020"
 msgid "Choose EDL number"
-msgstr "Choose EDL number"
+msgstr "Välj EDL-nummer"
 
 msgctxt "#45022"
 msgid "Could not save segment types."
-msgstr "Could not save segment types."
+msgstr "Segmenttyperna kunde inte sparas."
 
 msgctxt "#45023"
 msgid "Segment types saved."
-msgstr "Segment types saved."
+msgstr "Segmenttyper sparade."

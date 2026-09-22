@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.0.1] - 2026-09-22
+
+### Fixed
+- **Settings backup** includes the segment-types catalog. Restore merges that catalog into the live one. A settings file from before 7.0 applies its old skip lists, keywords, and EDL map to the catalog instead of dropping those removed keys.
+- **Profile-data restore** keeps a built-in type's local skip mode, aliases, and EDL number when that type is missing from the backup. Statistics and per-title rules stored under an old alias fold into the canonical type on merge.
+
+### Changed
+- Profile-data backup help text and the restore summary include segment types.
+
 ## [7.0.0] - 2026-09-21
 
 ### Changed
@@ -7,7 +16,11 @@
 - **Unknown labels Never skip** (breaking): a chapter that matches no type is still a segment, but skip mode is Never instead of Ask.
 - **Credits / Outro** and **Commercial / Ad / Sponsor** are one type each. **Cold open** is an alias of **Prologue**, not Intro.
 - **EDL write** always uses the type’s primary number (legacy 6/16 → 7, 13 → 8, 17 → 10). Old numbers still parse.
-- 6.x settings backups can still hold the old comma strings for a one-way import the first time the catalog is created. Profile-data backup now includes `segment_types`.
+- The first 7.0 run imports leftover comma lists from the profile `settings.xml`. Kodi’s `getSetting` no longer returns those removed ids. Profile-data backup includes `segment_types`.
+- Online upload matches a catalog alias exactly. A longer name such as "cold open extended" is not uploaded.
+
+### Fixed
+- Skip dialog, skip toast, editor list, and statistics show the type’s display name (`Behind the scenes`, not `behind_the_scenes`). Older statistic rows for the same type are combined.
 
 ### Added
 - WindowXML **Segment types** editor (720p and 1080i): Always / Ask / Never per type, EDL number, aliases, add/delete custom types.

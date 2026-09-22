@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import unicodedata
+import xml.etree.ElementTree as ET
 
 from skippy_profile_store import profile_path, read_json, write_json
 
@@ -305,27 +306,63 @@ def _split_csv(raw):
     return [part.strip() for part in str(raw or "").split(",") if part.strip()]
 
 
-def _read_legacy_setting(addon, key, default=""):
-    if addon is not None:
+_LEGACY_SETTING_KEYS = (
+    "segment_always_skip",
+    "segment_ask_skip",
+    "segment_never_skip",
+    "custom_segment_keywords",
+    "edl_action_mapping",
+)
+
+
+def _setting_element_text(setting) -> str:
+    """Kodi profile settings use element text (v2) or a value attribute (v1)."""
+    if setting.get("value") is not None:
+        return str(setting.get("value") or "")
+    return str(setting.text or "")
+
+
+def _legacy_settings_from_profile_file() -> dict:
+    """
+    Read leftover 6.x keys from the profile ``settings.xml``.
+
+    Those ids are gone from the add-on definition, so ``Addon.getSetting``
+    returns empty after the upgrade even when the file still has the values.
+    """
+    path = profile_path("settings.xml")
+    if not path or not os.path.isfile(path):
+        return {}
+    try:
+        root = ET.parse(path).getroot()
+    except (ET.ParseError, OSError):
+        return {}
+    found = {}
+    for setting in root.iter("setting"):
+        sid = setting.get("id")
+        if sid not in _LEGACY_SETTING_KEYS:
+            continue
+        found[sid] = _setting_element_text(setting)
+    return found
+
+
+def _legacy_settings_map(addon=None) -> dict:
+    """Profile file first. A passed addon fills keys the file does not have."""
+    found = _legacy_settings_from_profile_file()
+    if addon is None:
+        return found
+    for key in _LEGACY_SETTING_KEYS:
+        if str(found.get(key) or "").strip():
+            continue
         try:
             value = addon.getSetting(key)
-            if value is None:
-                return default
-            return str(value)
         except Exception:
-            return default
-    try:
-        from settings_utils import addon_get_setting_text, get_addon
-
-        live = get_addon()
-        if not live:
-            return default
-        text = addon_get_setting_text(live, key, default)
-        if text is None:
-            return default
-        return str(text)
-    except Exception:
-        return default
+            continue
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            found[key] = text
+    return found
 
 
 def _parse_edl_pairs(raw):
@@ -651,14 +688,13 @@ def types_to_payload(types):
     }
 
 
-def migrate_from_legacy_settings(addon=None):
-    """Seed builtins and overlay leftover 6.x comma-separated settings."""
-    types = seeded_builtin_types()
-    always = _split_csv(_read_legacy_setting(addon, "segment_always_skip"))
-    ask = _split_csv(_read_legacy_setting(addon, "segment_ask_skip"))
-    never = _split_csv(_read_legacy_setting(addon, "segment_never_skip"))
-    keywords = _split_csv(_read_legacy_setting(addon, "custom_segment_keywords"))
-    edl_raw = _read_legacy_setting(addon, "edl_action_mapping")
+def _apply_legacy_lists(types, legacy):
+    """Overlay 6.x comma lists onto ``types`` (skip mode, custom types, EDL)."""
+    always = _split_csv(legacy.get("segment_always_skip"))
+    ask = _split_csv(legacy.get("segment_ask_skip"))
+    never = _split_csv(legacy.get("segment_never_skip"))
+    keywords = _split_csv(legacy.get("custom_segment_keywords"))
+    edl_raw = legacy.get("edl_action_mapping") or ""
     _action_to_label, label_to_action = _parse_edl_pairs(edl_raw)
 
     skip_locked = set()
@@ -721,6 +757,32 @@ def migrate_from_legacy_settings(addon=None):
 
     _repair_collisions(types)
     return types
+
+
+def migrate_from_legacy_settings(addon=None):
+    """Seed builtins and overlay leftover 6.x comma-separated settings."""
+    return _apply_legacy_lists(seeded_builtin_types(), _legacy_settings_map(addon))
+
+
+def apply_legacy_settings_to_catalog(legacy):
+    """
+    Overlay non-empty 6.x skip lists onto the live catalog.
+
+    Used when restoring a settings backup from before 7.0. Types the file does
+    not mention stay as they are. Returns True when the catalog was written.
+    """
+    if not isinstance(legacy, dict):
+        return False
+    useful = {}
+    for key in _LEGACY_SETTING_KEYS:
+        text = str(legacy.get(key) or "").strip()
+        if text:
+            useful[key] = text
+    if not useful:
+        return False
+    types = ensure_catalog()
+    _apply_legacy_lists(types, useful)
+    return save_catalog(types)
 
 
 def _set_cache(types, path=None, mtime=None):
@@ -793,8 +855,9 @@ def export_catalog():
 
 def merge_catalog_from_backup(incoming):
     """
-    Replace-or-merge by type id. Incoming order wins; local-only custom types
-    are appended. Returns True when the live catalog was written.
+    Replace-or-merge by type id. Incoming order wins. A built-in missing from
+    the file keeps the local row. Local-only custom types are appended.
+    Returns True when the live catalog was written.
     """
     if not isinstance(incoming, dict):
         return False
@@ -802,17 +865,30 @@ def merge_catalog_from_backup(incoming):
     if not isinstance(incoming_types, list) or not incoming_types:
         return False
     local = ensure_catalog()
+    local_by_id = {type_row["id"]: type_row for type_row in local}
     merged = _merge_loaded_types(incoming_types)
     incoming_ids = {
         normalize_label(t.get("id") or t.get("label") or "")
         for t in incoming_types
         if isinstance(t, dict)
     }
+    # A builtin missing from the file keeps the local row. Re-seeding it would
+    # reset a skip mode the backup simply did not contain.
+    out = []
+    seen = set()
+    for type_row in merged:
+        if type_row["id"] not in incoming_ids and type_row["id"] in local_by_id:
+            out.append(clone_type(local_by_id[type_row["id"]]))
+        else:
+            out.append(type_row)
+        seen.add(type_row["id"])
     for type_row in local:
-        if type_row["id"] not in incoming_ids and not type_row.get("builtin"):
-            merged.append(clone_type(type_row))
-    _repair_collisions(merged)
-    return save_catalog(merged)
+        if type_row["id"] in seen or type_row.get("builtin"):
+            continue
+        out.append(clone_type(type_row))
+        seen.add(type_row["id"])
+    _repair_collisions(out)
+    return save_catalog(out)
 
 
 def resolve_segment_type(label):
@@ -888,14 +964,6 @@ def edl_write_action(label, action_type=None):
 def get_custom_segment_keyword_labels(_addon=None):
     """Display names in catalog order (marker / editor pickers)."""
     return [t["label"] for t in ensure_catalog()]
-
-
-def watch_labels():
-    """Normalized ids + aliases used to recognize named chapters."""
-    labels = set()
-    for type_row in ensure_catalog():
-        labels.update(_phrases_for_type(type_row))
-    return labels
 
 
 def catalog_stamp():

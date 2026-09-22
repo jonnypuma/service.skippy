@@ -1,7 +1,7 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 7.0.0** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog.
+**Version 7.0.1** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog and the 7.0.1 backup restore.
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
@@ -362,7 +362,7 @@ The **Statistics** category opens a modal with:
 
 Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown at the bottom of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
 
-**Backup & Restore** (Advanced) includes **Back up / Restore profile data**: one JSON file carries upload fingerprints, per-title auto-skip rules, and statistics. Restore **merges** into the local profile (fingerprints union; title rules merge per key; statistics keep the larger counter for each field). Legacy upload-history-only backups still restore. Settings actions call `RunScript(service.skippy,backup_profile_data)` / `restore_profile_data`; the old `backup_upload_history` / `restore_upload_history` names still work.
+**Backup & Restore** (Advanced) has two JSON backups. **Back up / Restore settings** writes every persisted add-on option (API keys included) and the segment-types catalog (`skippy-settings-backup-*.json`). Restore overwrites matching options and merges the catalog. A settings file from before 7.0 still restores: its old skip lists, keywords, and EDL map are applied to the catalog. **Back up / Restore profile data** writes upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog (`skippy-profile-data-backup-*.json`). Restore merges (fingerprints union; title rules merge per key; statistics keep the larger counter; segment types merge by id, and a built-in missing from the file keeps the local row). Legacy upload-history-only backups still restore. Settings actions call `RunScript(service.skippy,backup_settings|restore_settings)` and `backup_profile_data` / `restore_profile_data`; the old `backup_upload_history` / `restore_upload_history` names still work.
 
 ---
 

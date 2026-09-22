@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Backup and restore Skippy add-on settings as JSON (all persisted keys from settings.xml)."""
+"""Backup and restore Skippy add-on settings as JSON.
+
+The file holds every persisted key from settings.xml plus the segment-types
+catalog (the skip lists that used to be settings). A backup from before 7.0
+has no catalog; its old comma lists are applied to the live catalog on restore.
+"""
 from __future__ import annotations
 
 import json
@@ -136,7 +141,9 @@ def _read_json_file(path: str) -> dict:
 
 
 def export_to_path(addon, dest_json_path: str) -> int:
-    """Write JSON backup; returns number of keys written."""
+    """Write JSON backup; returns number of setting keys written."""
+    from segment_types import export_catalog
+
     keys = iter_persisted_setting_ids(addon)
     payload = {
         "schema": SCHEMA,
@@ -145,15 +152,21 @@ def export_to_path(addon, dest_json_path: str) -> int:
         "exported_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "settings": collect_settings(addon),
         "setting_key_count": len(keys),
+        "segment_types": export_catalog(),
     }
     _write_json_file(dest_json_path, payload)
     return len(keys)
 
 
 def apply_imported_settings(addon, settings: dict, allowed: set[str]) -> tuple[int, int]:
+    from segment_types import _LEGACY_SETTING_KEYS
+
+    retired = set(_LEGACY_SETTING_KEYS)
     applied = 0
     unknown = 0
     for k, v in settings.items():
+        if k in retired:
+            continue
         if k not in allowed:
             unknown += 1
             continue
@@ -164,6 +177,40 @@ def apply_imported_settings(addon, settings: dict, allowed: set[str]) -> tuple[i
             unknown += 1
     invalidate_settings_cache()
     return applied, unknown
+
+
+def _restore_segment_catalog(data, raw_settings) -> tuple[int, int, str]:
+    """
+    Merge ``segment_types`` from a 7.x settings backup.
+
+    A pre-7.0 file has no catalog. Its old comma lists are applied instead and
+    counted as applied settings. Returns ``(applied_extra, skipped_extra, note)``.
+    """
+    from segment_types import (
+        _LEGACY_SETTING_KEYS,
+        apply_legacy_settings_to_catalog,
+        merge_catalog_from_backup,
+    )
+
+    if "segment_types" in data:
+        if merge_catalog_from_backup(data.get("segment_types")):
+            return 0, 0, " Segment types merged."
+        return 0, 1, " Segment types in the backup could not be merged."
+
+    retired = [
+        key
+        for key in _LEGACY_SETTING_KEYS
+        if str((raw_settings or {}).get(key) or "").strip()
+    ]
+    if not retired:
+        return 0, 0, ""
+    if apply_legacy_settings_to_catalog(raw_settings):
+        return (
+            len(retired),
+            0,
+            " Legacy skip lists applied to the segment-types catalog.",
+        )
+    return 0, len(retired), " Legacy skip lists could not be applied."
 
 
 def import_from_path(addon, src_json_path: str) -> tuple[int, int, str]:
@@ -178,8 +225,11 @@ def import_from_path(addon, src_json_path: str) -> tuple[int, int, str]:
         raise ValueError("Backup file has no settings object.")
     allowed = set(iter_persisted_setting_ids(addon))
     applied, bad = apply_imported_settings(addon, raw, allowed)
+    extra_applied, extra_bad, catalog_note = _restore_segment_catalog(data, raw)
+    applied += extra_applied
+    bad += extra_bad
     ver = data.get("addon_version_exported") or "?"
-    note = "Backup from add-on version %s." % ver
+    note = "Backup from add-on version %s.%s" % (ver, catalog_note)
     return applied, bad, note
 
 
