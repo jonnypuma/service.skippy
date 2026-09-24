@@ -1,5 +1,10 @@
 # Changelog
 
+## [7.0.2] - 2026-09-25
+
+### Fixed
+- **Live TV / IPTV**: Skippy stays idle on a live channel. A PVR or live-TV playback no longer enters the segment loop, Segment Editor, or Segment Marker. Remote playback URLs (`http`, `https`, `pvr`, `rtp`, `rtsp`, `rtmp`, `udp`, `mmsh`, `mms`, `plugin`) are not passed to `xbmcvfs.exists()`, which was a HEAD (then a GET after HTTP 405) about once a second against proxies such as Dispatcharr.
+
 ## [7.0.1] - 2026-09-22
 
 ### Fixed

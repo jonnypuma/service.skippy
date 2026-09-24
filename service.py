@@ -17,6 +17,7 @@ from settings_utils import (
     log_always,
     log_service_detail,
     parse_kodi_jsonrpc_raw,
+    skippy_ignores_playback,
     skippy_notification_icon,
 )
 from keymap_utils import install_marker_keymap, install_editor_keymap
@@ -150,14 +151,20 @@ def get_video_file():
     """Resolve the playing file path. Matches the main loop: use Player.HasVideo as well as isPlayingVideo,
     because during startup/buffering Kodi often reports HasVideo before isPlayingVideo becomes true — the old
     isPlayingVideo-only check caused get_video_file() to return None while the outer loop still thought a video
-    was active, so segments/metadata were never parsed until a later stop/start."""
+    was active, so segments/metadata were never parsed until a later stop/start.
+
+    Live TV, PVR, and remote stream URLs return None before any VFS stat. There is no
+    segment file beside those URLs, and ``xbmcvfs.exists`` on http(s) opens a connection.
+    """
+    if skippy_ignores_playback():
+        return None
     path = None
     try:
         if player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo"):
             path = player.getPlayingFile()
     except RuntimeError:
         path = None
-    if not path:
+    if not path or skippy_ignores_playback(path):
         return None
 
     if xbmcvfs.exists(path):

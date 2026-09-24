@@ -39,6 +39,7 @@ from settings_utils import (
     normalize_label,
     get_custom_segment_keyword_labels,
     notify_skippy,
+    skippy_ignores_playback,
 )
 from time_format import format_clock, hms_to_seconds, seconds_to_edl, seconds_to_hms
 
@@ -1066,6 +1067,9 @@ def main():
     video_path = get_video_path()
     if not video_path:
         log("Could not get video path")
+        return
+    if skippy_ignores_playback(video_path):
+        log("Live TV / PVR playback — segment marker ignored")
         return
 
     if segment_editor_modal_is_open():

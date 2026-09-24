@@ -24,7 +24,7 @@ from service_skip_seek_property import (
     skippy_seek_grace_active,
     tick_skippy_skipping_property,
 )
-from settings_utils import log, log_service_detail
+from settings_utils import is_live_tv_playback, log, log_service_detail
 
 # All-detail only: playhead drift during parse is noise unless the parse was slow.
 PARSE_SLOW_LOG_MS = 200
@@ -278,6 +278,18 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
         if not (ctx.player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo")):
             if ctx.monitor.waitForAbort(ctx.check_interval):
                 log("🛑 Abort requested — exiting monitor loop")
+            continue
+
+        # Live TV / PVR has no segments. Idle here so the tick never resolves the
+        # channel URL or stats it (that stat is an HTTP request against the IPTV proxy).
+        if is_live_tv_playback():
+            ctx.log_if_changed(
+                "live_tv",
+                "📺 Live TV / PVR — Skippy idle (no segments on a live channel)",
+            )
+            if ctx.monitor.waitForAbort(ctx.check_interval):
+                log("🛑 Abort requested — exiting monitor loop")
+                break
             continue
 
         playback = refresh_playback_context(ctx)

@@ -1,7 +1,7 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 7.0.1** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog and the 7.0.1 backup restore.
+**Version 7.0.2** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 

@@ -23,6 +23,65 @@ _log_level_cached = None
 _log_level_cached_at = 0.0
 
 
+# Live channels have no sidecar segments. xbmcvfs.exists() on an http(s) playback
+# URL is a HEAD; IPTV proxies answer 405 and Kodi follows with a GET. These
+# schemes never have an intro file beside the URL, so Skippy must not stat them
+# and must not run the segment loop against them.
+_UNSKIPPABLE_PLAYBACK_PREFIXES = (
+    "http://",
+    "https://",
+    "pvr://",
+    "rtp://",
+    "rtsp://",
+    "rtmp://",
+    "udp://",
+    "mmsh://",
+    "mms://",
+    "plugin://",
+)
+
+# Kodi builtins. Recordings are files and are not included.
+_LIVE_TV_CONDITIONS = (
+    "PVR.IsPlayingTV",
+    "PVR.IsPlayingRadio",
+    "VideoPlayer.Content(livetv)",
+    "VideoPlayer.Content(liveradio)",
+)
+
+
+def is_live_tv_playback():
+    """True when Kodi is playing a live TV or radio channel."""
+    for cond in _LIVE_TV_CONDITIONS:
+        try:
+            if xbmc.getCondVisibility(cond):
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def playback_path_is_unskippable(path):
+    """True when ``path`` cannot have local segments (live TV, IPTV, plugin URL)."""
+    if not isinstance(path, str):
+        return False
+    low = path.strip().lower()
+    if not low:
+        return False
+    return low.startswith(_UNSKIPPABLE_PLAYBACK_PREFIXES)
+
+
+def skippy_ignores_playback(path=None):
+    """Skip the whole Skippy cycle for live TV/PVR and for remote playback URLs.
+
+    Pass ``path`` from ``Player.getPlayingFile()`` when it is already known.
+    A live-TV condition match ignores playback even when the path is still unknown,
+    so callers can return before ``getPlayingFile`` / ``xbmcvfs.exists``.
+    """
+    if is_live_tv_playback():
+        return True
+    return playback_path_is_unskippable(path)
+
+
 def invalidate_settings_cache():
     """Drop the cached Addon handle and log level (call after writing settings)."""
     global _addon_cached, _addon_cached_at, _log_level_cached, _log_level_cached_at

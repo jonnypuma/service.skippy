@@ -19,6 +19,7 @@ from settings_utils import (
     log,
     log_service_detail,
     parse_kodi_jsonrpc_raw,
+    skippy_ignores_playback,
 )
 
 
@@ -47,14 +48,19 @@ def _player_state(player) -> tuple[bool, bool]:
 
 
 def _quiet_video_path(player) -> Optional[str]:
-    """Resolve playing file without verbose logging (pause fast-path)."""
+    """Resolve playing file without verbose logging (pause fast-path).
+
+    Live TV and remote stream URLs return None without ``xbmcvfs.exists``.
+    """
+    if skippy_ignores_playback():
+        return None
     try:
         if not (player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo")):
             return None
         path = player.getPlayingFile()
     except RuntimeError:
         return None
-    if not path:
+    if not path or skippy_ignores_playback(path):
         return None
     try:
         if xbmcvfs.exists(path):

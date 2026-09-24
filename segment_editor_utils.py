@@ -84,6 +84,10 @@ def notify_open_editor():
 
 
 def get_video_file():
+    from settings_utils import skippy_ignores_playback
+
+    if skippy_ignores_playback():
+        return None
     try:
         player = xbmc.Player()
         if not (
@@ -94,6 +98,8 @@ def get_video_file():
     except RuntimeError:
         return None
 
+    if not path or skippy_ignores_playback(path):
+        return None
     if xbmcvfs.exists(path):
         return path
     return None
