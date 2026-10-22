@@ -1,0 +1,1664 @@
+openapi: 3.0.3
+info:
+  title: TheIntroDB API
+  version: 4.0.0
+  description: |
+    API for managing intro timestamps for movies and TV shows.
+
+    ### Versioning
+    `/v4` is the current version and the only version documented here. The frozen `/v2`
+    and `/v3` compatibility surfaces carry a single endpoint each (`GET /media`) and are
+    no longer extended.
+
+    ### Identity
+    TVDB is the identity. Every `/v4` response is keyed by `tvdb_id`, and a media that has
+    no TMDB counterpart is a normal media rather than a fake `tmdb_id: 0`. `tmdb_id` and
+    `imdb_id` are still accepted as a way to address a media and are resolved server-side,
+    in the priority order `tvdb_id` → `tmdb_id` → `imdb_id`.
+
+    ### Rate Limiting
+    All endpoints are subject to rate limiting to prevent abuse and ensure service stability. Limits are applied based on the client's IP address (for unauthenticated requests) or user ID (for authenticated requests). Exceeding these limits will result in a `429 Too Many Requests` error. Admins and moderators are exempt from rate limits.
+
+    - **/media**: 30 requests per 10 seconds
+    - **/submit and /map**: 40 requests per 10 seconds
+    - **All other endpoints**: 50 requests per 10 seconds
+
+    When a rate limit is exceeded, the following headers are returned:
+    - `X-RateLimit-Limit`: The maximum number of requests allowed in the current window.
+    - `X-RateLimit-Remaining`: The number of requests remaining in the current window.
+    - `X-RateLimit-Reset`: The time in seconds until the rate limit window resets.
+
+    ### Usage Limiting
+    In addition to rate limiting, daily usage limits are enforced to ensure fair use. Limits reset every 24 hours. Exceeding the usage limit will also result in a `429 Too Many Requests` error.
+
+    **Authenticated Users (per account):**
+    - `GET /media`: 1000 requests/day
+    - `POST /submit`: 1000 requests/day
+    - `POST /map`: 1500 requests/day
+    - Other authenticated endpoints: 1500 requests/day
+
+    **Unauthenticated Users (per IP address):**
+    - `GET /media`: 500 requests/day
+    - Other public endpoints: 400 requests/day
+
+    **Repeated requests to the same media (per caller):**
+    - `GET /media` for the same media target (the same `tvdb_id`/`tmdb_id`/`imdb_id`, and the same `season`/`episode` when given) is capped at 2000 requests/day, applied to authenticated and anonymous callers alike. Exceeding it returns the same `429`, with `X-UsageLimit-SpecificMedia-*` headers and `code: "specific_media_usage_limit_exceeded"`.
+
+    The API returns the following headers with each response to help you track your usage:
+    - `X-UsageLimit-Limit`: The maximum number of requests allowed in the current window.
+    - `X-UsageLimit-Remaining`: The number of requests remaining in the current window.
+    - `X-UsageLimit-Reset`: The time in seconds until the usage window resets.
+
+    ### Errors
+    Errors are returned as a JSON object with a single `error` message (the body carries no
+    other field). Request-shape failures the router rejects before the handler runs, such as
+    a non-numeric query parameter, use that body under `422 Unprocessable Entity`. The one
+    exception is an unparseable `POST` body, a `400` with `"validation failed"`.
+servers:
+  - url: https://api.theintrodb.org/v4
+    description: Production server
+
+paths:
+  /media:
+    get:
+      summary: Get media timestamps for a media item
+      description: |
+        Retrieve media timestamps for a specific movie or TV episode. Returns all segment types (intro, recap, credits, preview) with weighted averages calculated separately.
+
+        - For movies: provide a media id only, with no `season`/`episode`
+        - For TV episodes: provide `season` and `episode` together
+
+        **Addressing the media**: any one of `tvdb_id`, `tmdb_id` or `imdb_id` is required, and they are used in the priority order `tvdb_id` → `tmdb_id` → `imdb_id`. TVDB is the identity; `tmdb_id` and `imdb_id` are resolved server-side (for TV, including a season/episode mapping from that provider's numbering) and are slower.
+
+        **Media type** is inferred from the request shape, since `/media` carries no `type` parameter:
+
+        - `season` and `episode` both present → TV episode
+        - exactly one of the two → `400` (they must be provided together; `season=0` addresses specials and is not treated as absent)
+        - neither, but a TV-only parameter is present (`mapping`, `episode_name`/`episode_title`, `tvdb_episode_id`) → TV, which still needs `season`/`episode` and is rejected with `400` without them
+        - otherwise → movie
+
+        **Episode order**: every submission is stored in TVDB's `default` order. If your `season`/`episode` numbers come from a different order, pass `mapping` and the API converts your coordinates into `default` and echoes your own coordinates back in the response. An unknown order, or one TVDB does not carry for this series, is a `400`.
+
+        **Episode hints**: `tvdb_episode_id` pins one exact TVDB episode record (it needs no numbering to be correct, so it takes priority over `season`/`episode` when supplied). `episode_name` (alias `episode_title`, with `episode_name` winning when both are sent) corroborates the converted episode by title.
+
+        **Release versions**: optionally provide `duration_ms` to select the closest matching release version (theatrical, extended cut, uncensored, etc.). The closest cluster within 5 minutes is returned; with no `duration_ms` the version with the most submissions is used.
+
+        **Behavior by authentication**:
+
+        - **Without an API key**: only accepted submissions are included, and only media with at least one accepted submission returns timestamps; otherwise `404` with a `code` that distinguishes "nothing submitted yet" (`no_submissions`) from "no such season/episode" (`episode_not_found`).
+        - **With an optional API key** (`Authorization: Bearer ...`): the response additionally includes the requester's own **pending and accepted** submissions for that media. The requester's own submissions are weighted **10×** in the average. If there are no accepted submissions but the requester has pending ones for that media, the endpoint returns `200` with timestamps derived from those. Each segment type is calculated independently, and a segment type with no submissions is omitted from the response.
+      operationId: getMedia
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - name: tvdb_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100000000
+          description: |-
+            TVDB ID of the media item. TVDB is the identity every `/v4` response is keyed by. Pick one of `tvdb_id`, `tmdb_id` or `imdb_id`.
+          example: 71663
+        - name: tmdb_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000000
+          description: |-
+            TMDB ID of the media item. Optional: TVDB is the identity, so this is only an alternative way to address the media. Pick one of `tvdb_id`, `tmdb_id` or `imdb_id`.
+          example: 456
+        - name: imdb_id
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^tt[0-9]{7,8}$'
+          description: |-
+            IMDB ID in the format `tt` followed by 7-8 digits. Pick one of `tvdb_id`, `tmdb_id` or `imdb_id`.
+          example: "tt0111161"
+        - name: season
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000
+          description: |-
+            Season number (required together with `episode` for a TV episode; send neither for a movie). `0` addresses specials. A non-integer value is rejected with `422`.
+          example: 1
+        - name: episode
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 10000
+          description: |-
+            Episode number (required together with `season` for a TV episode; send neither for a movie). A non-integer value is rejected with `422`.
+          example: 1
+        - name: mapping
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |-
+            The episode order your `season` and `episode` are given in. Accepts `default`, `official`, `dvd`, `alternate`, `absolute` or `regional`, plus the Jellyfin spellings (`altdvd`, `alttwo`, `aired-order` and so on, ignoring case). The API converts your coordinates into the stored TVDB `default` order and echoes your own coordinates back.
+
+            Omitted means `default`, the storage order. An unknown value is rejected with `400` rather than silently treated as `default`, and so is an order TVDB does not carry for this series.
+          example: "dvd"
+        - name: tvdb_episode_id
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: |-
+            The TVDB episode id, which pins one exact episode record. An episode id needs no numbering to be correct, so it takes priority over `season` and `episode` when supplied. An id belongs to one order, not one piece of content, and the coordinates in the response are authoritative.
+          example: 55452
+        - name: episode_name
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |-
+            Optional episode title hint that corroborates the coordinate conversion, exactly as on `POST /submit`. Ignored when the media is addressed by `tmdb_id`, whose resolution does not take a hint.
+          example: "Simpsons Roasting on an Open Fire"
+        - name: episode_title
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Alias for `episode_name`. `episode_name` wins when both are supplied.
+          example: "Simpsons Roasting on an Open Fire"
+        - name: duration_ms
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+          description: |-
+            Optional total video duration in milliseconds used to select a release version.
+            - Omit to use the most popular version (by most submissions)
+            - `0` selects the version whose duration is unknown
+            - If no version matches within 5 minutes, it falls back to the version with most submissions
+          example: 2700000
+        - name: list_versions
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Return the media's release versions, the duration clusters it has submissions for, instead of the grouped skip timestamps. The response is then a `MediaVersionsResponse`. Send with `duration_ms` and it will match a version; omit and it lists all.
+          example: false
+        - name: merge_unknown
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+          description: Whether submissions with no known video duration join the selected release group. Defaults to `true`.
+          example: true
+        - name: details
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: |-
+            Include per-segment detail in the response: each timestamp then also carries `confidence` and `submission_count`, and the body carries `group_duration_ms` (the selected release group's representative duration). When `false` those fields are omitted.
+          example: true
+      responses:
+        '200':
+          description: |-
+            Successful response. The body is one of three shapes:
+
+            - `MediaResponse` — the grouped skip timestamps (the default)
+            - `MediaVersionsResponse` — the media's release versions, when `list_versions=true`
+            - `MediaEpisodeListResponse` — the episode list, returned only as a fallback when the media has no submissions and no TMDB API key is configured
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/MediaResponse'
+                  - $ref: '#/components/schemas/MediaVersionsResponse'
+                  - $ref: '#/components/schemas/MediaEpisodeListResponse'
+              examples:
+                movie-media:
+                  summary: Movie media response with all segments
+                  value:
+                    tvdb_id: 169
+                    type: "movie"
+                    intro:
+                      - start_ms: null
+                        end_ms: 23000
+                    recap:
+                      - start_ms: 25000
+                        end_ms: 134000
+                    credits:
+                      - start_ms: 5801777
+                        end_ms: 6371111
+                      - start_ms: 6408000
+                        end_ms: null
+                    preview:
+                      - start_ms: 1680000
+                        end_ms: 1740000
+                episode-media:
+                  summary: TV episode media response with multiple intro segments
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    season: 1
+                    episode: 1
+                    intro:
+                      - start_ms: 30000
+                        end_ms: 90000
+                      - start_ms: 120000
+                        end_ms: 150000
+                episode-media-details:
+                  summary: TV episode response with details=true (confidence, submission_count, group_duration_ms)
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    season: 1
+                    episode: 1
+                    group_duration_ms: 1400000
+                    intro:
+                      - start_ms: null
+                        end_ms: 23000
+                        confidence: 0.87
+                        submission_count: 12
+                converted-coordinates:
+                  summary: Requested in DVD order; the response echoes the caller's own coordinates back
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    season: 1
+                    episode: 1
+                    intro:
+                      - start_ms: null
+                        end_ms: 23000
+                versions:
+                  summary: Response with list_versions=true
+                  value:
+                    tvdb_id: 169
+                    type: "movie"
+                    versions:
+                      - duration_ms: 7200000
+                        average_duration_ms: 7195000
+                        submission_count: 14
+                      - duration_ms: 7560000
+                        submission_count: 3
+                episode-list:
+                  summary: Episode-list fallback (no submissions, no TMDB key)
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    episodes:
+                      - season: 1
+                        episode: 1
+                        total_submission_count: 4
+                        total_accepted_count: 4
+                        total_pending_count: 0
+                        total_rejected_count: 0
+                        flag_votes: 0
+                        intro_accepted_count: 4
+                        intro_pending_count: 0
+                        intro_rejected_count: 0
+                        recap_accepted_count: 0
+                        recap_pending_count: 0
+                        recap_rejected_count: 0
+                        credits_accepted_count: 0
+                        credits_pending_count: 0
+                        credits_rejected_count: 0
+                        preview_accepted_count: 0
+                        preview_pending_count: 0
+                        preview_rejected_count: 0
+        '400':
+          description: Bad request - missing or invalid parameters, an unusable media identity, or an episode order this media does not carry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing-id:
+                  summary: No media id supplied
+                  value:
+                    error: "tmdb_id, imdb_id, or tvdb_id is required"
+                invalid-season:
+                  summary: Invalid season parameter
+                  value:
+                    error: "Invalid season. Must be between 0 and 1000"
+                incomplete-pair:
+                  summary: Only one of season/episode supplied
+                  value:
+                    error: "season and episode must be provided together"
+                tv-only-field-without-pair:
+                  summary: A TV-only parameter supplied with no season/episode
+                  value:
+                    error: "season and episode are required for a tv request"
+                invalid-mapping:
+                  summary: Unknown episode order
+                  value:
+                    error: "invalid mapping \"foo\": must be one of default, official, dvd, alternate, absolute, regional"
+                order-unavailable:
+                  summary: The requested order is not available for this series
+                  value:
+                    error: "The \"dvd\" mapping is not available for this media: TVDB has no episodes for this series in that order."
+                episode-not-on-tvdb:
+                  summary: The requested episode does not exist on TVDB
+                  value:
+                    error: "Season 99 Episode 99 does not exist on TVDB for this show (order: default)"
+        '404':
+          description: |
+            The media is real but has nothing to return, or the requested season/episode
+            does not exist for it.
+
+            The `code` field says which of the two it is, so a client does not have to
+            match on the message text:
+
+            - `no_submissions` — the media (and, for a tv request, the season/episode) is
+              real, but no submissions have been accepted for it yet. This is the normal
+              answer for an episode that aired last week and nobody has submitted an
+              intro for.
+            - `episode_not_found` — the caller's `season`/`episode` do not exist for this
+              media, so the conversion into TVDB's `default` order could not place them.
+            - `media_not_found` — the media itself could not be resolved from the id that
+              was supplied.
+
+            A 404 for a `tvdb_id` the API has never seen also carries `media_not_found`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                no-submissions:
+                  summary: The episode exists, nothing submitted yet
+                  value:
+                    error: "no submissions for this media"
+                    code: "no_submissions"
+                episode-not-found:
+                  summary: That season/episode does not exist for this media
+                  value:
+                    error: "media not found for provided season/episode"
+                    code: "episode_not_found"
+                media-not-found:
+                  summary: The media itself could not be resolved
+                  value:
+                    error: "media not found for provided tmdb_id"
+                    code: "media_not_found"
+                no-data:
+                  summary: No submissions exist for this media
+                  value:
+                    error: "no data found for this media"
+                    code: "no_submissions"
+        '422':
+          description: Unprocessable entity - a query parameter could not be parsed as its declared type (e.g. a non-numeric `season`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "expected integer"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to retrieve submissions"
+
+  /submit:
+    post:
+      summary: Submit segment timestamps
+      description: |
+        Submit segment timestamps (intro, recap, credits, or preview) for a movie or TV episode. A user may submit once per segment type per media/episode.
+
+        **Authentication required**: this endpoint requires a valid API key.
+
+        **Addressing the media**: TVDB is the identity, so `tvdb_id` is the preferred way to address the media. Any **one** of `tvdb_id`, `tmdb_id` or `imdb_id` is required; the server resolves whichever is missing, which is slower than a direct `tvdb_id`. Which id you send decides the coordinate space your `season`/`episode` are read in.
+
+        **Episode order**: every submission is stored in TVDB's `default` order. If your `season`/`episode` numbers are in a different order, pass `mapping` (see `GET /media`) and the API converts them before storage. Omitted means `default`. `mapping` and `tvdb_episode_id` must not be sent when `type` is `movie`.
+
+        **Episode hints**: `tvdb_episode_id` pins one exact TVDB episode record and is the most precise way to submit for a single TV episode (it takes priority over the numbers). `episode_name` (alias `episode_title`, `episode_name` wins) corroborates the resolved episode by title.
+
+        **Segment types**:
+        - `intro`: Intro segment (start optional/null, end required)
+        - `recap`: Recap segment (start optional/null, end required)
+        - `credits`: Credits segment (start required, end optional/null = end of media)
+        - `preview`: Preview segment (start required, end optional/null = end of media)
+
+        **Time format**: provide either seconds (`start_sec`/`end_sec`) OR milliseconds (`start_ms`/`end_ms`) — never both. Optional fields may be omitted/null depending on the segment type (e.g. intro start can be null; credits end can be null). To represent **no segment**, send a 0-length segment (e.g. `end_*: 0` for intro/recap, or `start_*: 0` for credits/preview), both boundaries `0`, or both null.
+
+        **Release version**: optionally provide `video_duration_ms` (the total video duration) to associate the submission with a specific release version.
+        - Allowed values: `0` (unknown) or 5 minutes–6 hours (300000–21600000 ms)
+        - For TV, `video_duration_ms` is only allowed when `season` and `episode` are **single values** (not a list/range/mix)
+
+        **Business rules** (aligned with API constants): MinDuration 5s (5000 ms); MaxIntroDuration 300s (300000 ms); MaxRecapDuration 1200s (1200000 ms, 20 min); MaxCreditsDuration 1800s (1800000 ms, 30 min); MaxPreviewDuration 1800s (1800000 ms, 30 min). All start/end timestamps must not exceed 6 hours (21600 s / 21600000 ms).
+
+        - **Intro**: End required (except for no-segment), start optional (null/0 means starts at the beginning). Duration must be 0 (no intro) or 5–300 seconds.
+        - **Recap**: End required (except for no-segment), start optional (null/0 means starts at the beginning). Duration must be 0 (no recap) or 5–1200 seconds (20 minutes).
+        - **Credits**: Start required (except for no-segment). End optional (null means end of video). Duration must be 0 (no credits) or, if end is provided, 5 seconds–30 minutes.
+        - **Preview**: Start required (except for no-segment). End optional (null means end of media). Duration must be 0 (no preview) or, if end is provided, 5 seconds–30 minutes.
+        - For TV shows, both `season` and `episode` are required (a single value, a comma-separated list, or an ascending range — a list/range is written as the cross product of seasons × episodes, up to 100 submissions per request)
+        - For movies, `season`, `episode`, `mapping` and `tvdb_episode_id` must be omitted
+        - IMDB ID format must be `tt[0-9]{7,8}` if provided
+        - Users cannot submit multiple times for the same segment type per media/episode
+        - Segment times cannot overlap with the user's own other submissions for the same media/episode
+        - Locked/banned users cannot submit
+
+        To confirm how a request resolves **before** storing it, use `POST /map`.
+      operationId: submitMediaTimestamp
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionRequest'
+            examples:
+              movie-intro:
+                summary: Movie intro submission addressed by tvdb_id
+                value:
+                  tvdb_id: 169
+                  type: "movie"
+                  segment: "intro"
+                  start_sec: 30.5
+                  end_sec: 90.2
+                  imdb_id: "tt0111161"
+                  video_duration_ms: 7200000
+              tv-episode-intro:
+                summary: TV episode intro with the exact episode record pinned
+                value:
+                  tvdb_id: 71663
+                  type: "tv"
+                  season: "1"
+                  episode: "1"
+                  tvdb_episode_id: 55452
+                  segment: "intro"
+                  start_sec: null
+                  end_sec: 85.2
+              dvd-order-submission:
+                summary: Submission whose season/episode are stated in DVD order
+                value:
+                  tvdb_id: 71663
+                  type: "tv"
+                  mapping: "dvd"
+                  season: "1"
+                  episode: "1"
+                  segment: "intro"
+                  start_sec: 30.5
+                  end_sec: 90.2
+              credits-null-end:
+                summary: Credits submission (null end = end of media)
+                value:
+                  tvdb_id: 169
+                  type: "movie"
+                  segment: "credits"
+                  start_ms: 5801777
+                  end_ms: null
+              tv-range-submission:
+                summary: TV submission spanning a range of episodes (milliseconds)
+                value:
+                  tvdb_id: 71663
+                  type: "tv"
+                  season: "1"
+                  episode: "1-3"
+                  segment: "recap"
+                  start_ms: 25000
+                  end_ms: 134000
+              no-segment:
+                summary: Explicit "no intro" submission
+                value:
+                  tvdb_id: 169
+                  type: "movie"
+                  segment: "intro"
+                  start_sec: null
+                  end_sec: null
+              imdb-addressed:
+                summary: Addressed by imdb_id; the server resolves the TVDB identity
+                value:
+                  imdb_id: "tt0111161"
+                  type: "movie"
+                  segment: "intro"
+                  start_ms: 30000
+                  end_ms: 90000
+      responses:
+        '200':
+          description: Submission accepted. Every stored row is returned; verification runs asynchronously, so a row is returned as `pending` even when it is about to be auto-accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionResponse'
+              examples:
+                successful-submission:
+                  summary: Successful movie submission
+                  value:
+                    ok: true
+                    submissions:
+                      - id: "550e8400-e29b-41d4-a716-446655440000"
+                        tvdbId: 169
+                        type: "movie"
+                        segment: "intro"
+                        videoDurationMs: 7200000
+                        startMs: 30500
+                        endMs: 90200
+                        status: "pending"
+                        weight: 1.0
+                tv-episode-submission:
+                  summary: TV episode submission with coordinates
+                  value:
+                    ok: true
+                    submissions:
+                      - id: "550e8400-e29b-41d4-a716-446655440001"
+                        tvdbId: 71663
+                        type: "tv"
+                        segment: "intro"
+                        season: 1
+                        episode: 1
+                        videoDurationMs: null
+                        startMs: null
+                        endMs: 85200
+                        status: "pending"
+                        weight: 1.0
+                range-submission:
+                  summary: A range of episodes expands into one submission per episode
+                  value:
+                    ok: true
+                    submissions:
+                      - id: "550e8400-e29b-41d4-a716-446655440002"
+                        tvdbId: 71663
+                        type: "tv"
+                        segment: "recap"
+                        season: 1
+                        episode: 1
+                        videoDurationMs: null
+                        startMs: 25000
+                        endMs: 134000
+                        status: "pending"
+                        weight: 1.0
+                      - id: "550e8400-e29b-41d4-a716-446655440003"
+                        tvdbId: 71663
+                        type: "tv"
+                        segment: "recap"
+                        season: 1
+                        episode: 2
+                        videoDurationMs: null
+                        startMs: 25000
+                        endMs: 134000
+                        status: "pending"
+                        weight: 1.0
+        '400':
+          description: Bad request - invalid request body or a validation/business-rule failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid-request-body:
+                  summary: The request body could not be parsed
+                  value:
+                    error: "validation failed"
+                missing-identity:
+                  summary: No media id supplied
+                  value:
+                    error: "one of tvdb_id, tmdb_id or imdb_id is required when type is 'tv'"
+                missing-season-episode:
+                  summary: Missing season/episode for a TV submission
+                  value:
+                    error: "season and episode are required when type is 'tv'"
+                movie-with-coordinates:
+                  summary: Episode numbering sent for a movie
+                  value:
+                    error: "season must not be sent when type is 'movie'"
+                invalid-mapping:
+                  summary: Unknown episode order
+                  value:
+                    error: "invalid mapping \"foo\": must be one of default, official, dvd, alternate, absolute, regional"
+                both-time-formats:
+                  summary: Both time formats provided
+                  value:
+                    error: "Provide either start_sec/end_sec OR start_ms/end_ms, not both"
+                invalid-times:
+                  summary: Invalid start/end times
+                  value:
+                    error: "end_sec must be greater than start_sec"
+                segment-requirements:
+                  summary: A required boundary is missing for the segment type
+                  value:
+                    error: "credits segment requires start_ms"
+                duration-too-short:
+                  summary: Duration below the segment minimum
+                  value:
+                    error: "duration must be at least 5000 milliseconds (5 seconds)"
+                intro-too-long:
+                  summary: Intro duration above the maximum
+                  value:
+                    error: "intro duration must not exceed 300000 milliseconds (300 seconds)"
+                invalid-video-duration:
+                  summary: video_duration_ms out of range
+                  value:
+                    error: "Invalid video_duration_ms: must be 0 (unknown) or between 5 minutes and 6 hours"
+                duration-with-range:
+                  summary: video_duration_ms sent with a season/episode list or range
+                  value:
+                    error: "video_duration_ms cannot be submitted when using a list or range of seasons/episodes"
+                invalid-imdb-format:
+                  summary: Invalid IMDB ID format
+                  value:
+                    error: "Invalid imdb_id format"
+                episode-not-on-tvdb:
+                  summary: The requested episode does not exist on TVDB
+                  value:
+                    error: "Season 99 Episode 99 does not exist on TVDB for this show (order: default)"
+        '401':
+          description: Unauthorized - the request carried no usable credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing-header:
+                  summary: No Authorization header
+                  value:
+                    error: "Missing Authorization header"
+                invalid-token:
+                  summary: Malformed header, or an invalid/expired key or JWT
+                  value:
+                    error: "Invalid or expired token"
+        '403':
+          description: Forbidden - the user's account is locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Your account has been locked"
+        '409':
+          description: Conflict - the user already submitted this segment type, or the segment times overlap an existing submission (regular users only)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                duplicate-segment:
+                  summary: User already submitted this segment type
+                  value:
+                    error: "You have already submitted this exact segment for one or more episodes"
+                overlapping-segments:
+                  summary: Segment times overlap with an existing segment
+                  value:
+                    error: "Segment times overlap with an existing submission. Segments cannot overlap."
+        '422':
+          description: Unprocessable entity - the request body could not be parsed or failed schema validation before the handler ran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "expected value to be one of tv, movie"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Failed to create submissions"
+        '503':
+          description: Service unavailable - the account's status could not be verified, so the submission was refused to prevent a lock bypass
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Unable to verify account status, please try again later"
+
+  /map:
+    post:
+      summary: Resolve a submission to its TVDB mapping without storing it
+      description: |
+        A dry-run of `POST /submit`: it resolves exactly as `/submit` does and returns what the request **would** map to, storing nothing.
+
+        Use it to show the user the episode a TMDB- or IMDb-addressed submission resolves to **before** submitting. Because the resolution is the real one, a request that would be rejected on submit is rejected here with the same message and status.
+
+        **Authentication required**: this endpoint requires a valid API key.
+
+        **Addressing the media**: any one of `tvdb_id`, `tmdb_id` or `imdb_id`. Which id you send decides the coordinate space your `season`/`episode` are read in.
+
+        **Coordinates**: the response reports the resolved coordinates in the **storage order** (TVDB `default`) that a submission would be written in. A list or range of seasons/episodes cannot be reported as a single mapping and is refused with `400`. The response also reports `mapping`, the order the caller's own numbers were read in (canonicalised, with an omitted value reported as `default`).
+
+        Timestamps are not accepted: `segment` and the start/end times play no part in resolution.
+      operationId: mapSubmission
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MapRequest'
+            examples:
+              tv-episode:
+                summary: TV episode addressed by tvdb_id
+                value:
+                  tvdb_id: 71663
+                  type: "tv"
+                  season: "1"
+                  episode: "1"
+              tv-episode-dvd-order:
+                summary: TV episode whose numbers are in DVD order
+                value:
+                  tvdb_id: 71663
+                  type: "tv"
+                  mapping: "dvd"
+                  season: "1"
+                  episode: "1"
+              tmdb-addressed:
+                summary: Remap check for a client that still addresses media by tmdb_id
+                value:
+                  tmdb_id: 456
+                  type: "tv"
+                  season: "1"
+                  episode: "1"
+              movie:
+                summary: Movie addressed by imdb_id
+                value:
+                  imdb_id: "tt0111161"
+                  type: "movie"
+      responses:
+        '200':
+          description: Resolved successfully. Nothing was stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapResponse'
+              examples:
+                tv-episode:
+                  summary: TV episode resolved to its TVDB coordinates
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    mapping: "default"
+                    media_title: "The Simpsons"
+                    season: 1
+                    episode: 1
+                    tvdb_episode_id: 55452
+                    episode_title: "Simpsons Roasting on an Open Fire"
+                dvd-order-converted:
+                  summary: DVD-order numbers converted into the stored default order
+                  value:
+                    tvdb_id: 71663
+                    type: "tv"
+                    mapping: "dvd"
+                    media_title: "The Simpsons"
+                    season: 1
+                    episode: 1
+                    tvdb_episode_id: 55452
+                    episode_title: "Simpsons Roasting on an Open Fire"
+                movie:
+                  summary: Movie resolved by its TVDB identity (no episode coordinates)
+                  value:
+                    tvdb_id: 323
+                    type: "movie"
+                    mapping: "default"
+                    media_title: "The Shawshank Redemption"
+        '400':
+          description: Bad request - the submission would be rejected, or a list/range of seasons/episodes was supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing-identity:
+                  summary: No media id supplied
+                  value:
+                    error: "one of tvdb_id, tmdb_id or imdb_id is required when type is 'tv'"
+                invalid-mapping:
+                  summary: Unknown episode order
+                  value:
+                    error: "invalid mapping \"foo\": must be one of default, official, dvd, alternate, absolute, regional"
+                order-unavailable:
+                  summary: The requested order is not available for this series
+                  value:
+                    error: "The \"dvd\" mapping is not available for this media: TVDB has no episodes for this series in that order."
+                multiple-coordinates:
+                  summary: A list/range cannot be reported as a single mapping
+                  value:
+                    error: "map requires a single season and episode"
+                series-not-on-tvdb:
+                  summary: The media does not exist on TVDB
+                  value:
+                    error: "Series does not exist on TVDB"
+                episode-not-on-tvdb:
+                  summary: The resolved episode does not exist on TVDB
+                  value:
+                    error: "Season 99 Episode 99 does not exist on TVDB for this show (order: default)"
+        '401':
+          description: Unauthorized - the request carried no usable credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing-header:
+                  summary: No Authorization header
+                  value:
+                    error: "Missing Authorization header"
+                invalid-token:
+                  summary: Malformed header, or an invalid/expired key or JWT
+                  value:
+                    error: "Invalid or expired token"
+        '403':
+          description: Forbidden - the user's account is locked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Your account has been locked"
+        '422':
+          description: Unprocessable entity - the request body could not be parsed or failed schema validation before the handler ran
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "expected value to be one of tv, movie"
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          description: Internal server error - including a provider (TVDB/TMDB) outage during resolution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                resolution-failed:
+                  summary: Resolution failed for a reason other than the request
+                  value:
+                    error: "Failed to resolve submission media"
+                title-unreadable:
+                  summary: The episode exists but its title could not be read
+                  value:
+                    error: "Failed to read the episode title"
+        '503':
+          description: Service unavailable - the account's status could not be verified, so the request was refused to prevent a lock bypass
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Unable to verify account status, please try again later"
+
+components:
+  responses:
+    TooManyRequests:
+      description: |
+        Too Many Requests. The client has exceeded a rate limit or a daily usage limit.
+        When a rate limit is exceeded, `X-RateLimit-*` headers are returned.
+        When a usage limit is exceeded, `X-UsageLimit-*` headers are returned.
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: The maximum number of requests allowed in the current window.
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests remaining in the current window.
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: The time in seconds until the rate limit window resets.
+        X-UsageLimit-Limit:
+          schema:
+            type: integer
+          description: The maximum number of requests allowed in the current 24-hour window.
+        X-UsageLimit-Remaining:
+          schema:
+            type: integer
+          description: The number of requests remaining in the current 24-hour window.
+        X-UsageLimit-Reset:
+          schema:
+            type: integer
+          description: The time in seconds until the usage window resets.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TooManyRequestsErrorResponse'
+          examples:
+            rate-limit:
+              summary: Rate limit exceeded
+              value:
+                error: "Too Many Requests"
+            usage-limit:
+              summary: Usage limit exceeded
+              value:
+                error: "Usage limit exceeded"
+                code: "usage_limit_exceeded"
+                retry_after: "8.4 hours"
+  schemas:
+    SegmentTimestamp:
+      type: object
+      required:
+        - start_ms
+        - end_ms
+      properties:
+        start_ms:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: |-
+            Start time of the segment in milliseconds.
+            - Intro/Recap: may be null when the segment starts at (or very near) the beginning
+            - Credits/Preview: a non-negative integer (0 may be returned for "no segment")
+          example: 30000
+        end_ms:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: |-
+            End time of the segment in milliseconds.
+            - Intro/Recap: 0 may be returned for "no segment"; otherwise a non-negative integer
+            - Credits/Preview: may be null to mean end of media (when the weighted majority of submissions used null)
+            - Credits/Preview: 0 may be returned for "no segment"
+          example: 90000
+        confidence:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: |-
+            Confidence of the weighted average for this segment (0-1). Only present when `details=true`; omitted otherwise.
+          example: 0.87
+        submission_count:
+          type: integer
+          minimum: 0
+          description: |-
+            Number of submissions averaged into this segment. Only present when `details=true`; omitted otherwise.
+          example: 12
+
+    MediaResponse:
+      type: object
+      required:
+        - tvdb_id
+        - type
+      properties:
+        tvdb_id:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+          description: |-
+            The TVDB ID of the media item. TVDB is the identity: it is the only media id the response carries, and `tmdb_id` is deliberately absent (a media with no TMDB counterpart is a normal media rather than a fake `tmdb_id: 0`).
+          example: 169
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media
+          example: "movie"
+        season:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 1000
+          description: |-
+            The caller's season number, echoed back (only present for TV). This is the coordinate space the request was made in, not the stored `default` order.
+          example: 1
+        episode:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 10000
+          description: |-
+            The caller's episode number, echoed back (only present for TV). This is the coordinate space the request was made in, not the stored `default` order.
+          example: 1
+        group_duration_ms:
+          type: integer
+          format: int64
+          description: |-
+            Representative duration (median) of the release group the timestamps were computed from. Only present when `details=true`.
+          example: 2700000
+        intro:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTimestamp'
+          description: Intro segment timestamps. Omitted when no submissions exist for this segment type.
+        recap:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTimestamp'
+          description: Recap segment timestamps. Omitted when no submissions exist for this segment type.
+        credits:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTimestamp'
+          description: Credits segment timestamps. Omitted when no submissions exist for this segment type.
+        preview:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentTimestamp'
+          description: Preview segment timestamps. Omitted when no submissions exist for this segment type.
+
+    MediaVersion:
+      type: object
+      required:
+        - duration_ms
+        - submission_count
+      properties:
+        duration_ms:
+          type: integer
+          format: int64
+          description: |-
+            Cluster representative duration (median of the submissions in the group). Used to match against the `duration_ms` query parameter for release-group selection.
+          example: 7200000
+        average_duration_ms:
+          type: integer
+          format: int64
+          description: |-
+            Arithmetic mean of the video durations in this cluster. Informational only — not used for grouping or matching.
+          example: 7195000
+        submission_count:
+          type: integer
+          description: Number of submissions in this cluster.
+          example: 14
+
+    MediaVersionsResponse:
+      type: object
+      required:
+        - tvdb_id
+        - type
+        - versions
+      properties:
+        tvdb_id:
+          type: integer
+          minimum: 1
+          description: The TVDB ID of the media item.
+          example: 169
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media
+          example: "movie"
+        season:
+          type: integer
+          nullable: true
+          description: The caller's season number, echoed back (TV only). Not present for movies.
+          example: 1
+        episode:
+          type: integer
+          nullable: true
+          description: The caller's episode number, echoed back (TV only). Not present for movies.
+          example: 1
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaVersion'
+          description: Every duration cluster the media has accepted submissions for. Sorted by submission count (descending), then duration (ascending).
+
+    MediaEpisodeSummary:
+      type: object
+      required:
+        - season
+        - episode
+        - total_submission_count
+        - total_accepted_count
+        - total_pending_count
+        - total_rejected_count
+        - flag_votes
+        - intro_accepted_count
+        - intro_pending_count
+        - intro_rejected_count
+        - recap_accepted_count
+        - recap_pending_count
+        - recap_rejected_count
+        - credits_accepted_count
+        - credits_pending_count
+        - credits_rejected_count
+        - preview_accepted_count
+        - preview_pending_count
+        - preview_rejected_count
+      properties:
+        season:
+          type: integer
+          minimum: 0
+          description: Season number
+          example: 1
+        episode:
+          type: integer
+          minimum: 0
+          description: Episode number
+          example: 1
+        total_submission_count:
+          type: integer
+          description: Total submissions for this episode across every segment type
+          example: 4
+        total_accepted_count:
+          type: integer
+          description: Accepted submissions for this episode across every segment type
+          example: 4
+        total_pending_count:
+          type: integer
+          description: Pending submissions for this episode across every segment type
+          example: 0
+        total_rejected_count:
+          type: integer
+          description: Rejected submissions for this episode across every segment type
+          example: 0
+        flag_votes:
+          type: integer
+          description: Number of flag votes for this episode
+          example: 0
+        intro_accepted_count:
+          type: integer
+          description: Accepted intro submissions
+          example: 4
+        intro_pending_count:
+          type: integer
+          description: Pending intro submissions
+          example: 0
+        intro_rejected_count:
+          type: integer
+          description: Rejected intro submissions
+          example: 0
+        recap_accepted_count:
+          type: integer
+          description: Accepted recap submissions
+          example: 0
+        recap_pending_count:
+          type: integer
+          description: Pending recap submissions
+          example: 0
+        recap_rejected_count:
+          type: integer
+          description: Rejected recap submissions
+          example: 0
+        credits_accepted_count:
+          type: integer
+          description: Accepted credits submissions
+          example: 0
+        credits_pending_count:
+          type: integer
+          description: Pending credits submissions
+          example: 0
+        credits_rejected_count:
+          type: integer
+          description: Rejected credits submissions
+          example: 0
+        preview_accepted_count:
+          type: integer
+          description: Accepted preview submissions
+          example: 0
+        preview_pending_count:
+          type: integer
+          description: Pending preview submissions
+          example: 0
+        preview_rejected_count:
+          type: integer
+          description: Rejected preview submissions
+          example: 0
+
+    MediaEpisodeListResponse:
+      type: object
+      required:
+        - tvdb_id
+        - type
+      properties:
+        tvdb_id:
+          type: integer
+          minimum: 1
+          description: The TVDB ID of the media item.
+          example: 71663
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media
+          example: "tv"
+        episodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaEpisodeSummary'
+          description: |-
+            Per-episode submission counts. Only present for TV, and only returned as a fallback when the media has no submissions and no TMDB API key is configured.
+
+    SubmissionRequest:
+      type: object
+      required:
+        - type
+        - segment
+      properties:
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media. Required.
+          example: "movie"
+        segment:
+          type: string
+          enum: [intro, recap, credits, preview]
+          description: |-
+            The segment type to submit. Required.
+            - intro: Intro segment (end required, start optional/can be null)
+            - recap: Recap segment (end required, start optional/can be null)
+            - credits: Credits segment (start required, end optional/can be null)
+            - preview: Preview segment (start required, end optional/null = end of media)
+          example: "intro"
+        tvdb_id:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+          description: |-
+            TVDB ID of the media item. TVDB is the identity, so this is the preferred id. Required when neither `tmdb_id` nor `imdb_id` is supplied.
+          example: 169
+        tmdb_id:
+          type: integer
+          minimum: 1
+          maximum: 10000000
+          description: |-
+            TMDB ID of the media item. Optional: the server resolves it to the media's TVDB identity. Required when neither `tvdb_id` nor `imdb_id` is supplied.
+          example: 12345
+        imdb_id:
+          type: string
+          pattern: '^tt[0-9]{7,8}$'
+          description: |-
+            IMDB ID in the format `tt` followed by 7-8 digits. Optional: the server resolves it to the media's TVDB identity. Required when neither `tvdb_id` nor `tmdb_id` is supplied.
+          example: "tt0111161"
+        season:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 1000
+            - type: string
+              description: Comma-separated list, ascending range, or a mix (e.g. "1", "1,2", "1-3", "1,3-4,6")
+          nullable: true
+          description: |-
+            Season number (required when `type` is `"tv"`; must be omitted/null when `type` is `"movie"`).
+
+            Accepts a single number (`1`), a comma-separated list (`1,2`), an ascending range (`1-3`), or a mix (`1,3-4,6`). When a list/range is supplied, every combination with `episode` is created (up to 100 submissions per request). A non-`default` `mapping` only supports a single season and episode.
+          example: 1
+        episode:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 10000
+            - type: string
+              description: Comma-separated list, ascending range, or a mix (e.g. "1", "1,2", "1-3", "1,3-4,6")
+          nullable: true
+          description: |-
+            Episode number (required when `type` is `"tv"`; must be omitted/null when `type` is `"movie"`).
+
+            Accepts the same single/list/range forms as `season`. When multiple episodes are supplied, every combination with `season` is created.
+          example: "4,5,6"
+        mapping:
+          type: string
+          nullable: true
+          description: |-
+            The episode order your `season` and `episode` numbers are given in: `default`, `official`, `dvd`, `alternate`, `absolute` or `regional`, plus the Jellyfin spellings (`altdvd`, `alttwo`, `aired-order` and so on, ignoring case). The server converts your coordinates into the stored TVDB `default` order.
+
+            Optional; omitted means `default`. An unknown value is rejected with `400`. Must not be sent when `type` is `"movie"`.
+          example: "dvd"
+        tvdb_episode_id:
+          type: integer
+          format: int64
+          description: |-
+            TVDB episode id, which pins one exact episode record. TVDB episode ids are order-specific; supplied, it takes priority over `season`/`episode` and makes `mapping` redundant. Must not be sent when `type` is `"movie"`.
+          example: 55452
+        episode_name:
+          type: string
+          nullable: true
+          description: |-
+            Episode title, an independent check on the resolved episode. Optional. Ignored when the media is addressed by `tmdb_id`, whose resolution does not take a hint.
+          example: "Simpsons Roasting on an Open Fire"
+        episode_title:
+          type: string
+          nullable: true
+          description: Accepted alias for `episode_name`. `episode_name` wins when both are supplied.
+          example: "Simpsons Roasting on an Open Fire"
+        video_duration_ms:
+          type: integer
+          format: int64
+          nullable: true
+          minimum: 0
+          maximum: 21600000
+          description: |-
+            Optional total video duration in milliseconds (for release version identification).
+            - Omit for unknown duration
+            - otherwise must be `0` (unknown) or between 300000 and 21600000 (5 minutes–6 hours)
+            For TV, this field is only allowed when `season`/`episode` are single values (not a list/range/mix).
+          example: 7200000
+        start_sec:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 21600.0
+          description: |-
+            Start time of the segment in seconds (supports decimals). Must not exceed 6 hours (21600) or be negative.
+            - Intro: optional (null/0 means starts at the beginning)
+            - Recap: optional (null/0 means starts at the beginning)
+            - Credits: required unless this is a no-segment submission (0 means no credits, otherwise must be >= 5 seconds)
+            - Preview: required unless this is a no-segment submission
+            Use either `start_sec`/`end_sec` OR `start_ms`/`end_ms`, never both.
+          example: 30.5
+        end_sec:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 21600.0
+          description: |-
+            End time of the segment in seconds. Must not exceed 6 hours (21600) or be negative.
+            Must be greater than `start_sec`, except when representing a no-segment value (0-length segment).
+            - Intro: required
+            - Recap: required
+            - Credits: optional (null means end of video)
+            - Preview: optional (null means end of media)
+            Use either `start_sec`/`end_sec` OR `start_ms`/`end_ms`, never both.
+          example: 90.2
+        start_ms:
+          type: integer
+          format: int64
+          nullable: true
+          minimum: 0
+          maximum: 21600000
+          description: |-
+            Start time of the segment in milliseconds. Must not exceed 6 hours (21600000) or be negative.
+            - Intro: optional (null/0 means starts at the beginning)
+            - Recap: optional (null/0 means starts at the beginning)
+            - Credits: required unless this is a no-segment submission (0 means no credits, otherwise must be >= 5000 ms)
+            - Preview: required unless this is a no-segment submission
+            Use either `start_ms`/`end_ms` OR `start_sec`/`end_sec`, never both.
+          example: 30500
+        end_ms:
+          type: integer
+          format: int64
+          nullable: true
+          minimum: 0
+          maximum: 21600000
+          description: |-
+            End time of the segment in milliseconds. Must not exceed 6 hours (21600000) or be negative.
+            Must be greater than `start_ms`, except when representing a no-segment value (0-length segment).
+            - Intro: required
+            - Recap: required
+            - Credits: optional (null means end of video)
+            - Preview: optional (null means end of media)
+            Use either `start_ms`/`end_ms` OR `start_sec`/`end_sec`, never both.
+          example: 90200
+
+    SubmissionResponse:
+      type: object
+      required:
+        - ok
+        - submissions
+      properties:
+        ok:
+          type: boolean
+          description: Always `true` on a `200`. A failed submission returns an error status instead.
+          example: true
+        submissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmissionData'
+          description: Every submission row that was stored, one per (season, episode) pair created.
+
+    SubmissionData:
+      type: object
+      required:
+        - id
+        - tvdbId
+        - type
+        - segment
+        - videoDurationMs
+        - startMs
+        - endMs
+        - status
+        - weight
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the submission
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        tvdbId:
+          type: integer
+          nullable: true
+          description: |-
+            The TVDB ID of the media item — the media's identity. Present (and non-null) for every stored submission; `null` only in a response that predates the field.
+          example: 169
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media
+          example: "movie"
+        segment:
+          type: string
+          enum: [intro, recap, credits, preview]
+          description: The segment type of this submission
+          example: "intro"
+        season:
+          type: integer
+          nullable: true
+          description: Season number, in TVDB `default` order (only present for TV episodes)
+          example: 1
+        episode:
+          type: integer
+          nullable: true
+          description: Episode number, in TVDB `default` order (only present for TV episodes)
+          example: 1
+        videoDurationMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: Total duration of the underlying video in milliseconds, if provided
+          example: 7200000
+        startMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: |-
+            Start time of the segment in milliseconds.
+            - Intro: null if starts at the beginning
+            - Recap: null if starts at the beginning
+            - Credits: always present
+            - Preview: always present
+          example: 30500
+        endMs:
+          type: integer
+          format: int64
+          nullable: true
+          description: |-
+            End time of the segment in milliseconds.
+            - Intro: always present
+            - Recap: always present
+            - Credits: null if end of video
+            - Preview: null if end of media
+          example: 90200
+        status:
+          type: string
+          enum: [pending, accepted, rejected]
+          description: |-
+            Current status of the submission. Verification runs asynchronously, so a newly created row is returned as `pending`.
+          example: "pending"
+        weight:
+          type: number
+          format: double
+          minimum: 0
+          description: Weight of the submission (used in weighted average calculations)
+          example: 1.0
+
+    MapRequest:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media. Required.
+          example: "tv"
+        tvdb_id:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+          description: |-
+            TVDB ID of the media item. TVDB is the identity, so this is the preferred id. Required when neither `tmdb_id` nor `imdb_id` is supplied.
+          example: 71663
+        tmdb_id:
+          type: integer
+          minimum: 1
+          maximum: 10000000
+          description: |-
+            TMDB ID of the media item. Optional: the server resolves it to the media's TVDB identity. Required when neither `tvdb_id` nor `imdb_id` is supplied.
+          example: 456
+        imdb_id:
+          type: string
+          pattern: '^tt[0-9]{7,8}$'
+          description: |-
+            IMDB ID in the format `tt` followed by 7-8 digits. Optional: the server resolves it to the media's TVDB identity. Required when neither `tvdb_id` nor `tmdb_id` is supplied.
+          example: "tt0111161"
+        season:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 1000
+            - type: string
+          nullable: true
+          description: |-
+            Season number, in the order named by `mapping`. Required (with `episode`) when `type` is `"tv"`; must be omitted/null when `type` is `"movie"`.
+
+            A single season is required: a list or range cannot be reported as one mapping and is rejected with `400`.
+          example: 1
+        episode:
+          oneOf:
+            - type: integer
+              minimum: 0
+              maximum: 10000
+            - type: string
+          nullable: true
+          description: |-
+            Episode number, in the order named by `mapping`. Required (with `season`) when `type` is `"tv"`; must be omitted/null when `type` is `"movie"`.
+
+            A single episode is required: a list or range is rejected with `400`.
+          example: 1
+        mapping:
+          type: string
+          nullable: true
+          description: |-
+            The episode order your `season` and `episode` numbers are given in: `default`, `official`, `dvd`, `alternate`, `absolute` or `regional`, plus the Jellyfin spellings. Optional; omitted means `default`. An unknown value, or an order TVDB does not carry for this series, is rejected with `400`. Must not be sent when `type` is `"movie"`.
+          example: "dvd"
+        tvdb_episode_id:
+          type: integer
+          format: int64
+          description: |-
+            TVDB episode id, which pins one exact episode record and makes `mapping` redundant. Must not be sent when `type` is `"movie"`.
+          example: 55452
+        episode_name:
+          type: string
+          nullable: true
+          description: Episode title, an independent check on the resolved episode. Optional.
+          example: "Simpsons Roasting on an Open Fire"
+        episode_title:
+          type: string
+          nullable: true
+          description: Accepted alias for `episode_name`. `episode_name` wins when both are supplied.
+
+    MapResponse:
+      type: object
+      required:
+        - tvdb_id
+        - type
+        - mapping
+      properties:
+        tvdb_id:
+          type: integer
+          minimum: 1
+          description: The media's resolved TVDB identity.
+          example: 71663
+        type:
+          type: string
+          enum: [movie, tv]
+          description: The type of media.
+          example: "tv"
+        mapping:
+          type: string
+          description: |-
+            The order the caller's own numbers were read in, canonicalised. An omitted `mapping` is reported as `default`.
+          example: "dvd"
+        media_title:
+          type: string
+          description: The resolved series or movie name. Best-effort.
+          example: "The Simpsons"
+        season:
+          type: integer
+          nullable: true
+          description: |-
+            The resolved season, in TVDB `default` — the order every row is stored in. `null`/absent for a movie.
+          example: 1
+        episode:
+          type: integer
+          nullable: true
+          description: |-
+            The resolved episode, in TVDB `default`. `null`/absent for a movie.
+          example: 1
+        tvdb_episode_id:
+          type: integer
+          format: int64
+          description: |-
+            The TVDB episode record the returned coordinates address. Absent for a movie, and absent when TVDB reports no id.
+          example: 55452
+        episode_title:
+          type: string
+          description: The resolved episode's title on TVDB. Best-effort.
+          example: "Simpsons Roasting on an Open Fire"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong
+          example: "media not found"
+        code:
+          type: string
+          description: |
+            Optional machine-readable discriminator, present where one status covers
+            several meanings. Clients should branch on this instead of the message, which
+            is prose and may be reworded. Omitted entirely when an error has no code.
+          example: "no_submissions"
+
+    TooManyRequestsErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message describing the rate or usage limit violation
+          example: "Too Many Requests"
+        code:
+          type: string
+          description: Optional machine-readable error code for the limit type
+          example: "usage_limit_exceeded"
+        retry_after:
+          type: string
+          description: Optional human-readable time until the client should retry
+          example: "8.4 hours"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API key
+      description: |-
+        Bearer token authentication. Send your API key as `Authorization: Bearer <API_KEY>`.
+        A Clerk JWT issued to a signed-in user's browser session is also accepted, but API keys are the intended way for third-party clients.

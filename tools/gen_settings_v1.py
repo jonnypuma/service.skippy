@@ -152,7 +152,6 @@ _MODE_VISIBILITY = {
     # Playback & Dialog (g_pb)
     "settings_action_customize_skip_dialog": _ANY,
     "settings_action_skip_presets": _ANY,
-    "skip_dialog_current_preset": _ANY,
     "hide_ending_text": _FULL,
     "skip_dialog_mode": _ANY,
     "compact_full_combined": None,  # already limited to Full / Compact Full
@@ -424,16 +423,6 @@ def main():
         "44100",
         "44101",
         "RunScript(service.skippy,customize_skip_dialog)",
-    )
-    # Read-only: the service writes the matching preset name (or "Custom (unsaved)").
-    string_setting(
-        g,
-        "skip_dialog_current_preset",
-        0,
-        "46030",
-        "46031",
-        "",
-        en=[("skip_dialog_type", "Never")],
     )
     action_setting(
         g,

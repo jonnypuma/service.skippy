@@ -31,7 +31,16 @@
         <top>0</top>
         <width>120</width>
         <height>46</height>
-        <texture>minimal_rounded_gray_640.png</texture>
+        <texture>plates/minimal_rounded_gray_640_w120.png</texture>
+        <aspectratio>stretch</aspectratio>
+      </control>
+
+      <control type="image" id="3022">
+        <left>0</left>
+        <top>0</top>
+        <width>120</width>
+        <height>46</height>
+        <texture>plates/minimal_rounded_gray_640_w120.png</texture>
         <aspectratio>stretch</aspectratio>
       </control>
 
@@ -42,7 +51,7 @@
         <height>46</height>
         <label>Skip</label>
         <font>font16</font>
-        <texturefocus>minimal_rounded_gray_640.png</texturefocus>
+        <texturefocus>-</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>

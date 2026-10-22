@@ -1973,3 +1973,7 @@ msgstr "Personnalisé (non enregistré)"
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
 msgstr "Lorsqu'un segment est imbriqué dans un autre ou le chevauche, ajoute une ligne indiquant où Passer sautera ensuite (par exemple le début du segment suivant)."
+
+msgctxt "#46034"
+msgid "Preview type"
+msgstr "Type d'aperçu"

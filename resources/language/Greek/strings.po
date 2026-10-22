@@ -1973,3 +1973,7 @@ msgstr "Προσαρμοσμένο (μη αποθηκευμένο)"
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
 msgstr "Όταν ένα τμήμα είναι ένθετο ή επικαλύπτεται με άλλο, προστίθεται μια γραμμή που δείχνει πού θα μεταβεί η Παράλειψη στη συνέχεια (π.χ. η αρχή του επόμενου τμήματος)."
+
+msgctxt "#46034"
+msgid "Preview type"
+msgstr "Τύπος προεπισκόπησης"

@@ -92,7 +92,7 @@
         <label>Skip</label>
         <onright>3013</onright>
         <font>font16</font>
-        <texturefocus>-</texturefocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -111,7 +111,7 @@
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
-        <texturefocus>-</texturefocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -130,7 +130,7 @@
         <height>38</height>
         <label>Skip</label>
         <font>font16</font>
-        <texturefocus>-</texturefocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -151,7 +151,7 @@
         <onleft>3012</onleft>
         <onclick>Close</onclick>
         <font>font16</font>
-        <texturefocus>-</texturefocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
         <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
@@ -199,7 +199,7 @@
         <reveal>true</reveal>
         <texturebg>progress_background.png</texturebg>
         <textureleft>-</textureleft>
-        <midtexture>progress_mid.png</midtexture>
+        <midtexture>progress_mid_segmented_teal.png</midtexture>
         <textureright>-</textureright>
         <aspectratio>stretch</aspectratio>
         <orientation>horizontal</orientation>
@@ -218,7 +218,7 @@
         <top>135</top>
         <width>630</width>
         <height>24</height>
-        <texture>progress_mid.png</texture>
+        <texture>progress_mid_segmented_teal.png</texture>
         <aspectratio>stretch</aspectratio>
         <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
       </control>

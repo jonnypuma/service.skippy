@@ -6,6 +6,7 @@ Neither path patches production SkipDialog XML.
 """
 from __future__ import annotations
 
+import os
 import re
 from typing import Any, Callable, Optional
 
@@ -37,16 +38,19 @@ FULL_SKIP_PROGRESS_BAR_WIDTH = FULL_SKIP_PANEL_W_720 - (FULL_SKIP_MARGIN_720 * 2
 # Dialog width follows the skip label. Each label format has its own ladder of
 # fixed widths; the label's estimated size picks the first rung that fits, so a
 # plain "Skip" stays narrow while a long type name or duration still fits.
-SKIP_BTN_TEXT_PAD_720 = 40
-SKIP_BTN_MAX_TEXT_W_720 = 420
+SKIP_BTN_TEXT_PAD_720 = 35
+SKIP_BTN_MAX_TEXT_W_720 = 365
+# The skin font renders narrower than the generous glyph table, so Full / Compact Full
+# scale the estimate down (about 13%) to avoid a dialog wider than its label needs.
+SKIP_GLYPH_SCALE = 0.87
 SKIP_ICON_SLOT_720 = 30
 SKIP_CLOSE_ICON_SLOT_720 = 20
 SKIP_CLOSE_BTN_W_720 = 80
 SKIP_CLOSE_ICON_ID = 3083
 SKIP_WIDTH_STEPS_720 = {
-    "Skip": (96, 120),
-    "Skip + Type": (150, 190, 240, 300, 360),
-    "Skip + Type + Duration": (230, 270, 320, 380, 420),
+    "Skip": (84, 104),
+    "Skip + Type": (130, 165, 210, 260, 315),
+    "Skip + Type + Duration": (200, 235, 280, 330, 365),
 }
 SKIP_ROWS_MIN_CONTENT_W_720 = {"jump": 280, "ending": 190}
 SKIP_DIALOG_CANVAS_W_720 = 1280
@@ -326,14 +330,17 @@ class MockSegment:
         self.next_segment_info = next_segment_info
 
 
-def build_customize_mock_segment(skip_overlapping: bool) -> MockSegment:
+def build_customize_mock_segment(
+    skip_overlapping: bool, label: str = MOCK_SEGMENT_LABEL
+) -> MockSegment:
+    label = (label or MOCK_SEGMENT_LABEL).strip() or MOCK_SEGMENT_LABEL
     recap = MockSegment(MOCK_RECAP_START, MOCK_RECAP_END, "recap")
     if skip_overlapping:
-        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, MOCK_SEGMENT_LABEL)
+        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, label)
     return MockSegment(
         MOCK_INTRO_START,
         MOCK_INTRO_END,
-        MOCK_SEGMENT_LABEL,
+        label,
         next_segment_start=MOCK_RECAP_START,
         next_segment_info=jump_info_nested(recap),
     )
@@ -600,7 +607,7 @@ def skip_format_tier(format_setting) -> str:
 def skip_label_width_720(label: str, format_setting) -> int:
     """Width of the skip button text area: first rung of the format's ladder that fits."""
     need = min(
-        estimate_skip_label_width_720(label) + SKIP_BTN_TEXT_PAD_720,
+        estimate_skip_label_width_720(label) * SKIP_GLYPH_SCALE + SKIP_BTN_TEXT_PAD_720,
         SKIP_BTN_MAX_TEXT_W_720,
     )
     steps = SKIP_WIDTH_STEPS_720[skip_format_tier(format_setting)]
@@ -610,9 +617,15 @@ def skip_label_width_720(label: str, format_setting) -> int:
     return min(need, SKIP_BTN_MAX_TEXT_W_720)
 
 
-def widest_skip_label(segment, settings, addon=None) -> str:
+def widest_skip_label(
+    segment,
+    settings,
+    addon=None,
+    fmt_key="skip_button_format",
+    fmt_default="Skip + Type + Duration",
+) -> str:
     """Longest label the dialog can show for this segment (live durations never exceed it)."""
-    fmt = settings.get_text("skip_button_format", "Skip + Type + Duration")
+    fmt = settings.get_text(fmt_key, fmt_default)
     start = float(getattr(segment, "start_seconds", 0) or 0)
     end = float(getattr(segment, "end_seconds", 0) or 0)
     total = max(0, int(round(max(0.0, end - start))))
@@ -795,6 +808,103 @@ def full_skip_panel_metrics(
         "close_w": sc(SKIP_CLOSE_BTN_W_720),
         "close_icon_x": sc(skip_x + skip_w),
     }
+
+
+# Widths the Minimal plate is pre-rendered at (tools/gen_minimal_plate_variants.py).
+MINIMAL_PLATE_WIDTHS_720 = (120, 150, 190, 240, 270, 320, 380, 420)
+MINIMAL_PLATE_PAD_720 = 40
+_PLATE_VARIANT_DIR = "plates"
+_variant_exists_cache = {}
+
+
+def minimal_plate_width_720(segment, settings, addon=None) -> int:
+    """Smallest pre-rendered plate width that fits the label (never below the classic plate)."""
+    label = widest_skip_label(
+        segment,
+        settings,
+        addon,
+        fmt_key="minimal_skip_button_format",
+        fmt_default="Skip + Type",
+    )
+    need = estimate_skip_label_width_720(label) + MINIMAL_PLATE_PAD_720
+    for step in MINIMAL_PLATE_WIDTHS_720:
+        if need <= step:
+            return step
+    return MINIMAL_PLATE_WIDTHS_720[-1]
+
+
+def minimal_plate_variant(filename: str, width_720: int) -> str:
+    """Skin-relative path of ``filename`` pre-rendered for ``width_720``, else the original."""
+    name = (filename or "").strip()
+    stem, ext = os.path.splitext(name)
+    if not stem or width_720 not in MINIMAL_PLATE_WIDTHS_720:
+        return name
+    variant = "%s/%s_w%d.png" % (_PLATE_VARIANT_DIR, stem, width_720)
+    if variant not in _variant_exists_cache:
+        path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "resources",
+            "skins",
+            "default",
+            "media",
+            _PLATE_VARIANT_DIR,
+            "%s_w%d.png" % (stem, width_720),
+        )
+        _variant_exists_cache[variant] = os.path.isfile(path)
+    return variant if _variant_exists_cache[variant] else name
+
+
+def apply_minimal_skip_layout(
+    window,
+    settings,
+    segment,
+    scale_fn,
+    addon=None,
+    group_id=3090,
+    plate_ids=(3021, 3022),
+    button_id=3012,
+    place_panel=True,
+):
+    """Size the Minimal plate to its label; right corners keep their right edge."""
+    sc = scale_fn
+    width_720 = minimal_plate_width_720(segment, settings, addon)
+    width = sc(width_720)
+    height = sc(MINIMAL_MOCK_H_720)
+    try:
+        window._skip_panel_w = width
+        window._minimal_plate_w720 = width_720
+    except Exception:
+        pass
+    plate = minimal_plate_variant(minimal_plate_filename(settings), width_720)
+    for cid in plate_ids:
+        ctrl = _safe_control(window, cid)
+        if ctrl and plate:
+            try:
+                ctrl.setImage(plate)
+            except Exception:
+                pass
+    group = _safe_control(window, group_id)
+    if group:
+        try:
+            group.setWidth(width)
+        except Exception:
+            pass
+        if place_panel:
+            try:
+                x, y = group.getPosition()
+                corner = (
+                    settings.get_text("minimal_skip_dialog_position", "BottomRight")
+                    or "BottomRight"
+                ).replace(" ", "")
+                if corner.endswith("Right"):
+                    group.setPosition(
+                        int(x) + sc(MINIMAL_MOCK_W_720) - width, int(y)
+                    )
+            except Exception:
+                pass
+    for cid in tuple(plate_ids) + (button_id,):
+        _place_ctrl(_safe_control(window, cid), 0, 0, width, height)
+    return width
 
 
 def _layout_full_skip_buttons(
@@ -1187,6 +1297,8 @@ def apply_mock_textures(window, settings, minimal_mode: bool):
             pass
 
     if minimal_mode:
+        plate = minimal_plate_variant(plate, getattr(window, "_minimal_plate_w720", 0))
+        window.setProperty("skippy_minimal_plate", plate)
         _filename_image(5021, plate, True)
         _filename_image(5040, plate, True)
         _filename_image(3040, focus_file, False)

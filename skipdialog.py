@@ -29,6 +29,7 @@ from skip_dialog_appearance import (
     SMOOTH_PROGRESS_FILL_ID as _SMOOTH_PROGRESS_FILL_ID,
     AddonSettingsReader,
     apply_full_skip_layout,
+    apply_minimal_skip_layout,
     apply_jump_properties,
     build_skip_button_label as _build_skip_button_label,
     DIALOG_READY_PROP as _DIALOG_READY_PROP,
@@ -302,6 +303,17 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         if not self._minimal_mode:
             self._apply_full_skip_layout(addon)
+        else:
+            try:
+                apply_minimal_skip_layout(
+                    self,
+                    AddonSettingsReader(addon if addon is not None else get_addon()),
+                    self.segment,
+                    self._skin_sc,
+                    addon=addon,
+                )
+            except Exception as e:
+                log("⚠️ Minimal plate layout failed: %s" % e)
 
         self._apply_dialog_text_colors()
         # Focus after reveal — Kodi rejects setFocusId while the panel group is still hidden.

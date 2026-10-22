@@ -34,7 +34,7 @@
       </control>
       <control type="label" id="4090">
         <left>24</left><top>18</top>
-        <width>702</width><height>48</height>
+        <width>345</width><height>48</height>
         <label>Customize skip dialog</label>
         <font>font16</font>
         <textcolor>FFFFFFFF</textcolor>
@@ -64,6 +64,17 @@
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <aligny>center</aligny>
         <onup>4140</onup><ondown>4140</ondown><onleft>4140</onleft><onright>4140</onright>
+      </control>
+      <control type="button" id="4143">
+        <left>375</left><top>18</top><width>351</width><height>45</height>
+        <label>Preview type</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4143</onup><ondown>4143</ondown><onleft>4143</onleft><onright>4143</onright>
       </control>
       <control type="button" id="4141">
         <left>24</left><top>78</top><width>702</width><height>51</height>

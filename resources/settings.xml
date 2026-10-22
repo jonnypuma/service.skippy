@@ -211,19 +211,6 @@
                         <data>RunScript(service.skippy,customize_skip_dialog)</data>
                     </control>
                 <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
-                <setting id="skip_dialog_current_preset" type="string" label="46030" help="46031">
-                    <level>0</level>
-                    <default></default>
-                    <constraints>
-                        <allowempty>true</allowempty>
-                    </constraints>
-                    <control type="edit" format="string">
-                        <heading>46030</heading>
-                    </control>
-                    <dependencies>
-                        <dependency type="enable" setting="skip_dialog_type">Never</dependency>
-                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies>
-                </setting>
                 <setting id="settings_action_skip_presets" type="action" label="46013" help="46014">
                     <level>0</level>
                     <control type="button" format="action">

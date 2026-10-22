@@ -36,13 +36,17 @@ from skip_dialog_appearance import (
     MINIMAL_MOCK_H_720,
     MINIMAL_MOCK_W_720,
     MINIMAL_PANEL_GROUP_ID,
+    MINIMAL_PLATE_IMAGE_ID,
     MINIMAL_SKIP_BUTTON_ID,
     MOCK_INTRO_END,
     MOCK_PLAYHEAD,
+    MOCK_SEGMENT_LABEL,
+    display_segment_label,
     MOCK_STAGE_H_720,
     MOCK_STAGE_W_720,
     DictSettingsReader,
     apply_full_skip_layout,
+    apply_minimal_skip_layout,
     apply_jump_label,
     apply_jump_properties,
     apply_mock_textures,
@@ -65,6 +69,7 @@ from skip_dialog_appearance import (
 ID_TITLE = 4090
 ID_MODE = 4100
 ID_PRESET = 4140
+ID_PREVIEW_TYPE = 4143
 ID_CARD = 4141
 ID_OPACITY = 4142
 ID_HIDE_ENDING = 4101
@@ -382,6 +387,23 @@ def _pair_label(pairs, stored):
     return stored
 
 
+def preview_type_ids():
+    """Segment type ids the preview can show, in catalog order (Commercial always first-class)."""
+    ids = []
+    try:
+        from segment_types import get_types
+
+        for entry in get_types():
+            sid = str((entry.get("id") if isinstance(entry, dict) else "") or "").strip()
+            if sid and sid not in ids:
+                ids.append(sid)
+    except Exception:
+        pass
+    if MOCK_SEGMENT_LABEL not in ids:
+        ids.append(MOCK_SEGMENT_LABEL)
+    return ids
+
+
 def customize_nav_ids(draft: dict):
     """Visible left-pane control order. XML onup/ondown are self-bound so this is the only mover."""
     ids = [ID_PRESET, ID_MODE]
@@ -504,6 +526,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._original = dict(kwargs.get("original") or self._draft)
         self._saved = False
         self._closing = False
+        self._preview_type = MOCK_SEGMENT_LABEL
 
     def _sc(self, value):
         return scale_skin_coord(value, getattr(self, "_skin_resolution", None))
@@ -562,7 +585,8 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             return ID_MODE
 
     def _move_focus(self, delta):
-        ids = self._nav_ids()
+        # The preview-type picker sits in the header, one step above the Preset row.
+        ids = [ID_PREVIEW_TYPE] + list(self._nav_ids())
         current = self._focus_id()
         if current not in ids:
             current = ids[0]
@@ -599,7 +623,10 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         else:
             self._set_label(ID_FULL_HEADER, get_localized(addon, 32021, "Full mode"))
 
-        segment = build_customize_mock_segment(settings.get_bool("skip_overlapping_segments", True))
+        segment = build_customize_mock_segment(
+            settings.get_bool("skip_overlapping_segments", True),
+            getattr(self, "_preview_type", MOCK_SEGMENT_LABEL),
+        )
         color = font_color_argb_from_settings(settings)
         self.setProperty("skip_dialog_text_color", color)
         duration_str = skip_duration_for_playhead(MOCK_PLAYHEAD, segment, settings)
@@ -658,11 +685,22 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         stage_h = self._sc(MOCK_STAGE_H_720)
         if minimal:
             corner = settings.get_text("minimal_skip_dialog_position", "BottomRight")
+            plate_w = apply_minimal_skip_layout(
+                self,
+                settings,
+                segment,
+                self._sc,
+                addon=addon,
+                group_id=MINIMAL_PANEL_GROUP_ID,
+                plate_ids=(MINIMAL_PLATE_IMAGE_ID, 5040),
+                button_id=MINIMAL_SKIP_BUTTON_ID,
+                place_panel=False,
+            )
             x, y = mock_corner_pos(
                 corner,
                 stage_w,
                 stage_h,
-                self._sc(MINIMAL_MOCK_W_720),
+                plate_w,
                 self._sc(MINIMAL_MOCK_H_720),
             )
             grp = self._ctrl(MINIMAL_PANEL_GROUP_ID)
@@ -779,6 +817,14 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         addon = self.addon
         d = self._draft
         self._set_label(ID_PRESET, preset_row_label(addon, d))
+        self._set_label(
+            ID_PREVIEW_TYPE,
+            "%s: %s"
+            % (
+                get_localized(addon, 46034, "Preview type"),
+                display_segment_label(getattr(self, "_preview_type", MOCK_SEGMENT_LABEL)),
+            ),
+        )
         self._set_label(
             ID_CARD,
             "%s: %s"
@@ -963,7 +1009,11 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 
     def _nudge(self, control_id, delta):
         d = self._draft
-        if control_id == ID_PRESET:
+        if control_id == ID_PREVIEW_TYPE:
+            self._preview_type = _cycle(
+                preview_type_ids(), getattr(self, "_preview_type", MOCK_SEGMENT_LABEL), delta
+            )
+        elif control_id == ID_PRESET:
             picked = sp.cycle_preset(d, delta)
             if not picked:
                 return
@@ -975,6 +1025,10 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             d["skip_card_opacity"] = 0 if val > 100 else 100 if val < 0 else val
         elif control_id == ID_MODE:
             d["skip_dialog_mode"] = _cycle(MODES, d.get("skip_dialog_mode", "Full"), delta)
+            if d["skip_dialog_mode"] == "Full" and d.get("compact_full_combined"):
+                # Combined skip + progress hides the separate bar rows, so arriving in Full
+                # from a combined Compact look (Sleek, Pill) would show almost the same list.
+                d["compact_full_combined"] = False
         elif control_id == ID_HIDE_ENDING:
             d["hide_ending_text"] = not d.get("hide_ending_text")
         elif control_id == ID_FONT:
@@ -1100,6 +1154,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             self._open_preset_menu()
             return
         if cid in (
+            ID_PREVIEW_TYPE,
             ID_MODE,
             ID_CARD,
             ID_OPACITY,

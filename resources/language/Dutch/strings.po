@@ -1973,3 +1973,7 @@ msgstr "Aangepast (niet opgeslagen)"
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
 msgstr "Als een segment in een ander segment ligt of ermee overlapt, wordt een regel getoond met waar Overslaan daarna naartoe springt (bijvoorbeeld het begin van het volgende segment)."
+
+msgctxt "#46034"
+msgid "Preview type"
+msgstr "Voorbeeldtype"

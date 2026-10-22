@@ -1022,3 +1022,32 @@ class CustomizeImportIsolationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ModeSwitchToFullTests(unittest.TestCase):
+    def _window(self, draft):
+        from skip_dialog_customize_ui import SkipDialogCustomize
+
+        win = SkipDialogCustomize.__new__(SkipDialogCustomize)
+        win._draft = draft
+        win._preview_type = "commercial"
+        win.refresh_mockup = MagicMock()
+        return win
+
+    def test_switching_to_full_turns_combined_off_so_all_rows_show(self):
+        from skip_dialog_customize_ui import ID_MODE, ID_PROGRESS, customize_nav_ids
+
+        draft = {"skip_dialog_mode": "Minimal", "compact_full_combined": True}
+        win = self._window(draft)
+        win._nudge(ID_MODE, 1)  # Minimal -> Full
+        self.assertEqual(draft["skip_dialog_mode"], "Full")
+        self.assertFalse(draft["compact_full_combined"])
+        self.assertIn(ID_PROGRESS, customize_nav_ids(draft))
+
+    def test_compact_keeps_combined(self):
+        from skip_dialog_customize_ui import ID_MODE
+
+        draft = {"skip_dialog_mode": "Full", "compact_full_combined": False}
+        win = self._window(draft)
+        win._nudge(ID_MODE, 1)  # Full -> CompactFull
+        self.assertEqual(draft["skip_dialog_mode"], "CompactFull")

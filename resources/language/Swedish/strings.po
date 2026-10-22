@@ -1973,3 +1973,7 @@ msgstr "Anpassad (osparad)"
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
 msgstr "När ett segment ligger inuti eller överlappar ett annat visas en rad som berättar vart Hoppa över går härnäst (till exempel starten på nästa segment)."
+
+msgctxt "#46034"
+msgid "Preview type"
+msgstr "Förhandsvisningstyp"

@@ -22,22 +22,6 @@ def preset_row_label(addon, draft) -> str:
     )
 
 
-def refresh_current_preset_setting(addon=None):
-    """Mirror the matching preset name into the read-only settings row."""
-    addon = addon or get_addon()
-    if not addon:
-        return
-    from skip_dialog_customize_ui import load_skip_dialog_draft
-
-    name = sp.detect_preset(load_skip_dialog_draft(addon))
-    label = name or _loc(addon, 46032, "Custom (unsaved)")
-    try:
-        if addon.getSetting("skip_dialog_current_preset") != label:
-            addon.setSetting("skip_dialog_current_preset", label)
-    except Exception:
-        pass
-
-
 def _select(heading, items, preselect=-1):
     dlg = xbmcgui.Dialog()
     try:
