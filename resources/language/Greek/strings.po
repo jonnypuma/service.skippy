@@ -1837,3 +1837,139 @@ msgstr "Δεν ήταν δυνατή η αποθήκευση των τύπων �
 msgctxt "#45023"
 msgid "Segment types saved."
 msgstr "Οι τύποι τμήματος αποθηκεύτηκαν."
+
+msgctxt "#46000"
+msgid "Toggle mode"
+msgstr "Εναλλαγή λειτουργίας"
+
+msgctxt "#46001"
+msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+msgstr "Το Custom χρησιμοποιεί τον δικό του διάλογο του Skippy με γραμμή προόδου, θέση σε γωνία και επιλογές στυλ. Το Native χρησιμοποιεί την εμφάνιση του skin σας: ένα toast (OK για παράλειψη) ή τον διάλογο Ναι/Όχι του Kodi. Το κείμενο είναι σταθερό κατά την εμφάνιση (χωρίς ζωντανή αντίστροφη μέτρηση ή γραμμή προόδου)."
+
+msgctxt "#46002"
+msgid "Native dialog"
+msgstr "Native διάλογος"
+
+msgctxt "#46003"
+msgid "Default focus"
+msgstr "Προεπιλεγμένη εστίαση"
+
+msgctxt "#46004"
+msgid "Close dialog when segment ends"
+msgstr "Κλείσιμο διαλόγου στο τέλος του τμήματος"
+
+msgctxt "#46005"
+msgid "Automatically close the dialog when the segment ends or playback stops."
+msgstr "Αυτόματο κλείσιμο του διαλόγου όταν τελειώνει το τμήμα ή σταματά η αναπαραγωγή."
+
+msgctxt "#46006"
+msgid "Show next-jump line"
+msgstr "Εμφάνιση γραμμής επόμενου άλματος"
+
+msgctxt "#46007"
+msgid "Show segment duration"
+msgstr "Εμφάνιση διάρκειας τμήματος"
+
+msgctxt "#46008"
+msgid "Press OK to skip"
+msgstr "Πατήστε OK για παράλειψη"
+
+msgctxt "#46009"
+msgid "Show as toast (OK to skip)"
+msgstr "Εμφάνιση ως toast (OK για παράλειψη)"
+
+msgctxt "#46010"
+msgid "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+msgstr "Εμφανίζει το toast ειδοποίησης του skin αντί για διάλογο. Ένας αόρατος ακροατής επιτρέπει στο OK/Enter να παραλείπει και στο Πίσω να απορρίπτει. Το toast παραμένει καθ' όλη τη διάρκεια του τμήματος, αλλά το toast άλλου πρόσθετου μπορεί να το καλύψει. Το κείμενο είναι σταθερό κατά την εμφάνιση."
+
+msgctxt "#46011"
+msgid "Show card background"
+msgstr "Εμφάνιση φόντου κάρτας"
+
+msgctxt "#46012"
+msgid "Card opacity (%)"
+msgstr "Αδιαφάνεια κάρτας (%)"
+
+msgctxt "#46013"
+msgid "Skip dialog presets…"
+msgstr "Προεπιλογές διαλόγου παράλειψης…"
+
+msgctxt "#46014"
+msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
+msgstr "Εφαρμογή έτοιμου στυλ ή αποθηκευμένου δικού σας. Ισχύει για τη λειτουργία Custom."
+
+msgctxt "#46015"
+msgid "Preset"
+msgstr "Προεπιλογή"
+
+msgctxt "#46016"
+msgid "Custom"
+msgstr "Δικές σας ρυθμίσεις"
+
+msgctxt "#46017"
+msgid "Save current look as preset…"
+msgstr "Αποθήκευση τρέχοντος στυλ ως προεπιλογής…"
+
+msgctxt "#46018"
+msgid "Delete a saved preset…"
+msgstr "Διαγραφή αποθηκευμένης προεπιλογής…"
+
+msgctxt "#46019"
+msgid "Preset name"
+msgstr "Όνομα προεπιλογής"
+
+msgctxt "#46020"
+msgid "Preset saved: %s"
+msgstr "Η προεπιλογή αποθηκεύτηκε: %s"
+
+msgctxt "#46021"
+msgid "A saved preset named %s already exists. Overwrite it?"
+msgstr "Υπάρχει ήδη αποθηκευμένη προεπιλογή με όνομα %s. Αντικατάσταση;"
+
+msgctxt "#46022"
+msgid "Delete preset %s?"
+msgstr "Διαγραφή της προεπιλογής %s;"
+
+msgctxt "#46023"
+msgid "Preset deleted: %s"
+msgstr "Η προεπιλογή διαγράφηκε: %s"
+
+msgctxt "#46024"
+msgid "Choose a preset"
+msgstr "Επιλογή προεπιλογής"
+
+msgctxt "#46025"
+msgid "%s (saved)"
+msgstr "%s (αποθηκευμένη)"
+
+msgctxt "#46026"
+msgid "Could not save the preset."
+msgstr "Αδυναμία αποθήκευσης της προεπιλογής."
+
+msgctxt "#46027"
+msgid "Preset applied: %s"
+msgstr "Η προεπιλογή εφαρμόστηκε: %s"
+
+msgctxt "#46028"
+msgid "That name is used by a built-in preset."
+msgstr "Το όνομα χρησιμοποιείται από ενσωματωμένη προεπιλογή."
+
+msgctxt "#46029"
+msgid "There are no saved presets to delete."
+msgstr "Δεν υπάρχουν αποθηκευμένες προεπιλογές για διαγραφή."
+
+msgctxt "#46030"
+msgid "Current preset"
+msgstr "Τρέχουσα προεπιλογή"
+
+msgctxt "#46031"
+msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+msgstr "Δείχνει ποια προεπιλογή ταιριάζει με τις τρέχουσες ρυθμίσεις σας, ή Προσαρμοσμένο (μη αποθηκευμένο)."
+
+msgctxt "#46032"
+msgid "Custom (unsaved)"
+msgstr "Προσαρμοσμένο (μη αποθηκευμένο)"
+
+msgctxt "#46033"
+msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
+msgstr "Όταν ένα τμήμα είναι ένθετο ή επικαλύπτεται με άλλο, προστίθεται μια γραμμή που δείχνει πού θα μεταβεί η Παράλειψη στη συνέχεια (π.χ. η αρχή του επόμενου τμήματος)."

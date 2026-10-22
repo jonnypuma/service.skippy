@@ -138,6 +138,13 @@ class PlayerMonitor(xbmc.Monitor):
         except Exception as exc:
             log(f"⚠️ Failed to refresh skip dialog skin textures after settings change: {exc}")
 
+        try:
+            from skip_dialog_presets_ui import refresh_current_preset_setting
+
+            refresh_current_preset_setting(get_addon())
+        except Exception as exc:
+            log(f"⚠️ Failed to refresh current preset label: {exc}")
+
 monitor = PlayerMonitor()
 player = xbmc.Player()
 
@@ -145,6 +152,13 @@ try:
     warm_skip_dialog_skin_textures(get_addon())
 except Exception as exc:
     log(f"⚠️ Failed to warm skip dialog skin textures at service start: {exc}")
+
+try:
+    from skip_dialog_presets_ui import refresh_current_preset_setting
+
+    refresh_current_preset_setting(get_addon())
+except Exception as exc:
+    log(f"⚠️ Failed to set current preset label at service start: {exc}")
 
 
 def get_video_file():

@@ -113,12 +113,123 @@
         </category>
         <category id="playback" label="30001">
             <group id="g_pb" label="32019">
+                <setting id="skip_dialog_type" type="string" label="46000" help="46001">
+                    <level>0</level>
+                    <default>Custom</default>
+                    <constraints>
+                        <options>
+                            <option label="Custom">Custom</option>
+                            <option label="Native">Native</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                </setting>
+                <setting id="native_use_toast" type="boolean" label="46009" help="46010">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_skip_format" type="string" label="32013" help="32013">
+                    <level>0</level>
+                    <default>Skip + Type</default>
+                    <constraints>
+                        <options>
+                            <option label="Skip">Skip</option>
+                            <option label="Skip + Type">Skip + Type</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_show_duration" type="boolean" label="46007" help="46007">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_duration_format" type="string" label="32102" help="32102">
+                    <level>0</level>
+                    <default>1m30s</default>
+                    <constraints>
+                        <options>
+                            <option label="Short (1m30s)">1m30s</option>
+                            <option label="Clock (01:30)">mm:ss</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                        <dependency type="visible" setting="native_show_duration">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_default_focus" type="string" label="46003" help="46003">
+                    <level>0</level>
+                    <default>Skip</default>
+                    <constraints>
+                        <options>
+                            <option label="Skip">Skip</option>
+                            <option label="Dismiss">Dismiss</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                        <dependency type="visible" setting="native_use_toast">false</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_auto_close" type="boolean" label="46004" help="46005">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                        <dependency type="visible" setting="native_use_toast">false</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="native_show_jump_hint" type="boolean" label="46006" help="46033">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="skip_dialog_type">Native</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="settings_action_customize_skip_dialog" type="action" label="44100" help="44101">
                     <level>0</level>
                     <control type="button" format="action">
                         <data>RunScript(service.skippy,customize_skip_dialog)</data>
                     </control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_dialog_current_preset" type="string" label="46030" help="46031">
+                    <level>0</level>
+                    <default></default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>46030</heading>
+                    </control>
+                    <dependencies>
+                        <dependency type="enable" setting="skip_dialog_type">Never</dependency>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies>
                 </setting>
+                <setting id="settings_action_skip_presets" type="action" label="46013" help="46014">
+                    <level>0</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,skip_dialog_presets)</data>
+                    </control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
                 <setting id="rewind_threshold_seconds" type="integer" label="32008" help="If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons.">
                     <level>3</level>
                     <default>8</default>
@@ -185,10 +296,10 @@
                     <level>1</level>
                     <default>false</default>
                     <control type="toggle"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies></setting>
                 <setting id="skip_dialog_mode" type="string" label="32020" help="32020">
                     <level>0</level>
-                    <default>Full</default>
+                    <default>CompactFull</default>
                     <constraints>
                         <options>
                             <option label="Full">Full</option>
@@ -198,10 +309,10 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
                 <setting id="compact_full_combined" type="boolean" label="32101" help="32101">
                     <level>1</level>
-                    <default>false</default>
+                    <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible">
@@ -210,7 +321,7 @@
                                 <condition setting="skip_dialog_mode">CompactFull</condition>
                             </or>
                         </dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies>
                 </setting>
                 <setting id="skip_dialog_font_color" type="string" label="32026" help="32026">
                     <level>1</level>
@@ -235,26 +346,42 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
                 <setting id="skip_dialog_all_caps" type="boolean" label="32099" help="32099">
                     <level>1</level>
-                    <default>false</default>
+                    <default>true</default>
                     <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_card_enabled" type="boolean" label="46011" help="46011">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies></setting>
+                <setting id="skip_card_opacity" type="integer" label="46012" help="46012">
+                    <level>1</level>
+                    <default>95</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <maximum>100</maximum>
+                        <step>5</step>
+                    </constraints>
+                    <control type="spinner" format="integer"></control>
+                    <dependencies>
+                        <dependency type="enable" setting="skip_card_enabled">true</dependency>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies>
                 </setting>
-            </group>
-            <group id="g_prog" label="32021">
                 <setting id="show_progress_bar" type="boolean" label="32007" help="32007">
                     <level>1</level>
                     <default>true</default>
                     <control type="toggle"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
                 <setting id="progress_bar_countdown" type="boolean" label="32027" help="32027">
                     <level>1</level>
                     <default>false</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="progress_bar_style" type="string" label="32079" help="32079">
                     <level>2</level>
@@ -278,13 +405,32 @@
                             <option label="Violet 3D">progress_mid_3d_violet.png</option>
                             <option label="Graphite 3D">progress_mid_3d_graphite.png</option>
                             <option label="Ice 3D">progress_mid_3d_ice.png</option>
+                            <option label="Flat Blue">progress_mid_flat_blue.png</option>
+                            <option label="Flat Teal">progress_mid_flat_teal.png</option>
+                            <option label="Flat Green">progress_mid_flat_green.png</option>
+                            <option label="Flat Rose">progress_mid_flat_rose.png</option>
+                            <option label="Flat Orange">progress_mid_flat_orange.png</option>
+                            <option label="Flat Violet">progress_mid_flat_violet.png</option>
+                            <option label="Flat Slate">progress_mid_flat_slate.png</option>
+                            <option label="Flat White">progress_mid_flat_white.png</option>
+                            <option label="Gradient Ocean">progress_mid_grad_ocean.png</option>
+                            <option label="Gradient Aurora">progress_mid_grad_aurora.png</option>
+                            <option label="Gradient Sunset">progress_mid_grad_sunset.png</option>
+                            <option label="Segmented White">progress_mid_segmented_white.png</option>
+                            <option label="Segmented Teal">progress_mid_segmented_teal.png</option>
+                            <option label="Segmented Green">progress_mid_segmented_green.png</option>
+                            <option label="Glow Cyan">progress_mid_glow_cyan.png</option>
+                            <option label="Glow Magenta">progress_mid_glow_magenta.png</option>
+                            <option label="Striped Blue">progress_mid_striped_blue.png</option>
+                            <option label="Striped Orange">progress_mid_striped_orange.png</option>
+                            <option label="Gradient Gold">progress_mid_grad_gold.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="progress_bar_height" type="integer" label="32080" help="32080">
                     <level>2</level>
@@ -297,7 +443,7 @@
                     <control type="spinner" format="integer"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies>
                 </setting>
                 <setting id="smooth_progress_bar" type="boolean" label="32083" help="32084">
                     <level>2</level>
@@ -305,7 +451,7 @@
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="progress_bar_updates_per_second" type="integer" label="32085" help="32086">
                     <level>2</level>
@@ -319,7 +465,7 @@
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
                         <dependency type="enable" setting="smooth_progress_bar">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="skip_dialog_position" type="string" label="32009" help="32009">
                     <level>0</level>
@@ -334,10 +480,10 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
                 <setting id="button_focus_style" type="string" label="32000" help="32000">
                     <level>1</level>
-                    <default>button_focus.png</default>
+                    <default>button_focus_flat_teal.png</default>
                     <constraints>
                         <options>
                             <option label="Default">button_focus.png</option>
@@ -359,14 +505,40 @@
                             <option label="Violet 3D">button_focus_3d_violet.png</option>
                             <option label="Graphite 3D">button_focus_3d_graphite.png</option>
                             <option label="Ice 3D">button_focus_3d_ice.png</option>
+                            <option label="Flat Blue">button_focus_flat_blue.png</option>
+                            <option label="Flat Teal">button_focus_flat_teal.png</option>
+                            <option label="Flat Green">button_focus_flat_green.png</option>
+                            <option label="Flat Rose">button_focus_flat_rose.png</option>
+                            <option label="Flat Orange">button_focus_flat_orange.png</option>
+                            <option label="Flat Violet">button_focus_flat_violet.png</option>
+                            <option label="Flat Slate">button_focus_flat_slate.png</option>
+                            <option label="Flat White">button_focus_flat_white.png</option>
+                            <option label="Glass White">button_focus_glass_white.png</option>
+                            <option label="Glass Blue">button_focus_glass_blue.png</option>
+                            <option label="Glass Dark">button_focus_glass_dark.png</option>
+                            <option label="Outline White">button_focus_outline_white.png</option>
+                            <option label="Outline Cyan">button_focus_outline_cyan.png</option>
+                            <option label="Underline White">button_focus_underline_white.png</option>
+                            <option label="Underline Cyan">button_focus_underline_cyan.png</option>
+                            <option label="Frosted White">button_focus_frosted_white.png</option>
+                            <option label="Brushed Steel">button_focus_steel.png</option>
+                            <option label="Neon Cyan">button_focus_neon_cyan.png</option>
+                            <option label="Neon Magenta">button_focus_neon_magenta.png</option>
+                            <option label="Gold Leaf">button_focus_gold.png</option>
+                            <option label="Pastel Mint">button_focus_pastel_mint.png</option>
+                            <option label="Pastel Peach">button_focus_pastel_peach.png</option>
+                            <option label="Pastel Lavender">button_focus_pastel_lavender.png</option>
+                            <option label="Bracket White">button_focus_bracket_white.png</option>
+                            <option label="Bracket Cyan">button_focus_bracket_cyan.png</option>
+                            <option label="Bracket Green">button_focus_bracket_green.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
                 <setting id="skip_button_format" type="string" label="32013" help="32013">
                     <level>1</level>
-                    <default>Skip + Type + Duration</default>
+                    <default>Skip + Type</default>
                     <constraints>
                         <options>
                             <option label="Skip">Skip</option>
@@ -376,19 +548,19 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
                 <setting id="skip_duration_format" type="string" label="32102" help="32102">
                     <level>1</level>
                     <default>1m30s</default>
                     <constraints>
                         <options>
-                            <option label="1m30s">1m30s</option>
-                            <option label="01:30">mm:ss</option>
+                            <option label="Short (1m30s)">1m30s</option>
+                            <option label="Clock (01:30)">mm:ss</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><and><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or><condition setting="skip_button_format">Skip + Type + Duration</condition></and><and><condition setting="skip_dialog_mode">Minimal</condition><condition setting="minimal_skip_button_format">Skip + Type + Duration</condition></and></or></dependency></dependencies></setting>
                 <setting id="skip_duration_content" type="string" label="32103" help="32103">
                     <level>1</level>
                     <default>total</default>
@@ -402,27 +574,25 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><and><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or><condition setting="skip_button_format">Skip + Type + Duration</condition></and><and><condition setting="skip_dialog_mode">Minimal</condition><condition setting="minimal_skip_button_format">Skip + Type + Duration</condition></and></or></dependency></dependencies></setting>
                 <setting id="hide_close_button" type="boolean" label="32014" help="32014">
                     <level>1</level>
-                    <default>false</default>
+                    <default>true</default>
                     <control type="toggle"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
                 <setting id="show_skip_button_focus_texture" type="boolean" label="32081" help="32082">
                     <level>1</level>
                     <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="hide_close_button">true</dependency>
-                    </dependencies>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="hide_skip_icon" type="boolean" label="32015" help="32015">
                     <level>1</level>
                     <default>false</default>
                     <control type="toggle"></control>
-                </setting>
-            </group>
-            <group id="g_min" label="32022">
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies></setting>
                 <setting id="minimal_button_style" type="string" label="32023" help="32023">
                     <level>1</level>
                     <default>minimal_rounded_gray_640.png</default>
@@ -432,9 +602,9 @@
                             <option label="Rectangular Aquamarine Blue">minimal_rectangular_aquamarine-blue_640.png</option>
                             <option label="Rectangular Blue">minimal_rectangular_blue_640.png</option>
                             <option label="Rectangular Yellow">minimal_rectangular_yellow_640.png</option>
-                            <option label="3D Blue">minimal_3d_blue.png</option>
-                            <option label="3D Glossy Blue">minimal_3d_glossy_blue.png</option>
-                            <option label="3D Red Glossy">minimal_3d_red_glossy.png</option>
+                            <option label="Blue 3D">minimal_3d_blue.png</option>
+                            <option label="Glossy Blue 3D">minimal_3d_glossy_blue.png</option>
+                            <option label="Red Glossy 3D">minimal_3d_red_glossy.png</option>
                             <option label="Black Beveled">minimal_black_beveled.png</option>
                             <option label="Rounded Baby Purple">minimal_rounded_baby-purple_640.png</option>
                             <option label="Rounded Blue Red Gradient">minimal_rounded_blue-red-gradient_640.png</option>
@@ -461,11 +631,29 @@
                             <option label="Rounded Pinkish Orange">minimal_rounded_pinkish-orange_640.png</option>
                             <option label="Rounded Sunset">minimal_rounded_sunset_640.png</option>
                             <option label="Rounded White">minimal_rounded_white_640.png</option>
+                            <option label="Flat Black">minimal_flat_black_640.png</option>
+                            <option label="Flat Charcoal">minimal_flat_charcoal_640.png</option>
+                            <option label="Flat White">minimal_flat_white_640.png</option>
+                            <option label="Flat Blue">minimal_flat_blue_640.png</option>
+                            <option label="Flat Teal">minimal_flat_teal_640.png</option>
+                            <option label="Flat Rose">minimal_flat_rose_640.png</option>
+                            <option label="Glass Dark">minimal_glass_dark_640.png</option>
+                            <option label="Glass Light">minimal_glass_light_640.png</option>
+                            <option label="Outline White">minimal_outline_white_640.png</option>
+                            <option label="Gradient Midnight">minimal_grad_midnight_640.png</option>
+                            <option label="Gradient Sunset">minimal_grad_sunset_640.png</option>
+                            <option label="Pastel Mint">minimal_pastel_mint_640.png</option>
+                            <option label="Pastel Peach">minimal_pastel_peach_640.png</option>
+                            <option label="Pastel Lavender">minimal_pastel_lavender_640.png</option>
+                            <option label="Brushed Steel">minimal_steel_640.png</option>
+                            <option label="Frosted">minimal_frosted_640.png</option>
+                            <option label="Gold Leaf">minimal_gold_640.png</option>
+                            <option label="Neon Cyan">minimal_neon_cyan_640.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Minimal</dependency></dependencies></setting>
                 <setting id="minimal_skip_button_format" type="string" label="32025" help="32025">
                     <level>1</level>
                     <default>Skip + Type</default>
@@ -478,7 +666,7 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Minimal</dependency></dependencies></setting>
                 <setting id="minimal_skip_dialog_position" type="string" label="32024" help="32024">
                     <level>0</level>
                     <default>BottomRight</default>
@@ -492,7 +680,7 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
-                </setting>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Minimal</dependency></dependencies></setting>
             </group>
         </category>
         <category id="sources" label="30004">

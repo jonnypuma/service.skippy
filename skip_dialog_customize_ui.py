@@ -21,6 +21,12 @@ from settings_utils import (
     get_addon,
     get_localized,
 )
+import skip_dialog_presets as sp
+from skip_dialog_presets_ui import (
+    present_preset_menu,
+    preset_row_label,
+    prompt_save_preset,
+)
 from skip_dialog_appearance import (
     DIALOG_READY_PROP,
     ENDING_TEXT_ARGB,
@@ -58,6 +64,9 @@ from skip_dialog_appearance import (
 
 ID_TITLE = 4090
 ID_MODE = 4100
+ID_PRESET = 4140
+ID_CARD = 4141
+ID_OPACITY = 4142
 ID_HIDE_ENDING = 4101
 ID_FONT = 4102
 ID_OVERLAP = 4103
@@ -150,15 +159,41 @@ BUTTON_FOCUS = (
     ("Violet 3D", "button_focus_3d_violet.png"),
     ("Graphite 3D", "button_focus_3d_graphite.png"),
     ("Ice 3D", "button_focus_3d_ice.png"),
+    ("Flat Blue", "button_focus_flat_blue.png"),
+    ("Flat Teal", "button_focus_flat_teal.png"),
+    ("Flat Green", "button_focus_flat_green.png"),
+    ("Flat Rose", "button_focus_flat_rose.png"),
+    ("Flat Orange", "button_focus_flat_orange.png"),
+    ("Flat Violet", "button_focus_flat_violet.png"),
+    ("Flat Slate", "button_focus_flat_slate.png"),
+    ("Flat White", "button_focus_flat_white.png"),
+    ("Glass White", "button_focus_glass_white.png"),
+    ("Glass Blue", "button_focus_glass_blue.png"),
+    ("Glass Dark", "button_focus_glass_dark.png"),
+    ("Outline White", "button_focus_outline_white.png"),
+    ("Outline Cyan", "button_focus_outline_cyan.png"),
+    ("Underline White", "button_focus_underline_white.png"),
+    ("Underline Cyan", "button_focus_underline_cyan.png"),
+    ("Frosted White", "button_focus_frosted_white.png"),
+    ("Brushed Steel", "button_focus_steel.png"),
+    ("Neon Cyan", "button_focus_neon_cyan.png"),
+    ("Neon Magenta", "button_focus_neon_magenta.png"),
+    ("Gold Leaf", "button_focus_gold.png"),
+    ("Pastel Mint", "button_focus_pastel_mint.png"),
+    ("Pastel Peach", "button_focus_pastel_peach.png"),
+    ("Pastel Lavender", "button_focus_pastel_lavender.png"),
+    ("Bracket White", "button_focus_bracket_white.png"),
+    ("Bracket Cyan", "button_focus_bracket_cyan.png"),
+    ("Bracket Green", "button_focus_bracket_green.png"),
 )
 MINIMAL_PLATES = (
     ("Rounded Gray", "minimal_rounded_gray_640.png"),
     ("Rectangular Aquamarine Blue", "minimal_rectangular_aquamarine-blue_640.png"),
     ("Rectangular Blue", "minimal_rectangular_blue_640.png"),
     ("Rectangular Yellow", "minimal_rectangular_yellow_640.png"),
-    ("3D Blue", "minimal_3d_blue.png"),
-    ("3D Glossy Blue", "minimal_3d_glossy_blue.png"),
-    ("3D Red Glossy", "minimal_3d_red_glossy.png"),
+    ("Blue 3D", "minimal_3d_blue.png"),
+    ("Glossy Blue 3D", "minimal_3d_glossy_blue.png"),
+    ("Red Glossy 3D", "minimal_3d_red_glossy.png"),
     ("Black Beveled", "minimal_black_beveled.png"),
     ("Rounded Baby Purple", "minimal_rounded_baby-purple_640.png"),
     ("Rounded Blue Red Gradient", "minimal_rounded_blue-red-gradient_640.png"),
@@ -185,6 +220,24 @@ MINIMAL_PLATES = (
     ("Rounded Pinkish Orange", "minimal_rounded_pinkish-orange_640.png"),
     ("Rounded Sunset", "minimal_rounded_sunset_640.png"),
     ("Rounded White", "minimal_rounded_white_640.png"),
+    ("Flat Black", "minimal_flat_black_640.png"),
+    ("Flat Charcoal", "minimal_flat_charcoal_640.png"),
+    ("Flat White", "minimal_flat_white_640.png"),
+    ("Flat Blue", "minimal_flat_blue_640.png"),
+    ("Flat Teal", "minimal_flat_teal_640.png"),
+    ("Flat Rose", "minimal_flat_rose_640.png"),
+    ("Glass Dark", "minimal_glass_dark_640.png"),
+    ("Glass Light", "minimal_glass_light_640.png"),
+    ("Outline White", "minimal_outline_white_640.png"),
+    ("Gradient Midnight", "minimal_grad_midnight_640.png"),
+    ("Gradient Sunset", "minimal_grad_sunset_640.png"),
+    ("Pastel Mint", "minimal_pastel_mint_640.png"),
+    ("Pastel Peach", "minimal_pastel_peach_640.png"),
+    ("Pastel Lavender", "minimal_pastel_lavender_640.png"),
+    ("Brushed Steel", "minimal_steel_640.png"),
+    ("Frosted", "minimal_frosted_640.png"),
+    ("Gold Leaf", "minimal_gold_640.png"),
+    ("Neon Cyan", "minimal_neon_cyan_640.png"),
 )
 PROGRESS_STYLES = (
     ("Green (Default)", "progress_mid.png"),
@@ -204,6 +257,25 @@ PROGRESS_STYLES = (
     ("Violet 3D", "progress_mid_3d_violet.png"),
     ("Graphite 3D", "progress_mid_3d_graphite.png"),
     ("Ice 3D", "progress_mid_3d_ice.png"),
+    ("Flat Blue", "progress_mid_flat_blue.png"),
+    ("Flat Teal", "progress_mid_flat_teal.png"),
+    ("Flat Green", "progress_mid_flat_green.png"),
+    ("Flat Rose", "progress_mid_flat_rose.png"),
+    ("Flat Orange", "progress_mid_flat_orange.png"),
+    ("Flat Violet", "progress_mid_flat_violet.png"),
+    ("Flat Slate", "progress_mid_flat_slate.png"),
+    ("Flat White", "progress_mid_flat_white.png"),
+    ("Gradient Ocean", "progress_mid_grad_ocean.png"),
+    ("Gradient Aurora", "progress_mid_grad_aurora.png"),
+    ("Gradient Sunset", "progress_mid_grad_sunset.png"),
+    ("Segmented White", "progress_mid_segmented_white.png"),
+    ("Segmented Teal", "progress_mid_segmented_teal.png"),
+    ("Segmented Green", "progress_mid_segmented_green.png"),
+    ("Glow Cyan", "progress_mid_glow_cyan.png"),
+    ("Glow Magenta", "progress_mid_glow_magenta.png"),
+    ("Striped Blue", "progress_mid_striped_blue.png"),
+    ("Striped Orange", "progress_mid_striped_orange.png"),
+    ("Gradient Gold", "progress_mid_grad_gold.png"),
 )
 
 DRAFT_BOOL_KEYS = (
@@ -217,6 +289,7 @@ DRAFT_BOOL_KEYS = (
     "skip_dialog_all_caps",
     "smooth_progress_bar",
     "compact_full_combined",
+    "skip_card_enabled",
 )
 DRAFT_TEXT_KEYS = (
     "skip_dialog_mode",
@@ -231,14 +304,17 @@ DRAFT_TEXT_KEYS = (
     "minimal_skip_dialog_position",
     "progress_bar_style",
 )
-DRAFT_INT_KEYS = (("progress_bar_height", 16, 5, 32),)
+DRAFT_INT_KEYS = (
+    ("progress_bar_height", 16, 5, 32),
+    ("skip_card_opacity", 95, 0, 100),
+)
 
 _TEXT_DEFAULTS = {
-    "skip_dialog_mode": "Full",
+    "skip_dialog_mode": "CompactFull",
     "skip_dialog_font_color": "FFFFFFFF",
     "skip_dialog_position": "BottomRight",
-    "button_focus_style": "button_focus.png",
-    "skip_button_format": "Skip + Type + Duration",
+    "button_focus_style": "button_focus_flat_teal.png",
+    "skip_button_format": "Skip + Type",
     "skip_duration_format": "1m30s",
     "skip_duration_content": "total",
     "minimal_button_style": "minimal_rounded_gray_640.png",
@@ -251,12 +327,13 @@ _BOOL_DEFAULTS = {
     "skip_overlapping_segments": True,
     "show_progress_bar": True,
     "progress_bar_countdown": False,
-    "hide_close_button": False,
+    "hide_close_button": True,
     "show_skip_button_focus_texture": True,
     "hide_skip_icon": False,
-    "skip_dialog_all_caps": False,
+    "skip_dialog_all_caps": True,
     "smooth_progress_bar": False,
-    "compact_full_combined": False,
+    "compact_full_combined": True,
+    "skip_card_enabled": True,
 }
 
 
@@ -307,7 +384,7 @@ def _pair_label(pairs, stored):
 
 def customize_nav_ids(draft: dict):
     """Visible left-pane control order. XML onup/ondown are self-bound so this is the only mover."""
-    ids = [ID_MODE]
+    ids = [ID_PRESET, ID_MODE]
     mode = draft.get("skip_dialog_mode") or "Full"
     minimal = is_minimal_skip_mode(mode)
     compact = is_compact_full_mode(mode)
@@ -315,6 +392,10 @@ def customize_nav_ids(draft: dict):
     if not minimal and not compact:
         ids.append(ID_HIDE_ENDING)
     ids.extend([ID_FONT, ID_ALL_CAPS])
+    if not minimal and not compact:
+        ids.append(ID_CARD)
+        if draft.get("skip_card_enabled", True):
+            ids.append(ID_OPACITY)
     if not minimal:
         ids.append(ID_OVERLAP)
         ids.append(ID_COMBINED)
@@ -420,7 +501,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._skin_resolution = init_window_xml_dialog(super(SkipDialogCustomize, self), args)
         self.addon = kwargs.get("addon") or get_addon()
         self._draft = kwargs.get("draft") or load_skip_dialog_draft(self.addon)
-        self._original = dict(self._draft)
+        self._original = dict(kwargs.get("original") or self._draft)
         self._saved = False
         self._closing = False
 
@@ -456,7 +537,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._load_fanart()
         self.refresh_mockup()
         try:
-            self.setFocusId(ID_MODE)
+            self.setFocusId(ID_PRESET)
         except Exception:
             pass
 
@@ -570,6 +651,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 segment=segment,
                 scale_fn=self._sc,
                 place_focus_overlays=True,
+                addon=addon,
             ) or panel_h
 
         stage_w = self._sc(MOCK_STAGE_W_720)
@@ -589,7 +671,11 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         else:
             corner = settings.get_text("skip_dialog_position", "BottomRight")
             x, y = mock_corner_pos(
-                corner, stage_w, stage_h, self._sc(FULL_MOCK_W_720), int(panel_h)
+                corner,
+                stage_w,
+                stage_h,
+                int(getattr(self, "_skip_panel_w", self._sc(FULL_MOCK_W_720))),
+                int(panel_h),
             )
             grp = self._ctrl(FULL_SKIP_PANEL_GROUP_ID)
             if grp:
@@ -661,6 +747,8 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 pass
         for cid in (
             ID_HIDE_ENDING,
+            ID_CARD,
+            ID_OPACITY,
             ID_OVERLAP,
             ID_PROGRESS,
             ID_COUNTDOWN,
@@ -690,6 +778,23 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
     def _refresh_row_labels(self):
         addon = self.addon
         d = self._draft
+        self._set_label(ID_PRESET, preset_row_label(addon, d))
+        self._set_label(
+            ID_CARD,
+            "%s: %s"
+            % (
+                get_localized(addon, 46011, "Show card background"),
+                _yes_no(addon, d.get("skip_card_enabled", True)),
+            ),
+        )
+        self._set_label(
+            ID_OPACITY,
+            "%s: %s"
+            % (
+                get_localized(addon, 46012, "Card opacity (%)"),
+                d.get("skip_card_opacity", 95),
+            ),
+        )
         self._set_label(
             ID_MODE,
             "%s: %s"
@@ -858,7 +963,17 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 
     def _nudge(self, control_id, delta):
         d = self._draft
-        if control_id == ID_MODE:
+        if control_id == ID_PRESET:
+            picked = sp.cycle_preset(d, delta)
+            if not picked:
+                return
+            sp.apply_preset(d, picked[1])
+        elif control_id == ID_CARD:
+            d["skip_card_enabled"] = not d.get("skip_card_enabled", True)
+        elif control_id == ID_OPACITY:
+            val = int(d.get("skip_card_opacity", 95)) + 5 * delta
+            d["skip_card_opacity"] = 0 if val > 100 else 100 if val < 0 else val
+        elif control_id == ID_MODE:
             d["skip_dialog_mode"] = _cycle(MODES, d.get("skip_dialog_mode", "Full"), delta)
         elif control_id == ID_HIDE_ENDING:
             d["hide_ending_text"] = not d.get("hide_ending_text")
@@ -935,11 +1050,19 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             return
         self.refresh_mockup()
 
+    def _open_preset_menu(self):
+        present_preset_menu(self.addon, self._draft)
+        self.refresh_mockup()
+        try:
+            self.setFocusId(ID_PRESET)
+        except Exception:
+            pass
+
     def _save_and_close(self):
         addon = self.addon
+        payload = draft_setting_payload(self._draft)
+        original = draft_setting_payload(self._original)
         if addon:
-            payload = draft_setting_payload(self._draft)
-            original = draft_setting_payload(self._original)
             for key, value in payload.items():
                 if original.get(key) != value:
                     try:
@@ -947,6 +1070,13 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                     except Exception:
                         pass
         self._saved = True
+        # A look that matches no preset is "Custom": offer to keep it as a preset.
+        changed = payload != original if addon else False
+        if addon and changed and not sp.detect_preset(self._draft):
+            try:
+                prompt_save_preset(addon, self._draft)
+            except Exception:
+                pass
         self._closing = True
         self.close()
 
@@ -966,8 +1096,13 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         if cid == ID_CANCEL:
             self._cancel_and_close()
             return
+        if cid == ID_PRESET:
+            self._open_preset_menu()
+            return
         if cid in (
             ID_MODE,
+            ID_CARD,
+            ID_OPACITY,
             ID_HIDE_ENDING,
             ID_FONT,
             ID_ALL_CAPS,
@@ -1010,13 +1145,19 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             self._nudge(cid, 1 if aid == _MOVE_RIGHT else -1)
 
 
-def show_skip_dialog_customize():
+def show_skip_dialog_customize(draft=None, original=None):
+    """Open the Customize modal. ``draft`` previews unsaved values (e.g. a preset);
+    ``original`` is what is currently stored, so Save writes only real changes."""
     addon = get_addon()
     if not addon:
         return False
     path = addon.getAddonInfo("path")
+    kwargs = {"addon": addon}
+    if draft is not None:
+        kwargs["draft"] = draft
+        kwargs["original"] = original or load_skip_dialog_draft(addon)
     dialog = SkipDialogCustomize(
-        "SkipDialogCustomize.xml", path, "default", addon=addon
+        "SkipDialogCustomize.xml", path, "default", **kwargs
     )
     dialog.doModal()
     saved = bool(getattr(dialog, "_saved", False))

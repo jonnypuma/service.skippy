@@ -183,18 +183,36 @@ def _theintrodb_lookup_api_key():
     return key or None
 
 
+def _theintrodb_id_query(context):
+    """One media id for GET /v4/media.
+
+    TVDB first (the API's identity; TV also pins the exact episode with
+    ``tvdb_episode_id`` when known), then TMDB, then IMDb.
+    """
+    tvdb = context.get("tvdb_id")
+    if tvdb not in (None, ""):
+        out = {"tvdb_id": tvdb}
+        ep = context.get("tvdb_episode_id")
+        if (context.get("type") or "").lower() != "movie" and ep not in (None, ""):
+            out["tvdb_episode_id"] = ep
+        return out
+    tmdb = context.get("tmdb_id")
+    if tmdb not in (None, ""):
+        return {"tmdb_id": tmdb}
+    imdb_id = context.get("imdb_id")
+    if imdb_id:
+        return {"imdb_id": imdb_id}
+    return {}
+
+
 def fetch_theintrodb_segments(context, total_time):
     query = {}
-    tmdb_id = context.get("tmdb_id")
-    imdb_id = context.get("imdb_id")
     if (context.get("type") or "").lower() == "movie":
-        if tmdb_id is not None:
-            query["tmdb_id"] = tmdb_id
-        elif imdb_id:
-            query["imdb_id"] = imdb_id
-        else:
-            _rlog("TheIntroDB movie: need tmdb_id or imdb_id in context")
+        ids = _theintrodb_id_query(context)
+        if not ids:
+            _rlog("TheIntroDB movie: need tmdb_id, tvdb_id or imdb_id in context")
             return []
+        query.update(ids)
     else:
         season = context.get("season")
         episode = context.get("episode")
@@ -203,16 +221,14 @@ def fetch_theintrodb_segments(context, total_time):
             return []
         query["season"] = season
         query["episode"] = episode
-        if tmdb_id is not None:
-            query["tmdb_id"] = tmdb_id
-        elif imdb_id:
-            query["imdb_id"] = imdb_id
-        else:
+        ids = _theintrodb_id_query(context)
+        if not ids:
             _rlog(
-                "TheIntroDB skipped: need tmdb_id or episode imdb_id in context "
+                "TheIntroDB skipped: need tmdb_id, tvdb_id or episode imdb_id in context "
                 "(show_imdb alone is not enough for this API)"
             )
             return []
+        query.update(ids)
 
     if total_time is not None:
         try:
@@ -279,23 +295,31 @@ def _introdb_segment_entries(payload, total_time):
 
 
 def fetch_introdb_segments(context, total_time):
-    imdb_id = context.get("show_imdb_id")
+    is_movie = (context.get("type") or "").lower() == "movie"
+    if is_movie:
+        imdb_id = context.get("imdb_id")
+        query = {"imdb_id": imdb_id, "is_movie": "true"}
+    else:
+        imdb_id = context.get("show_imdb_id")
+        query = {
+            "imdb_id": imdb_id,
+            "season": context.get("season"),
+            "episode": context.get("episode"),
+        }
+        try:
+            if int(query["season"]) < 1 or int(query["episode"]) < 1:
+                _rlog("IntroDB.app lookup skipped: season/episode must be >= 1")
+                return []
+        except (TypeError, ValueError):
+            _rlog("IntroDB.app lookup skipped: bad season/episode")
+            return []
     if not imdb_id:
-        _rlog("IntroDB.app lookup skipped: no show IMDb id")
+        _rlog("IntroDB.app lookup skipped: no %sIMDb id" % ("" if is_movie else "show "))
         return []
 
     payload = fetch_remote_json(
         "%s?%s"
-        % (
-            INTRODB_SEGMENTS_URL,
-            urlencode(
-                {
-                    "imdb_id": imdb_id,
-                    "season": context.get("season"),
-                    "episode": context.get("episode"),
-                }
-            ),
-        ),
+        % (INTRODB_SEGMENTS_URL, urlencode(query)),
         "IntroDB.app",
     )
     if payload is None:

@@ -12,6 +12,9 @@ from tests.kodi_stubs import install_kodi_stubs
 install_kodi_stubs()
 
 from skip_dialog_appearance import (
+    full_skip_panel_metrics,
+    skip_label_width_720,
+    widest_skip_label,
     COMBINED_FILL_SLICE_ID,
     COMBINED_FILL_STRETCH_ID,
     COMBINED_TRACK_ID,
@@ -67,8 +70,11 @@ from skip_dialog_customize_ui import (
     ID_HIDE_ICONS,
     ID_HEIGHT,
     ID_HIDE_CLOSE,
+    ID_CARD,
     ID_MODE,
+    ID_OPACITY,
     ID_OVERLAP,
+    ID_PRESET,
     ID_PROGRESS,
     ID_PROGRESS_STYLE,
     ID_FOCUS_STYLE,
@@ -83,6 +89,15 @@ from skip_dialog_customize_ui import (
     draft_setting_payload,
     load_skip_dialog_draft,
 )
+
+
+
+def _expected_metrics(settings, seg, compact, hide_close, hide_icon, min_content=0):
+    fmt = settings.get_text("skip_button_format", "Skip + Type + Duration")
+    text_w = skip_label_width_720(widest_skip_label(seg, settings), fmt)
+    return full_skip_panel_metrics(
+        lambda v: v, compact, hide_close, hide_icon, text_w, min_content
+    )
 
 
 class _Addon:
@@ -116,7 +131,7 @@ class _Addon:
 class CustomizeMockSegmentTests(unittest.TestCase):
     def test_overlapping_on_hides_jump(self):
         seg = build_customize_mock_segment(True)
-        self.assertEqual(seg.segment_type_label, "intro")
+        self.assertEqual(seg.segment_type_label, "commercial")
         self.assertEqual(seg.start_seconds, 0.0)
         self.assertEqual(seg.end_seconds, 90.0)
         self.assertIsNone(seg.next_segment_start)
@@ -141,10 +156,10 @@ class CustomizeLabelAndProgressTests(unittest.TestCase):
         dur = duration_label(MOCK_INTRO_END)
         addon = _Addon()
         self.assertEqual(build_skip_button_label(seg, "Skip", dur, addon), "Skip")
-        self.assertEqual(build_skip_button_label(seg, "Skip + Type", dur, addon), "Skip Intro")
+        self.assertEqual(build_skip_button_label(seg, "Skip + Type", dur, addon), "Skip Commercial")
         self.assertEqual(
             build_skip_button_label(seg, "Skip + Type + Duration", dur, addon),
-            "Skip Intro (1m30s)",
+            "Skip Commercial (1m30s)",
         )
 
     def test_progress_25_vs_countdown_75(self):
@@ -192,11 +207,14 @@ class CustomizeDraftTests(unittest.TestCase):
 class CustomizeNavAndStyleTests(unittest.TestCase):
     def test_full_nav_visits_every_row_without_skipping(self):
         ids = customize_nav_ids({"skip_dialog_mode": "Full", "hide_close_button": False})
-        self.assertEqual(ids[0], ID_MODE)
-        self.assertEqual(ids[1], ID_HIDE_ENDING)
-        self.assertEqual(ids[2], ID_FONT)
-        self.assertEqual(ids[3], ID_ALL_CAPS)
-        self.assertEqual(ids[4], ID_OVERLAP)
+        self.assertEqual(ids[0], ID_PRESET)
+        self.assertEqual(ids[1], ID_MODE)
+        self.assertEqual(ids[2], ID_HIDE_ENDING)
+        self.assertEqual(ids[3], ID_FONT)
+        self.assertEqual(ids[4], ID_ALL_CAPS)
+        self.assertEqual(ids[5], ID_CARD)
+        self.assertEqual(ids[6], ID_OPACITY)
+        self.assertEqual(ids[7], ID_OVERLAP)
         self.assertIn(ID_COMBINED, ids)
         self.assertEqual(ids[ids.index(ID_OVERLAP) + 1], ID_COMBINED)
         self.assertIn(ID_PROGRESS_STYLE, ids)
@@ -208,9 +226,11 @@ class CustomizeNavAndStyleTests(unittest.TestCase):
         ids = customize_nav_ids({"skip_dialog_mode": "Minimal"})
         self.assertNotIn(ID_HIDE_ENDING, ids)
         self.assertNotIn(ID_OVERLAP, ids)
-        self.assertEqual(ids[0], ID_MODE)
-        self.assertEqual(ids[1], ID_FONT)
-        self.assertEqual(ids[2], ID_ALL_CAPS)
+        self.assertEqual(ids[0], ID_PRESET)
+        self.assertEqual(ids[1], ID_MODE)
+        self.assertEqual(ids[2], ID_FONT)
+        self.assertEqual(ids[3], ID_ALL_CAPS)
+        self.assertNotIn(ID_CARD, ids)
 
     def test_compact_full_nav_omits_ending_icons_and_height(self):
         ids = customize_nav_ids({"skip_dialog_mode": "CompactFull", "hide_close_button": False})
@@ -222,8 +242,15 @@ class CustomizeNavAndStyleTests(unittest.TestCase):
         self.assertIn(ID_PROGRESS, ids)
         self.assertIn(ID_FOCUS_STYLE, ids)
         self.assertIn(ID_HIDE_CLOSE, ids)
-        self.assertEqual(ids[0], ID_MODE)
-        self.assertEqual(ids[1], ID_FONT)
+        self.assertEqual(ids[0], ID_PRESET)
+        self.assertEqual(ids[1], ID_MODE)
+        self.assertEqual(ids[2], ID_FONT)
+        self.assertNotIn(ID_CARD, ids)
+
+    def test_card_opacity_row_hidden_when_card_off(self):
+        ids = customize_nav_ids({"skip_dialog_mode": "Full", "skip_card_enabled": False})
+        self.assertIn(ID_CARD, ids)
+        self.assertNotIn(ID_OPACITY, ids)
 
     def test_mode_cycle_includes_compact_full(self):
         self.assertEqual(MODES, ("Full", "CompactFull", "Minimal"))
@@ -234,8 +261,8 @@ class CustomizeNavAndStyleTests(unittest.TestCase):
 
     def test_all_caps_keeps_duration_units_lowercase(self):
         self.assertEqual(
-            apply_skip_dialog_caps("Skip Intro (1m30s)", True),
-            "SKIP INTRO (1m30s)",
+            apply_skip_dialog_caps("Skip Commercial (1m30s)", True),
+            "SKIP COMMERCIAL (1m30s)",
         )
         self.assertEqual(
             apply_skip_dialog_caps("Skip Intro (22s / 1m30s)", True),
@@ -666,10 +693,10 @@ class CompactFullLayoutTests(unittest.TestCase):
         self.assertEqual(props["hide_ending_text"], "true")
         self.assertEqual(props["hide_skip_icon"], "true")
         controls[3081].setVisible.assert_called_with(False)
-        skip_w = COMPACT_SKIP_CONTENT_W_720 - COMPACT_SKIP_CLOSE_W_720 - COMPACT_SKIP_GAP_720
-        controls[3012].setWidth.assert_called_with(skip_w)
+        m = _expected_metrics(settings, seg, True, False, True)
+        controls[3012].setWidth.assert_called_with(m["skip_w"])
         controls[3014].setHeight.assert_called_with(COMPACT_PROGRESS_H_720)
-        self.assertEqual(window._skip_progress_bar_width, COMPACT_SKIP_CONTENT_W_720)
+        self.assertEqual(window._skip_progress_bar_width, m["content_w"])
         self.assertNotIn(COMBINED_TRACK_ID, controls)
         self.assertNotIn(COMBINED_FILL_STRETCH_ID, controls)
         self.assertNotIn(COMBINED_FILL_SLICE_ID, controls)
@@ -700,7 +727,9 @@ class CompactFullLayoutTests(unittest.TestCase):
         apply_full_skip_layout(window, settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value)
         self.assertEqual(props["skippy_compact_full"], "false")
         controls[3081].setVisible.assert_called_with(True)
-        controls[3012].setWidth.assert_called_with(290)
+        m = _expected_metrics(settings, seg, False, False, False)
+        controls[3012].setWidth.assert_called_with(m["skip_w"])
+        self.assertEqual(window._skip_panel_w, m["panel_w"])
 
     def test_layout_keeps_xml_panel_x(self):
         window = MagicMock()
@@ -727,8 +756,10 @@ class CompactFullLayoutTests(unittest.TestCase):
         )
         seg = build_customize_mock_segment(True)
         apply_full_skip_layout(window, settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value)
-        controls[3080].setPosition.assert_not_called()
-        controls[3080].setWidth.assert_not_called()
+        # Right corners are re-anchored for the label-sized width, keeping the Y.
+        m = _expected_metrics(settings, seg, False, False, False)
+        controls[3080].setPosition.assert_called_with(1270 - m["panel_w"], 930)
+        controls[3080].setWidth.assert_called_with(m["panel_w"])
         controls[3080].setHeight.assert_called()
         probed = [call.args[0] for call in window.getControl.call_args_list]
         for cid in (3040, 3041, 3042, 3043):
@@ -762,6 +793,18 @@ class CompactFullLayoutTests(unittest.TestCase):
         )
         apply_full_skip_layout(
             window, left_settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value
+        )
+        # Left corners keep the 10px screen inset.
+        controls[3080].setPosition.assert_called_with(10, 930)
+        # The preview window positions the panel itself, so it is never moved here.
+        controls[3080].setPosition.reset_mock()
+        apply_full_skip_layout(
+            window,
+            settings,
+            MOCK_PLAYHEAD,
+            seg,
+            scale_fn=lambda value: value,
+            place_focus_overlays=True,
         )
         controls[3080].setPosition.assert_not_called()
 
@@ -799,13 +842,16 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         controls[3081].setVisible.assert_called_with(False)
         # Compact + combined hides the close button and the icon, so 3016 is the
         # only skip variant the skin shows; the others are left untouched.
-        controls[3016].setWidth.assert_called_with(COMPACT_SKIP_CONTENT_W_720)
+        m = _expected_metrics(settings, seg, True, True, True)
+        controls[3016].setWidth.assert_called_with(m["wide_w"])
         self.assertNotIn(3012, controls)
         controls[3014].setVisible.assert_called_with(False)
-        controls[COMBINED_TRACK_ID].setWidth.assert_called_with(COMPACT_SKIP_CONTENT_W_720)
+        controls[COMBINED_TRACK_ID].setWidth.assert_called_with(m["wide_w"])
         self.assertNotIn(COMBINED_TRACK_SLICE_ID, controls)
-        controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(75)
-        self.assertEqual(window._skip_progress_bar_width, COMPACT_SKIP_CONTENT_W_720)
+        controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(
+            int(round(0.25 * m["wide_w"]))
+        )
+        self.assertEqual(window._skip_progress_bar_width, m["wide_w"])
 
     def test_combined_sliced_style_nine_slices_track_and_fill(self):
         window = MagicMock()
@@ -876,13 +922,16 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         controls[3014].setVisible.assert_called_with(False)
         # Combined hides close but keeps the skip icon here, so 3015 is the visible
         # variant and 3016 is never touched.
-        controls[3015].setWidth.assert_called_with(FULL_SKIP_PROGRESS_BAR_WIDTH)
+        m = _expected_metrics(settings, seg, False, True, False, min_content=190)
+        controls[3015].setWidth.assert_called_with(m["wide_w"])
         self.assertNotIn(3016, controls)
         controls[COMBINED_TRACK_ID].setPosition.assert_called_with(
             FULL_SKIP_MARGIN_720, 10
         )
-        controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(105)
-        self.assertEqual(window._skip_progress_bar_width, FULL_SKIP_PROGRESS_BAR_WIDTH)
+        controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(
+            int(round(0.25 * m["wide_w"]))
+        )
+        self.assertEqual(window._skip_progress_bar_width, m["wide_w"])
 
     def test_right_corner_xml_fits_canvas(self):
         self.assertEqual(skip_dialog_panel_left_720(False), SKIP_DIALOG_SCREEN_MARGIN_720)

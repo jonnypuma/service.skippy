@@ -141,6 +141,110 @@ def action_setting(g, sid, level, label, help_s, data, vis=None):
     return s
 
 
+_FULL = ("Full",)
+_FULL_COMPACT = ("Full", "CompactFull")
+_MINIMAL = ("Minimal",)
+_ANY = ("Full", "CompactFull", "Minimal")
+
+# Custom-mode options and the skip dialog modes they apply to. Every entry is also
+# hidden in Native mode. Mirrors the rows of the Customize Skip Dialog screen.
+_MODE_VISIBILITY = {
+    # Playback & Dialog (g_pb)
+    "settings_action_customize_skip_dialog": _ANY,
+    "settings_action_skip_presets": _ANY,
+    "skip_dialog_current_preset": _ANY,
+    "hide_ending_text": _FULL,
+    "skip_dialog_mode": _ANY,
+    "compact_full_combined": None,  # already limited to Full / Compact Full
+    "skip_dialog_font_color": _ANY,
+    "skip_dialog_all_caps": _ANY,
+    "skip_card_enabled": _FULL,
+    "skip_card_opacity": _FULL,
+    # Full mode group (g_prog)
+    "show_progress_bar": _FULL_COMPACT,
+    "progress_bar_countdown": _FULL_COMPACT,
+    "progress_bar_style": _FULL_COMPACT,
+    "progress_bar_height": _FULL,
+    "smooth_progress_bar": _FULL_COMPACT,
+    "progress_bar_updates_per_second": _FULL_COMPACT,
+    "skip_dialog_position": _FULL_COMPACT,
+    "button_focus_style": _FULL_COMPACT,
+    "skip_button_format": _FULL_COMPACT,
+    "skip_duration_format": _ANY,
+    "skip_duration_content": _ANY,
+    "hide_close_button": _FULL_COMPACT,
+    "show_skip_button_focus_texture": _FULL_COMPACT,
+    "hide_skip_icon": _FULL,
+    # Minimal mode group (g_min)
+    "minimal_button_style": _MINIMAL,
+    "minimal_skip_button_format": _MINIMAL,
+    "minimal_skip_dialog_position": _MINIMAL,
+}
+_MODE_GROUPS = ("g_pb",)
+
+
+def _add_mode_visibility(deps, modes):
+    """AND a ``skip_dialog_mode`` condition (single value or OR of values)."""
+    if not modes or set(modes) == set(_ANY):
+        return
+    if len(modes) == 1:
+        dep = ET.SubElement(
+            deps, "dependency", type="visible", setting="skip_dialog_mode"
+        )
+        dep.text = modes[0]
+        return
+    dep = ET.SubElement(deps, "dependency", type="visible")
+    or_el = ET.SubElement(dep, "or")
+    for value in modes:
+        cond = ET.SubElement(or_el, "condition", setting="skip_dialog_mode")
+        cond.text = value
+
+
+_DURATION_FORMAT = "Skip + Type + Duration"
+# Duration options only matter while the active mode's button format shows a duration.
+_DURATION_ROWS = ("skip_duration_format", "skip_duration_content")
+
+
+def _add_duration_visibility(deps):
+    dep = ET.SubElement(deps, "dependency", type="visible")
+    or_el = ET.SubElement(dep, "or")
+    full = ET.SubElement(or_el, "and")
+    modes = ET.SubElement(full, "or")
+    for value in ("Full", "CompactFull"):
+        cond = ET.SubElement(modes, "condition", setting="skip_dialog_mode")
+        cond.text = value
+    cond = ET.SubElement(full, "condition", setting="skip_button_format")
+    cond.text = _DURATION_FORMAT
+    minimal = ET.SubElement(or_el, "and")
+    cond = ET.SubElement(minimal, "condition", setting="skip_dialog_mode")
+    cond.text = "Minimal"
+    cond = ET.SubElement(minimal, "condition", setting="minimal_skip_button_format")
+    cond.text = _DURATION_FORMAT
+
+
+def _hide_custom_only_in_native(cat):
+    """Custom-dialog options show only in Custom mode, and only for the modes they apply to."""
+    for grp in cat.findall("group"):
+        gid = grp.get("id")
+        if gid not in _MODE_GROUPS:
+            continue
+        for st in grp.findall("setting"):
+            sid = st.get("id")
+            if sid not in _MODE_VISIBILITY:
+                continue
+            deps = st.find("dependencies")
+            if deps is None:
+                deps = ET.SubElement(st, "dependencies")
+            dep = ET.SubElement(
+                deps, "dependency", type="visible", setting="skip_dialog_type"
+            )
+            dep.text = "Custom"
+            if sid in _DURATION_ROWS:
+                _add_duration_visibility(deps)
+            else:
+                _add_mode_visibility(deps, _MODE_VISIBILITY[sid])
+
+
 def main():
     root = ET.Element("settings", version="1")
     section = ET.SubElement(root, "section", id=ADDON_ID)
@@ -251,8 +355,68 @@ def main():
 
     # ---- 30001 playback ----
     cat = ET.SubElement(section, "category", id="playback", label="30001")
+    playback_cat = cat
     # 32019 = Global options
     g = ET.SubElement(cat, "group", id="g_pb", label="32019")
+    labelenum_setting(
+        g,
+        "skip_dialog_type",
+        0,
+        "46000",
+        "46001",
+        "Custom",
+        enum_a("Custom|Native", "Custom|Native"),
+    )
+    # Native-mode options sit right under the selector in this first group. Kodi (22
+    # alpha) stops showing the groups that follow a group whose settings are all hidden,
+    # and these are all hidden in Custom mode, so they must not form a group of their own.
+    bool_setting(
+        g, "native_use_toast", 0, "46009", "46010", True,
+        vis=[("skip_dialog_type", "Native")],
+    )
+    labelenum_setting(
+        g,
+        "native_skip_format",
+        0,
+        "32013",
+        "32013",
+        "Skip + Type",
+        enum_a("Skip|Skip + Type", "Skip|Skip + Type"),
+        vis=[("skip_dialog_type", "Native")],
+    )
+    bool_setting(
+        g, "native_show_duration", 0, "46007", "46007", True,
+        vis=[("skip_dialog_type", "Native")],
+    )
+    labelenum_setting(
+        g,
+        "native_duration_format",
+        0,
+        "32102",
+        "32102",
+        "1m30s",
+        enum_a("Short (1m30s)|Clock (01:30)", "1m30s|mm:ss"),
+        vis=[("skip_dialog_type", "Native"), ("native_show_duration", "true")],
+    )
+    labelenum_setting(
+        g,
+        "native_default_focus",
+        0,
+        "46003",
+        "46003",
+        "Skip",
+        enum_a("Skip|Dismiss", "Skip|Dismiss"),
+        vis=[("skip_dialog_type", "Native"), ("native_use_toast", "false")],
+    )
+    bool_setting(
+        g, "native_auto_close", 0, "46004", "46005", True,
+        vis=[("skip_dialog_type", "Native"), ("native_use_toast", "false")],
+    )
+    bool_setting(
+        g, "native_show_jump_hint", 0, "46006", "46033", True,
+        vis=[("skip_dialog_type", "Native")],
+    )
+
     action_setting(
         g,
         "settings_action_customize_skip_dialog",
@@ -260,6 +424,24 @@ def main():
         "44100",
         "44101",
         "RunScript(service.skippy,customize_skip_dialog)",
+    )
+    # Read-only: the service writes the matching preset name (or "Custom (unsaved)").
+    string_setting(
+        g,
+        "skip_dialog_current_preset",
+        0,
+        "46030",
+        "46031",
+        "",
+        en=[("skip_dialog_type", "Never")],
+    )
+    action_setting(
+        g,
+        "settings_action_skip_presets",
+        0,
+        "46013",
+        "46014",
+        "RunScript(service.skippy,skip_dialog_presets)",
     )
     int_setting(
         g,
@@ -330,7 +512,7 @@ def main():
         0,
         "32020",
         "32020",
-        "Full",
+        "CompactFull",
         enum_a("Full|Compact Full|Minimal", "Full|CompactFull|Minimal"),
     )
     bool_setting(
@@ -339,7 +521,7 @@ def main():
         1,
         "32101",
         "32101",
-        False,
+        True,
         vis_or=[("skip_dialog_mode", "Full"), ("skip_dialog_mode", "CompactFull")],
     )
     labelenum_setting(
@@ -354,9 +536,27 @@ def main():
             "FFFFFFFF|FF8E8E8E|FF6E6E6E|FF3D3D3D|FF000000|FF1976D2|FFE5392F|FF43A047|FF00ACC1|FFE91E63|FF8E24AA|FFFF8A65|FFEF6C00|FFF9A825",
         ),
     )
-    bool_setting(g, "skip_dialog_all_caps", 1, "32099", "32099", False)
+    bool_setting(g, "skip_dialog_all_caps", 1, "32099", "32099", True)
+    bool_setting(g, "skip_card_enabled", 1, "46011", "46011", True)
+    int_setting(
+        g,
+        "skip_card_opacity",
+        1,
+        "46012",
+        "46012",
+        95,
+        minimum=0,
+        maximum=100,
+        step=5,
+        slider=True,
+        en=[("skip_card_enabled", "true")],
+    )
 
-    g = ET.SubElement(cat, "group", id="g_prog", label="32021")
+    # One group for all Skip dialog options: Kodi builds the list of groups once when the
+    # page opens and leaves out any group whose settings are all hidden at that moment,
+    # so a separate "Full mode" / "Minimal mode" group would never appear after a mode
+    # change. Settings inside one group do show and hide live.
+    g = cat.find("group[@id='g_pb']")
     bool_setting(g, "show_progress_bar", 1, "32007", "32007", True)
     bool_setting(
         g,
@@ -375,8 +575,8 @@ def main():
         "32079",
         "progress_mid.png",
         enum_b(
-            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png|progress_mid_3d_cyan.png|progress_mid_3d_silver.png|progress_mid_3d_orange.png|progress_mid_3d_violet.png|progress_mid_3d_graphite.png|progress_mid_3d_ice.png",
-            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D",
+            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png|progress_mid_3d_cyan.png|progress_mid_3d_silver.png|progress_mid_3d_orange.png|progress_mid_3d_violet.png|progress_mid_3d_graphite.png|progress_mid_3d_ice.png|progress_mid_flat_blue.png|progress_mid_flat_teal.png|progress_mid_flat_green.png|progress_mid_flat_rose.png|progress_mid_flat_orange.png|progress_mid_flat_violet.png|progress_mid_flat_slate.png|progress_mid_flat_white.png|progress_mid_grad_ocean.png|progress_mid_grad_aurora.png|progress_mid_grad_sunset.png|progress_mid_segmented_white.png|progress_mid_segmented_teal.png|progress_mid_segmented_green.png|progress_mid_glow_cyan.png|progress_mid_glow_magenta.png|progress_mid_striped_blue.png|progress_mid_striped_orange.png|progress_mid_grad_gold.png",
+            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Gradient Ocean|Gradient Aurora|Gradient Sunset|Segmented White|Segmented Teal|Segmented Green|Glow Cyan|Glow Magenta|Striped Blue|Striped Orange|Gradient Gold",
         ),
         en=[("show_progress_bar", "true")],
     )
@@ -436,10 +636,10 @@ def main():
         1,
         "32000",
         "32000",
-        "button_focus.png",
+        "button_focus_flat_teal.png",
         enum_b(
-            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png|button_focus_3d_cyan.png|button_focus_3d_silver.png|button_focus_3d_orange.png|button_focus_3d_violet.png|button_focus_3d_graphite.png|button_focus_3d_ice.png",
-            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D",
+            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png|button_focus_3d_cyan.png|button_focus_3d_silver.png|button_focus_3d_orange.png|button_focus_3d_violet.png|button_focus_3d_graphite.png|button_focus_3d_ice.png|button_focus_flat_blue.png|button_focus_flat_teal.png|button_focus_flat_green.png|button_focus_flat_rose.png|button_focus_flat_orange.png|button_focus_flat_violet.png|button_focus_flat_slate.png|button_focus_flat_white.png|button_focus_glass_white.png|button_focus_glass_blue.png|button_focus_glass_dark.png|button_focus_outline_white.png|button_focus_outline_cyan.png|button_focus_underline_white.png|button_focus_underline_cyan.png|button_focus_frosted_white.png|button_focus_steel.png|button_focus_neon_cyan.png|button_focus_neon_magenta.png|button_focus_gold.png|button_focus_pastel_mint.png|button_focus_pastel_peach.png|button_focus_pastel_lavender.png|button_focus_bracket_white.png|button_focus_bracket_cyan.png|button_focus_bracket_green.png",
+            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Glass White|Glass Blue|Glass Dark|Outline White|Outline Cyan|Underline White|Underline Cyan|Frosted White|Brushed Steel|Neon Cyan|Neon Magenta|Gold Leaf|Pastel Mint|Pastel Peach|Pastel Lavender|Bracket White|Bracket Cyan|Bracket Green",
         ),
     )
     labelenum_setting(
@@ -448,7 +648,7 @@ def main():
         1,
         "32013",
         "32013",
-        "Skip + Type + Duration",
+        "Skip + Type",
         enum_a(
             "Skip|Skip + Type|Skip + Type + Duration",
             "Skip|Skip + Type|Skip + Type + Duration",
@@ -461,7 +661,7 @@ def main():
         "32102",
         "32102",
         "1m30s",
-        enum_a("1m30s|01:30", "1m30s|mm:ss"),
+        enum_a("Short (1m30s)|Clock (01:30)", "1m30s|mm:ss"),
     )
     labelenum_setting(
         g,
@@ -475,7 +675,7 @@ def main():
             "total|elapsed_up|elapsed_down|elapsed_total",
         ),
     )
-    bool_setting(g, "hide_close_button", 1, "32014", "32014", False)
+    bool_setting(g, "hide_close_button", 1, "32014", "32014", True)
     bool_setting(
         g,
         "show_skip_button_focus_texture",
@@ -487,7 +687,7 @@ def main():
     )
     bool_setting(g, "hide_skip_icon", 1, "32015", "32015", False)
 
-    g = ET.SubElement(cat, "group", id="g_min", label="32022")
+    g = cat.find("group[@id='g_pb']")
     MINIMAL_FN = (
         "minimal_rounded_gray_640.png|minimal_rectangular_aquamarine-blue_640.png|"
         "minimal_rectangular_blue_640.png|minimal_rectangular_yellow_640.png|"
@@ -505,11 +705,11 @@ def main():
         "minimal_rounded_pattens-blue_640.png|minimal_rounded_peach-orange_640.png|"
         "minimal_rounded_pink-daisy_640.png|minimal_rounded_pink-lemonade_640.png|"
         "minimal_rounded_pinkish-orange_640.png|minimal_rounded_sunset_640.png|"
-        "minimal_rounded_white_640.png"
+        "minimal_rounded_white_640.png|minimal_flat_black_640.png|minimal_flat_charcoal_640.png|minimal_flat_white_640.png|minimal_flat_blue_640.png|minimal_flat_teal_640.png|minimal_flat_rose_640.png|minimal_glass_dark_640.png|minimal_glass_light_640.png|minimal_outline_white_640.png|minimal_grad_midnight_640.png|minimal_grad_sunset_640.png|minimal_pastel_mint_640.png|minimal_pastel_peach_640.png|minimal_pastel_lavender_640.png|minimal_steel_640.png|minimal_frosted_640.png|minimal_gold_640.png|minimal_neon_cyan_640.png"
     )
     MINIMAL_LB = (
         "Rounded Gray|Rectangular Aquamarine Blue|Rectangular Blue|Rectangular Yellow|"
-        "3D Blue|3D Glossy Blue|3D Red Glossy|Black Beveled|"
+        "Blue 3D|Glossy Blue 3D|Red Glossy 3D|Black Beveled|"
         "Rounded Baby Purple|Rounded Blue Red Gradient|Rounded Bright Aqua|"
         "Rounded Bright Blue Sky|Rounded Bright Cyan|Rounded Burnt Pink|Rounded Cranberry|"
         "Rounded Deep Pink|Rounded Greyish Blue|Rounded Languid Lavender|"
@@ -517,7 +717,7 @@ def main():
         "Rounded Minty Green|Rounded Mustard Yellow|Rounded Pale Gold|"
         "Rounded Pale Sky Blue|Rounded Pastel Green|Rounded Pattens Blue|"
         "Rounded Peach Orange|Rounded Pink Daisy|Rounded Pink Lemonade|"
-        "Rounded Pinkish Orange|Rounded Sunset|Rounded White"
+        "Rounded Pinkish Orange|Rounded Sunset|Rounded White|Flat Black|Flat Charcoal|Flat White|Flat Blue|Flat Teal|Flat Rose|Glass Dark|Glass Light|Outline White|Gradient Midnight|Gradient Sunset|Pastel Mint|Pastel Peach|Pastel Lavender|Brushed Steel|Frosted|Gold Leaf|Neon Cyan"
     )
     labelenum_setting(
         g,
@@ -1033,6 +1233,7 @@ def main():
         "resources",
         "settings.xml",
     )
+    _hide_custom_only_in_native(playback_cat)
     tree = ET.ElementTree(root)
     # Avoid `<tag />` for empty elements — some Kodi builds mishandle `<default />` for strings.
     tree.write(

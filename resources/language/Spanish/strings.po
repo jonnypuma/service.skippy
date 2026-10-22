@@ -1837,3 +1837,139 @@ msgstr "No se pudieron guardar los tipos de segmento."
 msgctxt "#45023"
 msgid "Segment types saved."
 msgstr "Tipos de segmento guardados."
+
+msgctxt "#46000"
+msgid "Toggle mode"
+msgstr "Cambiar modo"
+
+msgctxt "#46001"
+msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+msgstr "Custom usa el diálogo propio de Skippy con barra de progreso, posición en esquina y opciones de estilo. Native usa el aspecto de tu skin: un toast (OK para saltar) o el diálogo Sí/No de Kodi. El texto es fijo al aparecer (sin cuenta atrás ni barra de progreso en vivo)."
+
+msgctxt "#46002"
+msgid "Native dialog"
+msgstr "Diálogo nativo"
+
+msgctxt "#46003"
+msgid "Default focus"
+msgstr "Foco predeterminado"
+
+msgctxt "#46004"
+msgid "Close dialog when segment ends"
+msgstr "Cerrar al terminar el segmento"
+
+msgctxt "#46005"
+msgid "Automatically close the dialog when the segment ends or playback stops."
+msgstr "Cierra automáticamente el diálogo cuando termina el segmento o se detiene la reproducción."
+
+msgctxt "#46006"
+msgid "Show next-jump line"
+msgstr "Mostrar línea del siguiente salto"
+
+msgctxt "#46007"
+msgid "Show segment duration"
+msgstr "Mostrar duración del segmento"
+
+msgctxt "#46008"
+msgid "Press OK to skip"
+msgstr "Pulsa OK para saltar"
+
+msgctxt "#46009"
+msgid "Show as toast (OK to skip)"
+msgstr "Mostrar como toast (OK para saltar)"
+
+msgctxt "#46010"
+msgid "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+msgstr "Muestra el toast de notificación de la skin en lugar de un diálogo. Un oyente invisible permite que OK/Intro salte y Atrás descarte. El toast se mantiene en pantalla durante todo el segmento, pero el toast de otro complemento puede taparlo. El texto es fijo al aparecer."
+
+msgctxt "#46011"
+msgid "Show card background"
+msgstr "Mostrar fondo de la tarjeta"
+
+msgctxt "#46012"
+msgid "Card opacity (%)"
+msgstr "Opacidad de la tarjeta (%)"
+
+msgctxt "#46013"
+msgid "Skip dialog presets…"
+msgstr "Preajustes del diálogo de salto…"
+
+msgctxt "#46014"
+msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
+msgstr "Aplica un estilo ya hecho o uno que hayas guardado. Se aplica al modo Custom."
+
+msgctxt "#46015"
+msgid "Preset"
+msgstr "Preajuste"
+
+msgctxt "#46016"
+msgid "Custom"
+msgstr "Ajustes propios"
+
+msgctxt "#46017"
+msgid "Save current look as preset…"
+msgstr "Guardar el aspecto actual como preajuste…"
+
+msgctxt "#46018"
+msgid "Delete a saved preset…"
+msgstr "Eliminar un preajuste guardado…"
+
+msgctxt "#46019"
+msgid "Preset name"
+msgstr "Nombre del preajuste"
+
+msgctxt "#46020"
+msgid "Preset saved: %s"
+msgstr "Preajuste guardado: %s"
+
+msgctxt "#46021"
+msgid "A saved preset named %s already exists. Overwrite it?"
+msgstr "Ya existe un preajuste guardado llamado %s. ¿Sobrescribirlo?"
+
+msgctxt "#46022"
+msgid "Delete preset %s?"
+msgstr "¿Eliminar el preajuste %s?"
+
+msgctxt "#46023"
+msgid "Preset deleted: %s"
+msgstr "Preajuste eliminado: %s"
+
+msgctxt "#46024"
+msgid "Choose a preset"
+msgstr "Elegir un preajuste"
+
+msgctxt "#46025"
+msgid "%s (saved)"
+msgstr "%s (guardado)"
+
+msgctxt "#46026"
+msgid "Could not save the preset."
+msgstr "No se pudo guardar el preajuste."
+
+msgctxt "#46027"
+msgid "Preset applied: %s"
+msgstr "Preajuste aplicado: %s"
+
+msgctxt "#46028"
+msgid "That name is used by a built-in preset."
+msgstr "Ese nombre lo usa un preajuste integrado."
+
+msgctxt "#46029"
+msgid "There are no saved presets to delete."
+msgstr "No hay preajustes guardados que eliminar."
+
+msgctxt "#46030"
+msgid "Current preset"
+msgstr "Ajuste actual"
+
+msgctxt "#46031"
+msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+msgstr "Muestra qué ajuste coincide con tu configuración actual, o Personalizado (sin guardar)."
+
+msgctxt "#46032"
+msgid "Custom (unsaved)"
+msgstr "Personalizado (sin guardar)"
+
+msgctxt "#46033"
+msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
+msgstr "Cuando un segmento está anidado en otro o se solapa con él, añade una línea que indica adónde saltará Omitir a continuación (por ejemplo, el inicio del siguiente segmento)."

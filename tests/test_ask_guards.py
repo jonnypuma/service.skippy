@@ -368,6 +368,63 @@ class AskCooldownProcessTests(unittest.TestCase):
         dialog.doModal.assert_called_once()
 
 
+class AskRecheckAfterWaitTests(unittest.TestCase):
+    def _ctx(self, play_time=10.0, playing=True):
+        player = MagicMock()
+        player.isPlayingVideo.return_value = playing
+        player.getTime.return_value = play_time
+        return _base_ctx(_base_monitor([]), player=player)
+
+    def test_valid_inside_segment(self):
+        seg = SegmentItem(0.0, 100.0, "intro", source="xml")
+        with patch("service_loop_skip.xbmc.getCondVisibility", return_value=False):
+            self.assertTrue(skipmod().ask_still_valid_after_wait(self._ctx(10.0), seg))
+
+    def test_invalid_when_playhead_left_segment(self):
+        seg = SegmentItem(0.0, 100.0, "intro", source="xml")
+        with patch("service_loop_skip.xbmc.getCondVisibility", return_value=False):
+            self.assertFalse(skipmod().ask_still_valid_after_wait(self._ctx(150.0), seg))
+            self.assertFalse(skipmod().ask_still_valid_after_wait(self._ctx(-5.0), seg))
+
+    def test_invalid_when_stopped_or_paused(self):
+        seg = SegmentItem(0.0, 100.0, "intro", source="xml")
+        with patch("service_loop_skip.xbmc.getCondVisibility", return_value=False):
+            self.assertFalse(
+                skipmod().ask_still_valid_after_wait(self._ctx(10.0, playing=False), seg)
+            )
+        with patch("service_loop_skip.xbmc.getCondVisibility", return_value=True):
+            self.assertFalse(skipmod().ask_still_valid_after_wait(self._ctx(10.0), seg))
+
+    def test_paused_allowed_during_post_skip_grace(self):
+        seg = SegmentItem(0.0, 100.0, "intro", source="xml")
+        ctx = self._ctx(10.0)
+        ctx.monitor.skippy_skipping_since = time.monotonic()
+        with patch("service_loop_skip.xbmc.getCondVisibility", return_value=True):
+            self.assertTrue(skipmod().ask_still_valid_after_wait(ctx, seg))
+
+    @patch("service_loop_skip.xbmc.sleep")
+    @patch("service_loop_skip.SkipDialog")
+    def test_debounce_wait_aborts_when_playhead_moved_on(self, mock_dialog_cls, mock_sleep):
+        intro = SegmentItem(0.0, 100.0, "intro", source="xml")
+        ctx = self._ctx(10.0)
+        ctx.monitor.current_segments = [intro]
+        # The ask starts fine, but the playhead is past the segment once the wait is over.
+        ctx.player.getTime.return_value = 150.0
+        addon = MagicMock()
+        addon.getAddonInfo.return_value = "/addon"
+        with patch("service_loop_skip.addon_get_int", return_value=200):
+            with patch("service_loop_skip.is_native_skip_dialog", return_value=False):
+                with patch("service_loop_skip.xbmc.getCondVisibility", return_value=False):
+                    with patch("service_loop_skip.get_home_window", return_value=MagicMock()):
+                        result = skipmod()._handle_ask_skip(
+                            ctx, intro, _seg_id(intro), 101.0, addon, video="/v.mkv"
+                        )
+        mock_sleep.assert_called_once_with(200)
+        mock_dialog_cls.assert_not_called()
+        self.assertIsNone(result)
+        self.assertFalse(ctx.monitor.skip_dialog_modal_active)
+
+
 class AskChainUpdatedTests(unittest.TestCase):
     @patch("service_loop_skip.SkipDialog")
     @patch("service_loop_skip.xbmc.sleep")

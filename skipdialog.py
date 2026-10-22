@@ -335,6 +335,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             playhead=current,
             segment=self.segment,
             scale_fn=self._skin_sc,
+            addon=addon,
             log_fn=lambda msg: log("⚠️ %s" % msg) if "fail" in msg.lower() or "error" in msg.lower() else log("📊 %s" % msg),
         )
 

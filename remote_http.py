@@ -60,7 +60,7 @@ def _rlog(msg):
     log_remote(msg)
 
 
-THEINTRODB_BASE_URL = "https://api.theintrodb.org/v3/media"
+THEINTRODB_BASE_URL = "https://api.theintrodb.org/v4/media"
 INTRODB_SEGMENTS_URL = "https://api.introdb.app/segments"
 TMDB_API3_BASE = "https://api.themoviedb.org/3"
 TMDB_HELPER_ADDON_ID = "plugin.video.themoviedb.helper"

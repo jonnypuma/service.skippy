@@ -32,6 +32,7 @@ from settings_utils import (
     log_service_detail,
 )
 from service_skip_seek_property import mark_skippy_skipping
+from skip_dialog_native import is_native_skip_dialog, show_native_skip_dialog
 from skipdialog import SkipDialog
 
 
@@ -112,6 +113,27 @@ def should_ignore_as_just_skipped(monitor, seg_id, current_time: float) -> bool:
     start, end = bounds
     t = float(current_time)
     return start <= t <= end
+
+
+def ask_still_valid_after_wait(ctx, segment) -> bool:
+    """Re-check the world after any wait: still playing, playhead still in the segment."""
+    monitor = ctx.monitor
+    try:
+        playing = ctx.player.isPlayingVideo()
+        paused = xbmc.getCondVisibility("Player.Paused")
+    except RuntimeError:
+        return False
+    # Kodi briefly reports Paused right after our own seek.
+    grace = getattr(monitor, "skippy_skipping_since", None) is not None
+    if not playing or (paused and not grace):
+        return False
+    try:
+        now = float(ctx.player.getTime())
+    except (RuntimeError, TypeError, ValueError):
+        return True
+    start = float(getattr(segment, "start_seconds", 0) or 0)
+    end = float(getattr(segment, "end_seconds", 0) or 0)
+    return (start - 0.5) <= now <= end
 
 
 def ask_same_seg_on_cooldown(monitor, seg_id) -> bool:
@@ -463,46 +485,56 @@ def _handle_ask_skip(
         if debounce_ms > 0 and not skip_debounce:
             log("🛑 Debouncing skip dialog for %dms" % debounce_ms)
             xbmc.sleep(debounce_ms)
+            if not ask_still_valid_after_wait(ctx, segment):
+                log(
+                    "⏸️ Playback changed during the %dms settle delay — not opening dialog for segment %s"
+                    % (debounce_ms, seg_id)
+                )
+                return None
 
-        dialog_mode = (
-            addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full"
-        ).strip()
-        if dialog_mode == "Minimal":
-            layout_value = ctx.skip_dialog_layout_suffix(addon, "minimal_skip_dialog_position")
-            dialog_name = "Minimal_Skip_Dialog_%s.xml" % layout_value
+        if is_native_skip_dialog(addon):
+            log("📐 Using native skip dialog (skin Yes/No)")
+            response = show_native_skip_dialog(addon, segment, ctx.player)
         else:
-            layout_value = ctx.skip_dialog_layout_suffix(addon, "skip_dialog_position")
-            dialog_name = "SkipDialog_%s.xml" % layout_value
-        log("📐 Using skip dialog (%s): %s" % (dialog_mode, dialog_name))
+            dialog_mode = (
+                addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full"
+            ).strip()
+            if dialog_mode == "Minimal":
+                layout_value = ctx.skip_dialog_layout_suffix(addon, "minimal_skip_dialog_position")
+                dialog_name = "Minimal_Skip_Dialog_%s.xml" % layout_value
+            else:
+                layout_value = ctx.skip_dialog_layout_suffix(addon, "skip_dialog_position")
+                dialog_name = "SkipDialog_%s.xml" % layout_value
+            log("📐 Using skip dialog (%s): %s" % (dialog_mode, dialog_name))
 
-        try:
-            ctx.warm_skip_dialog_skin_textures(addon)
-        except Exception as e:
-            log("⚠️ Failed to update skip dialog skin XML: %s" % e)
+            try:
+                ctx.warm_skip_dialog_skin_textures(addon)
+            except Exception as e:
+                log("⚠️ Failed to update skip dialog skin XML: %s" % e)
 
-        try:
-            dialog = SkipDialog(
-                dialog_name, addon.getAddonInfo("path"), "default", segment=segment
-            )
-        except Exception as e:
-            log("❌ Failed to create skip dialog: %s" % e)
-            monitor.prompted.add(seg_id)
-            return None
+            try:
+                dialog = SkipDialog(
+                    dialog_name, addon.getAddonInfo("path"), "default", segment=segment
+                )
+            except Exception as e:
+                log("❌ Failed to create skip dialog: %s" % e)
+                monitor.prompted.add(seg_id)
+                return None
 
-        try:
-            dialog.doModal()
-        except Exception as e:
-            log("❌ Dialog doModal() failed: %s" % e)
-            monitor.prompted.add(seg_id)
-            return None
+            try:
+                dialog.doModal()
+            except Exception as e:
+                log("❌ Dialog doModal() failed: %s" % e)
+                monitor.prompted.add(seg_id)
+                return None
 
-        response = getattr(dialog, "_skippy_dialog_result", None)
-        if response is None:
-            response = getattr(dialog, "response", None)
-        try:
-            del dialog
-        except Exception:
-            pass
+            response = getattr(dialog, "_skippy_dialog_result", None)
+            if response is None:
+                response = getattr(dialog, "response", None)
+            try:
+                del dialog
+            except Exception:
+                pass
 
         log(
             "Skip dialog closed: response=%r jump_to=%s seg=%s"

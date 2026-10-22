@@ -82,6 +82,11 @@ def main():
 
             show_skip_dialog_customize()
             return
+        if command == "skip_dialog_presets":
+            from skip_dialog_presets_ui import show_skip_dialog_presets_menu
+
+            show_skip_dialog_presets_menu()
+            return
         if command == "edit_segment_types":
             from segment_types_editor_ui import show_segment_types_editor
 

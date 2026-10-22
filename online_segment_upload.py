@@ -25,7 +25,7 @@ from segment_editor_parser import seconds_to_hms
 from skippy_editor_modal_skin import show_editor_ok
 from skippy_stats import record_online_segment_uploaded
 
-THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v3/submit"
+THEINTRODB_SUBMIT_URL = "https://api.theintrodb.org/v4/submit"
 INTRODB_SUBMIT_URL = "https://api.introdb.app/submit"
 
 TARGET_BOTH = "Both"
@@ -369,6 +369,38 @@ def _theintrodb_submit_accepted(parsed: dict | None) -> bool:
     return parsed.get("ok") is True and bool(subs or legacy)
 
 
+def _positive_int(raw, hi):
+    if raw is None or str(raw).strip() == "":
+        return None
+    try:
+        val = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return val if 1 <= val <= hi else None
+
+
+def _pick_theintrodb_media_id(ctx: dict):
+    """Return ``(field, value)`` for the single media id to send, or ``(None, None)``.
+
+    v4 prefers TVDB (direct lookup, no server-side resolution), so ``tvdb_id`` wins
+    when known; for TV the caller also adds ``tvdb_episode_id`` when available.
+    Fallbacks: TMDB, then IMDb.
+    """
+    tvdb = _positive_int(ctx.get("tvdb_id"), 100_000_000)
+    if tvdb is not None:
+        return "tvdb_id", tvdb
+    tmdb = _positive_int(ctx.get("tmdb_id"), 10_000_000)
+    if tmdb is not None:
+        return "tmdb_id", tmdb
+    if ctx.get("type") == "movie":
+        imdb = normalize_imdb_id(ctx.get("imdb_id"))
+    else:
+        imdb = normalize_imdb_id(ctx.get("imdb_id") or ctx.get("show_imdb_id"))
+    if imdb:
+        return "imdb_id", imdb
+    return None, None
+
+
 def _submit_theintrodb(
     ctx: dict,
     tidb_segment: str,
@@ -377,11 +409,12 @@ def _submit_theintrodb(
     api_key: str,
 ) -> tuple[bool, str]:
     """
-    POST /v3/submit (flat JSON: ``tmdb_id``, ``type``, ``segment``, times — **not** the nested
+    POST /v4/submit (flat JSON: one media id (``tmdb_id`` / ``tvdb_id`` / ``imdb_id``), ``type``, ``segment``, times — **not** the nested
     ``intro``/``recap``/… arrays from GET /media). Sends ``start_ms``/``end_ms`` as integers or
     JSON ``null`` (intro/recap from beginning; credits/preview through end-of-media). Optional
     ``video_duration_ms`` aligns submissions with release cuts when playback/library duration is known.
-    Optional ``imdb_id`` / ``tvdb_id`` when present in context.
+    v4 resolves the media by priority tvdb → tmdb → imdb, so exactly **one** id is sent:
+    TVDB when known (preferred by the API), else TMDB, else IMDb.
     """
     key = (api_key or "").strip()
     if not key:
@@ -392,17 +425,14 @@ def _submit_theintrodb(
         _up_log_err("TheIntroDB submit: bad segment %r" % tidb_segment)
         return False, _translate(39047)
 
-    tmdb_id = ctx.get("tmdb_id")
-    try:
-        tmdb_int = int(tmdb_id) if tmdb_id is not None else None
-    except (TypeError, ValueError):
-        tmdb_int = None
-    if tmdb_int is None or not (1 <= tmdb_int <= 10_000_000):
+    id_field, id_value = _pick_theintrodb_media_id(ctx)
+    if id_field is None:
         _up_log_err(
-            "TheIntroDB submit: invalid tmdb_id %r (ctx type=%s)"
-            % (tmdb_id, ctx.get("type"))
+            "TheIntroDB submit: no usable tmdb_id/tvdb_id/imdb_id (ctx type=%s)"
+            % ctx.get("type")
         )
         return False, _translate(39044)
+    tmdb_int = id_value if id_field == "tmdb_id" else None
 
     api_type = "movie" if ctx.get("type") == "movie" else "tv"
     duration_sec = ctx.get("playback_duration_seconds")
@@ -410,7 +440,7 @@ def _submit_theintrodb(
         tidb_segment, float(start_sec), float(end_sec), duration_sec
     )
     body: dict = {
-        "tmdb_id": tmdb_int,
+        id_field: id_value,
         "type": api_type,
         "segment": tidb_segment,
         "start_ms": start_ms,
@@ -426,6 +456,9 @@ def _submit_theintrodb(
                 % (ctx.get("season"), ctx.get("episode"))
             )
             return False, _translate(39043) + "\n\n" + "invalid season or episode"
+        ep_pin = _positive_int(ctx.get("tvdb_episode_id"), 2**62)
+        if id_field == "tvdb_id" and ep_pin is not None:
+            body["tvdb_episode_id"] = ep_pin
 
     vd_sec = ctx.get("playback_duration_seconds")
     if vd_sec is not None:
@@ -435,26 +468,6 @@ def _submit_theintrodb(
                 body["video_duration_ms"] = vd_ms
         except (TypeError, ValueError):
             pass
-
-    imdb_opt = None
-    if ctx.get("type") == "movie":
-        imdb_opt = ctx.get("imdb_id")
-    else:
-        imdb_opt = ctx.get("imdb_id") or ctx.get("show_imdb_id")
-    imdb_opt = normalize_imdb_id(imdb_opt)
-    if imdb_opt:
-        body["imdb_id"] = imdb_opt
-
-    tvdb_raw = ctx.get("tvdb_id")
-    if tvdb_raw is not None and str(tvdb_raw).strip() != "":
-        try:
-            tvdb_int = int(tvdb_raw)
-            if tvdb_int > 0:
-                body["tvdb_id"] = tvdb_int
-        except (TypeError, ValueError):
-            _up_log_err(
-                "TheIntroDB submit: ignoring invalid tvdb_id %r" % (tvdb_raw,)
-            )
 
     err = _validate_theintrodb_times(
         tidb_segment,
@@ -478,17 +491,16 @@ def _submit_theintrodb(
     if api_type == "tv":
         tv_log = " S=%s E=%s" % (body.get("season"), body.get("episode"))
     _up_log_info(
-        "TheIntroDB v3 submit: POST segment=%s tmdb=%s type=%s%s start_ms=%s end_ms=%s video_duration_ms=%s imdb=%s tvdb=%s"
+        "TheIntroDB v4 submit: POST segment=%s %s=%s type=%s%s start_ms=%s end_ms=%s video_duration_ms=%s"
         % (
             tidb_segment,
-            tmdb_int,
+            id_field,
+            id_value,
             api_type,
             tv_log,
             body["start_ms"],
             body["end_ms"],
             vd_log,
-            "yes" if body.get("imdb_id") else "no",
-            body.get("tvdb_id") if body.get("tvdb_id") is not None else "omit",
         )
     )
 
@@ -505,12 +517,12 @@ def _submit_theintrodb(
             sid = subs[0].get("id") if isinstance(subs[0], dict) else None
             if sid:
                 _up_log_info(
-                    "TheIntroDB v3 submit OK: submissions=%s first_id=%s"
+                    "TheIntroDB v4 submit OK: submissions=%s first_id=%s"
                     % (n, sid)
                 )
             else:
                 _up_log_info(
-                    "TheIntroDB v3 submit OK: submissions=%s (no id in first row)"
+                    "TheIntroDB v4 submit OK: submissions=%s (no id in first row)"
                     % n
                 )
             return True, "ok"
@@ -521,21 +533,21 @@ def _submit_theintrodb(
                 % (sid or "?")
             )
             return True, "ok"
-        _up_log_info("TheIntroDB v3 submit OK (HTTP 200, ok=true)")
+        _up_log_info("TheIntroDB v4 submit OK (HTTP 200, ok=true)")
         return True, "ok"
     if code == 200:
         detail = _detail_from_parsed(parsed, raw_err)
         base = _translate(39041)
         msg = base + ("\n\n" + detail if detail else "")
         _up_log_err(
-            "TheIntroDB submit: HTTP 200 but no submissions in response (segment=%s tmdb=%s): %s"
-            % (tidb_segment, tmdb_int, detail or raw_err or "")
+            "TheIntroDB submit: HTTP 200 but no submissions in response (segment=%s %s=%s): %s"
+            % (tidb_segment, id_field, id_value, detail or raw_err or "")
         )
         return False, msg
     msg = _submit_http_user_message("theintrodb", code, parsed, raw_err)
     _up_log_err(
-        "TheIntroDB submit failed HTTP %s segment=%s tmdb=%s: %s"
-        % (code, tidb_segment, tmdb_int, msg.replace("\n", " | "))
+        "TheIntroDB submit failed HTTP %s segment=%s %s=%s: %s"
+        % (code, tidb_segment, id_field, id_value, msg.replace("\n", " | "))
     )
     return False, msg
 
@@ -579,10 +591,24 @@ def _submit_introdb_app(
         "end_sec": round(float(end_sec), 1),
     }
     if ctx.get("type") == "tv":
-        body["season"] = int(ctx.get("season"))
-        body["episode"] = int(ctx.get("episode"))
+        try:
+            body["season"] = int(ctx.get("season"))
+            body["episode"] = int(ctx.get("episode"))
+        except (TypeError, ValueError):
+            body["season"] = body["episode"] = 0
+        if body["season"] < 1 or body["episode"] < 1:
+            # IntroDB.app requires season/episode >= 1 (no specials).
+            _up_log_err(
+                "IntroDB.app submit: season/episode must be >= 1 (got %r/%r)"
+                % (ctx.get("season"), ctx.get("episode"))
+            )
+            return False, _translate(39043) + "\n\n" + "season and episode must be 1 or higher"
+    else:
+        # Movies: the API requires is_movie=true and rejects season/episode.
+        body["is_movie"] = True
 
-    for id_key in ("tmdb_id", "tvdb_id"):
+    # tmdb_id / tvdb_id are documented as *series* ids, so only send them for TV.
+    for id_key in (("tmdb_id", "tvdb_id") if ctx.get("type") == "tv" else ()):
         raw = ctx.get(id_key)
         if raw is None or str(raw).strip() == "":
             continue

@@ -34,6 +34,21 @@ CUSTOMIZE_SKIP_FOCUS_OVERLAY_IDS = (3040, 3042, 3041, 3043)
 FULL_SKIP_PANEL_W_720 = 430
 FULL_SKIP_MARGIN_720 = 5
 FULL_SKIP_PROGRESS_BAR_WIDTH = FULL_SKIP_PANEL_W_720 - (FULL_SKIP_MARGIN_720 * 2)
+# Dialog width follows the skip label. Each label format has its own ladder of
+# fixed widths; the label's estimated size picks the first rung that fits, so a
+# plain "Skip" stays narrow while a long type name or duration still fits.
+SKIP_BTN_TEXT_PAD_720 = 40
+SKIP_BTN_MAX_TEXT_W_720 = 420
+SKIP_ICON_SLOT_720 = 30
+SKIP_CLOSE_ICON_SLOT_720 = 20
+SKIP_CLOSE_BTN_W_720 = 80
+SKIP_CLOSE_ICON_ID = 3083
+SKIP_WIDTH_STEPS_720 = {
+    "Skip": (96, 120),
+    "Skip + Type": (150, 190, 240, 300, 360),
+    "Skip + Type + Duration": (230, 270, 320, 380, 420),
+}
+SKIP_ROWS_MIN_CONTENT_W_720 = {"jump": 280, "ending": 190}
 SKIP_DIALOG_CANVAS_W_720 = 1280
 SKIP_DIALOG_SCREEN_MARGIN_720 = 10
 SKIP_DIALOG_MODE_FULL = "Full"
@@ -88,6 +103,30 @@ BUTTON_FOCUS_NINE_SLICE_BORDERS = {
     "button_focus_3d_violet.png": "12,0,12,0",
     "button_focus_3d_graphite.png": "12,0,12,0",
     "button_focus_3d_ice.png": "12,0,12,0",
+    "button_focus_flat_blue.png": "12,12,12,12",
+    "button_focus_flat_teal.png": "12,12,12,12",
+    "button_focus_flat_green.png": "12,12,12,12",
+    "button_focus_flat_rose.png": "12,12,12,12",
+    "button_focus_flat_orange.png": "12,12,12,12",
+    "button_focus_flat_violet.png": "12,12,12,12",
+    "button_focus_flat_slate.png": "12,12,12,12",
+    "button_focus_flat_white.png": "12,12,12,12",
+    "button_focus_glass_white.png": "12,12,12,12",
+    "button_focus_glass_blue.png": "12,12,12,12",
+    "button_focus_glass_dark.png": "12,12,12,12",
+    "button_focus_outline_white.png": "12,12,12,12",
+    "button_focus_outline_cyan.png": "12,12,12,12",
+    "button_focus_frosted_white.png": "12,12,12,12",
+    "button_focus_steel.png": "12,12,12,12",
+    "button_focus_neon_cyan.png": "12,12,12,12",
+    "button_focus_neon_magenta.png": "12,12,12,12",
+    "button_focus_gold.png": "12,12,12,12",
+    "button_focus_pastel_mint.png": "12,12,12,12",
+    "button_focus_pastel_peach.png": "12,12,12,12",
+    "button_focus_pastel_lavender.png": "12,12,12,12",
+    "button_focus_bracket_white.png": "12,12,12,12",
+    "button_focus_bracket_cyan.png": "12,12,12,12",
+    "button_focus_bracket_green.png": "12,12,12,12",
 }
 
 
@@ -95,6 +134,12 @@ def button_focus_nine_slice_border(filename: str) -> Optional[str]:
     """Return Kodi ``border`` for 3D focus art, or None to stretch the whole image."""
     name = (filename or "").replace("\\", "/").rsplit("/", 1)[-1].strip()
     return BUTTON_FOCUS_NINE_SLICE_BORDERS.get(name)
+
+
+def card_color_diffuse(settings) -> str:
+    """AARRGGBB black for the Full-mode card; opacity setting is 0-100 percent."""
+    pct = settings.get_int("skip_card_opacity", 95, minimum=0, maximum=100)
+    return "%02X000000" % int(round(max(0, min(100, pct)) * 255 / 100.0))
 
 
 def skip_dialog_mode_name(raw: Optional[str]) -> str:
@@ -259,6 +304,10 @@ class DictSettingsReader:
         return v
 
 
+# Longest common type name, so the Customize preview shows the width worst case.
+MOCK_SEGMENT_LABEL = "commercial"
+
+
 class MockSegment:
     """Minimal segment object for Customize preview (no parse / player)."""
 
@@ -280,11 +329,11 @@ class MockSegment:
 def build_customize_mock_segment(skip_overlapping: bool) -> MockSegment:
     recap = MockSegment(MOCK_RECAP_START, MOCK_RECAP_END, "recap")
     if skip_overlapping:
-        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, "intro")
+        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, MOCK_SEGMENT_LABEL)
     return MockSegment(
         MOCK_INTRO_START,
         MOCK_INTRO_END,
-        "intro",
+        MOCK_SEGMENT_LABEL,
         next_segment_start=MOCK_RECAP_START,
         next_segment_info=jump_info_nested(recap),
     )
@@ -518,6 +567,68 @@ def build_skip_button_label(segment, format_setting, duration_str, addon=None):
     return get_localized(addon, 40003, "Skip %s (%s)", typ, duration_str)
 
 
+def _label_glyph_width_720(ch: str) -> float:
+    """Rough 720p width of one glyph in the skin's button font (deliberately generous)."""
+    if ch == " ":
+        return 5.0
+    if ch in "il.,:;|'!1":
+        return 5.5 if ch != "1" else 10.5
+    if ch in "()/[]-":
+        return 6.5
+    if ch.isdigit():
+        return 10.5
+    if ch in "mwMW":
+        return 15.0
+    if ch.isupper():
+        return 13.0
+    return 9.5
+
+
+def estimate_skip_label_width_720(label: str) -> int:
+    return int(round(sum(_label_glyph_width_720(c) for c in (label or ""))))
+
+
+def skip_format_tier(format_setting) -> str:
+    fmt = (format_setting or "").strip()
+    if fmt == "Skip":
+        return "Skip"
+    if fmt == "Skip + Type":
+        return "Skip + Type"
+    return "Skip + Type + Duration"
+
+
+def skip_label_width_720(label: str, format_setting) -> int:
+    """Width of the skip button text area: first rung of the format's ladder that fits."""
+    need = min(
+        estimate_skip_label_width_720(label) + SKIP_BTN_TEXT_PAD_720,
+        SKIP_BTN_MAX_TEXT_W_720,
+    )
+    steps = SKIP_WIDTH_STEPS_720[skip_format_tier(format_setting)]
+    for step in steps:
+        if need <= step:
+            return step
+    return min(need, SKIP_BTN_MAX_TEXT_W_720)
+
+
+def widest_skip_label(segment, settings, addon=None) -> str:
+    """Longest label the dialog can show for this segment (live durations never exceed it)."""
+    fmt = settings.get_text("skip_button_format", "Skip + Type + Duration")
+    start = float(getattr(segment, "start_seconds", 0) or 0)
+    end = float(getattr(segment, "end_seconds", 0) or 0)
+    total = max(0, int(round(max(0.0, end - start))))
+    dur = skip_button_duration_text(
+        total,
+        total,
+        total,
+        settings.get_text("skip_duration_format", DURATION_FORMAT_1M30S),
+        settings.get_text("skip_duration_content", DURATION_CONTENT_TOTAL),
+    )
+    return apply_skip_dialog_caps(
+        build_skip_button_label(segment, fmt, dur, addon),
+        settings.get_bool("skip_dialog_all_caps", False),
+    )
+
+
 def elapsed_progress_percent_float(current_time, segment_start, total_duration):
     if not total_duration or total_duration <= 0:
         return 0.0
@@ -628,30 +739,97 @@ def _place_ctrl(ctrl, x, y, w=None, h=None):
             pass
 
 
+def full_skip_panel_metrics(
+    sc, compact, hide_close, hide_skip_icon, text_w, min_content_w=0
+):
+    """Geometry (skin pixels) of the Skip/Close row for a label of ``text_w`` (720p)."""
+    margin = FULL_SKIP_MARGIN_720
+    if compact:
+        close_w = COMPACT_SKIP_CLOSE_W_720
+        gap = COMPACT_SKIP_GAP_720
+        content_w = text_w if hide_close else text_w + close_w + gap
+        content_w = max(content_w, min_content_w)
+        skip_w = content_w if hide_close else content_w - close_w - gap
+        return {
+            "panel_w": sc(content_w),
+            "content_w": sc(content_w),
+            "left0": 0,
+            "skip_x": 0,
+            "skip_w": sc(skip_w),
+            "wide_x": 0,
+            "wide_w": sc(content_w),
+            "close_x": sc(skip_w + gap),
+            "close_w": sc(close_w),
+            "close_icon_x": None,
+        }
+    icon_slot = 0 if hide_skip_icon else SKIP_ICON_SLOT_720
+    if hide_close:
+        btn_w = text_w + 2 * icon_slot
+        panel_w = max(btn_w + 2 * margin, min_content_w + 2 * margin)
+        content_w = panel_w - 2 * margin
+        return {
+            "panel_w": sc(panel_w),
+            "content_w": sc(content_w),
+            "left0": sc(margin),
+            "skip_x": sc(35),
+            "skip_w": sc(text_w),
+            "wide_x": sc(margin),
+            "wide_w": sc(content_w),
+            "close_x": 0,
+            "close_w": 0,
+            "close_icon_x": None,
+        }
+    skip_x = 35
+    tail = SKIP_CLOSE_ICON_SLOT_720 + SKIP_CLOSE_BTN_W_720 + margin
+    panel_w = max(skip_x + text_w + tail, min_content_w + 2 * margin)
+    skip_w = panel_w - skip_x - tail
+    return {
+        "panel_w": sc(panel_w),
+        "content_w": sc(panel_w - 2 * margin),
+        "left0": sc(margin),
+        "skip_x": sc(skip_x),
+        "skip_w": sc(skip_w),
+        "wide_x": sc(margin),
+        "wide_w": sc(panel_w - 2 * margin),
+        "close_x": sc(skip_x + skip_w + SKIP_CLOSE_ICON_SLOT_720),
+        "close_w": sc(SKIP_CLOSE_BTN_W_720),
+        "close_icon_x": sc(skip_x + skip_w),
+    }
+
+
 def _layout_full_skip_buttons(
-    window, sc, compact, hide_close, align_right, place_focus_overlays=False, hide_skip_icon=False
+    window,
+    sc,
+    compact,
+    hide_close,
+    align_right,
+    place_focus_overlays=False,
+    hide_skip_icon=False,
+    text_w=None,
+    min_content_w=0,
 ):
     """Place Skip/Close and optional Customize focus overlays; return (content_left, content_w)."""
-    if compact:
-        content_w = sc(COMPACT_SKIP_CONTENT_W_720)
-        panel_w = sc(FULL_SKIP_PANEL_W_720)
-        left0 = (panel_w - content_w) if align_right else 0
-        btn_top = sc(COMPACT_SKIP_BTN_TOP_720)
-        btn_h = sc(COMPACT_SKIP_BTN_H_720)
-        close_w = sc(COMPACT_SKIP_CLOSE_W_720)
-        gap = sc(COMPACT_SKIP_GAP_720)
-        skip_w = content_w if hide_close else max(sc(80), content_w - close_w - gap)
-        close_x = left0 + skip_w + gap
-        wide_x, wide_w = left0, content_w
-        skip_x = left0
-    else:
-        left0 = sc(FULL_SKIP_MARGIN_720)
-        content_w = sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
-        btn_top = sc(10)
-        btn_h = sc(25)
-        skip_x, skip_w = sc(35), sc(290)
-        close_x, close_w = sc(345), sc(80)
-        wide_x, wide_w = left0, content_w
+    if text_w is None:
+        # Legacy fixed layout: wide enough for any label.
+        text_w = 290 if not compact else COMPACT_SKIP_CONTENT_W_720 - COMPACT_SKIP_CLOSE_W_720 - COMPACT_SKIP_GAP_720
+    m = full_skip_panel_metrics(
+        sc, compact, hide_close, hide_skip_icon, text_w, min_content_w
+    )
+    left0 = m["left0"]
+    content_w = m["content_w"]
+    btn_top = sc(COMPACT_SKIP_BTN_TOP_720) if compact else sc(10)
+    btn_h = sc(COMPACT_SKIP_BTN_H_720) if compact else sc(25)
+    skip_x, skip_w = m["skip_x"], m["skip_w"]
+    close_x, close_w = m["close_x"], m["close_w"]
+    wide_x, wide_w = m["wide_x"], m["wide_w"]
+    try:
+        window._skip_panel_w = m["panel_w"]
+    except Exception:
+        pass
+    if m["close_icon_x"] is not None and not hide_close and not hide_skip_icon:
+        _place_ctrl(
+            _safe_control(window, SKIP_CLOSE_ICON_ID), m["close_icon_x"], sc(13)
+        )
 
     # Each control call waits for a rendered frame, so place only the buttons the
     # skin can actually show. The preview window toggles these live, so it still
@@ -693,8 +871,9 @@ def apply_full_skip_layout(
     scale_fn: Callable[[int], int],
     log_fn: Optional[Callable[[str], None]] = None,
     place_focus_overlays: bool = False,
+    addon=None,
 ):
-    """Stack optional Full rows, set panel height, seed progress from playhead."""
+    """Size the panel to the skip label, stack optional rows, seed progress from playhead."""
     sc = scale_fn
     compact = is_compact_full_mode(settings.get_text("skip_dialog_mode", SKIP_DIALOG_MODE_FULL))
     combined = is_compact_combined(settings)
@@ -719,9 +898,29 @@ def apply_full_skip_layout(
 
     # Mirrors the dialog's own resolution so the placed button is the visible one.
     hide_skip_icon = True if compact else settings.get_bool("hide_skip_icon", False)
-    content_left, progress_bar_width = _layout_full_skip_buttons(
-        window, sc, compact, hide_close, align_right, place_focus_overlays, hide_skip_icon
+    show_jump_row = window.getProperty("show_next_jump") == "true"
+    ending_row = (not compact) and window.getProperty("hide_ending_text") != "true"
+    min_content_w = 0
+    if show_jump_row:
+        min_content_w = SKIP_ROWS_MIN_CONTENT_W_720["jump"]
+    elif ending_row:
+        min_content_w = SKIP_ROWS_MIN_CONTENT_W_720["ending"]
+    label_for_width = widest_skip_label(segment, settings, addon)
+    text_w = skip_label_width_720(
+        label_for_width, settings.get_text("skip_button_format", "Skip + Type + Duration")
     )
+    content_left, progress_bar_width = _layout_full_skip_buttons(
+        window,
+        sc,
+        compact,
+        hide_close,
+        align_right,
+        place_focus_overlays,
+        hide_skip_icon,
+        text_w=text_w,
+        min_content_w=min_content_w,
+    )
+    panel_w = int(getattr(window, "_skip_panel_w", sc(FULL_SKIP_PANEL_W_720)))
     CONTENT_TOP = sc(33) if compact else sc(41)
     GAP_AFTER_JUMP = sc(5)
     GAP_BEFORE_PROGRESS = sc(4) if not compact else sc(3)
@@ -774,12 +973,33 @@ def apply_full_skip_layout(
             # Only height follows ending text / progress / jump rows.
             try:
                 panel.setHeight(total_h)
+                panel.setWidth(panel_w)
             except Exception:
                 pass
+            if not place_focus_overlays:
+                # The corner skin anchors the group for the widest panel; re-anchor it
+                # for this width (right corners keep the same inset as left ones).
+                try:
+                    x720 = (
+                        SKIP_DIALOG_CANVAS_W_720
+                        - SKIP_DIALOG_SCREEN_MARGIN_720
+                        if align_right
+                        else SKIP_DIALOG_SCREEN_MARGIN_720
+                    )
+                    x = sc(x720) - panel_w if align_right else sc(x720)
+                    panel.setPosition(int(x), int(panel.getPosition()[1]))
+                except Exception as e:
+                    _log("Full skip panel position: %s" % e)
         if backdrop:
-            _place_ctrl(backdrop, 0, 0, sc(FULL_SKIP_PANEL_W_720), total_h)
+            _place_ctrl(backdrop, 0, 0, panel_w, total_h)
             try:
-                backdrop.setVisible(not compact)
+                backdrop.setColorDiffuse(card_color_diffuse(settings))
+            except Exception:
+                pass
+            try:
+                backdrop.setVisible(
+                    (not compact) and settings.get_bool("skip_card_enabled", True)
+                )
             except Exception:
                 pass
     except Exception as e:

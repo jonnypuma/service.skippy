@@ -1,7 +1,7 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 7.0.2** (`addon.xml`). See `CHANGELOG.md` for the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
+**Version 7.1.0** (`addon.xml`). See `CHANGELOG.md` for the 7.1.0 native skip dialog, presets and TheIntroDB v4, the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
@@ -172,7 +172,7 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 
 Remote services match your library using **TMDB** and/or **IMDb** IDs—not Kodi’s internal database IDs. Skippy reads those from Kodi’s **`uniqueid`** (and can lift **show-level** TMDB when the episode row only has TVDB/Sonarr-style IDs). If metadata is incomplete, Skippy can call **api.themoviedb.org** to resolve missing IDs, **but only when a TMDB v3 API key is available**.
 
-TheIntroDB’s **GET** `https://api.theintrodb.org/v3/media` returns each segment type (**intro**, **recap**, **credits**, **preview**, …) as a **JSON array** of windows (`start_ms` / `end_ms`; some segments may omit an end timestamp meaning “through end of the file”). Skippy passes **`duration_ms`** from playback/runtime when known to better match theatrical vs extended cuts. Multiple segments per type are supported, and empty types are **left out** of the response.
+TheIntroDB’s **GET** `https://api.theintrodb.org/v4/media` returns each segment type (**intro**, **recap**, **credits**, **preview**, …) as a **JSON array** of windows (`start_ms` / `end_ms`; some segments may omit an end timestamp meaning “through end of the file”). Skippy passes **`duration_ms`** from playback/runtime when known to better match theatrical vs extended cuts. Multiple segments per type are supported, and empty types are **left out** of the response.
 
 **For reliable online lookup**, plan on one of these (you do **not** need both):
 
@@ -274,7 +274,22 @@ Duplicate Ask prompts are blocked primarily by **state**, not by sleeping before
 
 - **Just-skipped**: After a Skippy skip (Ask confirm or Auto), that segment’s id is ignored while the playhead is still inside its `[start, end]` (e.g. keyframe snap). Cleared when outside that window, on a new video, or on major rewind. Nested, overlapping, and consecutive abutting segments use different ids and are not blocked.
 - **Same-seg cooldown**: The same `seg_id` will not open Ask again within **300 ms** (hard-coded anti-spam; separate from the debounce setting).
-- **Optional debounce**: **`ask_dialog_debounce_ms`** under **Playback → Global options** (**0–500**, **default 0**). There is **no** fixed 300 ms wait on every Ask. Leave at **0** unless your device still double-opens dialogs; raise it only then.
+- **Optional debounce**: **`ask_dialog_debounce_ms`** under **Playback → Global options** (**0–500**, **default 0**). There is **no** fixed 300 ms wait on every Ask. Leave at **0** unless your device still double-opens dialogs; raise it only then. After any delay Skippy re-checks that playback is still running and the playhead is still inside the segment before opening the dialog. This option is legacy and may be removed if no double-opening dialogs are reported.
+
+---
+
+## Skip dialog type (Custom or Native)
+
+**Toggle mode** (top of **Playback & Dialog**, a selector: **Custom** or **Native**, default Custom) chooses who draws the Ask prompt:
+
+- **Custom** — Skippy's own dialog described under **Skip dialog modes** (Full / Compact Full / Minimal, progress bar, corner placement, colours). All of those options show only in this mode.
+- **Native** — the skin's own look: a notification toast with OK-to-skip (default), or Kodi's built-in Yes/No dialog. No add-on styling is involved, so it matches every skin.
+
+Native options: **Skip button text** (Skip / Skip + Type), **Show segment duration** (adds e.g. `(1m30s)`), **Duration format**, **Default focus** (Skip or Dismiss), **Close dialog when segment ends**, and **Show next-jump line**. The message reads like *Intro ending in: 00:45*, plus the next-jump hint when enabled.
+
+**Show as toast (OK to skip)** (default on in Native mode) swaps the Yes/No dialog for the skin's notification toast, with an invisible Skippy dialog that holds focus so **OK / Enter skips** and **Back** dismisses. The toast shows *Skip Intro (1m30s)* plus *Press OK to skip* and is re-posted if it disappears mid-segment, so it stays up for the whole segment. Kodi shows one toast at a time, so another add-on's toast can temporarily cover it (Skippy brings it back afterwards). Nothing highlights, and **Default focus** / **Close dialog when segment ends** do not apply. If the skin does not report toast visibility, Skippy posts one long toast and does not re-post.
+
+Native limits (Kodi gives add-ons no handle to change or position a stock dialog): the text, including the countdown and duration, is **fixed when the dialog opens**; there is no progress bar, no corner placement (the skin decides), no font colour or focus-texture control, and no Close/icon toggles. The dialog closes by itself when the segment ends (via `autoclose`), playback stops, or you seek out of the segment. **Back** / **ESC** dismisses, same as Close. `defaultbutton` needs Kodi 20+; older builds ignore **Default focus**.
 
 ---
 
@@ -291,6 +306,28 @@ Classic panel: optional skip/close icons, **Skip** and **Close** buttons, option
 ### Compact Full mode
 
 Same SkipDialog XML and Full-mode styles (button focus, skip label format, corner) without the black card. Ending text and skip/close icons are always off. Skip and Close sit in a **300px** pill cluster (Close can still be hidden). Optional next-jump line and a **4px** progress bar stay under the cluster. **Combined skip and progress** (Full and Compact Full) hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar. Compact Full is for a sleeker Full prompt, not a replacement for Minimal’s plate chip.
+
+### Presets, card background and new textures (Custom mode)
+
+**Skip dialog presets…** (Playback & Dialog, and the **Preset** row at the top of **Customize Skip Dialog**) applies a ready-made look. From the settings action, the chosen preset opens in **Customize Skip Dialog** as a live preview; nothing is stored until you press **Save** (Cancel keeps your old look):
+
+| Style | Presets |
+| ----- | ------- |
+| Glossy / 3D | **Classic** (the original look), **Stylish** (graphite, all caps), **Colorful** (violet 3D, pink→blue progress) |
+| Flat / matte | **Modern** (flat blue, thin bar, translucent card), **Vibrant** (flat violet, aurora gradient bar), **Mono** (slate, all caps, hairline white bar), **Slate** (muted grey-blue), **Sunset** (flat orange, sunset gradient bar), **Stripes** (flat orange, striped bar), **Segments** (flat teal, segmented bar) |
+| Metal / gold | **Steel** (brushed steel pill, all caps), **Gold** (gold-leaf pill and gold bar on a dim card, all caps) |
+| Glass / outline / glow | **Glass** (no card, dark glass pill), **Frosted** (no card, milky white glass pill), **Outline** (no card, white ring), **Neon** (no card, cyan glow ring and glow line), **Neon Pink** (magenta glow), **Subtle** (Compact Full, light glass pill), **Ghost** (no card, faint glass pill, label only) |
+| Retro / large | **Retro** (green text, corner brackets, segmented bar), **Big & Bold** (opaque card, flat blue, thick bar, all caps), **Accessible** (opaque card, all caps, thick white bar) |
+| Compact | **Sleek** (Compact Full, combined flat teal), **Clean** (Compact Full, underline focus), **Pill** (Compact Full, combined glass-blue capsule), **Underline** (Compact Full, cyan underline, teal bar) |
+| Minimal | **Minimalist** (flat white plate), **Minimal Dark**, **Minimal Glass**, **Minimal Color**, **Minimal Paper** (light grey plate, dark text), **Minimal Pastel** (mint plate, dark text), **Minimal Steel**, **Minimal Gold**, **Minimal Neon**, **Minimal Frosted** |
+
+A preset only changes the *look* (mode, textures, font colour, all caps, card, label format, progress style/height, Close and icon toggles). Your corner placement, **Ignore overlapping segments**, countdown and duration settings are left alone. In the Customize screen the Preset row shows **Custom** as soon as you change anything; pressing **Save** on a Custom look asks for a name and stores it as your own preset (cancel the name box to save the settings only); use **left/right** to step through presets with a live preview, or **OK** to open the list.
+
+**Save your own:** in the preset list choose **Save current look as preset…**, type a name, and it appears in the list as *Name (saved)*. Saving over a saved name asks first; built-in names cannot be reused. **Delete a saved preset…** removes one. Saved presets live in `addon_data/service.skippy/skip_dialog_presets.json` and are included in **Backup profile data** (restore adds presets you do not already have).
+
+**Card background:** **Show card background** and **Card opacity (%)** (default 95, steps of 5) control the dark panel behind Full mode. Turn the card off for a floating button and bar, or lower the opacity for a see-through panel. Compact Full and Minimal never draw the card.
+
+**Textures:** the flat, glass, outline and underline button styles, the flat and gradient progress fills and the matte/glass/gradient minimal plates are generated by `tools/gen_preset_textures.py`. Flat button focus art is authored at 2x (128×50) and 9-sliced, so it stays crisp at 1080p. Underline styles have no side caps. *Combined skip and progress* uses the button texture as the fill, so solid or glass styles read best there.
 
 ### Next jump line (Full and Compact Full)
 
@@ -534,7 +571,7 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 4. Changes apply immediately for new skip dialogs
 
 **Technical Details:**
-- Progress bar dimensions: width **420** (5 px inset from each side of the 430-wide panel); height **5–32** via settings (default **16**), applied at dialog layout
+- Progress bar dimensions: width follows the panel (5 px inset from each side; the panel is sized to the skip label, up to 430 wide); height **5–32** via settings (default **16**), applied at dialog layout
 - Skin uses Kodi **`reveal` true**: **`midtexture`** should match **`texturebg`** dimensions (full-width fill image clips to the current percent instead of stretching horizontally)
 - Located at the bottom of the skip dialog
 - Uses a flat dark `progress_background.png` track (no left/right outline caps)

@@ -1837,3 +1837,139 @@ msgstr "Kunne ikke lagre segmenttypene."
 msgctxt "#45023"
 msgid "Segment types saved."
 msgstr "Segmenttyper lagret."
+
+msgctxt "#46000"
+msgid "Toggle mode"
+msgstr "Bytt modus"
+
+msgctxt "#46001"
+msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+msgstr "Custom bruker Skippys egen dialog med fremdriftslinje, hjørneplassering og stilvalg. Native bruker skinnets utseende: en toast (OK for å hoppe over) eller Kodis Ja/Nei-dialog. Teksten er fast når den vises (ingen levende nedtelling eller fremdriftslinje)."
+
+msgctxt "#46002"
+msgid "Native dialog"
+msgstr "Native dialog"
+
+msgctxt "#46003"
+msgid "Default focus"
+msgstr "Standardfokus"
+
+msgctxt "#46004"
+msgid "Close dialog when segment ends"
+msgstr "Lukk dialogen når segmentet slutter"
+
+msgctxt "#46005"
+msgid "Automatically close the dialog when the segment ends or playback stops."
+msgstr "Lukker dialogen automatisk når segmentet slutter eller avspillingen stopper."
+
+msgctxt "#46006"
+msgid "Show next-jump line"
+msgstr "Vis linje for neste hopp"
+
+msgctxt "#46007"
+msgid "Show segment duration"
+msgstr "Vis segmentets varighet"
+
+msgctxt "#46008"
+msgid "Press OK to skip"
+msgstr "Trykk OK for å hoppe over"
+
+msgctxt "#46009"
+msgid "Show as toast (OK to skip)"
+msgstr "Vis som toast (OK for å hoppe over)"
+
+msgctxt "#46010"
+msgid "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+msgstr "Viser skinnets varsel-toast i stedet for en dialog. En usynlig lytter lar OK/Enter hoppe over og Tilbake avvise. Toasten holdes på skjermen under hele segmentet, men en annen tilleggs toast kan dekke den. Teksten er fast når den vises."
+
+msgctxt "#46011"
+msgid "Show card background"
+msgstr "Vis kortbakgrunn"
+
+msgctxt "#46012"
+msgid "Card opacity (%)"
+msgstr "Kortets ugjennomsiktighet (%)"
+
+msgctxt "#46013"
+msgid "Skip dialog presets…"
+msgstr "Forhåndsvalg for hopp-dialog…"
+
+msgctxt "#46014"
+msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
+msgstr "Bruk et ferdig utseende eller ett du har lagret. Gjelder Custom-modus."
+
+msgctxt "#46015"
+msgid "Preset"
+msgstr "Forhåndsvalg"
+
+msgctxt "#46016"
+msgid "Custom"
+msgstr "Egne innstillinger"
+
+msgctxt "#46017"
+msgid "Save current look as preset…"
+msgstr "Lagre nåværende utseende som forhåndsvalg…"
+
+msgctxt "#46018"
+msgid "Delete a saved preset…"
+msgstr "Slett et lagret forhåndsvalg…"
+
+msgctxt "#46019"
+msgid "Preset name"
+msgstr "Navn på forhåndsvalg"
+
+msgctxt "#46020"
+msgid "Preset saved: %s"
+msgstr "Forhåndsvalg lagret: %s"
+
+msgctxt "#46021"
+msgid "A saved preset named %s already exists. Overwrite it?"
+msgstr "Et lagret forhåndsvalg med navnet %s finnes allerede. Overskrive det?"
+
+msgctxt "#46022"
+msgid "Delete preset %s?"
+msgstr "Slette forhåndsvalget %s?"
+
+msgctxt "#46023"
+msgid "Preset deleted: %s"
+msgstr "Forhåndsvalg slettet: %s"
+
+msgctxt "#46024"
+msgid "Choose a preset"
+msgstr "Velg et forhåndsvalg"
+
+msgctxt "#46025"
+msgid "%s (saved)"
+msgstr "%s (lagret)"
+
+msgctxt "#46026"
+msgid "Could not save the preset."
+msgstr "Kunne ikke lagre forhåndsvalget."
+
+msgctxt "#46027"
+msgid "Preset applied: %s"
+msgstr "Forhåndsvalg brukt: %s"
+
+msgctxt "#46028"
+msgid "That name is used by a built-in preset."
+msgstr "Navnet brukes av et innebygd forhåndsvalg."
+
+msgctxt "#46029"
+msgid "There are no saved presets to delete."
+msgstr "Det finnes ingen lagrede forhåndsvalg å slette."
+
+msgctxt "#46030"
+msgid "Current preset"
+msgstr "Gjeldende forhåndsvalg"
+
+msgctxt "#46031"
+msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+msgstr "Viser hvilket forhåndsvalg som samsvarer med innstillingene dine, eller Egendefinert (ikke lagret)."
+
+msgctxt "#46032"
+msgid "Custom (unsaved)"
+msgstr "Egendefinert (ikke lagret)"
+
+msgctxt "#46033"
+msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
+msgstr "Når et segment ligger inni eller overlapper et annet, vises en linje som forteller hvor Hopp over går videre (for eksempel starten på neste segment)."

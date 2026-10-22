@@ -1831,3 +1831,139 @@ msgctxt "#45023"
 msgid "Segment types saved."
 msgstr "Segment types saved."
 
+
+msgctxt "#46000"
+msgid "Toggle mode"
+msgstr "Toggle mode"
+
+msgctxt "#46001"
+msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+msgstr "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+
+msgctxt "#46002"
+msgid "Native dialog"
+msgstr "Native dialog"
+
+msgctxt "#46003"
+msgid "Default focus"
+msgstr "Default focus"
+
+msgctxt "#46004"
+msgid "Close dialog when segment ends"
+msgstr "Close dialog when segment ends"
+
+msgctxt "#46005"
+msgid "Automatically close the dialog when the segment ends or playback stops."
+msgstr "Automatically close the dialog when the segment ends or playback stops."
+
+msgctxt "#46006"
+msgid "Show next-jump line"
+msgstr "Show next-jump line"
+
+msgctxt "#46007"
+msgid "Show segment duration"
+msgstr "Show segment duration"
+
+msgctxt "#46008"
+msgid "Press OK to skip"
+msgstr "Press OK to skip"
+
+msgctxt "#46009"
+msgid "Show as toast (OK to skip)"
+msgstr "Show as toast (OK to skip)"
+
+msgctxt "#46010"
+msgid "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+msgstr "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+
+msgctxt "#46011"
+msgid "Show card background"
+msgstr "Show card background"
+
+msgctxt "#46012"
+msgid "Card opacity (%)"
+msgstr "Card opacity (%)"
+
+msgctxt "#46013"
+msgid "Skip dialog presets…"
+msgstr "Skip dialog presets…"
+
+msgctxt "#46014"
+msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
+msgstr "Apply a ready-made look or one you saved. Applies to Custom mode."
+
+msgctxt "#46015"
+msgid "Preset"
+msgstr "Preset"
+
+msgctxt "#46016"
+msgid "Custom"
+msgstr "Custom"
+
+msgctxt "#46017"
+msgid "Save current look as preset…"
+msgstr "Save current look as preset…"
+
+msgctxt "#46018"
+msgid "Delete a saved preset…"
+msgstr "Delete a saved preset…"
+
+msgctxt "#46019"
+msgid "Preset name"
+msgstr "Preset name"
+
+msgctxt "#46020"
+msgid "Preset saved: %s"
+msgstr "Preset saved: %s"
+
+msgctxt "#46021"
+msgid "A saved preset named %s already exists. Overwrite it?"
+msgstr "A saved preset named %s already exists. Overwrite it?"
+
+msgctxt "#46022"
+msgid "Delete preset %s?"
+msgstr "Delete preset %s?"
+
+msgctxt "#46023"
+msgid "Preset deleted: %s"
+msgstr "Preset deleted: %s"
+
+msgctxt "#46024"
+msgid "Choose a preset"
+msgstr "Choose a preset"
+
+msgctxt "#46025"
+msgid "%s (saved)"
+msgstr "%s (saved)"
+
+msgctxt "#46026"
+msgid "Could not save the preset."
+msgstr "Could not save the preset."
+
+msgctxt "#46027"
+msgid "Preset applied: %s"
+msgstr "Preset applied: %s"
+
+msgctxt "#46028"
+msgid "That name is used by a built-in preset."
+msgstr "That name is used by a built-in preset."
+
+msgctxt "#46029"
+msgid "There are no saved presets to delete."
+msgstr "There are no saved presets to delete."
+
+msgctxt "#46030"
+msgid "Current preset"
+msgstr "Current preset"
+
+msgctxt "#46031"
+msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+msgstr "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+
+msgctxt "#46032"
+msgid "Custom (unsaved)"
+msgstr "Custom (unsaved)"
+
+msgctxt "#46033"
+msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
+msgstr "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."

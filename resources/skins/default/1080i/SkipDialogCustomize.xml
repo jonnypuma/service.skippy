@@ -8,7 +8,7 @@
     <height>1080</height>
   </coordinates>
   <zorder>1</zorder>
-  <defaultcontrol>4100</defaultcontrol>
+  <defaultcontrol>4140</defaultcontrol>
   <animation type="WindowOpen">
     <effect type="fade" start="0" end="100" time="200" />
   </animation>
@@ -53,6 +53,39 @@
         <textcolorfocus>FFFFFFFF</textcolorfocus>
         <aligny>center</aligny>
         <onup>4100</onup><ondown>4100</ondown><onleft>4100</onleft><onright>4100</onright>
+      </control>
+      <control type="button" id="4140">
+        <left>24</left><top>78</top><width>702</width><height>51</height>
+        <label>Preset</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4140</onup><ondown>4140</ondown><onleft>4140</onleft><onright>4140</onright>
+      </control>
+      <control type="button" id="4141">
+        <left>24</left><top>78</top><width>702</width><height>51</height>
+        <label>Show card background</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4141</onup><ondown>4141</ondown><onleft>4141</onleft><onright>4141</onright>
+      </control>
+      <control type="button" id="4142">
+        <left>24</left><top>78</top><width>702</width><height>51</height>
+        <label>Card opacity (%)</label>
+        <font>font13</font>
+        <texturefocus>button_focus.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>FFC0C0C0</textcolor>
+        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <aligny>center</aligny>
+        <onup>4142</onup><ondown>4142</ondown><onleft>4142</onleft><onright>4142</onright>
       </control>
       <control type="button" id="4101">
         <left>24</left><top>129</top><width>702</width><height>51</height>
@@ -362,7 +395,7 @@
           <texture>icon_skip.png</texture>
           <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
         </control>
-        <control type="image">
+        <control type="image" id="3083">
           <left>488</left><top>20</top>
           <width>30</width><height>30</height>
           <texture>icon_close.png</texture>

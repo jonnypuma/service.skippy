@@ -77,6 +77,24 @@ class IntroDbSubmitPayloadTests(unittest.TestCase):
         self.assertNotIn("tmdb_id", body)
         self.assertNotIn("tvdb_id", body)
 
+    def test_movie_submit_sets_is_movie_and_omits_series_ids(self):
+        import online_segment_upload as mod
+
+        captured = {}
+
+        def fake_post(_url, _headers, payload):
+            captured["payload"] = payload
+            return 200, {"ok": True}, None
+
+        ctx = {"type": "movie", "imdb_id": "tt0111161", "tmdb_id": 278, "tvdb_id": 169}
+        with patch.object(mod, "_http_post_json", side_effect=fake_post):
+            ok, _ = mod._submit_introdb_app(ctx, "outro", 7000.0, 7200.0, "k")
+        self.assertTrue(ok)
+        body = captured["payload"]
+        self.assertIs(body["is_movie"], True)
+        for k in ("season", "episode", "tmdb_id", "tvdb_id"):
+            self.assertNotIn(k, body)
+
 
 if __name__ == "__main__":
     unittest.main()

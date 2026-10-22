@@ -663,14 +663,15 @@ def build_movie_context(item, force_tmdb_enrichment=False):
             "After TMDB API enrichment (movie): tmdb=%s imdb=%s" % (tmdb_id, imdb_id)
         )
 
-    if tmdb_id is None and not imdb_id:
-        _rlog("Remote movie segments skipped: no TMDB/IMDb after Kodi and TMDB API")
+    tvdb_movie = normalize_numeric_id(uid.get("tvdb"))
+    if tmdb_id is None and not imdb_id and tvdb_movie is None:
+        _rlog("Remote movie segments skipped: no TVDB/TMDB/IMDb after Kodi and TMDB API")
         return None
     return {
         "type": "movie",
         "tmdb_id": tmdb_id,
         "imdb_id": imdb_id,
-        "tvdb_id": normalize_numeric_id(uid.get("tvdb")),
+        "tvdb_id": tvdb_movie,
     }
 
 
@@ -1031,13 +1032,15 @@ def build_tv_episode_context(item, force_tmdb_enrichment=False):
             show_imdb_id, imdb_id, tmdb_id, key
         )
 
-    tvdb_id = normalize_numeric_id(uid.get("tvdb"))
-    if tvdb_id is None:
-        tvshow_id = _resolve_tvshow_id(item)
-        if tvshow_id:
-            tvdb_id = _tvdb_from_tvshow_row(tvshow_id)
+    # Kodi's *episode* uniqueid "tvdb" is the TVDB **episode** id; the **series** id
+    # (what TheIntroDB v4 calls tvdb_id) lives on the TV show row.
+    tvdb_episode_id = normalize_numeric_id(uid.get("tvdb"))
+    tvdb_id = None
+    tvshow_id = _resolve_tvshow_id(item)
+    if tvshow_id:
+        tvdb_id = _tvdb_from_tvshow_row(tvshow_id)
 
-    if tmdb_id is None and not imdb_id and not show_imdb_id:
+    if tmdb_id is None and not imdb_id and not show_imdb_id and tvdb_id is None:
         tvdb_raw = uid.get("tvdb")
         if tvdb_raw is not None and str(tvdb_raw).strip() != "":
             _rlog(
@@ -1062,10 +1065,11 @@ def build_tv_episode_context(item, force_tmdb_enrichment=False):
         "imdb_id": imdb_id,
         "show_imdb_id": show_imdb_id,
         "tvdb_id": tvdb_id,
+        "tvdb_episode_id": tvdb_episode_id,
     }
     _rlog(
-        "TV context: S%02dE%02d tmdb_id=%s tvdb_id=%s episode_imdb=%s show_imdb=%s"
-        % (season, episode, tmdb_id, tvdb_id, imdb_id, show_imdb_id)
+        "TV context: S%02dE%02d tmdb_id=%s tvdb_id=%s tvdb_episode_id=%s episode_imdb=%s show_imdb=%s"
+        % (season, episode, tmdb_id, tvdb_id, tvdb_episode_id, imdb_id, show_imdb_id)
     )
     return ctx
 
