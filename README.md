@@ -1,14 +1,14 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 7.1.1** (`addon.xml`). See `CHANGELOG.md` for the 7.1.0 native skip dialog, presets and TheIntroDB v4, the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
+**Version 7.1.2** (`addon.xml`). See `CHANGELOG.md` for the 7.1.0 native skip dialog, presets and TheIntroDB v4, the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
 During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment types** catalog (skip mode, aliases, and EDL number).
-<img width="1610" height="983" alt="screenshot01" src="https://github.com/user-attachments/assets/cb119935-5098-4c3c-8218-43d78a964109" />
 <img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
 <img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
+
 <img width="1267" height="704" alt="screenshot06" src="https://github.com/user-attachments/assets/afe25b5d-cef2-4ea3-8a8b-ee4df9d8a8c9" />
 <img width="1259" height="709" alt="screenshot05" src="https://github.com/user-attachments/assets/d9978fc4-daf0-47e1-9d81-c80c4a7f5e9d" />
 <img width="1262" height="708" alt="screenshot04" src="https://github.com/user-attachments/assets/8527089e-0dcb-4bc1-8efe-5ccdff1bcef9" />

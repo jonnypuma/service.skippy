@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.1.2] - 2026-10-22
+
+### Fixed
+
+- **Jellyfin `.chapters` folder not detected on CoreELEC** (GitHub issue #1): Kodi's `listdir` can omit hidden folders, so `.chapters/<name>_chapters.xml` was skipped. Skippy now falls back to an `exists` check on the folder when it is missing from the listing.
+
 ## [7.1.1] - 2026-10-22
 
 ### Removed

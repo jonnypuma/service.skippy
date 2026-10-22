@@ -165,6 +165,16 @@ def _listdir_index(parent):
     return file_map, dir_set
 
 
+def _hidden_dir_exists(path, cache):
+    """``listdir`` can omit hidden dirs (e.g. ``.chapters`` on CoreELEC); ask ``exists``."""
+    if path not in cache:
+        try:
+            cache[path] = bool(xbmcvfs.exists(path.rstrip("/\\") + "/"))
+        except (OSError, IOError, RuntimeError, ValueError, TypeError, AttributeError):
+            cache[path] = False
+    return cache[path]
+
+
 def existing_paths_from_listing(candidate_paths, shared_indexes=None):
     """Split candidates into listed hits vs unknown (listdir failed for that parent).
 
@@ -176,6 +186,7 @@ def existing_paths_from_listing(candidate_paths, shared_indexes=None):
     unknown = []
     indexes = shared_indexes if shared_indexes is not None else {}
     jf_lower = _JF_CHAPTERS_SUBDIR.lower()
+    hidden_cache = {}
 
     def index_for(parent):
         if parent not in indexes:
@@ -194,7 +205,7 @@ def existing_paths_from_listing(candidate_paths, shared_indexes=None):
             gp = index_for(grandparent)
             if gp is not None:
                 _files, dirs = gp
-                if jf_lower not in dirs:
+                if jf_lower not in dirs and not _hidden_dir_exists(parent, hidden_cache):
                     continue
         idx = index_for(parent)
         if idx is None:

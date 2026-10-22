@@ -2,7 +2,6 @@
 # Keeps these in the repo for development; Kodi install ZIPs stay lean.
 tests/ export-ignore
 tools/ export-ignore
-screenshot*.png export-ignore
 _*.png export-ignore
 __pycache__/ export-ignore
 *.code-workspace export-ignore
