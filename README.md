@@ -6,9 +6,9 @@
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
 During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment types** catalog (skip mode, aliases, and EDL number).
+<img width="1610" height="983" alt="screenshot01" src="https://github.com/user-attachments/assets/8e0350e2-558c-407e-8b49-a5b5f011a01f" />
 <img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
 <img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
-
 <img width="1267" height="704" alt="screenshot06" src="https://github.com/user-attachments/assets/afe25b5d-cef2-4ea3-8a8b-ee4df9d8a8c9" />
 <img width="1259" height="709" alt="screenshot05" src="https://github.com/user-attachments/assets/d9978fc4-daf0-47e1-9d81-c80c4a7f5e9d" />
 <img width="1262" height="708" alt="screenshot04" src="https://github.com/user-attachments/assets/8527089e-0dcb-4bc1-8efe-5ccdff1bcef9" />
