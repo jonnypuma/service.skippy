@@ -925,9 +925,8 @@ class CombinedCompactLayoutTests(unittest.TestCase):
         m = _expected_metrics(settings, seg, False, True, False, min_content=190)
         controls[3015].setWidth.assert_called_with(m["wide_w"])
         self.assertNotIn(3016, controls)
-        controls[COMBINED_TRACK_ID].setPosition.assert_called_with(
-            FULL_SKIP_MARGIN_720, 10
-        )
+        # The track starts after the icon slot so the icon stays outside it.
+        controls[COMBINED_TRACK_ID].setPosition.assert_called_with(m["wide_x"], 10)
         controls[COMBINED_FILL_STRETCH_ID].setWidth.assert_called_with(
             int(round(0.25 * m["wide_w"]))
         )

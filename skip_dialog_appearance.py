@@ -847,8 +847,10 @@ def full_skip_panel_metrics(
             "left0": sc(margin),
             "skip_x": sc(35),
             "skip_w": sc(text_w),
-            "wide_x": sc(margin),
-            "wide_w": sc(content_w),
+            # With the Skip icon shown, the focus texture starts after the icon slot so
+            # the icon stays outside it (same as when the Close button is shown).
+            "wide_x": sc(margin + icon_slot),
+            "wide_w": sc(content_w - icon_slot),
             "close_x": 0,
             "close_w": 0,
             "close_icon_x": None,

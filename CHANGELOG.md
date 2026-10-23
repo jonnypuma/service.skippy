@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.8] - 2026-10-23
+
+### Fixed
+
+- **Skip and Close icons were hidden even when enabled**: the icons were drawn underneath the button's focus texture, so with the wide button (Hide Close Button on) they were covered and the option only made the button wider. The icons are now drawn above the buttons in every skin layout and in the Customize preview, and the Skip icon now sits in its own slot beside the button instead of on top of the focus texture, whether or not the Close button is shown.
+
+### Changed
+
+- **Built-in presets hide the Skip and Close icons by default**; turn off *Hide Skip and Close Icons* to show them.
+
 ## [7.1.7] - 2026-10-23
 
 ### Fixed

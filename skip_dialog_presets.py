@@ -68,7 +68,7 @@ BASE_LOOK = {
     "skip_button_format": "Skip + Type + Duration",
     "hide_close_button": True,
     "show_skip_button_focus_texture": True,
-    "hide_skip_icon": False,
+    "hide_skip_icon": True,
     "compact_full_combined": False,
     "skip_card_enabled": True,
     "skip_card_opacity": 95,

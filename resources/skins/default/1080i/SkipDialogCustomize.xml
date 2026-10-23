@@ -400,18 +400,6 @@
           <texture>white.png</texture>
           <colordiffuse>F0000000</colordiffuse>
         </control>
-        <control type="image">
-          <left>8</left><top>20</top>
-          <width>30</width><height>30</height>
-          <texture>icon_skip.png</texture>
-          <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
-        </control>
-        <control type="image" id="3083">
-          <left>488</left><top>20</top>
-          <width>30</width><height>30</height>
-          <texture>icon_close.png</texture>
-          <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
-        </control>
         <control type="image" id="3040">
           <left>52</left><top>15</top>
           <width>435</width><height>38</height>
@@ -505,6 +493,18 @@
           <align>center</align>
           <aligny>center</aligny>
           <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+        </control>
+        <control type="image">
+          <left>15</left><top>20</top>
+          <width>30</width><height>30</height>
+          <texture>icon_skip.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="image" id="3083">
+          <left>488</left><top>20</top>
+          <width>30</width><height>30</height>
+          <texture>icon_close.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
         </control>
         <control type="label" id="3011">
           <left>8</left><top>62</top>

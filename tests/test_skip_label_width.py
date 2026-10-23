@@ -61,7 +61,11 @@ class SkipLabelWidthTests(unittest.TestCase):
         ident = lambda v: v  # noqa: E731
         m = full_skip_panel_metrics(ident, False, True, False, 96, min_content_w=280)
         self.assertEqual(m["content_w"], 280)
-        self.assertEqual(m["wide_w"], 280)
+        # The focus texture starts after the Skip icon slot (icons stay outside it).
+        self.assertEqual(m["wide_w"], 280 - 30)
+        self.assertEqual(m["wide_x"], 5 + 30)
+        no_icon = full_skip_panel_metrics(ident, False, True, True, 96, min_content_w=280)
+        self.assertEqual(no_icon["wide_w"], 280)
 
 
 if __name__ == "__main__":
