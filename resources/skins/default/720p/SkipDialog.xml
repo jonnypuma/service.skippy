@@ -91,6 +91,7 @@
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
+        <textoffsety>-3</textoffsety>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
         <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
@@ -109,6 +110,7 @@
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
+        <textoffsety>-3</textoffsety>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
         <visible>String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
@@ -127,6 +129,7 @@
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
         <aligny>center</aligny>
+        <textoffsety>-3</textoffsety>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
         <visible>String.IsEqual(Window.Property(hide_close_button),true) + String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
@@ -147,6 +150,7 @@
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
+        <textoffsety>-3</textoffsety>
         <align>center</align>
         <textoffsetx>0</textoffsetx>
         <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
@@ -201,7 +205,14 @@
         <width>420</width><height>16</height>
         <texture>progress_mid.png</texture>
         <aspectratio>stretch</aspectratio>
-        <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true) + !String.IsEqual(Window.Property(skippy_bar_tiled),true)</visible>
+      </control>
+      <control type="image" id="3032">
+        <left>5</left><top>90</top>
+        <width>420</width><height>16</height>
+        <texture>$INFO[Window.Property(skippy_progress_mid_tiled)]</texture>
+        <aspectratio align="left" aligny="center">scale</aspectratio>
+        <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true) + String.IsEqual(Window.Property(skippy_bar_tiled),true)</visible>
       </control>
     </control>
   </controls>

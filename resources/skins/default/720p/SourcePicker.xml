@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Source picker: jump to each source's start/end, then keep local or online. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+  <zorder>2</zorder>
+  <defaultcontrol>111</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1280</width>
+      <height>720</height>
+      <texture>white.png</texture>
+      <colordiffuse>80000000</colordiffuse>
+    </control>
+    <control type="group">
+      <left>240</left>
+      <top>170</top>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>800</width>
+        <height>380</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0202020</colordiffuse>
+      </control>
+      <control type="label" id="100">
+        <left>30</left>
+        <top>20</top>
+        <width>740</width>
+        <height>40</height>
+        <font>font16</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <label></label>
+      </control>
+      <control type="label" id="110">
+        <left>30</left>
+        <top>90</top>
+        <width>740</width>
+        <height>30</height>
+        <font>font13</font>
+        <textcolor>FFBBBBBB</textcolor>
+        <label></label>
+      </control>
+      <control type="button" id="111">
+        <left>30</left>
+        <top>125</top>
+        <width>350</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onright>112</onright>
+        <ondown>121</ondown>
+        <onleft>112</onleft>
+        <onup>130</onup>
+      </control>
+      <control type="button" id="112">
+        <left>420</left>
+        <top>125</top>
+        <width>350</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onleft>111</onleft>
+        <onright>111</onright>
+        <ondown>122</ondown>
+        <onup>131</onup>
+      </control>
+      <control type="label" id="120">
+        <left>30</left>
+        <top>190</top>
+        <width>740</width>
+        <height>30</height>
+        <font>font13</font>
+        <textcolor>FFBBBBBB</textcolor>
+        <label></label>
+      </control>
+      <control type="button" id="121">
+        <left>30</left>
+        <top>225</top>
+        <width>350</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onright>122</onright>
+        <onleft>122</onleft>
+        <onup>111</onup>
+        <ondown>130</ondown>
+      </control>
+      <control type="button" id="122">
+        <left>420</left>
+        <top>225</top>
+        <width>350</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onleft>121</onleft>
+        <onright>121</onright>
+        <onup>112</onup>
+        <ondown>131</ondown>
+      </control>
+      <control type="button" id="130">
+        <left>30</left>
+        <top>305</top>
+        <width>230</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onleft>132</onleft>
+        <onright>131</onright>
+        <onup>121</onup>
+        <ondown>111</ondown>
+      </control>
+      <control type="button" id="131">
+        <left>285</left>
+        <top>305</top>
+        <width>230</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onleft>130</onleft>
+        <onright>132</onright>
+        <onup>122</onup>
+        <ondown>112</ondown>
+      </control>
+      <control type="button" id="132">
+        <left>540</left>
+        <top>305</top>
+        <width>230</width>
+        <height>44</height>
+        <font>font13</font>
+        <align>center</align>
+        <aligny>center</aligny>
+        <texturefocus colordiffuse="FF2A9D8F">white.png</texturefocus>
+        <texturenofocus colordiffuse="33FFFFFF">white.png</texturenofocus>
+        <onleft>131</onleft>
+        <onright>130</onright>
+        <onup>122</onup>
+        <ondown>111</ondown>
+      </control>
+    </control>
+  </controls>
+</window>

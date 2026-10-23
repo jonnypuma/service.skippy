@@ -330,6 +330,105 @@ _BUILTIN_OVERRIDES = (
         },
     ),
     (
+        "Arcade",
+        {
+            "skip_dialog_font_color": "FFFF4DD2",
+            "skip_dialog_all_caps": True,
+            "skip_card_opacity": 90,
+            "button_focus_style": "button_focus_neon_magenta.png",
+            "progress_bar_style": "progress_mid_segmented_white.png",
+            "progress_bar_height": 10,
+            "skip_button_format": "Skip + Type",
+            "hide_skip_icon": True,
+        },
+    ),
+    (
+        "Terminal",
+        {
+            "skip_dialog_font_color": "FF39FF14",
+            "skip_dialog_all_caps": True,
+            "hide_ending_text": True,
+            "skip_card_opacity": 100,
+            "button_focus_style": "button_focus_bracket_green.png",
+            "progress_bar_style": "progress_mid_flat_green.png",
+            "progress_bar_height": 6,
+            "skip_button_format": "Skip",
+            "hide_skip_icon": True,
+        },
+    ),
+    (
+        "Blueprint",
+        {
+            "skip_dialog_font_color": "FF7FDBFF",
+            "skip_dialog_all_caps": True,
+            "skip_card_enabled": False,
+            "button_focus_style": "button_focus_outline_cyan.png",
+            "progress_bar_style": "progress_mid_flat_blue.png",
+            "progress_bar_height": 5,
+            "skip_button_format": "Skip + Type",
+            "hide_skip_icon": True,
+        },
+    ),
+    (
+        "Lava",
+        {
+            "skip_dialog_font_color": "FFFFD54F",
+            "button_focus_style": "button_focus_3d_orange.png",
+            "progress_bar_style": "progress_mid_grad_sunset.png",
+            "progress_bar_height": 14,
+        },
+    ),
+    (
+        "Deep Sea",
+        {
+            "skip_dialog_font_color": "FFE0F7FA",
+            "skip_card_opacity": 80,
+            "button_focus_style": "button_focus_aqua_vignette.png",
+            "progress_bar_style": "progress_mid_grad_ocean.png",
+            "progress_bar_height": 8,
+            "skip_button_format": "Skip + Type",
+            "hide_skip_icon": True,
+        },
+    ),
+    (
+        "Candy",
+        {
+            "skip_dialog_mode": "CompactFull",
+            "skip_dialog_font_color": "FF6D4C6F",
+            "button_focus_style": "button_focus_pastel_peach.png",
+            "skip_button_format": "Skip + Type",
+            "hide_close_button": True,
+            "hide_skip_icon": True,
+            "compact_full_combined": True,
+        },
+    ),
+    (
+        "Noir",
+        {
+            "skip_dialog_mode": "CompactFull",
+            "skip_dialog_all_caps": True,
+            "skip_card_opacity": 100,
+            "button_focus_style": "button_focus_outline_white.png",
+            "progress_bar_style": "progress_mid_flat_white.png",
+            "progress_bar_height": 5,
+            "skip_button_format": "Skip + Type",
+            "hide_close_button": True,
+            "hide_skip_icon": True,
+        },
+    ),
+    (
+        "Aurora",
+        {
+            "skip_dialog_font_color": "FFB9F6CA",
+            "skip_card_opacity": 70,
+            "button_focus_style": "button_focus_glass_dark.png",
+            "progress_bar_style": "progress_mid_grad_aurora.png",
+            "progress_bar_height": 8,
+            "skip_button_format": "Skip + Type",
+            "hide_skip_icon": True,
+        },
+    ),
+    (
         "Pill",
         {
             "skip_dialog_mode": "CompactFull",
@@ -423,6 +522,37 @@ _BUILTIN_OVERRIDES = (
             "skip_dialog_mode": "Minimal",
             "skip_dialog_font_color": _DARK_GREY,
             "minimal_button_style": "minimal_pastel_mint_640.png",
+        },
+    ),
+    (
+        "Minimal Sunset",
+        {
+            "skip_dialog_mode": "Minimal",
+            "minimal_button_style": "minimal_grad_sunset_640.png",
+        },
+    ),
+    (
+        "Minimal Midnight",
+        {
+            "skip_dialog_mode": "Minimal",
+            "skip_dialog_font_color": "FFB3E5FC",
+            "minimal_button_style": "minimal_grad_midnight_640.png",
+        },
+    ),
+    (
+        "Minimal Cyberpunk",
+        {
+            "skip_dialog_mode": "Minimal",
+            "skip_dialog_all_caps": True,
+            "minimal_button_style": "minimal_rounded_deep-pink_640.png",
+        },
+    ),
+    (
+        "Minimal Coffee",
+        {
+            "skip_dialog_mode": "Minimal",
+            "skip_dialog_font_color": "FF3E2723",
+            "minimal_button_style": "minimal_rounded_mustard-yellow_640.png",
         },
     ),
 )

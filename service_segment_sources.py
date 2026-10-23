@@ -80,6 +80,16 @@ def _fetch_movie_remote_segments(segment_player, segment_monitor):
     return run_blocking_online_lookup(segment_player, _do_fetch)
 
 
+def _apply_source_choices(path, parsed, local_list, remote_list):
+    try:
+        from service_source_conflict import apply_source_choices
+
+        return apply_source_choices(path, parsed, local_list, remote_list)
+    except Exception as exc:
+        log("⚠ Source choice apply failed: %s" % exc)
+        return parsed
+
+
 def _invoke_local_to_online_sync(
     path,
     playback_type,
@@ -99,10 +109,16 @@ def _invoke_local_to_online_sync(
             probe_remote_segments_for_sync,
             sync_local_to_online_enabled,
         )
+        from service_source_conflict import (
+            maybe_prompt_source_conflict,
+            source_conflict_enabled,
+        )
     except Exception as exc:
         log("⚠ Local→online sync import failed: %s" % exc)
         return
-    if not sync_local_to_online_enabled(addon):
+    want_sync = sync_local_to_online_enabled(addon)
+    want_conflict = source_conflict_enabled(addon)
+    if not want_sync and not want_conflict:
         return
     if remote_list:
         remote_for_sync = list(remote_list)
@@ -110,9 +126,14 @@ def _invoke_local_to_online_sync(
         remote_for_sync = probe_remote_segments_for_sync(
             playback_type, segment_monitor, segment_player
         )
-    on_local_to_online_sync_check(
-        path, playback_type, local_list, remote_for_sync, segment_monitor
-    )
+    if want_sync:
+        on_local_to_online_sync_check(
+            path, playback_type, local_list, remote_for_sync, segment_monitor
+        )
+    if want_conflict:
+        maybe_prompt_source_conflict(
+            path, playback_type, local_list, remote_for_sync, segment_monitor
+        )
 
 
 def safe_file_read(*paths, skip_exists=False):
@@ -522,6 +543,7 @@ def _parse_source_segments_uncached(
             if embedded_list:
                 parsed = embedded_list
 
+        parsed = _apply_source_choices(path, parsed, local_list, remote_list)
         segment_monitor.segment_file_found = (
             local_file_found or bool(remote_list) or bool(embedded_list)
         )
@@ -662,6 +684,7 @@ def _parse_source_segments_uncached(
             if embedded_list_m:
                 parsed = embedded_list_m
 
+        parsed = _apply_source_choices(path, parsed, local_list, remote_list)
         segment_monitor.segment_file_found = (
             local_file_found or bool(remote_list) or bool(embedded_list_m)
         )

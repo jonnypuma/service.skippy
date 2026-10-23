@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Diagnostic window for skip_label_width_probe.py: auto-width label/button vs a fixed label. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+  <controls>
+    <control type="label" id="9001">
+      <left>20</left>
+      <top>20</top>
+      <width min="20" max="1200">auto</width>
+      <height>30</height>
+      <font>font16</font>
+      <label></label>
+    </control>
+    <control type="button" id="9002">
+      <left>20</left>
+      <top>60</top>
+      <width min="20" max="1200">auto</width>
+      <height>40</height>
+      <font>font16</font>
+      <label></label>
+      <texturefocus>-</texturefocus>
+      <texturenofocus>-</texturenofocus>
+    </control>
+    <control type="label" id="9003">
+      <left>20</left>
+      <top>110</top>
+      <width>600</width>
+      <height>30</height>
+      <font>font16</font>
+      <label></label>
+    </control>
+  </controls>
+</window>

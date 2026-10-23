@@ -2,7 +2,11 @@
 """Preset menu for the skip dialog: choose, save-as and delete (Custom mode looks)."""
 from __future__ import annotations
 
+import json
+import time
+
 import xbmcgui
+import xbmcvfs
 
 import skip_dialog_presets as sp
 from settings_utils import get_addon, get_localized, notify_skippy
@@ -20,22 +24,6 @@ def preset_row_label(addon, draft) -> str:
         _loc(addon, 46015, "Preset"),
         name if name else _loc(addon, 46016, "Custom"),
     )
-
-
-def refresh_current_preset_setting(addon=None):
-    """Mirror the matching preset name into the read-only settings row."""
-    addon = addon or get_addon()
-    if not addon:
-        return
-    from skip_dialog_customize_ui import load_skip_dialog_draft
-
-    name = sp.detect_preset(load_skip_dialog_draft(addon))
-    label = name or _loc(addon, 46032, "Custom (unsaved)")
-    try:
-        if addon.getSetting("skip_dialog_current_preset") != label:
-            addon.setSetting("skip_dialog_current_preset", label)
-    except Exception:
-        pass
 
 
 def _select(heading, items, preselect=-1):
@@ -110,6 +98,70 @@ def _delete_saved(addon):
         )
 
 
+PRESETS_FILE_PREFIX = "skippy-presets"
+
+
+def _export_saved(addon):
+    blob = sp.export_user_presets()
+    if not blob.get("presets"):
+        notify_skippy(addon, _loc(addon, 46041, "There are no saved presets to export."),
+                      title="Skippy", prefer_builtin=True)
+        return
+    from settings_backup import _join_writable_folder_file
+
+    folder = xbmcgui.Dialog().browse(
+        3, _loc(addon, 46037, "Export saved presets…"), "files", "", False, False, ""
+    )
+    if not folder or not str(folder).strip():
+        return
+    name = "%s-%s.json" % (PRESETS_FILE_PREFIX, time.strftime("%Y%m%d-%H%M%S"))
+    dest = _join_writable_folder_file(folder, name)
+    handle = None
+    try:
+        handle = xbmcvfs.File(dest, "w")
+        ok = bool(handle.write(json.dumps(blob, indent=2, ensure_ascii=False)))
+    except Exception:
+        ok = False
+    finally:
+        if handle is not None:
+            handle.close()
+    notify_skippy(
+        addon,
+        _loc(addon, 46039, "Presets exported: %s", name) if ok
+        else _loc(addon, 46026, "Could not save the preset."),
+        title="Skippy",
+        prefer_builtin=True,
+    )
+
+
+def _import_presets(addon):
+    from settings_backup import _restore_browse_result_is_json_file
+
+    path = xbmcgui.Dialog().browse(
+        1, _loc(addon, 46038, "Import presets…"), "files", ".json", False, False, ""
+    )
+    if not _restore_browse_result_is_json_file(path):
+        return
+    blob = None
+    handle = None
+    try:
+        handle = xbmcvfs.File(path)
+        blob = json.loads(handle.read())
+    except Exception:
+        blob = None
+    finally:
+        if handle is not None:
+            handle.close()
+    added = sp.merge_user_presets_from_backup(blob)
+    notify_skippy(
+        addon,
+        _loc(addon, 46040, "Presets imported: %s", added) if added
+        else _loc(addon, 46042, "No new presets were imported (the file has none, or the names already exist)."),
+        title="Skippy",
+        prefer_builtin=True,
+    )
+
+
 def present_preset_menu(addon, draft):
     """Pick / save / delete. Returns the applied preset's name, else None."""
     presets = sp.list_presets()
@@ -122,6 +174,10 @@ def present_preset_menu(addon, draft):
     if any(not b for _n, _v, b in presets):
         delete_idx = len(items)
         items.append(_loc(addon, 46018, "Delete a saved preset…"))
+    export_idx = len(items)
+    items.append(_loc(addon, 46037, "Export saved presets…"))
+    import_idx = len(items)
+    items.append(_loc(addon, 46038, "Import presets…"))
     pre = names.index(current) if current in names else -1
     pick = _select(_loc(addon, 46024, "Choose a preset"), items, pre)
     if pick < 0:
@@ -131,6 +187,12 @@ def present_preset_menu(addon, draft):
         return None
     if delete_idx is not None and pick == delete_idx:
         _delete_saved(addon)
+        return None
+    if pick == export_idx:
+        _export_saved(addon)
+        return None
+    if pick == import_idx:
+        _import_presets(addon)
         return None
     name, values, _builtin = presets[pick]
     sp.apply_preset(draft, values)

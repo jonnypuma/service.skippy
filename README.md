@@ -1,14 +1,12 @@
 <img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
 # Skippy — Segment skip, mark, and edit
 
-**Version 7.1.0** (`addon.xml`). See `CHANGELOG.md` for the 7.1.0 native skip dialog, presets and TheIntroDB v4, the 7.0.0 segment-types catalog, the 7.0.1 backup restore, and the 7.0.2 live-TV idle.
-
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
 During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment types** catalog (skip mode, aliases, and EDL number).
+<img width="1610" height="983" alt="screenshot01" src="https://github.com/user-attachments/assets/8e0350e2-558c-407e-8b49-a5b5f011a01f" />
 <img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
 <img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
-
 <img width="1267" height="704" alt="screenshot06" src="https://github.com/user-attachments/assets/afe25b5d-cef2-4ea3-8a8b-ee4df9d8a8c9" />
 <img width="1259" height="709" alt="screenshot05" src="https://github.com/user-attachments/assets/d9978fc4-daf0-47e1-9d81-c80c4a7f5e9d" />
 <img width="1262" height="708" alt="screenshot04" src="https://github.com/user-attachments/assets/8527089e-0dcb-4bc1-8efe-5ccdff1bcef9" />
@@ -305,7 +303,7 @@ Classic panel: optional skip/close icons, **Skip** and **Close** buttons, option
 
 ### Compact Full mode
 
-Same SkipDialog XML and Full-mode styles (button focus, skip label format, corner) without the black card. Ending text and skip/close icons are always off. Skip and Close sit in a **300px** pill cluster (Close can still be hidden). Optional next-jump line and a **4px** progress bar stay under the cluster. **Combined skip and progress** (Full and Compact Full) hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar. Compact Full is for a sleeker Full prompt, not a replacement for Minimal’s plate chip.
+Same SkipDialog XML and Full-mode styles (button focus, skip label format, corner) without the black card. Ending text and skip/close icons are always off. Skip and Close sit in a pill cluster sized to the label (Close can still be hidden). Optional next-jump line and a **4px** progress bar stay under the cluster. **Combined skip and progress** (Full and Compact Full) hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar. Compact Full is for a sleeker Full prompt, not a replacement for Minimal’s plate chip.
 
 ### Presets, card background and new textures (Custom mode)
 
@@ -318,8 +316,9 @@ Same SkipDialog XML and Full-mode styles (button focus, skip label format, corne
 | Metal / gold | **Steel** (brushed steel pill, all caps), **Gold** (gold-leaf pill and gold bar on a dim card, all caps) |
 | Glass / outline / glow | **Glass** (no card, dark glass pill), **Frosted** (no card, milky white glass pill), **Outline** (no card, white ring), **Neon** (no card, cyan glow ring and glow line), **Neon Pink** (magenta glow), **Subtle** (Compact Full, light glass pill), **Ghost** (no card, faint glass pill, label only) |
 | Retro / large | **Retro** (green text, corner brackets, segmented bar), **Big & Bold** (opaque card, flat blue, thick bar, all caps), **Accessible** (opaque card, all caps, thick white bar) |
+| Themed | **Arcade** (magenta neon, segmented white bar), **Terminal** (phosphor green, brackets, Skip only), **Blueprint** (cyan outline, no card), **Lava** (3D orange, sunset bar), **Deep Sea** (aqua vignette, ocean bar), **Candy** (Compact Full, peach pill), **Noir** (Compact Full, white on black, slate bar), **Aurora** (dark glass, aurora bar) |
 | Compact | **Sleek** (Compact Full, combined flat teal), **Clean** (Compact Full, underline focus), **Pill** (Compact Full, combined glass-blue capsule), **Underline** (Compact Full, cyan underline, teal bar) |
-| Minimal | **Minimalist** (flat white plate), **Minimal Dark**, **Minimal Glass**, **Minimal Color**, **Minimal Paper** (light grey plate, dark text), **Minimal Pastel** (mint plate, dark text), **Minimal Steel**, **Minimal Gold**, **Minimal Neon**, **Minimal Frosted** |
+| Minimal | **Minimalist** (flat white plate), **Minimal Dark**, **Minimal Glass**, **Minimal Color**, **Minimal Paper** (light grey plate, dark text), **Minimal Pastel** (mint plate, dark text), **Minimal Steel**, **Minimal Gold**, **Minimal Neon**, **Minimal Frosted**, **Minimal Sunset**, **Minimal Midnight** (pale-blue text), **Minimal Cyberpunk** (deep pink, all caps), **Minimal Coffee** (mustard plate, dark brown text) |
 
 A preset only changes the *look* (mode, textures, font colour, all caps, card, label format, progress style/height, Close and icon toggles). Your corner placement, **Ignore overlapping segments**, countdown and duration settings are left alone. In the Customize screen the Preset row shows **Custom** as soon as you change anything; pressing **Save** on a Custom look asks for a name and stores it as your own preset (cancel the name box to save the settings only); use **left/right** to step through presets with a live preview, or **OK** to open the list.
 

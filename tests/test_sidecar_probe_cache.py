@@ -177,6 +177,20 @@ class DirectoryListingMatchTests(unittest.TestCase):
         self.assertEqual(found, ["/media/show.edl"])
         self.assertEqual(unknown, [])
 
+    def test_hidden_chapters_dir_missing_from_listdir_is_found_via_exists(self):
+        """CoreELEC: listdir omits ``.chapters`` although it exists (GitHub issue #1)."""
+        from service_sidecar_paths import existing_paths_from_listing
+
+        def fake_listdir(parent):
+            if parent.replace("\\", "/").endswith(".chapters"):
+                return [], ["show_chapters.xml"]
+            return [], ["show.mkv"]
+
+        with patch("service_sidecar_paths.xbmcvfs.listdir", side_effect=fake_listdir):
+            with patch("service_sidecar_paths.xbmcvfs.exists", return_value=True):
+                found, _unknown = existing_paths_from_listing(["/media/.chapters/show_chapters.xml"])
+        self.assertEqual(found, ["/media/.chapters/show_chapters.xml"])
+
     def test_vfs_join_keeps_nfs_forward_slashes(self):
         from service_sidecar_paths import vfs_join, vfs_paths_match
 

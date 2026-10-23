@@ -82,6 +82,11 @@ def main():
 
             show_skip_dialog_customize()
             return
+        if command == "label_width_probe":
+            from skip_label_width_probe import run_label_width_probe
+
+            run_label_width_probe()
+            return
         if command == "skip_dialog_presets":
             from skip_dialog_presets_ui import show_skip_dialog_presets_menu
 

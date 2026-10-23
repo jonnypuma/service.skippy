@@ -152,7 +152,6 @@ _MODE_VISIBILITY = {
     # Playback & Dialog (g_pb)
     "settings_action_customize_skip_dialog": _ANY,
     "settings_action_skip_presets": _ANY,
-    "skip_dialog_current_preset": _ANY,
     "hide_ending_text": _FULL,
     "skip_dialog_mode": _ANY,
     "compact_full_combined": None,  # already limited to Full / Compact Full
@@ -374,6 +373,10 @@ def main():
         g, "native_use_toast", 0, "46009", "46010", True,
         vis=[("skip_dialog_type", "Native")],
     )
+    bool_setting(
+        g, "native_toast_show_ok", 0, "46035", "46036", True,
+        vis=[("skip_dialog_type", "Native"), ("native_use_toast", "true")],
+    )
     labelenum_setting(
         g,
         "native_skip_format",
@@ -424,16 +427,6 @@ def main():
         "44100",
         "44101",
         "RunScript(service.skippy,customize_skip_dialog)",
-    )
-    # Read-only: the service writes the matching preset name (or "Custom (unsaved)").
-    string_setting(
-        g,
-        "skip_dialog_current_preset",
-        0,
-        "46030",
-        "46031",
-        "",
-        en=[("skip_dialog_type", "Never")],
     )
     action_setting(
         g,
@@ -816,6 +809,9 @@ def main():
         "LocalFirst",
         enum_a("Local first|Online first", "LocalFirst|OnlineFirst"),
     )
+
+    g = ET.SubElement(cat, "group", id="g_conflict", label="")
+    bool_setting(g, "source_conflict_prompt", 0, "46043", "46044", False)
 
     # ---- 30002 toasts ----
     cat = ET.SubElement(section, "category", id="toasts", label="30002")

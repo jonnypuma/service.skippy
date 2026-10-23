@@ -6,6 +6,7 @@ Neither path patches production SkipDialog XML.
 """
 from __future__ import annotations
 
+import os
 import re
 from typing import Any, Callable, Optional
 
@@ -37,16 +38,19 @@ FULL_SKIP_PROGRESS_BAR_WIDTH = FULL_SKIP_PANEL_W_720 - (FULL_SKIP_MARGIN_720 * 2
 # Dialog width follows the skip label. Each label format has its own ladder of
 # fixed widths; the label's estimated size picks the first rung that fits, so a
 # plain "Skip" stays narrow while a long type name or duration still fits.
-SKIP_BTN_TEXT_PAD_720 = 40
-SKIP_BTN_MAX_TEXT_W_720 = 420
+SKIP_BTN_TEXT_PAD_720 = 35
+SKIP_BTN_MAX_TEXT_W_720 = 365
+# The skin font renders narrower than the generous glyph table, so Full / Compact Full
+# scale the estimate down (about 13%) to avoid a dialog wider than its label needs.
+SKIP_GLYPH_SCALE = 0.87
 SKIP_ICON_SLOT_720 = 30
 SKIP_CLOSE_ICON_SLOT_720 = 20
 SKIP_CLOSE_BTN_W_720 = 80
 SKIP_CLOSE_ICON_ID = 3083
 SKIP_WIDTH_STEPS_720 = {
-    "Skip": (96, 120),
-    "Skip + Type": (150, 190, 240, 300, 360),
-    "Skip + Type + Duration": (230, 270, 320, 380, 420),
+    "Skip": (84, 104),
+    "Skip + Type": (130, 165, 210, 260, 315),
+    "Skip + Type + Duration": (200, 235, 280, 330, 365),
 }
 SKIP_ROWS_MIN_CONTENT_W_720 = {"jump": 280, "ending": 190}
 SKIP_DIALOG_CANVAS_W_720 = 1280
@@ -73,6 +77,10 @@ DURATION_CONTENT_ELAPSED_DOWN = "elapsed_down"
 DURATION_CONTENT_ELAPSED_TOTAL = "elapsed_total"
 SMOOTH_PROGRESS_BG_ID = 3030
 SMOOTH_PROGRESS_FILL_ID = 3031
+# Cropped (not stretched) fill used for tiled styles such as segmented squares: the same
+# segment size at every fill level, so the count of segments grows/shrinks instead.
+SMOOTH_PROGRESS_TILED_FILL_ID = 3032
+SMOOTH_TILED_WINDOW_PROP = "skippy_bar_tiled"
 SMOOTH_BAR_WINDOW_PROP = "skippy_smooth_bar"
 DIALOG_READY_PROP = "skippy_dialog_ready"
 
@@ -326,14 +334,17 @@ class MockSegment:
         self.next_segment_info = next_segment_info
 
 
-def build_customize_mock_segment(skip_overlapping: bool) -> MockSegment:
+def build_customize_mock_segment(
+    skip_overlapping: bool, label: str = MOCK_SEGMENT_LABEL
+) -> MockSegment:
+    label = (label or MOCK_SEGMENT_LABEL).strip() or MOCK_SEGMENT_LABEL
     recap = MockSegment(MOCK_RECAP_START, MOCK_RECAP_END, "recap")
     if skip_overlapping:
-        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, MOCK_SEGMENT_LABEL)
+        return MockSegment(MOCK_INTRO_START, MOCK_INTRO_END, label)
     return MockSegment(
         MOCK_INTRO_START,
         MOCK_INTRO_END,
-        MOCK_SEGMENT_LABEL,
+        label,
         next_segment_start=MOCK_RECAP_START,
         next_segment_info=jump_info_nested(recap),
     )
@@ -600,7 +611,7 @@ def skip_format_tier(format_setting) -> str:
 def skip_label_width_720(label: str, format_setting) -> int:
     """Width of the skip button text area: first rung of the format's ladder that fits."""
     need = min(
-        estimate_skip_label_width_720(label) + SKIP_BTN_TEXT_PAD_720,
+        estimate_skip_label_width_720(label) * SKIP_GLYPH_SCALE + SKIP_BTN_TEXT_PAD_720,
         SKIP_BTN_MAX_TEXT_W_720,
     )
     steps = SKIP_WIDTH_STEPS_720[skip_format_tier(format_setting)]
@@ -610,9 +621,15 @@ def skip_label_width_720(label: str, format_setting) -> int:
     return min(need, SKIP_BTN_MAX_TEXT_W_720)
 
 
-def widest_skip_label(segment, settings, addon=None) -> str:
+def widest_skip_label(
+    segment,
+    settings,
+    addon=None,
+    fmt_key="skip_button_format",
+    fmt_default="Skip + Type + Duration",
+) -> str:
     """Longest label the dialog can show for this segment (live durations never exceed it)."""
-    fmt = settings.get_text("skip_button_format", "Skip + Type + Duration")
+    fmt = settings.get_text(fmt_key, fmt_default)
     start = float(getattr(segment, "start_seconds", 0) or 0)
     end = float(getattr(segment, "end_seconds", 0) or 0)
     total = max(0, int(round(max(0.0, end - start))))
@@ -670,6 +687,45 @@ def full_skip_focus_id(hide_close, hide_skip_icon):
     return 3012
 
 
+# Segmented styles are redrawn from pixel-exact, repeating textures (one per bar height,
+# tools/gen_progress_tiled_textures.py) and cropped from the left, so segments keep their
+# size and the count grows/shrinks. Proportions match the default 16 px bar: pitch 13, gap 3.
+TILED_PITCH_PER_HEIGHT = 0.8125
+
+_tiled_exists_cache = {}
+
+
+def tiled_segment_pitch_px(bar_height_px) -> int:
+    """On-screen width of one segment + gap (px) for a tiled bar of the given height."""
+    return max(3, int(round(TILED_PITCH_PER_HEIGHT * int(bar_height_px))))
+
+
+def snap_to_whole_segments(width_px, bar_width_px, pitch_px) -> int:
+    """Round a fill width to whole segments so the edge segment never grows pixel by pixel."""
+    if pitch_px <= 0 or width_px <= 0:
+        return max(0, int(width_px))
+    max_segments = int(bar_width_px // pitch_px)
+    count = min(max_segments, int(round(width_px / pitch_px)))
+    return int(count * pitch_px)
+
+
+def progress_tiled_variant(filename, height_px):
+    """Pixel-exact tiled texture for a progress style at this bar height, else ``None``."""
+    stem, ext = os.path.splitext((filename or "").strip())
+    prefix = "progress_mid_segmented_"
+    if not stem.startswith(prefix) or ext.lower() != ".png":
+        return None
+    variant = "progress_tiled_segmented_%s_h%d.png" % (stem[len(prefix):], int(height_px))
+    if variant not in _tiled_exists_cache:
+        _tiled_exists_cache[variant] = os.path.isfile(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "resources", "skins", "default", "media", variant,
+            )
+        )
+    return variant if _tiled_exists_cache[variant] else None
+
+
 def progress_mid_filename(settings) -> str:
     raw = (settings.get_text("progress_bar_style", "") or "").strip()
     if raw.endswith(".png"):
@@ -718,6 +774,24 @@ def _safe_control(window, control_id):
         return window.getControl(control_id)
     except Exception:
         return None
+
+
+PREVIEW_LABEL_NUDGE_720 = 1
+
+
+PREVIEW_UNDERLINE_EXTRA_NUDGE_720 = 2
+
+
+def preview_label_nudge(sc, focus_file=""):
+    """Pixels the Customize preview's Skip/Close labels sit above the button centre.
+
+    Underline textures draw a line along the bottom edge, so the label is raised a
+    little more to keep clear of it.
+    """
+    n = sc(PREVIEW_LABEL_NUDGE_720)
+    if "underline" in (focus_file or "").lower():
+        n += sc(PREVIEW_UNDERLINE_EXTRA_NUDGE_720)
+    return n
 
 
 def _place_ctrl(ctrl, x, y, w=None, h=None):
@@ -797,6 +871,103 @@ def full_skip_panel_metrics(
     }
 
 
+# Widths the Minimal plate is pre-rendered at (tools/gen_minimal_plate_variants.py).
+MINIMAL_PLATE_WIDTHS_720 = (120, 150, 190, 240, 270, 320, 380, 420)
+MINIMAL_PLATE_PAD_720 = 40
+_PLATE_VARIANT_DIR = "plates"
+_variant_exists_cache = {}
+
+
+def minimal_plate_width_720(segment, settings, addon=None) -> int:
+    """Smallest pre-rendered plate width that fits the label (never below the classic plate)."""
+    label = widest_skip_label(
+        segment,
+        settings,
+        addon,
+        fmt_key="minimal_skip_button_format",
+        fmt_default="Skip + Type",
+    )
+    need = estimate_skip_label_width_720(label) + MINIMAL_PLATE_PAD_720
+    for step in MINIMAL_PLATE_WIDTHS_720:
+        if need <= step:
+            return step
+    return MINIMAL_PLATE_WIDTHS_720[-1]
+
+
+def minimal_plate_variant(filename: str, width_720: int) -> str:
+    """Skin-relative path of ``filename`` pre-rendered for ``width_720``, else the original."""
+    name = (filename or "").strip()
+    stem, ext = os.path.splitext(name)
+    if not stem or width_720 not in MINIMAL_PLATE_WIDTHS_720:
+        return name
+    variant = "%s/%s_w%d.png" % (_PLATE_VARIANT_DIR, stem, width_720)
+    if variant not in _variant_exists_cache:
+        path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "resources",
+            "skins",
+            "default",
+            "media",
+            _PLATE_VARIANT_DIR,
+            "%s_w%d.png" % (stem, width_720),
+        )
+        _variant_exists_cache[variant] = os.path.isfile(path)
+    return variant if _variant_exists_cache[variant] else name
+
+
+def apply_minimal_skip_layout(
+    window,
+    settings,
+    segment,
+    scale_fn,
+    addon=None,
+    group_id=3090,
+    plate_ids=(3021, 3022),
+    button_id=3012,
+    place_panel=True,
+):
+    """Size the Minimal plate to its label; right corners keep their right edge."""
+    sc = scale_fn
+    width_720 = minimal_plate_width_720(segment, settings, addon)
+    width = sc(width_720)
+    height = sc(MINIMAL_MOCK_H_720)
+    try:
+        window._skip_panel_w = width
+        window._minimal_plate_w720 = width_720
+    except Exception:
+        pass
+    plate = minimal_plate_variant(minimal_plate_filename(settings), width_720)
+    for cid in plate_ids:
+        ctrl = _safe_control(window, cid)
+        if ctrl and plate:
+            try:
+                ctrl.setImage(plate)
+            except Exception:
+                pass
+    group = _safe_control(window, group_id)
+    if group:
+        try:
+            group.setWidth(width)
+        except Exception:
+            pass
+        if place_panel:
+            try:
+                x, y = group.getPosition()
+                corner = (
+                    settings.get_text("minimal_skip_dialog_position", "BottomRight")
+                    or "BottomRight"
+                ).replace(" ", "")
+                if corner.endswith("Right"):
+                    group.setPosition(
+                        int(x) + sc(MINIMAL_MOCK_W_720) - width, int(y)
+                    )
+            except Exception:
+                pass
+    for cid in tuple(plate_ids) + (button_id,):
+        _place_ctrl(_safe_control(window, cid), 0, 0, width, height)
+    return width
+
+
 def _layout_full_skip_buttons(
     window,
     sc,
@@ -835,10 +1006,16 @@ def _layout_full_skip_buttons(
     # skin can actually show. The preview window toggles these live, so it still
     # places every variant.
     if place_focus_overlays:
-        _place_ctrl(_safe_control(window, 3012), skip_x, btn_top, skip_w, btn_h)
-        _place_ctrl(_safe_control(window, 3013), close_x, btn_top, close_w, btn_h)
-        _place_ctrl(_safe_control(window, 3015), wide_x, btn_top, wide_w, btn_h)
-        _place_ctrl(_safe_control(window, 3016), wide_x, btn_top, wide_w, btn_h)
+        # Preview labels are plain label controls, so raise them a little.
+        try:
+            focus_name = window.getProperty("skippy_combined_fill") or ""
+        except Exception:
+            focus_name = ""
+        lbl_top = btn_top - preview_label_nudge(sc, focus_name)
+        _place_ctrl(_safe_control(window, 3012), skip_x, lbl_top, skip_w, btn_h)
+        _place_ctrl(_safe_control(window, 3013), close_x, lbl_top, close_w, btn_h)
+        _place_ctrl(_safe_control(window, 3015), wide_x, lbl_top, wide_w, btn_h)
+        _place_ctrl(_safe_control(window, 3016), wide_x, lbl_top, wide_w, btn_h)
     else:
         active_id = full_skip_focus_id(hide_close, hide_skip_icon)
         if active_id == 3012:
@@ -1102,13 +1279,25 @@ def apply_full_skip_layout(
                     pass
                 bg = _safe_control(window, SMOOTH_PROGRESS_BG_ID)
                 fill = _safe_control(window, SMOOTH_PROGRESS_FILL_ID)
+                tiled_fill = _safe_control(window, SMOOTH_PROGRESS_TILED_FILL_ID)
+                tiled_name = progress_tiled_variant(progress_mid_filename(settings), progress_h)
+                use_tiled = bool(tiled_name)
+                window.setProperty("skippy_progress_mid_tiled", tiled_name or "")
+                window.setProperty(SMOOTH_TILED_WINDOW_PROP, "true" if use_tiled else "false")
+                window._skip_tiled_pitch = tiled_segment_pitch_px(progress_h) if use_tiled else 0
+                if use_tiled:
+                    init_w = snap_to_whole_segments(
+                        init_w, progress_bar_width, window._skip_tiled_pitch
+                    )
                 if bg and fill:
                     bg.setPosition(LEFT_MARGIN, py)
                     bg.setWidth(progress_bar_width)
                     bg.setHeight(progress_h)
-                    fill.setPosition(LEFT_MARGIN, py)
-                    fill.setHeight(progress_h)
-                    fill.setWidth(init_w)
+                    for fctrl in (fill, tiled_fill):
+                        if fctrl:
+                            fctrl.setPosition(LEFT_MARGIN, py)
+                            fctrl.setHeight(progress_h)
+                            fctrl.setWidth(init_w)
                     if smooth_ui:
                         progress.setVisible(False)
                         window.setProperty(SMOOTH_BAR_WINDOW_PROP, "true")
@@ -1187,6 +1376,8 @@ def apply_mock_textures(window, settings, minimal_mode: bool):
             pass
 
     if minimal_mode:
+        plate = minimal_plate_variant(plate, getattr(window, "_minimal_plate_w720", 0))
+        window.setProperty("skippy_minimal_plate", plate)
         _filename_image(5021, plate, True)
         _filename_image(5040, plate, True)
         _filename_image(3040, focus_file, False)
@@ -1194,6 +1385,7 @@ def apply_mock_textures(window, settings, minimal_mode: bool):
         _filename_image(3042, focus_file, False)
         _filename_image(3043, focus_file, False)
         _filename_image(3031, progress_file, False)
+        _filename_image(SMOOTH_PROGRESS_TILED_FILL_ID, progress_file, False)
         _filename_image(COMBINED_TRACK_ID, focus_file, False)
         _filename_image(COMBINED_TRACK_SLICE_ID, focus_file, False)
         _filename_image(COMBINED_FILL_STRETCH_ID, focus_file, False)
@@ -1226,9 +1418,19 @@ def apply_mock_textures(window, settings, minimal_mode: bool):
                 prog.setVisible(False)
             except Exception:
                 pass
+        tiled_ctrl = _safe_control(window, SMOOTH_PROGRESS_TILED_FILL_ID)
+        try:
+            bar_h = int(tiled_ctrl.getHeight()) if tiled_ctrl else 0
+        except Exception:
+            bar_h = 0
+        tiled_file = progress_tiled_variant(progress_file, bar_h) if bar_h else None
+        window.setProperty(SMOOTH_TILED_WINDOW_PROP, "true" if tiled_file else "false")
+        window.setProperty("skippy_progress_mid_tiled", tiled_file or progress_file)
         _filename_image(3030, "progress_background.png", True)
-        _filename_image(3031, progress_file, True)
+        _filename_image(3031, progress_file, not tiled_file)
+        _filename_image(SMOOTH_PROGRESS_TILED_FILL_ID, tiled_file or progress_file, bool(tiled_file))
     else:
         window.setProperty(SMOOTH_BAR_WINDOW_PROP, "false")
         _filename_image(3030, "progress_background.png", False)
         _filename_image(3031, progress_file, False)
+        _filename_image(SMOOTH_PROGRESS_TILED_FILL_ID, progress_file, False)

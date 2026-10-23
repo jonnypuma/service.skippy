@@ -351,8 +351,17 @@ def merge_remote_segments(primary_segs, secondary_segs):
     """Primary wins when both sources cover the same time window; secondary adds non-overlapping only."""
     out = list(primary_segs)
     for b in secondary_segs:
-        if not any(_segments_overlap(b, a) for a in out):
+        hit = next((a for a in out if _segments_overlap(b, a)), None)
+        if hit is None:
             out.append(b)
+        elif (
+            abs(b.start_seconds - hit.start_seconds) <= 1.5
+            and abs(b.end_seconds - hit.end_seconds) <= 1.5
+        ):
+            # Both online sources agree: remember the second one for the source picker.
+            hit.corroboration = list(getattr(hit, "corroboration", [])) + [
+                (getattr(b, "source", ""), b.start_seconds, b.end_seconds)
+            ]
     return sorted(out, key=lambda s: s.start_seconds)
 
 

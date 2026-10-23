@@ -27,8 +27,11 @@ from skip_dialog_appearance import (
     FULL_SKIP_PROGRESS_BAR_WIDTH,
     SMOOTH_BAR_WINDOW_PROP as _SMOOTH_BAR_WINDOW_PROP,
     SMOOTH_PROGRESS_FILL_ID as _SMOOTH_PROGRESS_FILL_ID,
+    SMOOTH_PROGRESS_TILED_FILL_ID as _SMOOTH_PROGRESS_TILED_FILL_ID,
+    snap_to_whole_segments as _snap_to_whole_segments,
     AddonSettingsReader,
     apply_full_skip_layout,
+    apply_minimal_skip_layout,
     apply_jump_properties,
     build_skip_button_label as _build_skip_button_label,
     DIALOG_READY_PROP as _DIALOG_READY_PROP,
@@ -302,6 +305,17 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
         if not self._minimal_mode:
             self._apply_full_skip_layout(addon)
+        else:
+            try:
+                apply_minimal_skip_layout(
+                    self,
+                    AddonSettingsReader(addon if addon is not None else get_addon()),
+                    self.segment,
+                    self._skin_sc,
+                    addon=addon,
+                )
+            except Exception as e:
+                log("⚠️ Minimal plate layout failed: %s" % e)
 
         self._apply_dialog_text_colors()
         # Focus after reveal — Kodi rejects setFocusId while the panel group is still hidden.
@@ -427,9 +441,16 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                                     self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
                                 )
                                 w = max(0, min(bar_w, w))
+                                pitch = getattr(self, "_skip_tiled_pitch", 0)
+                                if pitch:
+                                    w = _snap_to_whole_segments(w, bar_w, pitch)
                                 if w != self._last_smooth_fill_w:
                                     self._last_smooth_fill_w = w
                                     fill.setWidth(w)
+                                    try:
+                                        self.getControl(_SMOOTH_PROGRESS_TILED_FILL_ID).setWidth(w)
+                                    except Exception:
+                                        pass
                                 now_wall = time.time()
                                 if (now_wall - self._last_smooth_log_ts) >= 1.5:
                                     self._last_smooth_log_ts = now_wall
@@ -612,6 +633,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 self.getControl(3014).setPercent(0)
                 try:
                     self.getControl(_SMOOTH_PROGRESS_FILL_ID).setWidth(0)
+                    self.getControl(_SMOOTH_PROGRESS_TILED_FILL_ID).setWidth(0)
                 except Exception:
                     pass
                 log("🔄 Progress bar reset on close")

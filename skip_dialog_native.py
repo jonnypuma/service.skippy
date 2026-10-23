@@ -250,9 +250,13 @@ def show_toast_skip_dialog(addon, segment, player):
     head = _playhead(player, float(segment.start_seconds))
     _heading, message, skip_label, _dismiss = build_native_texts(addon, segment, head)
     hint = message.split("\n", 1)[1] if "\n" in message else ""
-    body = get_localized(addon, 46008, "Press OK to skip")
+    body = (
+        get_localized(addon, 46008, "Press OK to skip")
+        if addon_get_bool(addon, "native_toast_show_ok", True)
+        else ""
+    )
     if hint:
-        body = "%s \u00b7 %s" % (body, hint)
+        body = "%s \u00b7 %s" % (body, hint) if body else hint
     icon = addon.getAddonInfo("icon") or ""
 
     def post(ms):

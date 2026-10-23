@@ -18,6 +18,7 @@ _SKIP_DIALOG_FULL_FILES = (
 )
 _FULL_MODE_PROGRESS_ID = "3014"
 _FULL_MODE_SMOOTH_FILL_ID = "3031"
+_FULL_MODE_TILED_FILL_ID = "3032"
 _SKIP_DIALOG_MINIMAL_FILES = (
     "Minimal_Skip_Dialog_BottomRight.xml",
     "Minimal_Skip_Dialog_BottomLeft.xml",
@@ -184,33 +185,6 @@ def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None,
 
 
 def _update_minimal_skip_dialog_textures(texture_filename):
-    """Minimal chip: plate image 3021 + single skip button 3012 texturefocus."""
-    global _last_minimal_plate_texture
-    try:
-        if texture_filename == _last_minimal_plate_texture:
-            return
-        xml_dirs = _get_skins_res_dirs()
-        if not xml_dirs or not texture_filename:
-            return
-        for xml_dir in xml_dirs:
-            for xml_file in _SKIP_DIALOG_MINIMAL_FILES:
-                xml_path = os.path.join(xml_dir, xml_file)
-                if not os.path.isfile(xml_path):
-                    continue
-                tree = ET.parse(xml_path)
-                root = tree.getroot()
-                for control in root.iter("control"):
-                    ctype = control.get("type")
-                    cid = control.get("id")
-                    if ctype == "image" and cid == _MINIMAL_PLATE_IMAGE_ID:
-                        _set_image_texture(control, texture_filename)
-                    if ctype == "button" and cid == "3012":
-                        _set_button_texturefocus(control, texture_filename)
-                _write_skin_xml(tree, xml_path)
-                log(
-                    f"📝 Updated Minimal dialog {os.path.basename(xml_dir)}/{xml_file}: "
-                    f"plate + button focus → {texture_filename}"
-                )
-        _last_minimal_plate_texture = texture_filename
-    except Exception as e:
-        log(f"⚠️ Failed to update Minimal skip dialog XML: {e}")
+    """No-op: the Minimal plate is set per dialog by ``apply_minimal_skip_layout`` as a
+    pre-rendered variant for the plate's width, so the skin XML is no longer rewritten."""
+    return None
