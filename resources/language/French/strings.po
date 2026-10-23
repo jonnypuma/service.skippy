@@ -1977,3 +1977,83 @@ msgstr "Lorsqu'un segment est imbriqué dans un autre ou le chevauche, ajoute un
 msgctxt "#46034"
 msgid "Preview type"
 msgstr "Type d'aperçu"
+
+msgctxt "#46035"
+msgid "Show \"Press OK to skip\" in the toast"
+msgstr "Afficher « Appuyez sur OK pour passer » dans la notification"
+
+msgctxt "#46036"
+msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
+msgstr "Ajoute le texte « Appuyez sur OK pour passer » à la notification. Désactivez pour une notification plus courte qui n'affiche que le libellé (et la ligne du prochain saut si activée)."
+
+msgctxt "#46037"
+msgid "Export saved presets…"
+msgstr "Exporter les préréglages enregistrés…"
+
+msgctxt "#46038"
+msgid "Import presets…"
+msgstr "Importer des préréglages…"
+
+msgctxt "#46039"
+msgid "Presets exported: %s"
+msgstr "Préréglages exportés : %s"
+
+msgctxt "#46040"
+msgid "Presets imported: %s"
+msgstr "Préréglages importés : %s"
+
+msgctxt "#46041"
+msgid "There are no saved presets to export."
+msgstr "Aucun préréglage enregistré à exporter."
+
+msgctxt "#46042"
+msgid "No new presets were imported (the file has none, or the names already exist)."
+msgstr "Aucun nouveau préréglage importé (le fichier n'en contient pas, ou les noms existent déjà)."
+
+msgctxt "#46043"
+msgid "Offer to review sources that disagree"
+msgstr "Proposer de comparer les sources en désaccord"
+
+msgctxt "#46044"
+msgid "When TheIntroDB and IntroDB.app agree on a segment but your local sidecar differs by more than 1.5 seconds, ask whether to review the sources. You can jump to each source's start or end and keep local or online for that file."
+msgstr "Quand TheIntroDB et IntroDB.app s'accordent sur un segment mais que votre fichier local diffère de plus de 1,5 seconde, Skippy propose de comparer les sources. Vous pouvez aller au début ou à la fin de chaque source et garder le local ou l'en ligne pour ce fichier."
+
+msgctxt "#46045"
+msgid "Segment sources disagree"
+msgstr "Les sources de segments divergent"
+
+msgctxt "#46046"
+msgid "%s: the local sidecar differs from the two online sources, which agree with each other.\n\nReview the sources now?"
+msgstr "%s : le fichier local diffère des deux sources en ligne, qui concordent entre elles.\n\nComparer les sources maintenant ?"
+
+msgctxt "#46047"
+msgid "Sources disagree: %s"
+msgstr "Sources divergentes : %s"
+
+msgctxt "#46048"
+msgid "Local sidecar"
+msgstr "Fichier local"
+
+msgctxt "#46049"
+msgid "Online (%s)"
+msgstr "En ligne (%s)"
+
+msgctxt "#46050"
+msgid "Start %s"
+msgstr "Début %s"
+
+msgctxt "#46051"
+msgid "End %s"
+msgstr "Fin %s"
+
+msgctxt "#46052"
+msgid "Use local"
+msgstr "Utiliser le local"
+
+msgctxt "#46053"
+msgid "Use online"
+msgstr "Utiliser l'en ligne"
+
+msgctxt "#46054"
+msgid "Close"
+msgstr "Fermer"

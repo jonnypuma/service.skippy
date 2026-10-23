@@ -1977,3 +1977,83 @@ msgstr "Når et segment ligger inde i eller overlapper et andet, vises en linje,
 msgctxt "#46034"
 msgid "Preview type"
 msgstr "Forhåndsvisningstype"
+
+msgctxt "#46035"
+msgid "Show \"Press OK to skip\" in the toast"
+msgstr "Vis \"Tryk OK for at springe over\" i toasten"
+
+msgctxt "#46036"
+msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
+msgstr "Tilføj teksten \"Tryk OK for at springe over\" til toasten. Slå fra for en kortere toast, der kun viser skip-teksten (og næste-spring-linjen, hvis aktiveret)."
+
+msgctxt "#46037"
+msgid "Export saved presets…"
+msgstr "Eksportér gemte presets…"
+
+msgctxt "#46038"
+msgid "Import presets…"
+msgstr "Importér presets…"
+
+msgctxt "#46039"
+msgid "Presets exported: %s"
+msgstr "Presets eksporteret: %s"
+
+msgctxt "#46040"
+msgid "Presets imported: %s"
+msgstr "Presets importeret: %s"
+
+msgctxt "#46041"
+msgid "There are no saved presets to export."
+msgstr "Der er ingen gemte presets at eksportere."
+
+msgctxt "#46042"
+msgid "No new presets were imported (the file has none, or the names already exist)."
+msgstr "Ingen nye presets blev importeret (filen har ingen, eller navnene findes allerede)."
+
+msgctxt "#46043"
+msgid "Offer to review sources that disagree"
+msgstr "Tilbyd at gennemgå kilder, der er uenige"
+
+msgctxt "#46044"
+msgid "When TheIntroDB and IntroDB.app agree on a segment but your local sidecar differs by more than 1.5 seconds, ask whether to review the sources. You can jump to each source's start or end and keep local or online for that file."
+msgstr "Når TheIntroDB og IntroDB.app er enige om et segment, men din lokale sidecar afviger med mere end 1,5 sekunder, spørges der, om kilderne skal gennemgås. Du kan hoppe til hver kildes start eller slut og beholde lokal eller online for filen."
+
+msgctxt "#46045"
+msgid "Segment sources disagree"
+msgstr "Segmentkilder er uenige"
+
+msgctxt "#46046"
+msgid "%s: the local sidecar differs from the two online sources, which agree with each other.\n\nReview the sources now?"
+msgstr "%s: den lokale sidecar afviger fra de to online-kilder, som er enige med hinanden.\n\nGennemgå kilderne nu?"
+
+msgctxt "#46047"
+msgid "Sources disagree: %s"
+msgstr "Kilder er uenige: %s"
+
+msgctxt "#46048"
+msgid "Local sidecar"
+msgstr "Lokal sidecar"
+
+msgctxt "#46049"
+msgid "Online (%s)"
+msgstr "Online (%s)"
+
+msgctxt "#46050"
+msgid "Start %s"
+msgstr "Start %s"
+
+msgctxt "#46051"
+msgid "End %s"
+msgstr "Slut %s"
+
+msgctxt "#46052"
+msgid "Use local"
+msgstr "Brug lokal"
+
+msgctxt "#46053"
+msgid "Use online"
+msgstr "Brug online"
+
+msgctxt "#46054"
+msgid "Close"
+msgstr "Luk"

@@ -1977,3 +1977,83 @@ msgstr "Als een segment in een ander segment ligt of ermee overlapt, wordt een r
 msgctxt "#46034"
 msgid "Preview type"
 msgstr "Voorbeeldtype"
+
+msgctxt "#46035"
+msgid "Show \"Press OK to skip\" in the toast"
+msgstr "\"Druk op OK om over te slaan\" tonen in de toast"
+
+msgctxt "#46036"
+msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
+msgstr "Voeg de tekst \"Druk op OK om over te slaan\" toe aan de toast. Schakel uit voor een kortere toast met alleen het skip-label (en de volgende-sprong-regel indien ingeschakeld)."
+
+msgctxt "#46037"
+msgid "Export saved presets…"
+msgstr "Opgeslagen presets exporteren…"
+
+msgctxt "#46038"
+msgid "Import presets…"
+msgstr "Presets importeren…"
+
+msgctxt "#46039"
+msgid "Presets exported: %s"
+msgstr "Presets geëxporteerd: %s"
+
+msgctxt "#46040"
+msgid "Presets imported: %s"
+msgstr "Presets geïmporteerd: %s"
+
+msgctxt "#46041"
+msgid "There are no saved presets to export."
+msgstr "Er zijn geen opgeslagen presets om te exporteren."
+
+msgctxt "#46042"
+msgid "No new presets were imported (the file has none, or the names already exist)."
+msgstr "Er zijn geen nieuwe presets geïmporteerd (het bestand heeft er geen, of de namen bestaan al)."
+
+msgctxt "#46043"
+msgid "Offer to review sources that disagree"
+msgstr "Aanbieden om afwijkende bronnen te bekijken"
+
+msgctxt "#46044"
+msgid "When TheIntroDB and IntroDB.app agree on a segment but your local sidecar differs by more than 1.5 seconds, ask whether to review the sources. You can jump to each source's start or end and keep local or online for that file."
+msgstr "Als TheIntroDB en IntroDB.app het eens zijn over een segment maar je lokale sidecar meer dan 1,5 seconden afwijkt, wordt gevraagd of je de bronnen wilt bekijken. Je kunt naar het begin of einde van elke bron springen en voor dit bestand lokaal of online kiezen."
+
+msgctxt "#46045"
+msgid "Segment sources disagree"
+msgstr "Segmentbronnen wijken af"
+
+msgctxt "#46046"
+msgid "%s: the local sidecar differs from the two online sources, which agree with each other.\n\nReview the sources now?"
+msgstr "%s: de lokale sidecar wijkt af van de twee online bronnen, die het met elkaar eens zijn.\n\nBronnen nu bekijken?"
+
+msgctxt "#46047"
+msgid "Sources disagree: %s"
+msgstr "Bronnen wijken af: %s"
+
+msgctxt "#46048"
+msgid "Local sidecar"
+msgstr "Lokale sidecar"
+
+msgctxt "#46049"
+msgid "Online (%s)"
+msgstr "Online (%s)"
+
+msgctxt "#46050"
+msgid "Start %s"
+msgstr "Begin %s"
+
+msgctxt "#46051"
+msgid "End %s"
+msgstr "Einde %s"
+
+msgctxt "#46052"
+msgid "Use local"
+msgstr "Lokaal gebruiken"
+
+msgctxt "#46053"
+msgid "Use online"
+msgstr "Online gebruiken"
+
+msgctxt "#46054"
+msgid "Close"
+msgstr "Sluiten"

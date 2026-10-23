@@ -1977,3 +1977,83 @@ msgstr "Quando un segmento è annidato in un altro o si sovrappone, aggiunge una
 msgctxt "#46034"
 msgid "Preview type"
 msgstr "Tipo di anteprima"
+
+msgctxt "#46035"
+msgid "Show \"Press OK to skip\" in the toast"
+msgstr "Mostra \"Premi OK per saltare\" nel toast"
+
+msgctxt "#46036"
+msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
+msgstr "Aggiunge il testo \"Premi OK per saltare\" al toast. Disattiva per un toast più breve con solo l'etichetta di salto (e la riga del salto successivo, se attiva)."
+
+msgctxt "#46037"
+msgid "Export saved presets…"
+msgstr "Esporta preset salvati…"
+
+msgctxt "#46038"
+msgid "Import presets…"
+msgstr "Importa preset…"
+
+msgctxt "#46039"
+msgid "Presets exported: %s"
+msgstr "Preset esportati: %s"
+
+msgctxt "#46040"
+msgid "Presets imported: %s"
+msgstr "Preset importati: %s"
+
+msgctxt "#46041"
+msgid "There are no saved presets to export."
+msgstr "Non ci sono preset salvati da esportare."
+
+msgctxt "#46042"
+msgid "No new presets were imported (the file has none, or the names already exist)."
+msgstr "Nessun nuovo preset importato (il file non ne contiene, o i nomi esistono già)."
+
+msgctxt "#46043"
+msgid "Offer to review sources that disagree"
+msgstr "Proponi di rivedere le fonti discordanti"
+
+msgctxt "#46044"
+msgid "When TheIntroDB and IntroDB.app agree on a segment but your local sidecar differs by more than 1.5 seconds, ask whether to review the sources. You can jump to each source's start or end and keep local or online for that file."
+msgstr "Quando TheIntroDB e IntroDB.app concordano su un segmento ma il file locale differisce di oltre 1,5 secondi, chiede se rivedere le fonti. Puoi saltare all'inizio o alla fine di ogni fonte e tenere locale oppure online per quel file."
+
+msgctxt "#46045"
+msgid "Segment sources disagree"
+msgstr "Le fonti dei segmenti non coincidono"
+
+msgctxt "#46046"
+msgid "%s: the local sidecar differs from the two online sources, which agree with each other.\n\nReview the sources now?"
+msgstr "%s: il file locale differisce dalle due fonti online, che concordano tra loro.\n\nRivedere le fonti ora?"
+
+msgctxt "#46047"
+msgid "Sources disagree: %s"
+msgstr "Fonti discordanti: %s"
+
+msgctxt "#46048"
+msgid "Local sidecar"
+msgstr "File locale"
+
+msgctxt "#46049"
+msgid "Online (%s)"
+msgstr "Online (%s)"
+
+msgctxt "#46050"
+msgid "Start %s"
+msgstr "Inizio %s"
+
+msgctxt "#46051"
+msgid "End %s"
+msgstr "Fine %s"
+
+msgctxt "#46052"
+msgid "Use local"
+msgstr "Usa locale"
+
+msgctxt "#46053"
+msgid "Use online"
+msgstr "Usa online"
+
+msgctxt "#46054"
+msgid "Close"
+msgstr "Chiudi"
