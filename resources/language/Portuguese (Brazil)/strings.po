@@ -12,7 +12,7 @@ msgstr "Configurações de segmentos"
 
 msgctxt "#30001"
 msgid "Playback & Skip Dialog"
-msgstr "Reprodução e diálogo de salto"
+msgstr "Reprodução e diálogo Pular"
 
 msgctxt "#30004"
 msgid "Segment Sources"
@@ -30,7 +30,7 @@ msgstr "Registro de depuração"
 
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
-msgstr "Preferências de comportamento de salto"
+msgstr "Preferências de comportamento de pulo"
 
 
 
@@ -107,7 +107,7 @@ msgstr "Azul"
 
 msgctxt "#32007"
 msgid "Show Progress Bar in Skip Dialog"
-msgstr "Mostrar barra de progresso no diálogo de salto"
+msgstr "Mostrar barra de progresso no diálogo Pular"
 
 msgctxt "#32008"
 msgid "Major Rewind Threshold (Seconds)"
@@ -115,23 +115,23 @@ msgstr "Limite de retrocesso grande (segundos)"
 
 msgctxt "#32009"
 msgid "Skip Dialog Position"
-msgstr "Posição do diálogo de salto"
+msgstr "Posição do diálogo Pular"
 
 msgctxt "#32010"
 msgid "Enable Skip for Movies"
-msgstr "Ativar salto para filmes"
+msgstr "Ativar Pular para filmes"
 
 msgctxt "#32011"
 msgid "Enable Skip for Episodes"
-msgstr "Ativar salto para episódios"
+msgstr "Ativar Pular para episódios"
 
 msgctxt "#32017"
 msgid "Show Skip Dialog for Movies"
-msgstr "Mostrar diálogo de salto para filmes"
+msgstr "Mostrar diálogo Pular para filmes"
 
 msgctxt "#32018"
 msgid "Show Skip Dialog for Episodes"
-msgstr "Mostrar diálogo de salto para episódios"
+msgstr "Mostrar diálogo Pular para episódios"
 
 msgctxt "#32013"
 msgid "Skip Button Format"
@@ -155,7 +155,7 @@ msgstr "Opções globais"
 
 msgctxt "#32020"
 msgid "Skip dialog mode"
-msgstr "Modo do diálogo de salto"
+msgstr "Modo do diálogo Pular"
 
 msgctxt "#32021"
 msgid "Full mode"
@@ -175,11 +175,11 @@ msgstr "Pular e progresso combinados"
 
 msgctxt "#32102"
 msgid "Skip duration format"
-msgstr "Formato da duração do salto"
+msgstr "Formato da duração do pulo"
 
 msgctxt "#32103"
 msgid "Skip duration content"
-msgstr "Conteúdo da duração do salto"
+msgstr "Conteúdo da duração do pulo"
 
 msgctxt "#32104"
 msgid "Add missing online types to existing sidecar"
@@ -196,19 +196,19 @@ msgstr "Estilo da placa mínima"
 
 msgctxt "#32024"
 msgid "Minimal skip dialog position"
-msgstr "Posição do diálogo de salto mínimo"
+msgstr "Posição do diálogo Pular mínimo"
 
 msgctxt "#32025"
 msgid "Minimal skip label format"
-msgstr "Formato do rótulo de salto mínimo"
+msgstr "Formato do rótulo de pulo mínimo"
 
 msgctxt "#32026"
 msgid "Skip dialog font color"
-msgstr "Cor da fonte do diálogo de salto"
+msgstr "Cor da fonte do diálogo Pular"
 
 msgctxt "#32099"
 msgid "Skip dialog text in ALL CAPS"
-msgstr "Texto do diálogo de salto em MAIÚSCULAS"
+msgstr "Texto do diálogo Pular em MAIÚSCULAS"
 
 msgctxt "#32027"
 msgid "Progress bar shows remaining (countdown)"
@@ -248,27 +248,27 @@ msgstr "Somente no modo suave: quantas vezes por segundo atualizar a barra (2–
 
 msgctxt "#32087"
 msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
-msgstr "Chave geral para filmes: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo de salto para filmes\"."
+msgstr "Chave geral para filmes: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo Pular para filmes\"."
 
 msgctxt "#32088"
 msgid "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
-msgstr "Chave geral para episódios de séries: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo de salto para episódios\"."
+msgstr "Chave geral para episódios de séries: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo Pular para episódios\"."
 
 msgctxt "#32089"
 msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
-msgstr "Para segmentos definidos como Perguntar, mostra o diálogo de salto Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar salto para filmes (esta linha só aparece quando essa opção está ativada)."
+msgstr "Para segmentos definidos como Perguntar, mostra o diálogo Pular Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar Pular para filmes (esta linha só aparece quando essa opção está ativada)."
 
 msgctxt "#32090"
 msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
-msgstr "Para segmentos definidos como Perguntar, mostra o diálogo de salto Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar salto para episódios (esta linha só aparece quando essa opção está ativada)."
+msgstr "Para segmentos definidos como Perguntar, mostra o diálogo Pular Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar Pular para episódios (esta linha só aparece quando essa opção está ativada)."
 
 msgctxt "#32091"
 msgid "Jump offset"
-msgstr "Deslocamento do salto"
+msgstr "Deslocamento do pulo"
 
 msgctxt "#32092"
 msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
-msgstr "Segundos somados ou subtraídos ao pular um segmento (automático ou depois de você confirmar Perguntar). Valores negativos caem antes do destino normal do salto (p. ex., -5 começa 5 s antes); valores positivos caem depois dele. O tempo de busca nunca fica abaixo de zero."
+msgstr "Segundos somados ou subtraídos ao pular um segmento (automático ou depois de você confirmar Perguntar). Valores negativos caem antes do destino normal do pulo (p. ex., -5 começa 5 s antes); valores positivos caem depois dele. O tempo de busca nunca fica abaixo de zero."
 
 msgctxt "#32097"
 msgid "Ask dialog debounce (ms)"
@@ -328,7 +328,7 @@ msgstr "Filmes"
 
 msgctxt "#32061"
 msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
-msgstr "Quando ativado, os episódios de séries carregam os segmentos de salto do chapters.xml ou .edl sidecar ao lado do vídeo."
+msgstr "Quando ativado, os episódios de séries carregam os segmentos de pulo do chapters.xml ou .edl sidecar ao lado do vídeo."
 
 msgctxt "#32062"
 msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
@@ -336,7 +336,7 @@ msgstr "Quando ativado, os episódios de séries podem carregar tempos de abertu
 
 msgctxt "#32063"
 msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
-msgstr "Quando arquivos locais e busca online estão ativados para episódios de séries: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo de salto possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
+msgstr "Quando arquivos locais e busca online estão ativados para episódios de séries: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo Pular possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
 
 msgctxt "#32064"
 msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
@@ -524,11 +524,11 @@ msgstr "Se você aceitar, este sidecar conterá:"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
-msgstr "Quando ativado, os filmes carregam os segmentos de salto do chapters.xml ou .edl sidecar ao lado do vídeo."
+msgstr "Quando ativado, os filmes carregam os segmentos de pulo do chapters.xml ou .edl sidecar ao lado do vídeo."
 
 msgctxt "#32054"
 msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
-msgstr "Quando arquivos locais e busca online estão ativados para filmes: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo de salto possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
+msgstr "Quando arquivos locais e busca online estão ativados para filmes: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo Pular possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
 
 # Toast Settings
 msgctxt "#33000"
@@ -667,7 +667,7 @@ msgstr "Restaurar configurações de JSON…"
 
 msgctxt "#38003"
 msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
-msgstr "Selecione um arquivo .json de backup do Skippy. Somente as chaves presentes no arquivo são alteradas; as demais opções permanecem como neste dispositivo. O catálogo de tipos de segmento do arquivo é mesclado. Um backup anterior à versão 7.0 aplica suas antigas listas de salto e o mapa EDL ao catálogo. Chaves que não existem aqui são ignoradas."
+msgstr "Selecione um arquivo .json de backup do Skippy. Somente as chaves presentes no arquivo são alteradas; as demais opções permanecem como neste dispositivo. O catálogo de tipos de segmento do arquivo é mesclado. Um backup anterior à versão 7.0 aplica suas antigas listas de pulo e o mapa EDL ao catálogo. Chaves que não existem aqui são ignoradas."
 
 msgctxt "#38004"
 msgid "The operation could not be completed."
@@ -695,7 +695,7 @@ msgstr "Fazer backup dos dados do perfil em JSON…"
 
 msgctxt "#38010"
 msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
-msgstr "Exporta impressões digitais de envio, regras de salto automático por título, estatísticas e o catálogo de tipos de segmento deste dispositivo. Escolha uma pasta com permissão de gravação; é criado um arquivo skippy-profile-data-backup-*.json com data e hora. Arquivos antigos skippy-upload-history-backup-*.json ainda podem ser restaurados."
+msgstr "Exporta impressões digitais de envio, regras de pulo automático por título, estatísticas e o catálogo de tipos de segmento deste dispositivo. Escolha uma pasta com permissão de gravação; é criado um arquivo skippy-profile-data-backup-*.json com data e hora. Arquivos antigos skippy-upload-history-backup-*.json ainda podem ser restaurados."
 
 msgctxt "#38011"
 msgid "Restore profile data from JSON (merge)…"
@@ -703,15 +703,15 @@ msgstr "Restaurar dados do perfil de JSON (mesclar)…"
 
 msgctxt "#38012"
 msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
-msgstr "Selecione um arquivo .json de backup de dados do perfil do Skippy (ou do histórico de envios antigo). As impressões digitais de envio são mescladas; as regras de salto automático por título são mescladas por título; as estatísticas mantêm os maiores valores dos contadores; os tipos de segmento são mesclados por tipo."
+msgstr "Selecione um arquivo .json de backup de dados do perfil do Skippy (ou do histórico de envios antigo). As impressões digitais de envio são mescladas; as regras de pulo automático por título são mescladas por título; as estatísticas mantêm os maiores valores dos contadores; os tipos de segmento são mesclados por tipo."
 
 msgctxt "#38013"
 msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
-msgstr "Mesclar os dados do perfil deste backup? As impressões digitais de envio existentes permanecem; as novas são adicionadas. As regras de salto automático por título são mescladas. As estatísticas mantêm os maiores valores de cada contador. Os tipos de segmento são mesclados por tipo."
+msgstr "Mesclar os dados do perfil deste backup? As impressões digitais de envio existentes permanecem; as novas são adicionadas. As regras de pulo automático por título são mescladas. As estatísticas mantêm os maiores valores de cada contador. Os tipos de segmento são mesclados por tipo."
 
 msgctxt "#38014"
 msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
-msgstr "Mesclado: %d nova(s) impressão(ões) digital(is) (%d já presente(s)); %d salto(s) automático(s) por título; %d regra(s) de segmento; estatísticas %s; tipos de segmento %s."
+msgstr "Mesclado: %d nova(s) impressão(ões) digital(is) (%d já presente(s)); %d pulo(s) automático(s) por título; %d regra(s) de segmento; estatísticas %s; tipos de segmento %s."
 
 msgctxt "#38015"
 msgid "Pause during online lookup"
@@ -723,11 +723,11 @@ msgstr "Pausa o vídeo enquanto o Skippy busca segmentos online (Online primeiro
 
 msgctxt "#38017"
 msgid "Hide OSD display during skip"
-msgstr "Ocultar a exibição na tela durante o salto"
+msgstr "Ocultar a exibição na tela durante o pulo"
 
 msgctxt "#38018"
 msgid "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
-msgstr "Quando ativado, o Skippy define a propriedade Skippy.Skipping da tela inicial durante saltos automáticos e saltos confirmados em Perguntar, para que uma skin cooperativa possa ocultar a barra de busca. Não vale enquanto o diálogo Perguntar está na tela — somente durante a própria busca. Requer uma edição do DialogSeekBar.xml em cada skin (ou um add-on que a aplique). Skins padrão ignoram isso — sem efeito até que a skin verifique a propriedade. Desative se quiser a barra de busca normal após os saltos do Skippy."
+msgstr "Quando ativado, o Skippy define a propriedade Skippy.Skipping da tela inicial durante pulos automáticos e pulos confirmados em Perguntar, para que uma skin cooperativa possa ocultar a barra de busca. Não vale enquanto o diálogo Perguntar está na tela — somente durante a própria busca. Requer uma edição do DialogSeekBar.xml em cada skin (ou um add-on que a aplique). Skins padrão ignoram isso — sem efeito até que a skin verifique a propriedade. Desative se quiser a barra de busca normal após os pulos do Skippy."
 
 msgctxt "#38020"
 msgid "updated"
@@ -1148,7 +1148,7 @@ msgstr "%s pulado"
 
 msgctxt "#43005"
 msgid "No skip segments found for this video."
-msgstr "Nenhum segmento de salto encontrado para este vídeo."
+msgstr "Nenhum segmento de pulo encontrado para este vídeo."
 
 msgctxt "#43006"
 msgid "No segments found locally or online for this %s."
@@ -1156,7 +1156,7 @@ msgstr "Nenhum segmento encontrado localmente nem online para este(a) %s."
 
 msgctxt "#43007"
 msgid "No skip segments found for this %s."
-msgstr "Nenhum segmento de salto encontrado para este(a) %s."
+msgstr "Nenhum segmento de pulo encontrado para este(a) %s."
 
 msgctxt "#43008"
 msgid "episode"
@@ -1545,23 +1545,23 @@ msgstr "Agora não"
 
 msgctxt "#44004"
 msgid "Auto-skip saved for this title"
-msgstr "Salto automático salvo para este título"
+msgstr "Pulo automático salvo para este título"
 
 msgctxt "#44005"
 msgid "Ask to auto-skip per show or movie"
-msgstr "Perguntar sobre salto automático por série ou filme"
+msgstr "Perguntar sobre pulo automático por série ou filme"
 
 msgctxt "#44006"
 msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
-msgstr "Depois que você confirmar um salto, pergunta se esse tipo de segmento deve ser pulado automaticamente nesta série ou filme de agora em diante. Salvo sob o ID TMDB do título, portanto também vale para outras versões do mesmo filme ou episódio."
+msgstr "Depois que você confirmar um pulo, pergunta se esse tipo de segmento deve ser pulado automaticamente nesta série ou filme de agora em diante. Salvo sob o ID TMDB do título, portanto também vale para outras versões do mesmo filme ou episódio."
 
 msgctxt "#44007"
 msgid "Clear saved per-title auto-skip choices"
-msgstr "Limpar escolhas salvas de salto automático por título"
+msgstr "Limpar escolhas salvas de pulo automático por título"
 
 msgctxt "#44008"
 msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
-msgstr "Esquece todas as decisões salvas de salto automático por título, inclusive os pedidos que você recusou, para que o Skippy possa perguntar de novo."
+msgstr "Esquece todas as decisões salvas de pulo automático por título, inclusive os pedidos que você recusou, para que o Skippy possa perguntar de novo."
 
 msgctxt "#44009"
 msgid "Cleared %d saved per-title choice(s)."
@@ -1609,11 +1609,11 @@ msgstr "Segmentos pulados: %d"
 
 msgctxt "#44026"
 msgid "Skips by segment type:"
-msgstr "Saltos por tipo de segmento:"
+msgstr "Pulos por tipo de segmento:"
 
 msgctxt "#44027"
 msgid "No skips recorded yet"
-msgstr "Nenhum salto registrado ainda"
+msgstr "Nenhum pulo registrado ainda"
 
 msgctxt "#44028"
 msgid "Online segments downloaded: %d"
@@ -1697,35 +1697,35 @@ msgstr "Aviso: sobrepõe entradas existentes de %s. "
 
 msgctxt "#44060"
 msgid "Title autoskip"
-msgstr "Salto automático por título"
+msgstr "Pulo automático por título"
 
 msgctxt "#44061"
 msgid "Manage saved auto-skips"
-msgstr "Gerenciar saltos automáticos salvos"
+msgstr "Gerenciar pulos automáticos salvos"
 
 msgctxt "#44062"
 msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
-msgstr "Mostra todas as séries ou filmes que têm uma regra de salto automático salva. Selecione um título para excluir essa entrada se você mudou de ideia."
+msgstr "Mostra todas as séries ou filmes que têm uma regra de pulo automático salva. Selecione um título para excluir essa entrada se você mudou de ideia."
 
 msgctxt "#44063"
 msgid "No titles with auto-skip saved yet."
-msgstr "Ainda não há títulos com salto automático salvo."
+msgstr "Ainda não há títulos com pulo automático salvo."
 
 msgctxt "#44064"
 msgid "Select a title to remove its auto-skip rules."
-msgstr "Selecione um título para remover suas regras de salto automático."
+msgstr "Selecione um título para remover suas regras de pulo automático."
 
 msgctxt "#44065"
 msgid "Remove auto-skip for %s?"
-msgstr "Remover o salto automático de %s?"
+msgstr "Remover o pulo automático de %s?"
 
 msgctxt "#44066"
 msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
-msgstr "Isto exclui as regras de salto automático salvas para este título, e o Skippy voltará a perguntar."
+msgstr "Isto exclui as regras de pulo automático salvas para este título, e o Skippy voltará a perguntar."
 
 msgctxt "#44067"
 msgid "Removed auto-skip for %s"
-msgstr "Salto automático removido de %s"
+msgstr "Pulo automático removido de %s"
 
 msgctxt "#44068"
 msgid "Could not remove that title entry."
@@ -1737,15 +1737,15 @@ msgstr "Excluir"
 
 msgctxt "#44100"
 msgid "Customize skip dialog"
-msgstr "Personalizar diálogo de salto"
+msgstr "Personalizar diálogo Pular"
 
 msgctxt "#44101"
 msgid "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
-msgstr "Abre uma prévia ao vivo da aparência e do comportamento do diálogo de salto. As alterações são aplicadas quando você clica em Salvar."
+msgstr "Abre uma prévia ao vivo da aparência e do comportamento do diálogo Pular. As alterações são aplicadas quando você clica em Salvar."
 
 msgctxt "#44102"
 msgid "Customize skip dialog"
-msgstr "Personalizar diálogo de salto"
+msgstr "Personalizar diálogo Pular"
 
 msgctxt "#44103"
 msgid "Save"
@@ -1765,11 +1765,11 @@ msgstr "Não"
 
 msgctxt "#32106"
 msgid "Segment types and skip behavior"
-msgstr "Tipos de segmento e comportamento de salto"
+msgstr "Tipos de segmento e comportamento de pulo"
 
 msgctxt "#32107"
 msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
-msgstr "Edite o catálogo de tipos de segmento: modo de salto (Sempre / Perguntar / Nunca), número EDL e apelidos. Tipos internos não podem ser excluídos. Rótulos não atribuídos e desconhecidos nunca são pulados, mas ainda viram segmentos."
+msgstr "Edite o catálogo de tipos de segmento: modo de pulo (Sempre / Perguntar / Nunca), número EDL e apelidos. Tipos internos não podem ser excluídos. Rótulos não atribuídos e desconhecidos nunca são pulados, mas ainda viram segmentos."
 
 msgctxt "#45001"
 msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
@@ -1817,7 +1817,7 @@ msgstr "Editar apelidos"
 
 msgctxt "#45019"
 msgid "Skip mode"
-msgstr "Modo de salto"
+msgstr "Modo de pulo"
 
 msgctxt "#45020"
 msgid "Choose EDL number"
@@ -1858,7 +1858,7 @@ msgstr "Fecha o diálogo automaticamente quando o segmento termina ou a reprodu�
 
 msgctxt "#46006"
 msgid "Show next-jump line"
-msgstr "Mostrar linha do próximo salto"
+msgstr "Mostrar linha do próximo pulo"
 
 msgctxt "#46007"
 msgid "Show segment duration"
@@ -1886,7 +1886,7 @@ msgstr "Opacidade do cartão (%)"
 
 msgctxt "#46013"
 msgid "Skip dialog presets…"
-msgstr "Predefinições do diálogo de salto…"
+msgstr "Predefinições do diálogo Pular…"
 
 msgctxt "#46014"
 msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
@@ -1958,7 +1958,7 @@ msgstr "Predefinição atual"
 
 msgctxt "#46031"
 msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
-msgstr "Mostra qual predefinição corresponde às configurações atuais do diálogo de salto, ou Personalizado (não salvo) se nenhuma corresponder."
+msgstr "Mostra qual predefinição corresponde às configurações atuais do diálogo Pular, ou Personalizado (não salvo) se nenhuma corresponder."
 
 msgctxt "#46032"
 msgid "Custom (unsaved)"
@@ -1966,7 +1966,7 @@ msgstr "Personalizado (não salvo)"
 
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
-msgstr "Quando um segmento está aninhado em outro ou se sobrepõe a ele, adiciona uma linha informando para onde o Pular vai saltar em seguida (por exemplo, o início do próximo segmento)."
+msgstr "Quando um segmento está aninhado em outro ou se sobrepõe a ele, adiciona uma linha informando para onde o Pular vai pular em seguida (por exemplo, o início do próximo segmento)."
 
 msgctxt "#46034"
 msgid "Preview type"
@@ -1978,7 +1978,7 @@ msgstr "Mostrar \"Pressione OK para pular\" na notificação"
 
 msgctxt "#46036"
 msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
-msgstr "Adiciona o texto \"Pressione OK para pular\" à notificação. Desative para uma notificação mais curta, que mostra só o rótulo de pular (e a linha do próximo salto, se ativada)."
+msgstr "Adiciona o texto \"Pressione OK para pular\" à notificação. Desative para uma notificação mais curta, que mostra só o rótulo de pular (e a linha do próximo pulo, se ativada)."
 
 msgctxt "#46037"
 msgid "Export saved presets…"
