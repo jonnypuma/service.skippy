@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.1.9] - 2026-10-24
+
+### Added
+
+- **Brazilian Portuguese (Portuguese (Brazil))** language pack with all 506 strings, matching the English catalog.
+
 ## [7.1.8] - 2026-10-23
 
 ### Fixed

@@ -1,0 +1,2053 @@
+# Kodi language file
+# Addon: service.skippy
+msgid ""
+msgstr ""
+"Language: pt_BR\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# Categories
+msgctxt "#30000"
+msgid "Segment Settings"
+msgstr "Configurações de segmentos"
+
+msgctxt "#30001"
+msgid "Playback & Skip Dialog"
+msgstr "Reprodução e diálogo de salto"
+
+msgctxt "#30004"
+msgid "Segment Sources"
+msgstr "Fontes de segmentos"
+
+msgctxt "#30002"
+msgid "Toast Notifications"
+msgstr "Notificações"
+
+msgctxt "#30003"
+msgid "Debug Logging"
+msgstr "Registro de depuração"
+
+# Segment Settings
+
+msgctxt "#31001"
+msgid "Skip Behavior Preferences"
+msgstr "Preferências de comportamento de salto"
+
+
+
+
+msgctxt "#31005"
+msgid "Ignore unmapped EDL actions"
+msgstr "Ignorar ações EDL não mapeadas"
+
+
+msgctxt "#31007"
+msgid "Ignore overlapping segments"
+msgstr "Ignorar segmentos sobrepostos"
+
+msgctxt "#31011"
+msgid "Open Segment Editor when overlaps are detected"
+msgstr "Abrir o Editor de segmentos quando houver sobreposições"
+
+msgctxt "#31012"
+msgid "After parsing your sidecar, if overlapping or nested segments are still present while “Ignore overlapping segments” is off, open the Segment Editor once per playback file so you can fix the list. Requires Segment Editor to be enabled. Uses the same detection as the overlapping-segments notification."
+msgstr "Depois de analisar seu arquivo sidecar, se ainda houver segmentos sobrepostos ou aninhados enquanto “Ignorar segmentos sobrepostos” estiver desativado, abre o Editor de segmentos uma vez por arquivo reproduzido para você corrigir a lista. Requer que o Editor de segmentos esteja ativado. Usa a mesma detecção da notificação de segmentos sobrepostos."
+
+msgctxt "#31008"
+msgid "Use embedded chapters as fallback"
+msgstr "Usar capítulos incorporados como alternativa"
+
+msgctxt "#31009"
+msgid "When no sidecar (chapters.xml / .edl) or online segments are found, parse chapters embedded in the video file (MKV, MP4). Known types are matched by alias; unknown chapter names are still kept as segments (Never skip)."
+msgstr "Quando nenhum sidecar (chapters.xml / .edl) ou segmento online é encontrado, analisa os capítulos incorporados no arquivo de vídeo (MKV, MP4). Os tipos conhecidos são identificados por apelido; nomes de capítulos desconhecidos são mantidos como segmentos (Nunca pular)."
+
+msgctxt "#31010"
+msgid "Segment types"
+msgstr "Tipos de segmento"
+
+msgctxt "#31013"
+msgid "Prefetch next episode"
+msgstr "Pré-carregar próximo episódio"
+
+msgctxt "#31014"
+msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
+msgstr "Quando a prioridade de segmentos de séries é “Online primeiro” e a busca online de séries está ativada, o Skippy identifica o próximo episódio da biblioteca (mesma série: próximo episódio da temporada, ou primeiro da temporada seguinte) e baixa em segundo plano os segmentos online combinados de abertura/recapitulação. Os segmentos só são aplicados quando você inicia exatamente esse arquivo (caminho + IDs devem coincidir). O registro detalhado (Todos os detalhes) registra agendamento, armazenamento e repasse do pré-carregamento. Não é usado em “Local primeiro”. Nunca pré-carrega sidecars locais."
+
+# Dialog Settings
+msgctxt "#32000"
+msgid "Button Focus Style"
+msgstr "Estilo de foco do botão"
+
+msgctxt "#32001"
+msgid "Default"
+msgstr "Padrão"
+
+msgctxt "#32002"
+msgid "Aqua"
+msgstr "Água"
+
+msgctxt "#32003"
+msgid "Aqua Bevel"
+msgstr "Água com relevo"
+
+msgctxt "#32004"
+msgid "Aqua Dark"
+msgstr "Água escuro"
+
+msgctxt "#32005"
+msgid "Aqua Vignette"
+msgstr "Água com vinheta"
+
+msgctxt "#32012"
+msgid "Aqua Rounded"
+msgstr "Água arredondado"
+
+msgctxt "#32006"
+msgid "Blue"
+msgstr "Azul"
+
+msgctxt "#32007"
+msgid "Show Progress Bar in Skip Dialog"
+msgstr "Mostrar barra de progresso no diálogo de salto"
+
+msgctxt "#32008"
+msgid "Major Rewind Threshold (Seconds)"
+msgstr "Limite de retrocesso grande (segundos)"
+
+msgctxt "#32009"
+msgid "Skip Dialog Position"
+msgstr "Posição do diálogo de salto"
+
+msgctxt "#32010"
+msgid "Enable Skip for Movies"
+msgstr "Ativar salto para filmes"
+
+msgctxt "#32011"
+msgid "Enable Skip for Episodes"
+msgstr "Ativar salto para episódios"
+
+msgctxt "#32017"
+msgid "Show Skip Dialog for Movies"
+msgstr "Mostrar diálogo de salto para filmes"
+
+msgctxt "#32018"
+msgid "Show Skip Dialog for Episodes"
+msgstr "Mostrar diálogo de salto para episódios"
+
+msgctxt "#32013"
+msgid "Skip Button Format"
+msgstr "Formato do botão Pular"
+
+msgctxt "#32014"
+msgid "Hide Close Button"
+msgstr "Ocultar botão Fechar"
+
+msgctxt "#32015"
+msgid "Hide Skip and Close Icons"
+msgstr "Ocultar ícones de Pular e Fechar"
+
+msgctxt "#32016"
+msgid "Hide segment ending in text"
+msgstr "Ocultar o fim do segmento no texto"
+
+msgctxt "#32019"
+msgid "Global options"
+msgstr "Opções globais"
+
+msgctxt "#32020"
+msgid "Skip dialog mode"
+msgstr "Modo do diálogo de salto"
+
+msgctxt "#32021"
+msgid "Full mode"
+msgstr "Modo completo"
+
+msgctxt "#32022"
+msgid "Minimal mode"
+msgstr "Modo mínimo"
+
+msgctxt "#32100"
+msgid "Compact Full"
+msgstr "Completo compacto"
+
+msgctxt "#32101"
+msgid "Combined skip and progress"
+msgstr "Pular e progresso combinados"
+
+msgctxt "#32102"
+msgid "Skip duration format"
+msgstr "Formato da duração do salto"
+
+msgctxt "#32103"
+msgid "Skip duration content"
+msgstr "Conteúdo da duração do salto"
+
+msgctxt "#32104"
+msgid "Add missing online types to existing sidecar"
+msgstr "Adicionar tipos online ausentes a um sidecar existente"
+
+msgctxt "#32105"
+msgid "When a local .edl or chapters.xml already exists, still append intro/recap/credits/preview windows from online lookup that the file does not already have (by type). Existing local times are not changed. IntroDB.app outro is stored as Credits. Requires Save online segments. Does not apply to Overwrite (file is replaced) or Update All (missing types are already inserted)."
+msgstr "Quando já existe um .edl ou chapters.xml local, ainda acrescenta as janelas de abertura/recapitulação/créditos/prévia da busca online que o arquivo ainda não tem (por tipo). Os tempos locais existentes não são alterados. O encerramento do IntroDB.app é armazenado como Créditos. Requer Salvar segmentos online. Não se aplica a Sobrescrever (o arquivo é substituído) nem a Atualizar tudo (os tipos ausentes já são inseridos)."
+
+
+msgctxt "#32023"
+msgid "Minimal plate style"
+msgstr "Estilo da placa mínima"
+
+msgctxt "#32024"
+msgid "Minimal skip dialog position"
+msgstr "Posição do diálogo de salto mínimo"
+
+msgctxt "#32025"
+msgid "Minimal skip label format"
+msgstr "Formato do rótulo de salto mínimo"
+
+msgctxt "#32026"
+msgid "Skip dialog font color"
+msgstr "Cor da fonte do diálogo de salto"
+
+msgctxt "#32099"
+msgid "Skip dialog text in ALL CAPS"
+msgstr "Texto do diálogo de salto em MAIÚSCULAS"
+
+msgctxt "#32027"
+msgid "Progress bar shows remaining (countdown)"
+msgstr "A barra de progresso mostra o tempo restante (contagem regressiva)"
+
+msgctxt "#32079"
+msgid "Progress bar style"
+msgstr "Estilo da barra de progresso"
+
+msgctxt "#32080"
+msgid "Progress bar height (pixels)"
+msgstr "Altura da barra de progresso (pixels)"
+
+msgctxt "#32081"
+msgid "Show skip button focus frame"
+msgstr "Mostrar moldura de foco do botão Pular"
+
+msgctxt "#32082"
+msgid "Full mode: when the Close button is hidden, draw the selected focus texture on the Skip button. Turn off to hide the focus frame when only Skip is shown."
+msgstr "Modo completo: quando o botão Fechar está oculto, desenha a textura de foco selecionada no botão Pular. Desative para ocultar a moldura de foco quando só o botão Pular é exibido."
+
+msgctxt "#32083"
+msgid "Smooth progress bar updates"
+msgstr "Atualizações suaves da barra de progresso"
+
+msgctxt "#32084"
+msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
+msgstr "Modo completo: atualiza a barra de progresso com mais frequência e suaviza as transições entre valores. Desative se a reprodução travar em dispositivos mais lentos (padrão: desativado)."
+
+msgctxt "#32085"
+msgid "Progress bar updates per second"
+msgstr "Atualizações da barra de progresso por segundo"
+
+msgctxt "#32086"
+msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
+msgstr "Somente no modo suave: quantas vezes por segundo atualizar a barra (2–120). O padrão 4 serve para a maioria das telas; aumente apenas se a barra parecer entrecortada em um painel de alta taxa de atualização (60–120 Hz) — e diminua novamente se a reprodução travar."
+
+msgctxt "#32087"
+msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."
+msgstr "Chave geral para filmes: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo de salto para filmes\"."
+
+msgctxt "#32088"
+msgid "Master switch for TV episodes: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for episodes\"."
+msgstr "Chave geral para episódios de séries: quando desativada, o Skippy não pula nem pergunta. Enquanto estiver desativada, o Kodi oculta a configuração filha \"Mostrar diálogo de salto para episódios\"."
+
+msgctxt "#32089"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for movies (this row only appears when that is on)."
+msgstr "Para segmentos definidos como Perguntar, mostra o diálogo de salto Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar salto para filmes (esta linha só aparece quando essa opção está ativada)."
+
+msgctxt "#32090"
+msgid "For segments set to Ask, show the Full or Minimal skip dialog. When off, those segments are not advanced. Requires Enable skip for episodes (this row only appears when that is on)."
+msgstr "Para segmentos definidos como Perguntar, mostra o diálogo de salto Completo ou Mínimo. Quando desativado, esses segmentos não são avançados. Requer Ativar salto para episódios (esta linha só aparece quando essa opção está ativada)."
+
+msgctxt "#32091"
+msgid "Jump offset"
+msgstr "Deslocamento do salto"
+
+msgctxt "#32092"
+msgid "Seconds added or subtracted when skipping a segment (auto or after you confirm Ask). Negative values land before the normal skip target (e.g. -5 starts 5 s earlier); positive values land after it. The seek time is never below zero."
+msgstr "Segundos somados ou subtraídos ao pular um segmento (automático ou depois de você confirmar Perguntar). Valores negativos caem antes do destino normal do salto (p. ex., -5 começa 5 s antes); valores positivos caem depois dele. O tempo de busca nunca fica abaixo de zero."
+
+msgctxt "#32097"
+msgid "Ask dialog debounce (ms)"
+msgstr "Atraso do diálogo Perguntar (ms)"
+
+msgctxt "#32098"
+msgid "Milliseconds to wait before opening an Ask dialog (0-500, step 10, default 0). Leave at 0 unless dialogs double-open. Duplicate asks are also blocked by a separate same-segment cooldown and just-skipped tracking."
+msgstr "Milissegundos de espera antes de abrir um diálogo Perguntar (0–500, passo 10, padrão 0). Deixe em 0, a menos que os diálogos abram duas vezes. Perguntas duplicadas também são bloqueadas por um intervalo separado para o mesmo segmento e pelo rastreamento de “acabou de pular”."
+
+msgctxt "#32028"
+msgid "Use local chapter / EDL files"
+msgstr "Usar arquivos locais de capítulos / EDL"
+
+msgctxt "#32029"
+msgid "Use online segment lookup (TheIntroDB / IntroDB.app)"
+msgstr "Usar busca online de segmentos (TheIntroDB / IntroDB.app)"
+
+msgctxt "#32030"
+msgid "Prefer when both local and online are enabled"
+msgstr "Preferir quando local e online estão ativados"
+
+msgctxt "#32036"
+msgid "Online APIs (TMDB)"
+msgstr "APIs online (TMDB)"
+
+msgctxt "#32031"
+msgid "Resolve missing TMDB / IMDb via TMDB API"
+msgstr "Resolver TMDB / IMDb ausentes pela API do TMDB"
+
+msgctxt "#32032"
+msgid "TMDB API key (optional)"
+msgstr "Chave da API do TMDB (opcional)"
+
+msgctxt "#32033"
+msgid "Free key from themoviedb.org (Settings → API). Used when TV or movie online lookup needs to resolve missing TMDB/IMDb ids. Leave empty to use TheMovieDB Helper’s key below (same key for episodes and movies)."
+msgstr "Chave gratuita em themoviedb.org (Configurações → API). Usada quando a busca online de séries ou filmes precisa resolver IDs TMDB/IMDb ausentes. Deixe vazio para usar a chave do TheMovieDB Helper abaixo (a mesma chave para episódios e filmes)."
+
+msgctxt "#32034"
+msgid "Use TheMovieDB Helper addon API key when empty"
+msgstr "Usar a chave de API do add-on TheMovieDB Helper quando vazio"
+
+msgctxt "#32035"
+msgid "When TV or movie online lookup is enabled and Kodi has no TMDB/IMDb in uniqueid, call api.themoviedb.org to fill gaps (same IDs TheIntroDB / IntroDB.app need). Applies to both episodes and movies. Disable to use only library scraper metadata."
+msgstr "Quando a busca online de séries ou filmes está ativada e o Kodi não tem TMDB/IMDb no uniqueid, consulta api.themoviedb.org para preencher as lacunas (os mesmos IDs que TheIntroDB / IntroDB.app precisam). Vale para episódios e filmes. Desative para usar apenas os metadados do scraper da biblioteca."
+
+msgctxt "#32037"
+msgid "If the TMDB API key field above is empty, read the key from plugin.video.themoviedb.helper when installed. One key for both TV episodes and movies."
+msgstr "Se o campo da chave da API do TMDB acima estiver vazio, lê a chave de plugin.video.themoviedb.helper quando instalado. Uma única chave para episódios de séries e filmes."
+
+msgctxt "#32059"
+msgid "TV episodes"
+msgstr "Episódios de séries"
+
+msgctxt "#32060"
+msgid "Movies"
+msgstr "Filmes"
+
+msgctxt "#32061"
+msgid "When enabled, TV episodes load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Quando ativado, os episódios de séries carregam os segmentos de salto do chapters.xml ou .edl sidecar ao lado do vídeo."
+
+msgctxt "#32062"
+msgid "When enabled, TV episodes can load intro/recap timing from TheIntroDB and IntroDB.app. Requires season/episode and TMDB/IMDb-style IDs from Kodi’s library (scraper uniqueid). SxxExx in the filename is only a fallback when the item is not in the library."
+msgstr "Quando ativado, os episódios de séries podem carregar tempos de abertura/recapitulação do TheIntroDB e do IntroDB.app. Requer temporada/episódio e IDs no estilo TMDB/IMDb da biblioteca do Kodi (uniqueid do scraper). SxxExx no nome do arquivo é só um recurso alternativo quando o item não está na biblioteca."
+
+msgctxt "#32063"
+msgid "When both local files and online lookup are enabled for TV episodes: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Quando arquivos locais e busca online estão ativados para episódios de séries: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo de salto possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
+
+msgctxt "#32064"
+msgid "When enabled, movies can load intro/recap timing from TheIntroDB only (not IntroDB.app). Requires TMDB and/or IMDb movie ids from Kodi’s library (uniqueid), or the global TMDB API settings above when ids are missing."
+msgstr "Quando ativado, os filmes podem carregar tempos de abertura/recapitulação apenas do TheIntroDB (não do IntroDB.app). Requer IDs TMDB e/ou IMDb de filmes da biblioteca do Kodi (uniqueid), ou as configurações globais da API do TMDB acima quando os IDs estão ausentes."
+
+msgctxt "#32065"
+msgid "TV episodes: online API priority"
+msgstr "Episódios de séries: prioridade das APIs online"
+
+msgctxt "#32066"
+msgid "When TheIntroDB and IntroDB.app both return a segment for the same time range, the API you list first wins for that window; the other’s overlapping entry is omitted. The other API can still add segments that do not overlap that window."
+msgstr "Quando o TheIntroDB e o IntroDB.app retornam um segmento para o mesmo intervalo de tempo, a API listada primeiro vence nessa janela; a entrada sobreposta da outra é omitida. A outra API ainda pode adicionar segmentos que não se sobrepõem a essa janela."
+
+msgctxt "#32067"
+msgid "Movies: online API priority"
+msgstr "Filmes: prioridade das APIs online"
+
+msgctxt "#32068"
+msgid "Same rule as for TV episodes. For movies, only TheIntroDB is used today (IntroDB.app has no movie segments); this setting stays for consistency if that changes later."
+msgstr "Mesma regra dos episódios de séries. Para filmes, hoje só o TheIntroDB é usado (o IntroDB.app não tem segmentos de filmes); esta configuração permanece por consistência caso isso mude no futuro."
+
+msgctxt "#32073"
+msgid "Seconds to pause remote API calls after errors"
+msgstr "Segundos de pausa nas chamadas de API remotas após erros"
+
+msgctxt "#32074"
+msgid "Base seconds for backoff after errors (each host separate). Each new failure doubles wait time up to 3600 s until a request succeeds (exponential backoff). HTTP 429 may include Retry-After; when present, Skippy uses at least that many seconds (still capped at 3600). HTTP 404 does not trigger backoff. Set to 0 to disable."
+msgstr "Segundos-base de espera após erros (cada host separadamente). Cada nova falha dobra o tempo de espera até 3600 s, até que uma requisição tenha êxito (espera exponencial). O HTTP 429 pode incluir Retry-After; quando presente, o Skippy usa pelo menos esse número de segundos (ainda limitado a 3600). O HTTP 404 não aciona espera. Defina 0 para desativar."
+
+msgctxt "#32045"
+msgid "Online segments sidecar"
+msgstr "Sidecar de segmentos online"
+
+msgctxt "#32077"
+msgid "Save format (online segments)"
+msgstr "Formato de gravação (segmentos online)"
+
+msgctxt "#32078"
+msgid "Write fetched online segments to `.edl` next to the video, to Matroska-style `-chapters.xml` / `_chapters.xml`, or both. Separate from Segment Marker save format."
+msgstr "Grava os segmentos online obtidos em `.edl` ao lado do vídeo, em `-chapters.xml` / `_chapters.xml` no estilo Matroska, ou em ambos. Independente do formato de gravação do Marcador de segmentos."
+
+msgctxt "#32046"
+msgid "Save online segments"
+msgstr "Salvar segmentos online"
+
+msgctxt "#32047"
+msgid "When online lookup returns segment windows and this is on, Skippy writes them to disk using the save format and the policies below (skip / overwrite / merge / update / backup). Does not apply to plugin playback, .strm files, or common stream URLs."
+msgstr "Quando a busca online retorna janelas de segmentos e esta opção está ativada, o Skippy as grava em disco usando o formato de gravação e as políticas abaixo (pular / sobrescrever / mesclar / atualizar / backup). Não se aplica à reprodução por plugin, a arquivos .strm nem a URLs de streaming comuns."
+
+msgctxt "#32069"
+msgid "If matching sidecar already exists"
+msgstr "Se já existir um sidecar correspondente"
+
+msgctxt "#32070"
+msgid "Applies separately to each sidecar type you save (.edl and/or chapters.xml). Skip: do nothing when that file already exists. Overwrite: replace it with online segments only (optional prompt). Merge: keep existing entries and add online segments that do not overlap an existing time range (neighbor snap settings are ignored). Update: adjust start/end on local segments that match online (intro/recap/credits/preview; IntroDB outro matches credits); optional neighbor snap trims overlaps from those new times; optional prompt. Update All: same as Update, plus append online segments whose type had no local row, with snap again per insert if enabled. Neighbor snap only affects Update and Update All, not Merge or Overwrite."
+msgstr "Aplica-se separadamente a cada tipo de sidecar que você salva (.edl e/ou chapters.xml). Pular: não faz nada quando esse arquivo já existe. Sobrescrever: substitui por apenas os segmentos online (com confirmação opcional). Mesclar: mantém as entradas existentes e adiciona os segmentos online que não se sobrepõem a um intervalo de tempo existente (as configurações de ajuste de vizinhos são ignoradas). Atualizar: ajusta início/fim dos segmentos locais que correspondem aos online (abertura/recapitulação/créditos/prévia; o encerramento do IntroDB corresponde a créditos); o ajuste opcional de vizinhos corta sobreposições a partir desses novos tempos; confirmação opcional. Atualizar tudo: igual a Atualizar, mais o acréscimo de segmentos online cujo tipo não tinha linha local, com ajuste novamente a cada inserção, se ativado. O ajuste de vizinhos afeta apenas Atualizar e Atualizar tudo, não Mesclar nem Sobrescrever."
+
+msgctxt "#32071"
+msgid "Back up sidecar files before overwrite, merge, or update"
+msgstr "Fazer backup dos arquivos sidecar antes de sobrescrever, mesclar ou atualizar"
+
+msgctxt "#32072"
+msgid "When enabled, an existing `.edl` or chapter XML file is copied to the same path with an extra `.bck` extension immediately before it is replaced, merged, or updated."
+msgstr "Quando ativado, um arquivo `.edl` ou de capítulos XML existente é copiado para o mesmo caminho com a extensão extra `.bck` imediatamente antes de ser substituído, mesclado ou atualizado."
+
+msgctxt "#35000"
+msgid "Replace local files with online segment data?"
+msgstr "Substituir os arquivos locais pelos dados de segmentos online?"
+
+msgctxt "#35001"
+msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
+msgstr "Já existe um arquivo sidecar para este vídeo. Substituí-lo apenas pelos segmentos online? (O conteúdo existente será perdido, a menos que você tenha ativado o backup ou escolhido Mesclar nas configurações.)"
+
+msgctxt "#35002"
+msgid "Replace local chapter XML and EDL with online data?"
+msgstr "Substituir o XML de capítulos e o EDL locais pelos dados online?"
+
+msgctxt "#35003"
+msgid "Both a chapter XML file and an `.edl` already exist beside this video. Replace both with segments from online lookup? (Existing content will be lost unless backup is enabled in settings or you use Merge policy.)"
+msgstr "Já existem um arquivo XML de capítulos e um `.edl` ao lado deste vídeo. Substituir ambos pelos segmentos da busca online? (O conteúdo existente será perdido, a menos que o backup esteja ativado nas configurações ou você use a política Mesclar.)"
+
+msgctxt "#35004"
+msgid "Existing chapter XML will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "O XML de capítulos existente será substituído pelos segmentos da busca online. Continuar? (Copia para `.bck` antes, se o backup estiver ativado. Use Mesclar nas configurações para combinar em vez de substituir.)"
+
+msgctxt "#35005"
+msgid "Existing `.edl` will be replaced by segments from online lookup. Continue? (Copies to `.bck` first if backup is enabled. Use Merge in settings to combine instead.)"
+msgstr "O `.edl` existente será substituído pelos segmentos da busca online. Continuar? (Copia para `.bck` antes, se o backup estiver ativado. Use Mesclar nas configurações para combinar em vez de substituir.)"
+
+msgctxt "#35012"
+msgid "Update chapter XML from online?"
+msgstr "Atualizar o XML de capítulos com dados online?"
+
+msgctxt "#35013"
+msgid "Matched local chapters (intro / recap / credits / preview — IntroDB outro matches credits) will get new start/end times from online lookup. Other chapters are unchanged; none are removed. A preview at the bottom lists all chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Os capítulos locais correspondentes (abertura / recapitulação / créditos / prévia — o encerramento do IntroDB corresponde a créditos) receberão novos horários de início/fim da busca online. Os demais capítulos permanecem inalterados; nenhum é removido. Uma prévia no fim lista todos os capítulos após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35014"
+msgid "Update EDL from online?"
+msgstr "Atualizar o EDL com dados online?"
+
+msgctxt "#35015"
+msgid "Matched local segment rows will get new times from online lookup (same rules as chapter XML update). Unmatched rows stay as-is. A preview at the bottom lists all rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "As linhas de segmentos locais correspondentes receberão novos horários da busca online (mesmas regras da atualização do XML de capítulos). As linhas sem correspondência permanecem como estão. Uma prévia no fim lista todas as linhas após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35016"
+msgid "Update chapter XML and EDL from online?"
+msgstr "Atualizar o XML de capítulos e o EDL com dados online?"
+
+msgctxt "#35017"
+msgid "Both sidecars exist: Skippy will update only matched local segments with online times (see Update policy help). Unmatched entries stay; none are removed. Previews at the bottom show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Ambos os sidecars existem: o Skippy atualizará apenas os segmentos locais correspondentes com os horários online (veja a ajuda da política Atualizar). As entradas sem correspondência permanecem; nenhuma é removida. Prévias no fim mostram cada arquivo após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35018"
+msgid "Yes"
+msgstr "Sim"
+
+msgctxt "#35019"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "#32093"
+msgid "Snap neighbor start"
+msgstr "Ajustar início do vizinho"
+
+msgctxt "#32094"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the start of a neighbor that extends past the anchor end so it begins at the anchor end (e.g. main starts after intro; epilogue starts after credits). Requires Snap neighbor start. Does not create extra rows—each existing neighbor row is trimmed at most once. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Quando Atualizar ou Atualizar tudo altera horários de segmentos ou Atualizar tudo insere um segmento: corta o início de um vizinho que se estende além do fim da âncora, para que comece no fim dela (p. ex., o conteúdo principal começa após a abertura; o epílogo começa após os créditos). Requer Ajustar início do vizinho. Não cria linhas extras — cada linha vizinha existente é cortada no máximo uma vez. Usado apenas com Atualizar / Atualizar tudo, não com Mesclar nem Sobrescrever. Nível Especialista."
+
+msgctxt "#32095"
+msgid "Snap neighbor end"
+msgstr "Ajustar fim do vizinho"
+
+msgctxt "#32096"
+msgid "When Update or Update All changes segment times or Update All inserts a segment: trim the end of a neighbor that overlaps into the anchor from the left so it ends at the anchor start (e.g. prologue ends where intro starts; main ends where credits start). Requires Snap neighbor end. Does not split one row into two. Used only with Update / Update All, not Merge or Overwrite. Expert level."
+msgstr "Quando Atualizar ou Atualizar tudo altera horários de segmentos ou Atualizar tudo insere um segmento: corta o fim de um vizinho que invade a âncora pela esquerda, para que termine no início dela (p. ex., o prólogo termina onde a abertura começa; o conteúdo principal termina onde os créditos começam). Requer Ajustar fim do vizinho. Não divide uma linha em duas. Usado apenas com Atualizar / Atualizar tudo, não com Mesclar nem Sobrescrever. Nível Especialista."
+
+msgctxt "#35020"
+msgid "Update chapter XML from online (merge missing)?"
+msgstr "Atualizar o XML de capítulos com dados online (mesclar ausentes)?"
+
+msgctxt "#35021"
+msgid "Matched local chapters get new times from online. Online segments with no same-type local chapter are added. If Expert snap options are on, overlapping neighbors may be trimmed. The preview below lists the chapters after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Os capítulos locais correspondentes recebem novos horários da busca online. Os segmentos online sem capítulo local do mesmo tipo são adicionados. Se as opções de ajuste do nível Especialista estiverem ativadas, vizinhos sobrepostos podem ser cortados. A prévia abaixo lista os capítulos após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35022"
+msgid "Update EDL from online (merge missing)?"
+msgstr "Atualizar o EDL com dados online (mesclar ausentes)?"
+
+msgctxt "#35023"
+msgid "Matched local EDL rows get new times from online. Missing online types are added as new rows; optional neighbor snap applies as for chapter XML. The preview lists rows after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "As linhas EDL locais correspondentes recebem novos horários da busca online. Os tipos online ausentes são adicionados como novas linhas; o ajuste opcional de vizinhos se aplica como no XML de capítulos. A prévia lista as linhas após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35024"
+msgid "Update chapter XML and EDL from online (merge missing)?"
+msgstr "Atualizar o XML de capítulos e o EDL com dados online (mesclar ausentes)?"
+
+msgctxt "#35025"
+msgid "Both sidecars: Update All rules (matched times + append missing types; optional neighbor snap). Previews below show each file after apply. Continue? (Copies to `.bck` first if backup is enabled.)"
+msgstr "Ambos os sidecars: regras de Atualizar tudo (horários correspondentes + acréscimo dos tipos ausentes; ajuste opcional de vizinhos). As prévias abaixo mostram cada arquivo após a aplicação. Continuar? (Copia para `.bck` antes, se o backup estiver ativado.)"
+
+msgctxt "#35026"
+msgid "[Neighbor snap]"
+msgstr "[Ajuste de vizinhos]"
+
+msgctxt "#35027"
+msgid "Snap neighbor start: %s"
+msgstr "Ajustar início do vizinho: %s"
+
+msgctxt "#35028"
+msgid "Snap neighbor end: %s"
+msgstr "Ajustar fim do vizinho: %s"
+
+msgctxt "#35029"
+msgid "On"
+msgstr "Ativado"
+
+msgctxt "#35030"
+msgid "Off"
+msgstr "Desativado"
+
+msgctxt "#35031"
+msgid "If you accept, this sidecar will contain:"
+msgstr "Se você aceitar, este sidecar conterá:"
+
+msgctxt "#32052"
+msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
+msgstr "Quando ativado, os filmes carregam os segmentos de salto do chapters.xml ou .edl sidecar ao lado do vídeo."
+
+msgctxt "#32054"
+msgid "When both local files and online lookup are enabled for movies: prefer segments from the chosen source when it has data; otherwise use the other. Online first waits for network lookup before the first skip dialog can appear (typically a few seconds, up to about 10 seconds on a cold start or slow network). Local first uses sidecar data immediately when present."
+msgstr "Quando arquivos locais e busca online estão ativados para filmes: prefere os segmentos da fonte escolhida quando ela tem dados; caso contrário usa a outra. “Online primeiro” espera pela busca na rede antes que o primeiro diálogo de salto possa aparecer (normalmente alguns segundos, até cerca de 10 segundos em uma partida a frio ou rede lenta). “Local primeiro” usa os dados do sidecar imediatamente quando existem."
+
+# Toast Settings
+msgctxt "#33000"
+msgid "Enable missing segment file toast for TV Episodes"
+msgstr "Ativar notificação de arquivo de segmentos ausente para episódios de séries"
+
+msgctxt "#33001"
+msgid "Enable missing segment file toast for movies"
+msgstr "Ativar notificação de arquivo de segmentos ausente para filmes"
+
+msgctxt "#33002"
+msgid "Enable overlapping segment toast if found in segment file"
+msgstr "Ativar notificação de segmentos sobrepostos encontrados no arquivo de segmentos"
+
+msgctxt "#33003"
+msgid "Enable toast notification for skipped segment"
+msgstr "Ativar notificação de segmento pulado"
+
+msgctxt "#33004"
+msgid "Enable toast notifications for segment marker"
+msgstr "Ativar notificações do marcador de segmentos"
+
+msgctxt "#33005"
+msgid "When enabled, Segment Marker shows Kodi notifications when you mark start and end times, and when you cancel before saving (e.g. Back from policy, segment type, or save confirmation)."
+msgstr "Quando ativado, o Marcador de segmentos mostra notificações do Kodi ao marcar os horários de início e fim e ao cancelar antes de salvar (p. ex., Voltar da política, do tipo de segmento ou da confirmação de gravação)."
+
+msgctxt "#33006"
+msgid "Toast when online segments are applied"
+msgstr "Notificação quando segmentos online são aplicados"
+
+msgctxt "#33007"
+msgid "Show a one-shot notification when deferred online segment lookup updates the playback timeline (e.g. Local first with no local sidecar)."
+msgstr "Mostra uma notificação única quando a busca online adiada de segmentos atualiza a linha do tempo da reprodução (p. ex., “Local primeiro” sem sidecar local)."
+
+# Debug Settings
+msgctxt "#34000"
+msgid "Enable Verbose Logging"
+msgstr "Ativar registro detalhado"
+
+msgctxt "#34001"
+msgid "Verbose lines in kodi.log for Skippy. For online segment lookup (TheIntroDB / IntroDB.app for TV; TheIntroDB for movies), filter logs for the tag: service.skippy - remote"
+msgstr "Linhas detalhadas no kodi.log para o Skippy. Para a busca online de segmentos (TheIntroDB / IntroDB.app para séries; TheIntroDB para filmes), filtre o log pela etiqueta: service.skippy - remote"
+
+msgctxt "#34002"
+msgid "Log detail level"
+msgstr "Nível de detalhe do registro"
+
+msgctxt "#34003"
+msgid "Errors only: Skippy emits no routine INFO (service, remote lookup, SkipDialog, SegmentItem). Normal: main service flow without per-loop noise. All detail: adds SegmentItem tick traces (is_active, debounce) plus verbose service internals (JSON-RPC for missing-file toast, path probes, each XML/EDL line). Skippy LOGERROR lines still appear when used."
+msgstr "Somente erros: o Skippy não emite nenhum INFO de rotina (serviço, busca remota, SkipDialog, SegmentItem). Normal: fluxo principal do serviço sem ruído por ciclo. Todos os detalhes: acrescenta rastreamentos de tick do SegmentItem (is_active, debounce) mais detalhes internos do serviço (JSON-RPC da notificação de arquivo ausente, verificações de caminho, cada linha de XML/EDL). As linhas LOGERROR do Skippy continuam aparecendo quando usadas."
+
+# Segment Marker Settings
+msgctxt "#30005"
+msgid "Segment Marker"
+msgstr "Marcador de segmentos"
+
+msgctxt "#30006"
+msgid "Segment Editor"
+msgstr "Editor de segmentos"
+
+msgctxt "#30007"
+msgid "Backup & Restore"
+msgstr "Backup e restauração"
+
+msgctxt "#37000"
+msgid "Enable Segment Editor"
+msgstr "Ativar Editor de segmentos"
+
+msgctxt "#37001"
+msgid "Edit .edl and chapters.xml sidecars during playback (add, change, remove segments). Uses segment keywords and EDL action mapping from Segment Settings. Default hotkey CTRL+SHIFT+E is separate from Segment Marker."
+msgstr "Edite sidecars .edl e chapters.xml durante a reprodução (adicione, altere e remova segmentos). Usa as palavras-chave de segmentos e o mapeamento de ações EDL de Configurações de segmentos. O atalho padrão CTRL+SHIFT+E é separado do Marcador de segmentos."
+
+msgctxt "#37002"
+msgid "Which sidecar file(s) the editor writes when you save. Both: .edl and _chapters.xml. EDL only or Chapters XML only: a single format."
+msgstr "Quais arquivos sidecar o editor grava ao salvar. Ambos: .edl e _chapters.xml. Somente EDL ou somente XML de capítulos: um único formato."
+
+msgctxt "#37004"
+msgid "Keyboard editor shortcut"
+msgstr "Atalho de teclado do editor"
+
+msgctxt "#37005"
+msgid "Free-form shortcut written to userdata/keymaps/skippy_editor.xml (separate from the marker keymap). Examples: ctrl+shift+e, f8. Use Keyboard press type below for normal vs long press."
+msgstr "Atalho livre gravado em userdata/keymaps/skippy_editor.xml (separado do mapa de teclas do marcador). Exemplos: ctrl+shift+e, f8. Use o tipo de pressionamento do teclado abaixo para toque normal ou longo."
+
+msgctxt "#37006"
+msgid "Remote editor button"
+msgstr "Botão do controle remoto do editor"
+
+msgctxt "#37007"
+msgid "Optional remote button for opening Segment Editor only (independent of Segment Marker). Same format as marker: button name (e.g. info) or discovered key:<code>."
+msgstr "Botão opcional do controle remoto para abrir apenas o Editor de segmentos (independente do Marcador de segmentos). Mesmo formato do marcador: nome do botão (p. ex., info) ou key:<código> descoberto."
+
+msgctxt "#37008"
+msgid "Remote editor press type"
+msgstr "Tipo de pressionamento do botão remoto do editor"
+
+msgctxt "#37009"
+msgid "Choose whether the configured editor remote button uses a normal press or long press in the keymap."
+msgstr "Escolha se o botão remoto do editor configurado usa toque normal ou longo no mapa de teclas."
+
+msgctxt "#37010"
+msgid "Full-screen dark overlay"
+msgstr "Sobreposição escura em tela cheia"
+
+msgctxt "#37011"
+msgid "When enabled, darkens the video behind the editor. When disabled, the video stays fully visible while editing."
+msgstr "Quando ativado, escurece o vídeo atrás do editor. Quando desativado, o vídeo permanece totalmente visível durante a edição."
+
+msgctxt "#37014"
+msgid "Discover remote button (editor)"
+msgstr "Descobrir botão do controle remoto (editor)"
+
+msgctxt "#37015"
+msgid "Capture the next remote press and store it in Remote editor button, then refresh skippy_editor.xml."
+msgstr "Captura o próximo toque no controle remoto, grava em Botão do controle remoto do editor e atualiza o skippy_editor.xml."
+
+msgctxt "#37016"
+msgid "Update editor keymap now"
+msgstr "Atualizar mapa de teclas do editor agora"
+
+msgctxt "#37017"
+msgid "Writes the current Segment Editor keyboard and remote settings to userdata/keymaps/skippy_editor.xml and reloads keymaps."
+msgstr "Grava as configurações atuais de teclado e controle remoto do Editor de segmentos em userdata/keymaps/skippy_editor.xml e recarrega os mapas de teclas."
+
+msgctxt "#38000"
+msgid "Back up settings to JSON…"
+msgstr "Fazer backup das configurações em JSON…"
+
+msgctxt "#38001"
+msgid "Export every Skippy option from this device (all non-action rows in the add-on settings, including any API keys) and the segment-types catalog. Pick a writable folder; a timestamped skippy-settings-backup-*.json file is created."
+msgstr "Exporta todas as opções do Skippy deste dispositivo (todas as linhas que não são ações nas configurações do add-on, incluindo chaves de API) e o catálogo de tipos de segmento. Escolha uma pasta com permissão de gravação; é criado um arquivo skippy-settings-backup-*.json com data e hora."
+
+msgctxt "#38002"
+msgid "Restore settings from JSON…"
+msgstr "Restaurar configurações de JSON…"
+
+msgctxt "#38003"
+msgid "Select a Skippy backup .json file. Only keys present in the file are changed; other options stay as on this device. The segment-types catalog in the file is merged. A backup from before 7.0 applies its old skip lists and EDL map to the catalog. Keys that do not exist here are skipped."
+msgstr "Selecione um arquivo .json de backup do Skippy. Somente as chaves presentes no arquivo são alteradas; as demais opções permanecem como neste dispositivo. O catálogo de tipos de segmento do arquivo é mesclado. Um backup anterior à versão 7.0 aplica suas antigas listas de salto e o mapa EDL ao catálogo. Chaves que não existem aqui são ignoradas."
+
+msgctxt "#38004"
+msgid "The operation could not be completed."
+msgstr "Não foi possível concluir a operação."
+
+msgctxt "#38005"
+msgid "Saved %s"
+msgstr "Salvo: %s"
+
+msgctxt "#38006"
+msgid "Restore settings from this backup? Values in the file overwrite matching Skippy options on this device. The segment-types catalog is merged when the file includes one. Options not listed in the file are left unchanged."
+msgstr "Restaurar as configurações deste backup? Os valores do arquivo substituem as opções correspondentes do Skippy neste dispositivo. O catálogo de tipos de segmento é mesclado quando o arquivo inclui um. As opções não listadas no arquivo permanecem inalteradas."
+
+msgctxt "#38007"
+msgid "This file is not a valid Skippy backup."
+msgstr "Este arquivo não é um backup válido do Skippy."
+
+msgctxt "#38008"
+msgid "Applied %s settings; %s entries were skipped (unknown key or error)."
+msgstr "%s configurações aplicadas; %s entradas foram ignoradas (chave desconhecida ou erro)."
+
+msgctxt "#38009"
+msgid "Back up profile data to JSON…"
+msgstr "Fazer backup dos dados do perfil em JSON…"
+
+msgctxt "#38010"
+msgid "Export upload fingerprints, per-title auto-skip rules, statistics, and the segment-types catalog from this device. Pick a writable folder; a timestamped skippy-profile-data-backup-*.json file is created. Older skippy-upload-history-backup-*.json files still restore."
+msgstr "Exporta impressões digitais de envio, regras de salto automático por título, estatísticas e o catálogo de tipos de segmento deste dispositivo. Escolha uma pasta com permissão de gravação; é criado um arquivo skippy-profile-data-backup-*.json com data e hora. Arquivos antigos skippy-upload-history-backup-*.json ainda podem ser restaurados."
+
+msgctxt "#38011"
+msgid "Restore profile data from JSON (merge)…"
+msgstr "Restaurar dados do perfil de JSON (mesclar)…"
+
+msgctxt "#38012"
+msgid "Select a Skippy profile-data (or legacy upload-history) backup .json file. Upload fingerprints are merged; title auto-skip rules are merged per title; statistics keep the larger counter values; segment types are merged by type."
+msgstr "Selecione um arquivo .json de backup de dados do perfil do Skippy (ou do histórico de envios antigo). As impressões digitais de envio são mescladas; as regras de salto automático por título são mescladas por título; as estatísticas mantêm os maiores valores dos contadores; os tipos de segmento são mesclados por tipo."
+
+msgctxt "#38013"
+msgid "Merge profile data from this backup? Existing upload fingerprints stay; new ones are added. Title auto-skip rules are merged. Statistics keep the larger values for each counter. Segment types are merged by type."
+msgstr "Mesclar os dados do perfil deste backup? As impressões digitais de envio existentes permanecem; as novas são adicionadas. As regras de salto automático por título são mescladas. As estatísticas mantêm os maiores valores de cada contador. Os tipos de segmento são mesclados por tipo."
+
+msgctxt "#38014"
+msgid "Merged: %d new fingerprint(s) (%d already present); %d title auto-skip(s); %d segment rule(s); statistics %s; segment types %s."
+msgstr "Mesclado: %d nova(s) impressão(ões) digital(is) (%d já presente(s)); %d salto(s) automático(s) por título; %d regra(s) de segmento; estatísticas %s; tipos de segmento %s."
+
+msgctxt "#38015"
+msgid "Pause during online lookup"
+msgstr "Pausar durante a busca online"
+
+msgctxt "#38016"
+msgid "Pause video while Skippy fetches online segments (Online first, or Local first when no local sidecar exists). Playback resumes when the lookup finishes. Does not pause background lookup when a local sidecar is already in use."
+msgstr "Pausa o vídeo enquanto o Skippy busca segmentos online (Online primeiro, ou Local primeiro quando não existe sidecar local). A reprodução continua quando a busca termina. Não pausa a busca em segundo plano quando um sidecar local já está em uso."
+
+msgctxt "#38017"
+msgid "Hide OSD display during skip"
+msgstr "Ocultar a exibição na tela durante o salto"
+
+msgctxt "#38018"
+msgid "When enabled, Skippy sets Home property Skippy.Skipping during auto-skip and confirmed ask-skip seeks so a cooperative skin can hide the seek bar. Does not apply while the ask dialog is on screen — only around the seek itself. Requires a per-skin DialogSeekBar.xml edit (or an add-on that patches it). Stock skins ignore this — no effect until the skin checks the property. Turn off if you want the normal seek OSD after Skippy skips."
+msgstr "Quando ativado, o Skippy define a propriedade Skippy.Skipping da tela inicial durante saltos automáticos e saltos confirmados em Perguntar, para que uma skin cooperativa possa ocultar a barra de busca. Não vale enquanto o diálogo Perguntar está na tela — somente durante a própria busca. Requer uma edição do DialogSeekBar.xml em cada skin (ou um add-on que a aplique). Skins padrão ignoram isso — sem efeito até que a skin verifique a propriedade. Desative se quiser a barra de busca normal após os saltos do Skippy."
+
+msgctxt "#38020"
+msgid "updated"
+msgstr "atualizado"
+
+msgctxt "#38021"
+msgid "unchanged"
+msgstr "inalterado"
+
+msgctxt "#39000"
+msgid "Upload to online sources"
+msgstr "Envio para fontes online"
+
+msgctxt "#39001"
+msgid "Default upload target"
+msgstr "Destino de envio padrão"
+
+msgctxt "#39002"
+msgid "Pre-selects the destination in the Segment Editor upload dialog. You can still pick another option each time."
+msgstr "Pré-seleciona o destino na janela de envio do Editor de segmentos. Você ainda pode escolher outra opção a cada vez."
+
+msgctxt "#39003"
+msgid "TheIntroDB.org API key"
+msgstr "Chave de API do TheIntroDB.org"
+
+msgctxt "#39004"
+msgid "Bearer token from your TheIntroDB account. Required to POST segment timestamps to api.theintrodb.org."
+msgstr "Token Bearer da sua conta do TheIntroDB. Necessário para enviar (POST) os horários dos segmentos para api.theintrodb.org."
+
+msgctxt "#39005"
+msgid "IntroDB.app API key"
+msgstr "Chave de API do IntroDB.app"
+
+msgctxt "#39006"
+msgid "API key from IntroDB.app (typically idb_…). Required for API-key submits."
+msgstr "Chave de API do IntroDB.app (normalmente idb_…). Necessária para envios com chave de API."
+
+msgctxt "#39009"
+msgid "Upload segments to"
+msgstr "Enviar segmentos para"
+
+msgctxt "#39010"
+msgid "Both"
+msgstr "Ambos"
+
+msgctxt "#39011"
+msgid "TheIntroDB.org only"
+msgstr "Somente TheIntroDB.org"
+
+msgctxt "#39012"
+msgid "IntroDB.app only"
+msgstr "Somente IntroDB.app"
+
+msgctxt "#39013"
+msgid "Segment upload"
+msgstr "Envio de segmentos"
+
+msgctxt "#39014"
+msgid "No segments are defined for this video."
+msgstr "Nenhum segmento está definido para este vídeo."
+
+msgctxt "#39015"
+msgid "No API key for the chosen destination. Turn on Enable upload to online sources and paste the required key(s) under Expert → Upload to online sources."
+msgstr "Não há chave de API para o destino escolhido. Ative Ativar envio para fontes online e cole a(s) chave(s) necessária(s) em Especialista → Envio para fontes online."
+
+msgctxt "#39016"
+msgid "Could not resolve TMDB/IMDb for this file. Is it in the Kodi library with proper unique IDs?"
+msgstr "Não foi possível resolver o TMDB/IMDb deste arquivo. Ele está na biblioteca do Kodi com IDs únicos corretos?"
+
+msgctxt "#39018"
+msgid "Upload"
+msgstr "Enviar"
+
+msgctxt "#39020"
+msgid "not uploaded (excluded types: ads, prologue, epilogue, main body, unknown keywords, etc.)"
+msgstr "não enviado (tipos excluídos: anúncios, prólogo, epílogo, conteúdo principal, palavras-chave desconhecidas etc.)"
+
+msgctxt "#39021"
+msgid "already submitted from this device (stored fingerprint)"
+msgstr "já enviado deste dispositivo (impressão digital armazenada)"
+
+msgctxt "#39022"
+msgid "Successful submissions"
+msgstr "Envios bem-sucedidos"
+
+msgctxt "#39023"
+msgid "Skipped"
+msgstr "Ignorados"
+
+msgctxt "#39024"
+msgid "Errors"
+msgstr "Erros"
+
+msgctxt "#39025"
+msgid "Enable upload to online sources"
+msgstr "Ativar envio para fontes online"
+
+msgctxt "#39026"
+msgid "When enabled, the Segment Editor shows Upload so you can submit segments to TheIntroDB.org and/or IntroDB.app. You still need valid API keys below."
+msgstr "Quando ativado, o Editor de segmentos mostra Enviar para que você possa submeter segmentos ao TheIntroDB.org e/ou IntroDB.app. Você ainda precisa de chaves de API válidas abaixo."
+
+msgctxt "#39028"
+msgid "Paste your TheIntroDB.org API key under Settings → Expert → Upload to online sources (Bearer token from your account)."
+msgstr "Cole sua chave de API do TheIntroDB.org em Configurações → Especialista → Envio para fontes online (token Bearer da sua conta)."
+
+msgctxt "#39029"
+msgid "Paste your IntroDB.app API key under Settings → Expert → Upload to online sources (typically idb_…)."
+msgstr "Cole sua chave de API do IntroDB.app em Configurações → Especialista → Envio para fontes online (normalmente idb_…)."
+
+msgctxt "#39030"
+msgid "TheIntroDB.org denied access (unauthorized or forbidden). Your API key may be wrong, expired, or not allowed to submit. Copy a fresh key from your TheIntroDB account."
+msgstr "O TheIntroDB.org negou o acesso (não autorizado ou proibido). Sua chave de API pode estar errada, expirada ou sem permissão para enviar. Copie uma chave nova da sua conta do TheIntroDB."
+
+msgctxt "#39031"
+msgid "IntroDB.app denied access (unauthorized or forbidden). Check that your API key is correct and still active in IntroDB.app."
+msgstr "O IntroDB.app negou o acesso (não autorizado ou proibido). Verifique se sua chave de API está correta e ainda ativa no IntroDB.app."
+
+msgctxt "#39032"
+msgid "The service is rate-limiting this device. Wait several minutes before trying again."
+msgstr "O serviço está limitando a taxa deste dispositivo. Aguarde alguns minutos antes de tentar novamente."
+
+msgctxt "#39033"
+msgid "Could not reach the server. Check your internet connection, DNS, and whether the API is reachable from this network."
+msgstr "Não foi possível alcançar o servidor. Verifique sua conexão com a internet, o DNS e se a API é acessível a partir desta rede."
+
+msgctxt "#39034"
+msgid "Unexpected server response (HTTP %s). If it persists, try again later or check the service status."
+msgstr "Resposta inesperada do servidor (HTTP %s). Se persistir, tente novamente mais tarde ou verifique o status do serviço."
+
+msgctxt "#39037"
+msgid "Cannot upload"
+msgstr "Não é possível enviar"
+
+msgctxt "#39040"
+msgid "Turn on Enable upload to online sources under Settings → Expert, then open the editor again."
+msgstr "Ative Ativar envio para fontes online em Configurações → Especialista e abra o editor novamente."
+
+msgctxt "#39041"
+msgid "TheIntroDB.org rejected this submission (validation or business rules). Check segment durations and their documentation."
+msgstr "O TheIntroDB.org rejeitou este envio (validação ou regras de negócio). Verifique as durações dos segmentos e a documentação deles."
+
+msgctxt "#39042"
+msgid "IntroDB.app rejected this submission. Check segment times and their API rules."
+msgstr "O IntroDB.app rejeitou este envio. Verifique os horários dos segmentos e as regras da API deles."
+
+msgctxt "#39043"
+msgid "These times may not meet TheIntroDB.org limits (duration and 0–6 hour window). Technical detail:"
+msgstr "Esses horários podem não atender aos limites do TheIntroDB.org (duração e janela de 0 a 6 horas). Detalhe técnico:"
+
+msgctxt "#39044"
+msgid "TheIntroDB.org requires a valid TMDB id for this title. Ensure library metadata includes TMDB (or enable TMDB resolution with an API key under Segment sources)."
+msgstr "O TheIntroDB.org exige um ID TMDB válido para este título. Garanta que os metadados da biblioteca incluam o TMDB (ou ative a resolução do TMDB com uma chave de API em Fontes de segmentos)."
+
+msgctxt "#39045"
+msgid "IntroDB.app needs an IMDb id (show-level IMDb for TV). Fix Kodi library metadata or rescrape with IMDb."
+msgstr "O IntroDB.app precisa de um ID IMDb (IMDb da série, para TV). Corrija os metadados da biblioteca do Kodi ou refaça a busca com IMDb."
+
+msgctxt "#39046"
+msgid "Internal error: unsupported segment type for IntroDB.app."
+msgstr "Erro interno: tipo de segmento não suportado pelo IntroDB.app."
+
+msgctxt "#39047"
+msgid "Internal error: unsupported segment type for TheIntroDB.org."
+msgstr "Erro interno: tipo de segmento não suportado pelo TheIntroDB.org."
+
+msgctxt "#39048"
+msgid "… and %d more (not shown)."
+msgstr "… e mais %d (não exibidos)."
+
+msgctxt "#39049"
+msgid "(none)"
+msgstr "(nenhum)"
+
+msgctxt "#39054"
+msgid "TheIntroDB.org"
+msgstr "TheIntroDB.org"
+
+msgctxt "#39055"
+msgid "IntroDB.app"
+msgstr "IntroDB.app"
+
+msgctxt "#39056"
+msgid "not sent to IntroDB.app (preview segments not accepted)"
+msgstr "não enviado ao IntroDB.app (segmentos de prévia não são aceitos)"
+
+msgctxt "#39057"
+msgid "Sync local to online"
+msgstr "Sincronizar local com online"
+
+msgctxt "#39058"
+msgid "During playback, compare local sidecar segments with online databases. When local has segment types missing online (e.g. recap or credits), ask to upload them. May query APIs even when online lookup is off for playback. Requires API keys below."
+msgstr "Durante a reprodução, compara os segmentos do sidecar local com os bancos de dados online. Quando o local tem tipos de segmento que faltam online (p. ex., recapitulação ou créditos), pergunta se deseja enviá-los. Pode consultar as APIs mesmo com a busca online desativada para reprodução. Requer as chaves de API abaixo."
+
+msgctxt "#39059"
+msgid "Sync local segments to online?"
+msgstr "Sincronizar segmentos locais com online?"
+
+msgctxt "#39060"
+msgid "No online segment data was found for this title."
+msgstr "Nenhum dado de segmento online foi encontrado para este título."
+
+msgctxt "#39061"
+msgid "Some segment types from your local sidecar are not online yet."
+msgstr "Alguns tipos de segmento do seu sidecar local ainda não estão online."
+
+msgctxt "#39062"
+msgid "Local sidecar has segments not found online:"
+msgstr "O sidecar local tem segmentos não encontrados online:"
+
+msgctxt "#39063"
+msgid "Upload these using your default upload target?"
+msgstr "Enviá-los usando seu destino de envio padrão?"
+
+msgctxt "#36000"
+msgid "Enable Segment Marker"
+msgstr "Ativar Marcador de segmentos"
+
+msgctxt "#36001"
+msgid "Mark segment start/end times during playback with a configurable hotkey (default: CTRL+E) or remote button. After marking start and end, choose a segment type and save to sidecar files."
+msgstr "Marque horários de início/fim de segmentos durante a reprodução com uma tecla de atalho configurável (padrão: CTRL+E) ou um botão do controle remoto. Depois de marcar início e fim, escolha um tipo de segmento e salve nos arquivos sidecar."
+
+msgctxt "#36002"
+msgid "Auto-save marked segments"
+msgstr "Salvar segmentos marcados automaticamente"
+
+msgctxt "#36003"
+msgid "When enabled, segments are saved immediately after selecting the segment type without a confirmation prompt."
+msgstr "Quando ativado, os segmentos são salvos imediatamente após selecionar o tipo de segmento, sem pedir confirmação."
+
+
+
+msgctxt "#36006"
+msgid "Saved file permissions"
+msgstr "Permissões dos arquivos salvos"
+
+msgctxt "#36007"
+msgid "Permissions applied after saving EDL/chapters files. Leave unchanged: Skippy does not call chmod; the file keeps whatever mode the OS or Kodi created (umask / platform default). 644: owner read/write, group and others read only. 666: all users read/write (use sparingly; sometimes used on shared folders)."
+msgstr "Permissões aplicadas após salvar os arquivos EDL/capítulos. Manter inalterado: o Skippy não chama chmod; o arquivo mantém o modo criado pelo sistema ou pelo Kodi (umask / padrão da plataforma). 644: dono lê/grava, grupo e outros só leem. 666: todos os usuários leem/gravam (use com moderação; às vezes usado em pastas compartilhadas)."
+
+msgctxt "#36008"
+msgid "Start time set"
+msgstr "Horário de início definido"
+
+msgctxt "#36009"
+msgid "End time set"
+msgstr "Horário de fim definido"
+
+msgctxt "#36010"
+msgid "Choose segment type"
+msgstr "Escolha o tipo de segmento"
+
+msgctxt "#36011"
+msgid "Save segment?"
+msgstr "Salvar segmento?"
+
+msgctxt "#36012"
+msgid "Segment saved"
+msgstr "Segmento salvo"
+
+msgctxt "#36013"
+msgid "Error saving segment"
+msgstr "Erro ao salvar o segmento"
+
+msgctxt "#36014"
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgctxt "#36015"
+msgid "No video playing"
+msgstr "Nenhum vídeo em reprodução"
+
+msgctxt "#36016"
+msgid "Segment Marker disabled"
+msgstr "Marcador de segmentos desativado"
+
+msgctxt "#36017"
+msgid "Save format"
+msgstr "Formato de gravação"
+
+msgctxt "#36018"
+msgid "Choose which sidecar file format(s) to save marked segments to. Both: saves to .edl and _chapters.xml. EDL only: saves to .edl file. Chapters XML only: saves to _chapters.xml file."
+msgstr "Escolha em quais formatos de sidecar salvar os segmentos marcados. Ambos: salva em .edl e _chapters.xml. Somente EDL: salva no arquivo .edl. Somente XML de capítulos: salva no arquivo _chapters.xml."
+
+msgctxt "#36019"
+msgid "Keyboard marker shortcut"
+msgstr "Atalho de teclado do marcador"
+
+msgctxt "#36020"
+msgid "Type the Kodi keyboard shortcut to write to userdata/keymaps/skippy_marker.xml. Examples: ctrl+e, e, f9, ctrl+shift+m. Use Keyboard marker press type below for normal press vs long press. The keymap is refreshed automatically when settings change."
+msgstr "Digite o atalho de teclado do Kodi a gravar em userdata/keymaps/skippy_marker.xml. Exemplos: ctrl+e, e, f9, ctrl+shift+m. Use o tipo de pressionamento do teclado abaixo para toque normal ou longo. O mapa de teclas é atualizado automaticamente quando as configurações mudam."
+
+msgctxt "#36021"
+msgid "Remote marker button"
+msgstr "Botão do controle remoto do marcador"
+
+msgctxt "#36022"
+msgid "Optional Kodi remote button name (red, green, blue, yellow, record, select, info, etc.) or discovered raw key code (for example key:61505). CEC remotes usually save as button names; Bluetooth/remotes with raw codes usually save as key:<code>. Leave empty when only using the keyboard hotkey."
+msgstr "Nome opcional do botão do controle remoto do Kodi (red, green, blue, yellow, record, select, info etc.) ou código de tecla bruto descoberto (por exemplo, key:61505). Controles CEC normalmente são salvos como nomes de botões; controles Bluetooth ou com códigos brutos normalmente são salvos como key:<código>. Deixe vazio se usar apenas o atalho de teclado."
+
+msgctxt "#36023"
+msgid "Discover remote button code"
+msgstr "Descobrir código do botão do controle remoto"
+
+msgctxt "#36024"
+msgid "Opens a small capture dialog. Press the remote button you want to use; Skippy stores the button code in the Remote marker button setting and updates the keymap. Use Remote marker press type to choose normal press or long press."
+msgstr "Abre uma pequena janela de captura. Pressione o botão do controle remoto que deseja usar; o Skippy grava o código do botão na configuração Botão do controle remoto do marcador e atualiza o mapa de teclas. Use Tipo de pressionamento do botão remoto do marcador para escolher toque normal ou longo."
+
+msgctxt "#36025"
+msgid "Update marker keymap now"
+msgstr "Atualizar mapa de teclas do marcador agora"
+
+msgctxt "#36026"
+msgid "Writes the current keyboard and remote marker settings to Kodi's userdata keymap and reloads keymaps."
+msgstr "Grava as configurações atuais de teclado e controle remoto do marcador no mapa de teclas do userdata do Kodi e recarrega os mapas de teclas."
+
+msgctxt "#36027"
+msgid "Remote marker press type"
+msgstr "Tipo de pressionamento do botão remoto do marcador"
+
+msgctxt "#36028"
+msgid "Choose whether the configured remote marker button triggers on a normal press or long press. For discovered raw key codes, Skippy writes this as a keymap longpress modifier."
+msgstr "Escolha se o botão remoto configurado do marcador é acionado por toque normal ou longo. Para códigos de tecla brutos descobertos, o Skippy grava isso como um modificador longpress no mapa de teclas."
+
+msgctxt "#36029"
+msgid "Keyboard marker press type"
+msgstr "Tipo de pressionamento do teclado do marcador"
+
+msgctxt "#36030"
+msgid "Choose whether the configured keyboard shortcut triggers on a normal press or long press. Default is normal press."
+msgstr "Escolha se o atalho de teclado configurado é acionado por toque normal ou longo. O padrão é toque normal."
+
+msgctxt "#36031"
+msgid "How to save marked segments"
+msgstr "Como salvar os segmentos marcados"
+
+msgctxt "#36032"
+msgid "Controls how Segment Marker combines a new marked range with existing EDL/XML sidecar entries. Merge non-overlapping: add the marker only when it does not overlap existing entries. Keep both (old starts after new): add the new segment and shorten any overlapping existing segment so it starts where the new one ends (drops the old entry if the new range fully covers it). Overwrite overlapping: remove overlapping entries and add the new one. Append always: add the new entry even if it overlaps. Replace file: write only the newly marked segment. Ask each time: choose during marker save, before selecting the segment type."
+msgstr "Controla como o Marcador de segmentos combina um novo intervalo marcado com as entradas existentes do sidecar EDL/XML. Mesclar sem sobreposição: adiciona a marcação somente se não se sobrepuser às entradas existentes. Manter ambos (antigo começa depois do novo): adiciona o novo segmento e encurta qualquer segmento existente sobreposto para que comece onde o novo termina (descarta a entrada antiga se o novo intervalo a cobrir totalmente). Sobrescrever sobrepostos: remove as entradas sobrepostas e adiciona a nova. Sempre acrescentar: adiciona a nova entrada mesmo que se sobreponha. Substituir arquivo: grava apenas o segmento recém-marcado. Perguntar sempre: escolha durante o salvamento da marcação, antes de selecionar o tipo de segmento."
+
+msgctxt "#36033"
+msgid "Back up files before marker save"
+msgstr "Fazer backup dos arquivos antes de salvar a marcação"
+
+msgctxt "#36034"
+msgid "Before saving, back up existing sidecar files selected by Save format. EDL only backs up .edl, Chapters XML only backs up chapter XML, Both backs up both when they exist. Backups use the same path with a .bck extension."
+msgstr "Antes de salvar, faz backup dos arquivos sidecar existentes selecionados em Formato de gravação. Somente EDL faz backup só do .edl, somente XML de capítulos só do XML de capítulos, Ambos faz backup dos dois quando existem. Os backups usam o mesmo caminho com a extensão .bck."
+
+msgctxt "#36035"
+msgid "Press the segment marker key again to set the end time."
+msgstr "Pressione a tecla do marcador de segmentos novamente para definir o horário de fim."
+
+msgctxt "#36036"
+msgid "Segment marker cancelled."
+msgstr "Marcador de segmentos cancelado."
+
+# ---------------------------------------------------------------------------
+# Runtime UI (5.3.0+) — skip dialog, toasts, editor, marker extras
+# ---------------------------------------------------------------------------
+
+# Skip dialog (#40000–40099)
+msgctxt "#40000"
+msgid "Skip"
+msgstr "Pular"
+
+msgctxt "#40001"
+msgid "Close"
+msgstr "Fechar"
+
+msgctxt "#40002"
+msgid "Skip %s"
+msgstr "Pular %s"
+
+msgctxt "#40003"
+msgid "Skip %s (%s)"
+msgstr "Pular %s (%s)"
+
+msgctxt "#40004"
+msgid "%s ending in:"
+msgstr "%s termina em:"
+
+msgctxt "#40005"
+msgid "Skip to %s at %s"
+msgstr "Pular para %s em %s"
+
+msgctxt "#40006"
+msgid "Skip to next segment at %s"
+msgstr "Pular para o próximo segmento em %s"
+
+msgctxt "#40007"
+msgid "Skip to remaining %s at %s"
+msgstr "Pular para %s restante em %s"
+
+# Marker extras (#42000–42099)
+msgctxt "#42000"
+msgid "Close the Segment Editor before using the Segment Marker."
+msgstr "Feche o Editor de segmentos antes de usar o Marcador de segmentos."
+
+# Toasts / common (#43000–43099)
+msgctxt "#43000"
+msgid "Skippy"
+msgstr "Skippy"
+
+msgctxt "#43001"
+msgid "Online segments loaded"
+msgstr "Segmentos online carregados"
+
+msgctxt "#43002"
+msgid "Overlapping/Nested segments detected."
+msgstr "Segmentos sobrepostos/aninhados detectados."
+
+msgctxt "#43003"
+msgid "Skipped"
+msgstr "Pulado"
+
+msgctxt "#43004"
+msgid "%s skipped"
+msgstr "%s pulado"
+
+msgctxt "#43005"
+msgid "No skip segments found for this video."
+msgstr "Nenhum segmento de salto encontrado para este vídeo."
+
+msgctxt "#43006"
+msgid "No segments found locally or online for this %s."
+msgstr "Nenhum segmento encontrado localmente nem online para este(a) %s."
+
+msgctxt "#43007"
+msgid "No skip segments found for this %s."
+msgstr "Nenhum segmento de salto encontrado para este(a) %s."
+
+msgctxt "#43008"
+msgid "episode"
+msgstr "episódio"
+
+msgctxt "#43009"
+msgid "movie"
+msgstr "filme"
+
+msgctxt "#43010"
+msgid "No online segment data found; local segment data is available for this %s."
+msgstr "Nenhum dado de segmento online encontrado; há dados de segmento locais para este(a) %s."
+
+msgctxt "#43011"
+msgid "No online segment data found for this %s."
+msgstr "Nenhum dado de segmento online encontrado para este(a) %s."
+
+msgctxt "#43012"
+msgid "No local segment data found for this %s."
+msgstr "Nenhum dado de segmento local encontrado para este(a) %s."
+
+# Segment Editor (#41000–41199)
+msgctxt "#41000"
+msgid "Segment Editor"
+msgstr "Editor de segmentos"
+
+msgctxt "#41001"
+msgid "Pause"
+msgstr "Pausar"
+
+msgctxt "#41002"
+msgid "Resume"
+msgstr "Continuar"
+
+msgctxt "#41003"
+msgid "Check"
+msgstr "Verificar"
+
+msgctxt "#41004"
+msgid "Import"
+msgstr "Importar"
+
+msgctxt "#41005"
+msgid "No sidecar segment file was found.\n\nCheck this video for embedded Matroska chapters? This may take a few seconds."
+msgstr "Nenhum arquivo sidecar de segmentos foi encontrado.\n\nVerificar se este vídeo tem capítulos Matroska incorporados? Pode levar alguns segundos."
+
+msgctxt "#41006"
+msgid "No embedded chapters found"
+msgstr "Nenhum capítulo incorporado encontrado"
+
+msgctxt "#41007"
+msgid "This video contains %d embedded chapter(s).\n\nImport them as segments?"
+msgstr "Este vídeo contém %d capítulo(s) incorporado(s).\n\nImportá-los como segmentos?"
+
+msgctxt "#41008"
+msgid "Segment %d - %s - %s to %s"
+msgstr "Segmento %d - %s - %s a %s"
+
+msgctxt "#41009"
+msgid "Duration: %.1fs | Source: %s"
+msgstr "Duração: %.1fs | Origem: %s"
+
+msgctxt "#41010"
+msgid " | Nested"
+msgstr " | Aninhado"
+
+msgctxt "#41011"
+msgid " | Overlapping"
+msgstr " | Sobreposto"
+
+msgctxt "#41012"
+msgid "Current Time: %s"
+msgstr "Tempo atual: %s"
+
+msgctxt "#41013"
+msgid " [PAUSED]"
+msgstr " [PAUSADO]"
+
+msgctxt "#41014"
+msgid "Start: %s"
+msgstr "Início: %s"
+
+msgctxt "#41015"
+msgid "End: %s"
+msgstr "Fim: %s"
+
+msgctxt "#41016"
+msgid " | End: %s"
+msgstr " | Fim: %s"
+
+msgctxt "#41017"
+msgid " [INVALID: End must be after Start]"
+msgstr " [INVÁLIDO: o fim deve ser depois do início]"
+
+msgctxt "#41018"
+msgid "Merge segment"
+msgstr "Mesclar segmento"
+
+msgctxt "#41019"
+msgid "Merge with previous segment"
+msgstr "Mesclar com o segmento anterior"
+
+msgctxt "#41020"
+msgid "Merge with next segment"
+msgstr "Mesclar com o próximo segmento"
+
+msgctxt "#41021"
+msgid "No segments available."
+msgstr "Nenhum segmento disponível."
+
+msgctxt "#41022"
+msgid "Cannot merge with previous segment — there is no prior segment."
+msgstr "Não é possível mesclar com o segmento anterior — não há segmento anterior."
+
+msgctxt "#41023"
+msgid "Cannot merge with next segment — there is no following segment."
+msgstr "Não é possível mesclar com o próximo segmento — não há segmento seguinte."
+
+msgctxt "#41024"
+msgid "Cannot merge segments: %s"
+msgstr "Não é possível mesclar os segmentos: %s"
+
+msgctxt "#41025"
+msgid "Please select a segment first."
+msgstr "Selecione um segmento primeiro."
+
+msgctxt "#41026"
+msgid "Cannot split — video is not playing."
+msgstr "Não é possível dividir — o vídeo não está em reprodução."
+
+msgctxt "#41027"
+msgid "Playhead must be strictly inside the selected segment.\n\nSegment: %s to %s\nPlayhead: %s"
+msgstr "A posição de reprodução deve ficar estritamente dentro do segmento selecionado.\n\nSegmento: %s a %s\nPosição: %s"
+
+msgctxt "#41028"
+msgid "Cannot split segment: %s"
+msgstr "Não é possível dividir o segmento: %s"
+
+msgctxt "#41029"
+msgid "Fix overlap does not apply to nested segments.\nUse merge or manual edit instead."
+msgstr "Corrigir sobreposição não se aplica a segmentos aninhados.\nUse mesclar ou edição manual."
+
+msgctxt "#41030"
+msgid "The selected segment is not flagged as overlapping."
+msgstr "O segmento selecionado não está marcado como sobreposto."
+
+msgctxt "#41031"
+msgid "Could not fix overlap automatically for this segment."
+msgstr "Não foi possível corrigir automaticamente a sobreposição deste segmento."
+
+msgctxt "#41032"
+msgid "Fix overlap would remove the segment entirely.\nUse merge or delete instead."
+msgstr "Corrigir a sobreposição removeria o segmento por completo.\nUse mesclar ou excluir."
+
+msgctxt "#41033"
+msgid "No current playback time available."
+msgstr "Nenhum tempo de reprodução atual disponível."
+
+msgctxt "#41034"
+msgid "Segment Duration (seconds)"
+msgstr "Duração do segmento (segundos)"
+
+msgctxt "#41035"
+msgid "Duration must be greater than zero."
+msgstr "A duração deve ser maior que zero."
+
+msgctxt "#41036"
+msgid "Invalid duration value."
+msgstr "Valor de duração inválido."
+
+msgctxt "#41037"
+msgid "You have marked start and end times.\n\nUse 'Add with Marked Times' instead?"
+msgstr "Você marcou os horários de início e fim.\n\nUsar “Adicionar com horários marcados”?"
+
+msgctxt "#41038"
+msgid "Start Time (HH:MM:SS.mmm or seconds)"
+msgstr "Horário de início (HH:MM:SS.mmm ou segundos)"
+
+msgctxt "#41039"
+msgid "End Time (HH:MM:SS.mmm or seconds)"
+msgstr "Horário de fim (HH:MM:SS.mmm ou segundos)"
+
+msgctxt "#41040"
+msgid "End time must be after start time."
+msgstr "O horário de fim deve ser depois do horário de início."
+
+msgctxt "#41041"
+msgid "Invalid input: %s"
+msgstr "Entrada inválida: %s"
+
+msgctxt "#41042"
+msgid "Please select a segment to edit."
+msgstr "Selecione um segmento para editar."
+
+msgctxt "#41043"
+msgid "You have marked start and end times.\n\nUse marked times for this segment?"
+msgstr "Você marcou os horários de início e fim.\n\nUsar os horários marcados para este segmento?"
+
+msgctxt "#41044"
+msgid "Cannot snap: start would not be before the segment end time.\n\nEnd: %s\nSnap target: %s"
+msgstr "Não é possível ajustar: o início não ficaria antes do horário de fim do segmento.\n\nFim: %s\nAlvo do ajuste: %s"
+
+msgctxt "#41045"
+msgid "Cannot snap end to video length: duration is not available. Ensure the video is playing."
+msgstr "Não é possível ajustar o fim ao tamanho do vídeo: a duração não está disponível. Verifique se o vídeo está em reprodução."
+
+msgctxt "#41046"
+msgid "Cannot snap: end would not be after the segment start time.\n\nStart: %s\nSnap target: %s"
+msgstr "Não é possível ajustar: o fim não ficaria depois do horário de início do segmento.\n\nInício: %s\nAlvo do ajuste: %s"
+
+msgctxt "#41047"
+msgid "Cannot set start to current time: video is not playing."
+msgstr "Não é possível definir o início como o tempo atual: o vídeo não está em reprodução."
+
+msgctxt "#41048"
+msgid "Cannot set start to current time: playhead is not before the segment end.\n\nEnd: %s\nCurrent: %s"
+msgstr "Não é possível definir o início como o tempo atual: a posição de reprodução não está antes do fim do segmento.\n\nFim: %s\nAtual: %s"
+
+msgctxt "#41049"
+msgid "Cannot set end to current time: video is not playing."
+msgstr "Não é possível definir o fim como o tempo atual: o vídeo não está em reprodução."
+
+msgctxt "#41050"
+msgid "Cannot set end to current time: playhead is not after the segment start.\n\nStart: %s\nCurrent: %s"
+msgstr "Não é possível definir o fim como o tempo atual: a posição de reprodução não está depois do início do segmento.\n\nInício: %s\nAtual: %s"
+
+msgctxt "#41051"
+msgid "Please select a segment to delete."
+msgstr "Selecione um segmento para excluir."
+
+msgctxt "#41052"
+msgid "Delete segment '%s'?"
+msgstr "Excluir o segmento '%s'?"
+
+msgctxt "#41053"
+msgid "There are no segments to delete."
+msgstr "Não há segmentos para excluir."
+
+msgctxt "#41054"
+msgid "Delete all %d segments?"
+msgstr "Excluir todos os %d segmentos?"
+
+msgctxt "#41055"
+msgid "Delete All"
+msgstr "Excluir tudo"
+
+msgctxt "#41056"
+msgid "You have unsaved changes.\nExit without saving?"
+msgstr "Há alterações não salvas.\nSair sem salvar?"
+
+msgctxt "#41057"
+msgid "Cannot jump - video is not playing."
+msgstr "Não é possível ir para o tempo — o vídeo não está em reprodução."
+
+msgctxt "#41058"
+msgid "Jump To Time (HH:MM:SS.mmm or seconds)"
+msgstr "Ir para o tempo (HH:MM:SS.mmm ou segundos)"
+
+msgctxt "#41059"
+msgid "Time cannot be negative."
+msgstr "O tempo não pode ser negativo."
+
+msgctxt "#41060"
+msgid "Jumped to %s"
+msgstr "Foi para %s"
+
+msgctxt "#41061"
+msgid "Invalid time format. %s"
+msgstr "Formato de tempo inválido. %s"
+
+msgctxt "#41062"
+msgid "Start time cleared"
+msgstr "Horário de início limpo"
+
+msgctxt "#41063"
+msgid "Cannot set start time after end time.\n\nStart: %s\nEnd: %s"
+msgstr "Não é possível definir o início depois do fim.\n\nInício: %s\nFim: %s"
+
+msgctxt "#41064"
+msgid "Start marked: %s"
+msgstr "Início marcado: %s"
+
+msgctxt "#41065"
+msgid "End time cleared"
+msgstr "Horário de fim limpo"
+
+msgctxt "#41066"
+msgid "Cannot set end time before start time.\n\nStart: %s\nEnd: %s"
+msgstr "Não é possível definir o fim antes do início.\n\nInício: %s\nFim: %s"
+
+msgctxt "#41067"
+msgid "End marked: %s"
+msgstr "Fim marcado: %s"
+
+msgctxt "#41068"
+msgid "No segments available to select."
+msgstr "Não há segmentos disponíveis para selecionar."
+
+msgctxt "#41069"
+msgid "Segment %d: %s (%s -> %s)"
+msgstr "Segmento %d: %s (%s -> %s)"
+
+msgctxt "#41070"
+msgid "Select Segment (Start at End)"
+msgstr "Selecionar segmento (início no fim)"
+
+msgctxt "#41071"
+msgid "Select Segment (End at Start)"
+msgstr "Selecionar segmento (fim no início)"
+
+msgctxt "#41072"
+msgid "Cannot set start time after end time.\n\nMarked end: %s\nChosen start: %s"
+msgstr "Não é possível definir o início depois do fim.\n\nFim marcado: %s\nInício escolhido: %s"
+
+msgctxt "#41073"
+msgid "Cannot set end time before start time.\n\nMarked start: %s\nChosen end: %s"
+msgstr "Não é possível definir o fim antes do início.\n\nInício marcado: %s\nFim escolhido: %s"
+
+msgctxt "#41074"
+msgid "Custom..."
+msgstr "Personalizado..."
+
+msgctxt "#41075"
+msgid "Select Segment Label"
+msgstr "Selecionar rótulo do segmento"
+
+msgctxt "#41076"
+msgid "Enter Custom Label"
+msgstr "Digite um rótulo personalizado"
+
+msgctxt "#41077"
+msgid "Please mark both start and end times first."
+msgstr "Marque primeiro os horários de início e fim."
+
+msgctxt "#41078"
+msgid "Segment added successfully"
+msgstr "Segmento adicionado com sucesso"
+
+msgctxt "#41079"
+msgid "No video path available for saving."
+msgstr "Nenhum caminho de vídeo disponível para salvar."
+
+msgctxt "#41080"
+msgid "No segments to save."
+msgstr "Nenhum segmento para salvar."
+
+msgctxt "#41081"
+msgid "Error saving segments: %s"
+msgstr "Erro ao salvar os segmentos: %s"
+
+msgctxt "#41082"
+msgid "Segments saved to both formats"
+msgstr "Segmentos salvos nos dois formatos"
+
+msgctxt "#41083"
+msgid "Segments saved to EDL (XML failed)"
+msgstr "Segmentos salvos em EDL (o XML falhou)"
+
+msgctxt "#41084"
+msgid "Segments saved to XML (EDL failed)"
+msgstr "Segmentos salvos em XML (o EDL falhou)"
+
+msgctxt "#41085"
+msgid "Segments saved successfully"
+msgstr "Segmentos salvos com sucesso"
+
+msgctxt "#41086"
+msgid "Failed to save segments. Check file permissions."
+msgstr "Falha ao salvar os segmentos. Verifique as permissões do arquivo."
+
+msgctxt "#44000"
+msgid "Always skip this segment?"
+msgstr "Sempre pular este segmento?"
+
+msgctxt "#44001"
+msgid "Automatically skip %s for %s from now on?"
+msgstr "Pular automaticamente %s para %s de agora em diante?"
+
+msgctxt "#44002"
+msgid "Automatically skip %s for this title from now on?"
+msgstr "Pular automaticamente %s para este título de agora em diante?"
+
+msgctxt "#44003"
+msgid "Not now"
+msgstr "Agora não"
+
+msgctxt "#44004"
+msgid "Auto-skip saved for this title"
+msgstr "Salto automático salvo para este título"
+
+msgctxt "#44005"
+msgid "Ask to auto-skip per show or movie"
+msgstr "Perguntar sobre salto automático por série ou filme"
+
+msgctxt "#44006"
+msgid "After you confirm a skip, ask whether that segment type should skip automatically for this show or movie from now on. Saved under the title's TMDB id, so it also applies to other versions of the same movie or episode."
+msgstr "Depois que você confirmar um salto, pergunta se esse tipo de segmento deve ser pulado automaticamente nesta série ou filme de agora em diante. Salvo sob o ID TMDB do título, portanto também vale para outras versões do mesmo filme ou episódio."
+
+msgctxt "#44007"
+msgid "Clear saved per-title auto-skip choices"
+msgstr "Limpar escolhas salvas de salto automático por título"
+
+msgctxt "#44008"
+msgid "Forget every saved per-title auto-skip decision, including the prompts you declined, so Skippy can ask again."
+msgstr "Esquece todas as decisões salvas de salto automático por título, inclusive os pedidos que você recusou, para que o Skippy possa perguntar de novo."
+
+msgctxt "#44009"
+msgid "Cleared %d saved per-title choice(s)."
+msgstr "%d escolha(s) salva(s) por título removida(s)."
+
+msgctxt "#44010"
+msgid "No saved per-title choices to clear."
+msgstr "Não há escolhas salvas por título para limpar."
+
+msgctxt "#44011"
+msgid "CEC remote marker button set: %s"
+msgstr "Botão do marcador do controle remoto CEC definido: %s"
+
+msgctxt "#44012"
+msgid "No button code captured"
+msgstr "Nenhum código de botão capturado"
+
+msgctxt "#44013"
+msgid "Remote marker button set: %s"
+msgstr "Botão do marcador do controle remoto definido: %s"
+
+msgctxt "#44020"
+msgid "Statistics"
+msgstr "Estatísticas"
+
+msgctxt "#44021"
+msgid "Time saved: %s"
+msgstr "Tempo economizado: %s"
+
+msgctxt "#44022"
+msgid "%dh %02dm"
+msgstr "%dh %02dm"
+
+msgctxt "#44023"
+msgid "%dm %02ds"
+msgstr "%dm %02ds"
+
+msgctxt "#44024"
+msgid "%ds"
+msgstr "%ds"
+
+msgctxt "#44025"
+msgid "Segments skipped: %d"
+msgstr "Segmentos pulados: %d"
+
+msgctxt "#44026"
+msgid "Skips by segment type:"
+msgstr "Saltos por tipo de segmento:"
+
+msgctxt "#44027"
+msgid "No skips recorded yet"
+msgstr "Nenhum salto registrado ainda"
+
+msgctxt "#44028"
+msgid "Online segments downloaded: %d"
+msgstr "Segmentos online baixados: %d"
+
+msgctxt "#44029"
+msgid "Online segments uploaded: %d"
+msgstr "Segmentos online enviados: %d"
+
+msgctxt "#44030"
+msgid "Counting since %s"
+msgstr "Contando desde %s"
+
+msgctxt "#44031"
+msgid "Reset"
+msgstr "Zerar"
+
+msgctxt "#44032"
+msgid "Reset statistics"
+msgstr "Zerar estatísticas"
+
+msgctxt "#44033"
+msgid "Reset all Skippy statistics to zero?"
+msgstr "Zerar todas as estatísticas do Skippy?"
+
+msgctxt "#44034"
+msgid "Show total time saved, how many segments were skipped in total and per type, and how many segments were downloaded from or uploaded to the online databases."
+msgstr "Mostra o tempo total economizado, quantos segmentos foram pulados no total e por tipo, e quantos segmentos foram baixados ou enviados para os bancos de dados online."
+
+msgctxt "#44035"
+msgid "Set every counter back to zero and start counting from today. Asks for confirmation first."
+msgstr "Volta todos os contadores a zero e recomeça a contagem a partir de hoje. Pede confirmação antes."
+
+msgctxt "#44036"
+msgid "Statistics reset"
+msgstr "Estatísticas zeradas"
+
+msgctxt "#44040"
+msgid "Skippy Remote Button Discovery"
+msgstr "Descoberta de botão do controle remoto do Skippy"
+
+msgctxt "#44041"
+msgid "Press the remote button to use for Segment Marker."
+msgstr "Pressione o botão do controle remoto que deseja usar para o Marcador de segmentos."
+
+msgctxt "#44042"
+msgid "Bluetooth/raw remotes save as key:<code>."
+msgstr "Controles Bluetooth/brutos são salvos como key:<código>."
+
+msgctxt "#44043"
+msgid "CEC remotes save as Kodi remote button names when possible."
+msgstr "Controles CEC são salvos como nomes de botões do Kodi sempre que possível."
+
+msgctxt "#44044"
+msgid "Back/Esc cancels."
+msgstr "Voltar/Esc cancela."
+
+msgctxt "#44045"
+msgid "Choose the label for the marked segment."
+msgstr "Escolha o rótulo do segmento marcado."
+
+msgctxt "#44046"
+msgid "Enter/OK selects. Back/Esc cancels."
+msgstr "Enter/OK seleciona. Voltar/Esc cancela."
+
+msgctxt "#44047"
+msgid "How should this marker be saved?"
+msgstr "Como esta marcação deve ser salva?"
+
+msgctxt "#44048"
+msgid "Choose how Skippy should save this marked range."
+msgstr "Escolha como o Skippy deve salvar este intervalo marcado."
+
+msgctxt "#44049"
+msgid "Merge is safest. Back/Esc cancels marker save."
+msgstr "Mesclar é o mais seguro. Voltar/Esc cancela o salvamento da marcação."
+
+msgctxt "#44050"
+msgid "Warning: overlaps existing %s entries. "
+msgstr "Aviso: sobrepõe entradas existentes de %s. "
+
+msgctxt "#44060"
+msgid "Title autoskip"
+msgstr "Salto automático por título"
+
+msgctxt "#44061"
+msgid "Manage saved auto-skips"
+msgstr "Gerenciar saltos automáticos salvos"
+
+msgctxt "#44062"
+msgid "Show every show or movie that has a saved auto-skip rule. Select a title to delete that entry if you changed your mind."
+msgstr "Mostra todas as séries ou filmes que têm uma regra de salto automático salva. Selecione um título para excluir essa entrada se você mudou de ideia."
+
+msgctxt "#44063"
+msgid "No titles with auto-skip saved yet."
+msgstr "Ainda não há títulos com salto automático salvo."
+
+msgctxt "#44064"
+msgid "Select a title to remove its auto-skip rules."
+msgstr "Selecione um título para remover suas regras de salto automático."
+
+msgctxt "#44065"
+msgid "Remove auto-skip for %s?"
+msgstr "Remover o salto automático de %s?"
+
+msgctxt "#44066"
+msgid "This deletes the saved auto-skip rules for this title so Skippy will ask again."
+msgstr "Isto exclui as regras de salto automático salvas para este título, e o Skippy voltará a perguntar."
+
+msgctxt "#44067"
+msgid "Removed auto-skip for %s"
+msgstr "Salto automático removido de %s"
+
+msgctxt "#44068"
+msgid "Could not remove that title entry."
+msgstr "Não foi possível remover a entrada desse título."
+
+msgctxt "#44070"
+msgid "Delete"
+msgstr "Excluir"
+
+msgctxt "#44100"
+msgid "Customize skip dialog"
+msgstr "Personalizar diálogo de salto"
+
+msgctxt "#44101"
+msgid "Open a live preview of skip dialog look and behavior. Changes apply when you Save."
+msgstr "Abre uma prévia ao vivo da aparência e do comportamento do diálogo de salto. As alterações são aplicadas quando você clica em Salvar."
+
+msgctxt "#44102"
+msgid "Customize skip dialog"
+msgstr "Personalizar diálogo de salto"
+
+msgctxt "#44103"
+msgid "Save"
+msgstr "Salvar"
+
+msgctxt "#44104"
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgctxt "#44105"
+msgid "Yes"
+msgstr "Sim"
+
+msgctxt "#44106"
+msgid "No"
+msgstr "Não"
+
+msgctxt "#32106"
+msgid "Segment types and skip behavior"
+msgstr "Tipos de segmento e comportamento de salto"
+
+msgctxt "#32107"
+msgid "Edit the catalog of segment types: skip mode (Always / Ask / Never), EDL number, and aliases. Built-in types cannot be deleted. Unassigned and unknown labels Never skip but still become segments."
+msgstr "Edite o catálogo de tipos de segmento: modo de salto (Sempre / Perguntar / Nunca), número EDL e apelidos. Tipos internos não podem ser excluídos. Rótulos não atribuídos e desconhecidos nunca são pulados, mas ainda viram segmentos."
+
+msgctxt "#45001"
+msgid "Always / Ask / Never and EDL number for each type. Built-ins cannot be deleted."
+msgstr "Sempre / Perguntar / Nunca e número EDL de cada tipo. Tipos internos não podem ser excluídos."
+
+msgctxt "#45005"
+msgid "EDL"
+msgstr "EDL"
+
+msgctxt "#45006"
+msgid "Aliases"
+msgstr "Apelidos"
+
+msgctxt "#45007"
+msgid "Delete"
+msgstr "Excluir"
+
+msgctxt "#45008"
+msgid "Add type"
+msgstr "Adicionar tipo"
+
+msgctxt "#45011"
+msgid "Type name"
+msgstr "Nome do tipo"
+
+msgctxt "#45012"
+msgid "Built-in types cannot be deleted."
+msgstr "Tipos internos não podem ser excluídos."
+
+msgctxt "#45013"
+msgid "Delete this custom type?"
+msgstr "Excluir este tipo personalizado?"
+
+msgctxt "#45016"
+msgid "Add alias"
+msgstr "Adicionar apelido"
+
+msgctxt "#45017"
+msgid "Remove alias"
+msgstr "Remover apelido"
+
+msgctxt "#45018"
+msgid "Edit aliases"
+msgstr "Editar apelidos"
+
+msgctxt "#45019"
+msgid "Skip mode"
+msgstr "Modo de salto"
+
+msgctxt "#45020"
+msgid "Choose EDL number"
+msgstr "Escolha o número EDL"
+
+msgctxt "#45022"
+msgid "Could not save segment types."
+msgstr "Não foi possível salvar os tipos de segmento."
+
+msgctxt "#45023"
+msgid "Segment types saved."
+msgstr "Tipos de segmento salvos."
+
+
+msgctxt "#46000"
+msgid "Toggle mode"
+msgstr "Modo de alternância"
+
+msgctxt "#46001"
+msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
+msgstr "Personalizado usa o diálogo próprio do Skippy, com barra de progresso, posicionamento nos cantos e opções de estilo. Nativo usa a aparência da sua skin: uma notificação (OK para pular) ou o diálogo Sim/Não integrado do Kodi. O texto nativo é fixado quando aparece (sem contagem regressiva nem barra de progresso ao vivo)."
+
+msgctxt "#46002"
+msgid "Native dialog"
+msgstr "Diálogo nativo"
+
+msgctxt "#46003"
+msgid "Default focus"
+msgstr "Foco padrão"
+
+msgctxt "#46004"
+msgid "Close dialog when segment ends"
+msgstr "Fechar o diálogo quando o segmento terminar"
+
+msgctxt "#46005"
+msgid "Automatically close the dialog when the segment ends or playback stops."
+msgstr "Fecha o diálogo automaticamente quando o segmento termina ou a reprodução para."
+
+msgctxt "#46006"
+msgid "Show next-jump line"
+msgstr "Mostrar linha do próximo salto"
+
+msgctxt "#46007"
+msgid "Show segment duration"
+msgstr "Mostrar duração do segmento"
+
+msgctxt "#46008"
+msgid "Press OK to skip"
+msgstr "Pressione OK para pular"
+
+msgctxt "#46009"
+msgid "Show as toast (OK to skip)"
+msgstr "Mostrar como notificação (OK para pular)"
+
+msgctxt "#46010"
+msgid "Shows the skin's notification toast instead of a dialog. An invisible listener lets OK / Enter skip and Back dismiss. The toast is kept on screen for the whole segment, but another add-on's toast may cover it. Text is fixed when it appears."
+msgstr "Mostra a notificação da skin em vez de um diálogo. Um ouvinte invisível permite que OK / Enter pule e Voltar dispense. A notificação permanece na tela durante todo o segmento, mas a notificação de outro add-on pode cobri-la. O texto é fixado quando aparece."
+
+msgctxt "#46011"
+msgid "Show card background"
+msgstr "Mostrar fundo do cartão"
+
+msgctxt "#46012"
+msgid "Card opacity (%)"
+msgstr "Opacidade do cartão (%)"
+
+msgctxt "#46013"
+msgid "Skip dialog presets…"
+msgstr "Predefinições do diálogo de salto…"
+
+msgctxt "#46014"
+msgid "Apply a ready-made look or one you saved. Applies to Custom mode."
+msgstr "Aplique uma aparência pronta ou uma que você salvou. Vale para o modo Personalizado."
+
+msgctxt "#46015"
+msgid "Preset"
+msgstr "Predefinição"
+
+msgctxt "#46016"
+msgid "Custom"
+msgstr "Personalizado"
+
+msgctxt "#46017"
+msgid "Save current look as preset…"
+msgstr "Salvar a aparência atual como predefinição…"
+
+msgctxt "#46018"
+msgid "Delete a saved preset…"
+msgstr "Excluir uma predefinição salva…"
+
+msgctxt "#46019"
+msgid "Preset name"
+msgstr "Nome da predefinição"
+
+msgctxt "#46020"
+msgid "Preset saved: %s"
+msgstr "Predefinição salva: %s"
+
+msgctxt "#46021"
+msgid "A saved preset named %s already exists. Overwrite it?"
+msgstr "Já existe uma predefinição salva chamada %s. Sobrescrevê-la?"
+
+msgctxt "#46022"
+msgid "Delete preset %s?"
+msgstr "Excluir a predefinição %s?"
+
+msgctxt "#46023"
+msgid "Preset deleted: %s"
+msgstr "Predefinição excluída: %s"
+
+msgctxt "#46024"
+msgid "Choose a preset"
+msgstr "Escolha uma predefinição"
+
+msgctxt "#46025"
+msgid "%s (saved)"
+msgstr "%s (salva)"
+
+msgctxt "#46026"
+msgid "Could not save the preset."
+msgstr "Não foi possível salvar a predefinição."
+
+msgctxt "#46027"
+msgid "Preset applied: %s"
+msgstr "Predefinição aplicada: %s"
+
+msgctxt "#46028"
+msgid "That name is used by a built-in preset."
+msgstr "Esse nome é usado por uma predefinição integrada."
+
+msgctxt "#46029"
+msgid "There are no saved presets to delete."
+msgstr "Não há predefinições salvas para excluir."
+
+msgctxt "#46030"
+msgid "Current preset"
+msgstr "Predefinição atual"
+
+msgctxt "#46031"
+msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
+msgstr "Mostra qual predefinição corresponde às configurações atuais do diálogo de salto, ou Personalizado (não salvo) se nenhuma corresponder."
+
+msgctxt "#46032"
+msgid "Custom (unsaved)"
+msgstr "Personalizado (não salvo)"
+
+msgctxt "#46033"
+msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
+msgstr "Quando um segmento está aninhado em outro ou se sobrepõe a ele, adiciona uma linha informando para onde o Pular vai saltar em seguida (por exemplo, o início do próximo segmento)."
+
+msgctxt "#46034"
+msgid "Preview type"
+msgstr "Tipo de prévia"
+
+msgctxt "#46035"
+msgid "Show \"Press OK to skip\" in the toast"
+msgstr "Mostrar \"Pressione OK para pular\" na notificação"
+
+msgctxt "#46036"
+msgid "Add the \"Press OK to skip\" text to the toast. Turn off for a shorter toast that only shows the skip label (and the next-jump line if enabled)."
+msgstr "Adiciona o texto \"Pressione OK para pular\" à notificação. Desative para uma notificação mais curta, que mostra só o rótulo de pular (e a linha do próximo salto, se ativada)."
+
+msgctxt "#46037"
+msgid "Export saved presets…"
+msgstr "Exportar predefinições salvas…"
+
+msgctxt "#46038"
+msgid "Import presets…"
+msgstr "Importar predefinições…"
+
+msgctxt "#46039"
+msgid "Presets exported: %s"
+msgstr "Predefinições exportadas: %s"
+
+msgctxt "#46040"
+msgid "Presets imported: %s"
+msgstr "Predefinições importadas: %s"
+
+msgctxt "#46041"
+msgid "There are no saved presets to export."
+msgstr "Não há predefinições salvas para exportar."
+
+msgctxt "#46042"
+msgid "No new presets were imported (the file has none, or the names already exist)."
+msgstr "Nenhuma predefinição nova foi importada (o arquivo não tem nenhuma, ou os nomes já existem)."
+
+msgctxt "#46043"
+msgid "Offer to review sources that disagree"
+msgstr "Oferecer revisão de fontes que divergem"
+
+msgctxt "#46044"
+msgid "When TheIntroDB and IntroDB.app agree on a segment but your local sidecar differs by more than 1.5 seconds, ask whether to review the sources. You can jump to each source's start or end and keep local or online for that file."
+msgstr "Quando o TheIntroDB e o IntroDB.app concordam sobre um segmento mas seu sidecar local difere em mais de 1,5 segundo, pergunta se deseja revisar as fontes. Você pode ir para o início ou o fim de cada fonte e manter o local ou o online para esse arquivo."
+
+msgctxt "#46045"
+msgid "Segment sources disagree"
+msgstr "As fontes de segmentos divergem"
+
+msgctxt "#46046"
+msgid "%s: the local sidecar differs from the two online sources, which agree with each other.\n\nReview the sources now?"
+msgstr "%s: o sidecar local difere das duas fontes online, que concordam entre si.\n\nRevisar as fontes agora?"
+
+msgctxt "#46047"
+msgid "Sources disagree: %s"
+msgstr "Fontes divergem: %s"
+
+msgctxt "#46048"
+msgid "Local sidecar"
+msgstr "Sidecar local"
+
+msgctxt "#46049"
+msgid "Online (%s)"
+msgstr "Online (%s)"
+
+msgctxt "#46050"
+msgid "Start %s"
+msgstr "Início %s"
+
+msgctxt "#46051"
+msgid "End %s"
+msgstr "Fim %s"
+
+msgctxt "#46052"
+msgid "Use local"
+msgstr "Usar local"
+
+msgctxt "#46053"
+msgid "Use online"
+msgstr "Usar online"
+
+msgctxt "#46054"
+msgid "Close"
+msgstr "Fechar"
