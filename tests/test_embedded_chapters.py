@@ -71,6 +71,217 @@ class MkvChapterParseTests(unittest.TestCase):
         self.assertEqual(rows[0]["name"], "Intro")
 
 
+def _big_size(n: int) -> bytes:
+    """8-byte EBML size vint (what muxers write for multi-GB Segments)."""
+    return b"\x01" + int(n).to_bytes(7, "big")
+
+
+def _chapters_element():
+    intro = _elem(
+        b"\xb6",
+        _elem(b"\x91", _uint(79 * 10**9, 5))
+        + _elem(b"\x92", _uint(170 * 10**9, 5))
+        + _elem(b"\x80", _elem(b"\x85", b"Intro")),
+    )
+    credits = _elem(
+        b"\xb6",
+        _elem(b"\x91", _uint(2634 * 10**9, 6))
+        + _elem(b"\x80", _elem(b"\x85", b"Ending Credits")),
+    )
+    return _elem(b"\x10\x43\xa7\x70", _elem(b"\x45\xb9", intro + credits))
+
+
+_EBML_HEADER = _elem(b"\x1a\x45\xdf\xa3", _elem(b"\x42\x86", b"\x01"))
+_HUGE_SEGMENT_SIZE = 2_904_795_982
+
+
+def _seekhead(chapters_rel: int) -> bytes:
+    seek = _elem(
+        b"\x4d\xbb",
+        _elem(b"\x53\xab", b"\x10\x43\xa7\x70")
+        + _elem(b"\x53\xac", _uint(chapters_rel, 4)),
+    )
+    return _elem(b"\x11\x4d\x9b\x74", seek)
+
+
+class LargeSegmentTests(unittest.TestCase):
+    """Segment declares far more bytes than the header read holds (large file)."""
+
+    def test_chapters_inside_buffer_with_huge_declared_segment(self):
+        chapters = _chapters_element()
+        body = _seekhead(0) + chapters
+        # Cluster header declares a size that is not in the buffer either.
+        cluster = b"\x1f\x43\xb6\x75" + _big_size(500_000_000) + b"\x00" * 16
+        buf = _EBML_HEADER + b"\x18\x53\x80\x67" + _big_size(_HUGE_SEGMENT_SIZE) + body + cluster
+        rows = parse_matroska_chapters_from_bytes(buf)
+        self.assertEqual(
+            [(r["name"], r["start"], r["end"]) for r in rows],
+            [("Intro", 79.0, 170.0), ("Ending Credits", 2634.0, None)],
+        )
+
+    def test_chapters_beyond_first_read_found_via_seekhead(self):
+        from mkv_chapter_parse import parse_matroska_chapters_via_vfs
+
+        chapters = _chapters_element()
+        padding = _elem(b"\xec", b"\x00" * 400)  # Void, pushes Chapters past the first read
+        seekhead_len = len(_seekhead(0))
+        chapters_rel = seekhead_len + len(padding)
+        segment_body = _seekhead(chapters_rel) + padding + chapters
+        data = _EBML_HEADER + b"\x18\x53\x80\x67" + _big_size(_HUGE_SEGMENT_SIZE) + segment_body
+
+        class FakeFile:
+            def __init__(self, _path):
+                self.pos = 0
+
+            def readBytes(self, n):
+                chunk = data[self.pos : self.pos + n]
+                self.pos += len(chunk)
+                return bytearray(chunk)
+
+            def seek(self, offset, whence=0):
+                self.pos = offset
+
+            def close(self):
+                pass
+
+        first_read = len(_EBML_HEADER) + 12 + len(_seekhead(0)) + 100
+        self.assertLess(first_read, len(data) - len(chapters))
+        import xbmcvfs
+
+        with patch.object(xbmcvfs, "File", FakeFile, create=True):
+            rows = parse_matroska_chapters_via_vfs("nfs://x/episode.mkv", max_bytes=first_read)
+        self.assertEqual([r["name"] for r in rows], ["Intro", "Ending Credits"])
+
+
+def _atom(name, start_s, *, enabled=None, hidden=False, end_s=None, children=b""):
+    body = _elem(b"\x91", _uint(int(start_s * 10**9), 8))
+    if end_s is not None:
+        body += _elem(b"\x92", _uint(int(end_s * 10**9), 8))
+    if hidden:
+        body += _elem(b"\x98", b"\x01")
+    if enabled is not None:
+        body += _elem(b"\x45\x98", b"\x01" if enabled else b"\x00")
+    body += _elem(b"\x80", _elem(b"\x85", name.encode()))
+    return _elem(b"\xb6", body + children)
+
+
+def _edition(atoms, *, default=None, hidden=None):
+    body = b""
+    if default is not None:
+        body += _elem(b"\x45\xdb", b"\x01" if default else b"\x00")
+    if hidden is not None:
+        body += _elem(b"\x45\xbd", b"\x01" if hidden else b"\x00")
+    return _elem(b"\x45\xb9", body + b"".join(atoms))
+
+
+def _mkv(chapters_payload):
+    return (
+        _EBML_HEADER
+        + _elem(b"\x18\x53\x80\x67", _elem(b"\x10\x43\xa7\x70", chapters_payload))
+    )
+
+
+class EditionAndEnabledTests(unittest.TestCase):
+    def test_default_edition_wins_over_first(self):
+        first = _edition([_atom("Director Intro", 5)], default=False)
+        second = _edition([_atom("Intro", 0), _atom("Credits", 90)], default=True)
+        rows = parse_matroska_chapters_from_bytes(_mkv(first + second))
+        self.assertEqual([r["name"] for r in rows], ["Intro", "Credits"])
+
+    def test_hidden_edition_is_ignored(self):
+        hidden = _edition([_atom("Secret", 1)], default=True, hidden=True)
+        visible = _edition([_atom("Intro", 0)], default=False)
+        rows = parse_matroska_chapters_from_bytes(_mkv(hidden + visible))
+        self.assertEqual([r["name"] for r in rows], ["Intro"])
+
+    def test_first_edition_used_when_none_default(self):
+        one = _edition([_atom("A", 0)])
+        two = _edition([_atom("B", 0)])
+        rows = parse_matroska_chapters_from_bytes(_mkv(one + two))
+        self.assertEqual([r["name"] for r in rows], ["A"])
+
+    def test_disabled_chapter_is_skipped(self):
+        edition = _edition([_atom("Intro", 0), _atom("Gone", 30, enabled=False), _atom("Credits", 90)])
+        rows = parse_matroska_chapters_from_bytes(_mkv(edition))
+        self.assertEqual([r["name"] for r in rows], ["Intro", "Credits"])
+
+    def test_disabled_parent_drops_children(self):
+        child = _atom("Child", 10)
+        edition = _edition([_atom("Parent", 0, enabled=False, children=child), _atom("Credits", 90)])
+        rows = parse_matroska_chapters_from_bytes(_mkv(edition))
+        self.assertEqual([r["name"] for r in rows], ["Credits"])
+
+
+def _seek_entry(target_id: bytes, rel: int) -> bytes:
+    return _elem(
+        b"\x4d\xbb", _elem(b"\x53\xab", target_id) + _elem(b"\x53\xac", _uint(rel, 4))
+    )
+
+
+_SEEKHEAD_ID = b"\x11\x4d\x9b\x74"
+_CHAPTERS_ID = b"\x10\x43\xa7\x70"
+
+
+class SeekHeadTests(unittest.TestCase):
+    def test_second_seekhead_without_chapters_does_not_hide_first(self):
+        chapters = _chapters_element()
+        first = _elem(_SEEKHEAD_ID, _seek_entry(_CHAPTERS_ID, 0))
+        second = _elem(_SEEKHEAD_ID, _seek_entry(b"\x16\x54\xae\x6b", 999))
+        # first SeekHead says Chapters at rel (after both heads + chapters placed later)
+        rel = len(first) + len(second)
+        first = _elem(_SEEKHEAD_ID, _seek_entry(_CHAPTERS_ID, rel))
+        from mkv_chapter_parse import _chapters_seek_location
+
+        buf = _EBML_HEADER + b"\x18\x53\x80\x67" + _big_size(10**9) + first + second
+        found, _start = _chapters_seek_location(buf)
+        self.assertEqual(found, rel)
+
+    def test_chain_of_seekheads_is_followed(self):
+        from mkv_chapter_parse import parse_matroska_chapters_via_vfs
+
+        chapters = _chapters_element()
+        padding = _elem(b"\xec", b"\x00" * 400)
+        head2_len = len(_elem(_SEEKHEAD_ID, _seek_entry(_CHAPTERS_ID, 0)))
+        head1_len = len(_elem(_SEEKHEAD_ID, _seek_entry(_SEEKHEAD_ID, 0)))
+        head2_rel = head1_len + len(padding)
+        chapters_rel = head2_rel + head2_len
+        head1 = _elem(_SEEKHEAD_ID, _seek_entry(_SEEKHEAD_ID, head2_rel))
+        head2 = _elem(_SEEKHEAD_ID, _seek_entry(_CHAPTERS_ID, chapters_rel))
+        data = (
+            _EBML_HEADER + b"\x18\x53\x80\x67" + _big_size(_HUGE_SEGMENT_SIZE)
+            + head1 + padding + head2 + chapters
+        )
+
+        class FakeFile:
+            def __init__(self, _path):
+                self.pos = 0
+
+            def readBytes(self, n):
+                chunk = data[self.pos : self.pos + n]
+                self.pos += len(chunk)
+                return bytearray(chunk)
+
+            def seek(self, offset, whence=0):
+                self.pos = offset
+
+            def close(self):
+                pass
+
+        import xbmcvfs
+
+        first_read = len(_EBML_HEADER) + 12 + head1_len + 50
+        with patch("mkv_chapter_parse._FIRST_READ_BYTES", first_read):
+            with patch.object(xbmcvfs, "File", FakeFile, create=True):
+                rows = parse_matroska_chapters_via_vfs("smb://x/episode.mkv")
+        self.assertEqual([r["name"] for r in rows], ["Intro", "Ending Credits"])
+
+    def test_extension_ignores_query_and_headers(self):
+        from mkv_chapter_parse import _path_extension
+
+        self.assertEqual(_path_extension("http://h/a/b.MKV?token=1|User-Agent=x"), "mkv")
+        self.assertEqual(_path_extension("smb://h/a.mp4"), "mp4")
+
+
 class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
     def setUp(self):
         self.addon = install_kodi_stubs()

@@ -1,5 +1,43 @@
 # Changelog
 
+## [7.2.3] - 2026-11-02
+
+### Fixed
+
+- **One malformed chapter could stop Skippy until Kodi restarted.** A chapter in a `*_chapters.xml` whose end time was before its start (or whose time could not be read) raised an error that nothing caught, which ended the service. Such a chapter is now skipped on its own and the others still load. The monitor loop also has a safety net now: if a tick ever fails, the error is logged once with its traceback and Skippy carries on.
+- **One bad EDL row dropped the rest of the file.** A row with the end before the start (or `nan`, `inf` or a negative time) made every following row disappear. Only the bad row is skipped.
+- **Changes made in the settings windows now reach the running service.** The service kept its own copy of the per-title auto-skip rules and of the statistics, so "Manage titles", "Clear all" and "Reset statistics" (and restoring a backup) did not take effect until Kodi restarted, and a reset could be undone by the next skip. Both caches now notice when the file was changed by another script.
+- **Skip dialog left open when playback stopped.** If the video stopped or ended while the dialog was showing, the dialog stayed on screen and blocked skipping until a button was pressed. It now closes by itself (without counting as a skip or a dismissal) once playback has been gone for about three quarters of a second, and also closes if its update thread fails.
+- **Pausing no longer dismisses the skip dialog.** The dialog's safety timeout counted wall-clock time, so a long pause declined the skip and marked the segment as dismissed. Paused time no longer counts.
+- **Saving a segment could lose or misreport the sidecar.** The Segment Marker said "saved" even when the write failed (read-only share, full disk) and did not use the safe writer. It now uses the shared writer and reports failure. The writer also puts the original file back when every write attempt fails; before, it had already deleted it.
+- **Dismissing a nested skip dialog could reopen it at once** when two segments had (nearly) the same start and end. The nested-segment bookkeeping no longer treats such a segment as its own parent.
+- **Profile data files are flushed to disk** (`fsync`) before they replace the old file, so a power cut right after a save cannot leave an empty statistics, catalog or overrides file. Data that cannot be written as JSON now leaves the old file untouched instead of raising.
+
+## [7.2.2] - 2026-11-02
+
+### Fixed
+
+- **Embedded MKV chapters: several editions.** Files with more than one chapter edition (for example a commentary or alternative cut) had all editions merged, giving duplicate and overlapping segments. Skippy now uses the default edition, otherwise the first visible one, and ignores hidden editions.
+- **Disabled chapters** (ChapterFlagEnabled = 0) are no longer turned into segments; a disabled chapter also hides its sub-chapters.
+- **SeekHead handling.** A later SeekHead without a Chapters entry no longer erases the position found in an earlier one, SeekHeads that only point at another SeekHead are followed, and the chapters block is read in full when it is larger than the first read.
+- **Faster, lighter chapter read.** Chapters are looked up in the first 256 KiB; the larger read of the file header only happens when the file has no SeekHead pointers. File names with a query string or `|` headers (stream URLs) are now recognised as MKV by extension.
+
+### Added
+
+- **More default segment names** matched exactly: Intro: opening credits, opening titles, title sequence, op. Credits: ending credits, end credits, closing credits, end titles, ending titles, ending theme, ed. Preview: next episode preview, episode preview, next episode. They are added once to an existing Segment types list (never over a name another type already uses, and never again after you remove one). "Post-Credits" is left unmapped on purpose.
+
+## [7.2.1] - 2026-11-02
+
+### Fixed
+
+- **Embedded MKV chapters not found on large files** (GitHub issue #3): the Matroska parser rejected the whole top-level Segment when its declared size was larger than the part of the file that is read (8 MiB), which is the case for almost any real MKV. The Segment is now parsed from the bytes that are available, so chapters in the header are found, and the SeekHead retry that reads Chapters from further into the file works as well. Thanks to bitcreepy for the report and the working fix.
+
+## [7.2.0] - 2026-10-24
+
+### Added
+
+- **Translated add-on summary and description** in `addon.xml` (Danish, Dutch, French, German, Greek, Italian, Norwegian Bokmål, Spanish, Swedish, Brazilian Portuguese), so the Kodi add-on info page follows the interface language. English remains the default (`en_GB`).
+
 ## [7.1.9] - 2026-10-24
 
 ### Added

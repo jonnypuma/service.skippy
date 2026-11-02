@@ -48,6 +48,23 @@ def _log(msg):
 
 
 # Built-in seed. ``edl_read_aliases`` and ``online_bucket`` stay in code.
+# Aliases added to the built-in types after the first 7.x releases. A saved catalog
+# older than ALIAS_SEED gets them appended once (never over a phrase another type owns).
+ALIAS_SEED = 2
+_ADDED_ALIASES = {
+    "intro": ("opening credits", "opening titles", "title sequence", "op"),
+    "credits": (
+        "ending credits",
+        "end credits",
+        "closing credits",
+        "end titles",
+        "ending titles",
+        "ending theme",
+        "ed",
+    ),
+    "preview": ("next episode preview", "episode preview", "next episode"),
+}
+
 _BUILTIN_SPECS = (
     {
         "id": "intro",
@@ -176,6 +193,10 @@ _BUILTIN_SPECS = (
         "online_bucket": None,
     },
 )
+
+for _spec in _BUILTIN_SPECS:
+    _spec["aliases"] = tuple(_spec["aliases"]) + _ADDED_ALIASES.get(_spec["id"], ())
+del _spec
 
 BUILTIN_BY_ID = {spec["id"]: spec for spec in _BUILTIN_SPECS}
 
@@ -606,7 +627,34 @@ def _sanitize_custom(loaded):
     }
 
 
-def _merge_loaded_types(loaded_types):
+def _apply_alias_seed(types, alias_seed):
+    """Append aliases introduced after ``alias_seed`` to saved built-in rows."""
+    try:
+        current = int(alias_seed)
+    except (TypeError, ValueError):
+        current = 1
+    if current >= ALIAS_SEED:
+        return False
+    owned = set()
+    for row in types:
+        for phrase in list(row.get("aliases") or []) + [row.get("id"), row.get("label")]:
+            norm = normalize_label(phrase)
+            if norm:
+                owned.add(norm)
+    changed = False
+    for row in types:
+        if not row.get("builtin"):
+            continue
+        for phrase in _ADDED_ALIASES.get(row["id"], ()):
+            norm = normalize_label(phrase)
+            if norm and norm not in owned:
+                row["aliases"] = list(row.get("aliases") or []) + [phrase]
+                owned.add(norm)
+                changed = True
+    return changed
+
+
+def _merge_loaded_types(loaded_types, alias_seed=ALIAS_SEED):
     result = []
     seen = set()
     for raw in loaded_types or []:
@@ -624,6 +672,7 @@ def _merge_loaded_types(loaded_types):
         if spec["id"] not in seen:
             result.append(clone_type(spec))
             seen.add(spec["id"])
+    _apply_alias_seed(result, alias_seed)
     _repair_collisions(result)
     return result
 
@@ -674,6 +723,7 @@ def _payload_types(data):
 def types_to_payload(types):
     return {
         "schema": SCHEMA,
+        "alias_seed": ALIAS_SEED,
         "types": [
             {
                 "id": t["id"],
@@ -811,11 +861,16 @@ def ensure_catalog(addon=None):
     loaded = read_json(path, default=None) if path else None
     raw_types = _payload_types(loaded)
     if raw_types is not None:
-        types = _merge_loaded_types(raw_types)
+        seed = loaded.get("alias_seed") if isinstance(loaded, dict) else None
+        types = _merge_loaded_types(raw_types, seed if seed is not None else 1)
         missing_builtin = any(
             spec["id"] not in {t["id"] for t in raw_types} for spec in _BUILTIN_SPECS
         )
-        if missing_builtin and path:
+        try:
+            seed_outdated = int(seed if seed is not None else 1) < ALIAS_SEED
+        except (TypeError, ValueError):
+            seed_outdated = True
+        if (missing_builtin or seed_outdated) and path:
             save_catalog(types)
             mtime = _file_mtime(path)
         return _set_cache(types, path, mtime)
@@ -866,7 +921,8 @@ def merge_catalog_from_backup(incoming):
         return False
     local = ensure_catalog()
     local_by_id = {type_row["id"]: type_row for type_row in local}
-    merged = _merge_loaded_types(incoming_types)
+    seed = incoming.get("alias_seed")
+    merged = _merge_loaded_types(incoming_types, seed if seed is not None else 1)
     incoming_ids = {
         normalize_label(t.get("id") or t.get("label") or "")
         for t in incoming_types

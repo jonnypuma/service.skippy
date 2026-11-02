@@ -115,6 +115,25 @@ def log_always(msg):
         xbmc.log(f"[service.skippy - SkipDialog] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
+# How long playback must be gone before the open dialog closes itself. Kodi can
+# report "not playing" for a moment during a seek or a stream restart.
+PLAYBACK_STOP_GRACE_S = 0.75
+# Pause state is only sampled this often; it does not need the progress-bar rate.
+_PAUSE_POLL_S = 0.25
+
+
+def advance_active_elapsed(active_elapsed, wall_delta, paused):
+    """Dialog time that counts toward the safety timeout: wall time minus paused time."""
+    if paused:
+        return active_elapsed
+    return active_elapsed + max(0.0, float(wall_delta))
+
+
+def playback_gone_long_enough(stopped_since, now, grace=PLAYBACK_STOP_GRACE_S):
+    """True once playback has been continuously absent for ``grace`` seconds."""
+    return stopped_since is not None and (now - stopped_since) >= grace
+
+
 class SkipDialog(xbmcgui.WindowXMLDialog):
     def _skin_sc(self, value):
         return scale_skin_coord(value, getattr(self, "_skin_resolution", None))
@@ -383,15 +402,56 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 )
 
     def _monitor_segment_end(self):
+        """Thread target: whatever goes wrong, the dialog must not stay open forever."""
+        try:
+            self._monitor_segment_end_loop()
+        except Exception as e:
+            log_always(f"❌ Skip dialog monitor failed ({type(e).__name__}): {e}")
+            if not getattr(self, "_closing", False):
+                self._finish_dialog(None)
+
+    def _monitor_segment_end_loop(self):
         timeout = self._total_duration + 5  # ⏳ Dynamic timeout based on segment length
         self._last_smooth_fill_w = getattr(self, "_last_smooth_fill_w", None)
         self._last_smooth_log_ts = 0.0
         self._last_classic_log_ts = 0.0
+        last_tick = time.time()
+        active_elapsed = 0.0  # dialog time with playback running (pauses excluded)
+        paused = False
+        last_pause_poll = 0.0
+        stopped_since = None
 
         while not self._closing:
-            if not self.player.isPlaying():
-                log("⏹️ Playback stopped during dialog")
-                break
+            now_wall = time.time()
+            try:
+                alive = bool(self.player.isPlaying())
+                current = self.player.getTime() if alive else None
+            except RuntimeError:
+                alive = False
+                current = None
+            if not alive:
+                if stopped_since is None:
+                    stopped_since = now_wall
+                if playback_gone_long_enough(stopped_since, now_wall):
+                    log("⏹️ Playback stopped during dialog — closing it")
+                    # No choice was made: the service neither skips nor marks it dismissed.
+                    self._finish_dialog(None)
+                    break
+                time.sleep(0.1)
+                last_tick = time.time()
+                continue
+            stopped_since = None
+
+            if (now_wall - last_pause_poll) >= _PAUSE_POLL_S:
+                last_pause_poll = now_wall
+                try:
+                    paused = bool(xbmc.getCondVisibility("Player.Paused"))
+                except RuntimeError:
+                    paused = False
+            active_elapsed = advance_active_elapsed(
+                active_elapsed, now_wall - last_tick, paused
+            )
+            last_tick = now_wall
 
             addon = get_addon()
             smooth = addon_get_bool(addon, "smooth_progress_bar", False) if addon else False
@@ -399,7 +459,6 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             ups = min(120, max(2, ups))
             delay = (1.0 / ups) if (smooth or getattr(self, "_combined_mode", False)) else 0.25
 
-            current = self.player.getTime()
             remaining = int(self.segment.end_seconds - current)
             m, s = divmod(max(remaining, 0), 60)
             self.setProperty("countdown", f"{m:02d}:{s:02d}")
@@ -486,8 +545,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                 self._finish_dialog(False)
                 break
 
-            # ⏳ Timeout fallback
-            if time.time() - self._start_time > timeout:
+            # ⏳ Timeout fallback (a paused video keeps the dialog open)
+            if active_elapsed > timeout:
                 log("⏳ Timeout reached — auto-decline")
                 self._finish_dialog(False)
                 break

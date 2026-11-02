@@ -133,7 +133,7 @@ def _clear_parent_dismissals_when_inside_nested(ctx: Any, current_time: float) -
     for nested_seg in segments_active_for_playback(monitor.current_segments, current_time):
         nested_seg_id = segment_id(nested_seg)
         parent_seg_id_check = parent_map.get(nested_seg_id)
-        if not parent_seg_id_check:
+        if not parent_seg_id_check or parent_seg_id_check == nested_seg_id:
             continue
 
         parent_seg_for_nested = _parent_segment_for_id(monitor, parent_seg_id_check)

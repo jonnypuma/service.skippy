@@ -5,6 +5,7 @@ tools/ export-ignore
 _*.png export-ignore
 __pycache__/ export-ignore
 *.code-workspace export-ignore
+CLAUDE.md export-ignore
 openapi_theintrodb_v3.yaml export-ignore
 .gitignore export-ignore
 .gitattributes export-ignore

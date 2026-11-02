@@ -12,13 +12,16 @@ import threading
 from datetime import datetime, timezone
 
 from settings_utils import log_service_detail, normalize_label
-from skippy_profile_store import profile_path, read_json, write_json
+from skippy_profile_store import file_stamp, profile_path, read_json, write_json
 
 STATS_FILENAME = "statistics.json"
 SCHEMA = "skippy_statistics_v1"
 
 _lock = threading.RLock()
 _cache: dict | None = None
+# Stamp of the file as we last read or wrote it. Another script (the statistics
+# window's reset, a backup restore) can change the file behind the service's back.
+_cache_stamp = None
 
 
 def _log(msg: str) -> None:
@@ -106,9 +109,12 @@ def _stats_path() -> str | None:
 
 def load_statistics() -> dict:
     """Current counters (normalized); reads from disk once, then from cache."""
-    global _cache
+    global _cache, _cache_stamp
     with _lock:
+        if _cache is not None and file_stamp(_stats_path()) != _cache_stamp:
+            _cache = None
         if _cache is None:
+            _cache_stamp = file_stamp(_stats_path())
             raw = read_json(_stats_path(), default=None)
             _cache = _normalized(raw)
             raw_skips = raw.get("skips") if isinstance(raw, dict) else None
@@ -132,10 +138,13 @@ def load_statistics() -> dict:
 
 
 def _flush() -> None:
+    global _cache_stamp
     if _cache is None:
         return
     if not write_json(_stats_path(), _cache):
         _log("could not write statistics file")
+        return
+    _cache_stamp = file_stamp(_stats_path())
 
 
 def record_skip(segment_label, seconds_saved=0.0) -> None:
@@ -236,6 +245,7 @@ def reset_statistics() -> None:
 
 
 def clear_cache() -> None:
-    global _cache
+    global _cache, _cache_stamp
     with _lock:
         _cache = None
+        _cache_stamp = None

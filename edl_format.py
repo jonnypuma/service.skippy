@@ -8,6 +8,8 @@ listed could be partly ignored during playback.
 
 from __future__ import annotations
 
+import math
+
 # Kodi's EDL "cut/scene" action; used when a row omits the action column.
 EDL_DEFAULT_ACTION = 4
 
@@ -32,6 +34,8 @@ def parse_edl_line(line, *, default_action=None):
         start = float(parts[0])
         end = float(parts[1])
     except (TypeError, ValueError):
+        return None
+    if not (math.isfinite(start) and math.isfinite(end)) or start < 0 or end < 0:
         return None
 
     if len(parts) > 2:

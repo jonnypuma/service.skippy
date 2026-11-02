@@ -209,6 +209,28 @@ def _chapter_window_overlap(s1, e1, s2, e2, tol=1.5):
     return not (e1 + tol <= s2 or e2 + tol <= s1)
 
 
+def _segment_from_chapter_atom(atom):
+    """One ``ChapterAtom`` as a SegmentItem, or None when it is unusable.
+
+    A chapter without an end time, with an unreadable time, or whose end is before
+    its start is skipped on its own; it must never take the other chapters with it.
+    """
+    start = atom.findtext("ChapterTimeStart")
+    end = atom.findtext("ChapterTimeEnd")
+    if not start or not end:
+        return None
+    label = normalize_label(
+        atom.findtext(".//ChapterDisplay/ChapterString", default="")
+    )
+    try:
+        return SegmentItem(
+            hms_to_seconds(start), hms_to_seconds(end), label, source="xml"
+        )
+    except (ValueError, TypeError, OverflowError) as exc:
+        log("⚠ Skipping unusable chapter %r (%s → %s): %s" % (label, start, end, exc))
+        return None
+
+
 def _parse_chapter_xml_string(xml_data):
     """Return SegmentItems from chapter XML text (Matroska-style); empty list on failure."""
     if not xml_data:
@@ -221,22 +243,9 @@ def _parse_chapter_xml_string(xml_data):
         return []
     out = []
     for atom in root.findall(".//ChapterAtom"):
-        raw_label = atom.findtext(".//ChapterDisplay/ChapterString", default="")
-        label = normalize_label(raw_label)
-        start = atom.findtext("ChapterTimeStart")
-        end = atom.findtext("ChapterTimeEnd")
-        if start and end:
-            try:
-                out.append(
-                    SegmentItem(
-                        hms_to_seconds(start),
-                        hms_to_seconds(end),
-                        label,
-                        source="xml",
-                    )
-                )
-            except Exception:
-                continue
+        item = _segment_from_chapter_atom(atom)
+        if item is not None:
+            out.append(item)
     return dedupe_overlapping_same_label_segments(out)
 
 
@@ -326,22 +335,14 @@ def parse_chapters(video_path, update_monitor=True, segment_monitor=None):
 
         result = []
         for atom in root.findall(".//ChapterAtom"):
-            raw_label = atom.findtext(".//ChapterDisplay/ChapterString", default="")
-            label = normalize_label(raw_label)
-            start = atom.findtext("ChapterTimeStart")
-            end = atom.findtext("ChapterTimeEnd")
-            if start and end:
-                result.append(
-                    SegmentItem(
-                        hms_to_seconds(start),
-                        hms_to_seconds(end),
-                        label,
-                        source="xml",
-                    )
-                )
-                _log_seg_detail(
-                    f"📘 Parsed XML segment: {start} → {end} | label='{label}'"
-                )
+            item = _segment_from_chapter_atom(atom)
+            if item is None:
+                continue
+            result.append(item)
+            _log_seg_detail(
+                "📘 Parsed XML segment: %s → %s | label='%s'"
+                % (item.start_seconds, item.end_seconds, item.segment_type_label)
+            )
         if result:
             n0 = len(result)
             result = dedupe_overlapping_same_label_segments(result)
@@ -406,12 +407,12 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     )
     log(f"🔧 ignore_internal_edl_actions setting: {ignore_internal}")
 
-    try:
-        for line in edl_data.splitlines():
+    for line in edl_data.splitlines():
+        try:
             parsed = parse_edl_line(line)
             if parsed is None:
                 continue
-            s, e, action = parsed
+            s_sec, e_sec, action = parsed
             label = mapping.get(action)
 
             if ignore_internal and label is None:
@@ -424,12 +425,13 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
                 continue
 
             label = label or "segment"
-            segments.append(SegmentItem(s, e, label, source="edl"))
+            segments.append(SegmentItem(s_sec, e_sec, label, source="edl"))
             _log_seg_detail(
-                f"📗 Parsed EDL line: {s} → {e} | action={action} | label='{label}'"
+                f"📗 Parsed EDL line: {s_sec} → {e_sec} | action={action} | label='{label}'"
             )
-    except Exception as e:
-        log(f"❌ EDL parse failed: {e}")
+        except (ValueError, TypeError, OverflowError) as e:
+            # One unusable row (end before start, ...) must not drop the rest.
+            log(f"⚠ Skipping unusable EDL row {line.strip()!r}: {e}")
 
     log(f"✅ Total segments parsed from EDL: {len(segments)}")
     return segments

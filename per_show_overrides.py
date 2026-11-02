@@ -12,7 +12,7 @@ from __future__ import annotations
 import os
 
 from settings_utils import addon_get_bool, log, log_service_detail, normalize_label
-from skippy_profile_store import profile_path, read_json, write_json
+from skippy_profile_store import file_stamp, profile_path, read_json, write_json
 
 OVERRIDES_DIRNAME = "show_overrides"
 SCHEMA = "skippy_show_overrides_v1"
@@ -20,8 +20,10 @@ SCHEMA = "skippy_show_overrides_v1"
 MODE_AUTO = "auto"
 MODE_DECLINED = "declined"
 
-# key -> overrides dict; the skip path reads this on every active segment.
-_cache: dict[str, dict] = {}
+# key -> (file stamp, overrides dict); the skip path reads this on every active
+# segment. The stamp makes a change made by another script (the Manage window,
+# a backup restore) visible to the running service.
+_cache: dict[str, tuple] = {}
 
 
 def per_show_override_enabled(addon) -> bool:
@@ -64,10 +66,12 @@ def load_overrides(key: str) -> dict:
     """``{normalized_label: mode}`` for one title (cached; empty when nothing saved)."""
     if not key:
         return {}
+    path = _store_path(key)
+    stamp = file_stamp(path)
     cached = _cache.get(key)
-    if cached is not None:
-        return cached
-    data = read_json(_store_path(key), default=None)
+    if cached is not None and cached[0] == stamp:
+        return cached[1]
+    data = read_json(path, default=None)
     segments = {}
     if isinstance(data, dict):
         raw = data.get("segments")
@@ -75,7 +79,7 @@ def load_overrides(key: str) -> dict:
             for label, mode in raw.items():
                 if mode in (MODE_AUTO, MODE_DECLINED):
                     segments[_canonical_override_key(label)] = mode
-    _cache[key] = segments
+    _cache[key] = (stamp, segments)
     return segments
 
 

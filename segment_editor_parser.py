@@ -132,6 +132,42 @@ def remap_nfs_path_for_write(path):
     return variations
 
 
+def _read_vfs_bytes(path):
+    """Current bytes of a VFS file, or None when it cannot be read (or is empty)."""
+    handle = None
+    try:
+        handle = xbmcvfs.File(path)
+        data = handle.readBytes() if hasattr(handle, "readBytes") else handle.read()
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+        data = bytes(data or b"")
+        return data or None
+    except Exception:
+        return None
+    finally:
+        if handle is not None:
+            try:
+                handle.close()
+            except Exception:
+                pass
+
+
+def _restore_vfs_bytes(path, data):
+    """Put ``data`` back at ``path`` after a failed overwrite. True when restored."""
+    try:
+        if xbmcvfs.exists(path):
+            return True
+        handle = xbmcvfs.File(path, 'w')
+        if not handle:
+            return False
+        handle.write(data)
+        handle.close()
+        return bool(xbmcvfs.exists(path))
+    except Exception as exc:
+        log(f"Could not restore original file {path}: {exc}")
+        return False
+
+
 def safe_file_write(path, content, is_bytes=False):
     """Safely write a file using Kodi's VFS, falling back through NFS remaps.
 
@@ -144,6 +180,10 @@ def safe_file_write(path, content, is_bytes=False):
 
     path_variations = remap_nfs_path_for_write(path)
     last_error = None
+    # Originals we deleted to get a clean overwrite. If every attempt fails they are
+    # put back, so a failed save (full disk, read-only share, dropped connection)
+    # cannot cost the user the sidecar they already had.
+    deleted_originals = {}
 
     for attempt_path in path_variations:
         try:
@@ -153,6 +193,9 @@ def safe_file_write(path, content, is_bytes=False):
             # delete first so a shorter file does not leave stale bytes at EOF.
             if xbmcvfs.exists(attempt_path):
                 try:
+                    original = _read_vfs_bytes(attempt_path)
+                    if original is not None:
+                        deleted_originals[attempt_path] = original
                     log(f"Deleting existing file before write: {attempt_path}")
                     xbmcvfs.delete(attempt_path)
                     time.sleep(0.05)
@@ -194,6 +237,12 @@ def safe_file_write(path, content, is_bytes=False):
                     continue
             if attempt_path == path_variations[-1]:
                 break
+
+    for lost_path, original in deleted_originals.items():
+        if _restore_vfs_bytes(lost_path, original):
+            log(f"Write failed; original file kept: {lost_path}")
+        else:
+            log(f"Write failed and the original could not be restored: {lost_path}")
 
     if last_error:
         log(f"All write attempts failed. Last error: {last_error}")

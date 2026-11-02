@@ -27,6 +27,7 @@ from keymap_utils import install_marker_keymap
 from segment_editor_parser import (
     CHAPTER_XML_SIDECAR_SUFFIXES,
     DEFAULT_NEW_CHAPTER_XML_SUFFIX,
+    safe_file_write,
 )
 from segment_editor_utils import (
     segment_editor_modal_is_open,
@@ -640,9 +641,15 @@ def read_vfs_text(path):
 
 
 def write_vfs_text(path, content):
-    f = xbmcvfs.File(path, "w")
-    f.write(content)
-    f.close()
+    """Write ``content`` through the shared safe writer; raises OSError when it fails.
+
+    Callers report "saved" only after this returns, so a failed write (read-only
+    share, full disk) is no longer reported as success. The writer also handles the
+    NFS path variations and keeps the original file when the new write fails.
+    """
+    ok, _written = safe_file_write(path, content, is_bytes=False)
+    if not ok:
+        raise OSError("Could not write %s" % path)
 
 
 def backup_existing_file(path, enabled):

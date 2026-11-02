@@ -143,6 +143,76 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(addon.getSetting("segment_always_skip"), "")
 
 
+class AliasSeedTests(unittest.TestCase):
+    def tearDown(self):
+        set_catalog_for_tests(None)
+
+    def test_new_defaults_resolve(self):
+        set_catalog_for_tests(seeded_builtin_types())
+        from segment_types import canonical_type_id
+
+        for label, expected in (
+            ("Opening Credits", "intro"),
+            ("Ending Credits", "credits"),
+            ("End Credits", "credits"),
+            ("Next Episode Preview", "preview"),
+            ("OP", "intro"),
+            ("ED", "credits"),
+        ):
+            self.assertEqual(canonical_type_id(label), expected, label)
+
+    def test_old_catalog_gets_aliases_once_without_stealing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "segment_types.json")
+            old = seeded_builtin_types()
+            for row in old:
+                if row["id"] == "credits":
+                    row["aliases"] = ["credits", "outro"]
+                if row["id"] == "intro":
+                    row["aliases"] = ["intro"]
+            payload = {
+                "schema": SCHEMA,
+                "types": [
+                    {
+                        "id": t["id"], "label": t["label"], "skip_mode": t["skip_mode"],
+                        "edl_action": t["edl_action"], "aliases": t["aliases"],
+                        "builtin": t["builtin"],
+                    }
+                    for t in old
+                ]
+                + [
+                    {
+                        "id": "mine", "label": "Mine", "skip_mode": "never",
+                        "edl_action": 40, "aliases": ["end credits"], "builtin": False,
+                    }
+                ],
+            }
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            with patch("segment_types.catalog_path", return_value=path):
+                set_catalog_for_tests(None)
+                import segment_types
+
+                segment_types.invalidate_catalog_cache()
+                types = {t["id"]: t for t in ensure_catalog()}
+                self.assertIn("ending credits", types["credits"]["aliases"])
+                self.assertNotIn("end credits", types["credits"]["aliases"])
+                self.assertIn("end credits", types["mine"]["aliases"])
+                self.assertIn("opening credits", types["intro"]["aliases"])
+                with open(path, encoding="utf-8") as handle:
+                    saved = json.load(handle)
+                self.assertEqual(saved.get("alias_seed"), segment_types.ALIAS_SEED)
+                # A user who removes an alias keeps it removed.
+                for row in saved["types"]:
+                    if row["id"] == "intro":
+                        row["aliases"].remove("opening credits")
+                with open(path, "w", encoding="utf-8") as handle:
+                    json.dump(saved, handle)
+                segment_types.invalidate_catalog_cache()
+                again = {t["id"]: t for t in ensure_catalog()}
+                self.assertNotIn("opening credits", again["intro"]["aliases"])
+
+
 class CatalogApiTests(unittest.TestCase):
     def tearDown(self):
         set_catalog_for_tests(None)

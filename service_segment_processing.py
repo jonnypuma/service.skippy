@@ -94,7 +94,13 @@ def build_nested_parent_map(filtered_segments):
     for i, parent in enumerate(filtered_segments):
         for child, relation in iter_forward_overlaps(filtered_segments, i):
             if relation == RELATION_NESTED:
-                parent_map[segment_id(child)] = segment_id(parent)
+                child_id = segment_id(child)
+                parent_id = segment_id(parent)
+                # Ids are whole-second (start, end). Two near-identical segments
+                # share an id; mapping it to itself would make the dismissal logic
+                # clear a dismissal the moment it is made.
+                if child_id != parent_id:
+                    parent_map[child_id] = parent_id
     return parent_map
 
 
