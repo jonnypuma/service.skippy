@@ -152,6 +152,14 @@ def _read_vfs_bytes(path):
                 pass
 
 
+def _vfs_size(path):
+    """Size in bytes of a VFS file, or None when it cannot be determined."""
+    try:
+        return int(xbmcvfs.Stat(path).st_size())
+    except Exception:
+        return None
+
+
 def _restore_vfs_bytes(path, data):
     """Put ``data`` back at ``path`` after a failed overwrite. True when restored."""
     try:
@@ -162,7 +170,8 @@ def _restore_vfs_bytes(path, data):
             return False
         handle.write(data)
         handle.close()
-        return bool(xbmcvfs.exists(path))
+        # Judge by what is on disk, not by the write call (see safe_file_write).
+        return bool(xbmcvfs.exists(path)) and _vfs_size(path) != 0
     except Exception as exc:
         log(f"Could not restore original file {path}: {exc}")
         return False
@@ -210,6 +219,19 @@ def safe_file_write(path, content, is_bytes=False):
 
             result = f.write(content_bytes)
             f.close()
+
+            # Opening for write creates the file, so a failed write leaves an empty
+            # one behind and exists() alone would call that a success. An empty file
+            # is the same as no file: treat it as a failed attempt whatever write()
+            # returned, and clear it so the original can be put back.
+            if content_bytes and _vfs_size(attempt_path) == 0:
+                log(f"Write left an empty file, treating as failed: {attempt_path}")
+                last_error = "Write produced an empty file"
+                try:
+                    xbmcvfs.delete(attempt_path)
+                except Exception:
+                    pass
+                continue
 
             # Kodi VFS may return bytes-written, True, None or False. Always
             # verify with xbmcvfs.exists() as a fallback check.

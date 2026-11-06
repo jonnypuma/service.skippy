@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Customize next episode popup. next_episode_customize_ui.py shows only the rows that apply and
+     moves the buttons up; the numbers below are the full layout (Custom style, all six rows).
+     Focus moves only in Python (no onup/ondown/onleft/onright here): Kodi would move it a second time. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+
+  <zorder>2</zorder>
+  <defaultcontrol>6011</defaultcontrol>
+
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1280</width>
+      <height>720</height>
+      <texture>white.png</texture>
+      <colordiffuse>99000000</colordiffuse>
+    </control>
+
+    <control type="group" id="6000">
+      <posx>360</posx>
+      <posy>163</posy>
+      <width>560</width>
+      <height>394</height>
+
+      <control type="image" id="6001">
+        <left>0</left>
+        <top>0</top>
+        <width>560</width>
+        <height>394</height>
+        <texture>white.png</texture>
+        <colordiffuse>F2101418</colordiffuse>
+      </control>
+
+      <control type="label" id="6002">
+        <left>20</left>
+        <top>14</top>
+        <width>520</width>
+        <height>34</height>
+        <label></label>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+
+      <control type="button" id="6011">
+        <left>20</left>
+        <top>60</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6012">
+        <left>20</left>
+        <top>104</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6013">
+        <left>20</left>
+        <top>148</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6014">
+        <left>20</left>
+        <top>192</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6015">
+        <left>20</left>
+        <top>236</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6016">
+        <left>20</left>
+        <top>280</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6020">
+        <left>20</left>
+        <top>334</top>
+        <width>160</width>
+        <height>40</height>
+        <label>Preview</label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="button" id="6021">
+        <left>200</left>
+        <top>334</top>
+        <width>160</width>
+        <height>40</height>
+        <label>Save</label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="button" id="6022">
+        <left>380</left>
+        <top>334</top>
+        <width>160</width>
+        <height>40</height>
+        <label>Cancel</label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+    </control>
+  </controls>
+</window>

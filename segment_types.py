@@ -858,7 +858,7 @@ def ensure_catalog(addon=None):
     ):
         return clone_types(_cache)
 
-    loaded = read_json(path, default=None) if path else None
+    loaded = read_json(path, default=None, recover=True) if path else None
     raw_types = _payload_types(loaded)
     if raw_types is not None:
         seed = loaded.get("alias_seed") if isinstance(loaded, dict) else None
@@ -896,7 +896,7 @@ def save_catalog(types):
         _log("Segment types catalog not saved: %s" % err)
         return False
     path = catalog_path()
-    ok = write_json(path, types_to_payload(types))
+    ok = write_json(path, types_to_payload(types), keep_backup=True)
     if ok:
         invalidate_catalog_cache()
         _set_cache(types, path, _file_mtime(path) if path else None)

@@ -679,6 +679,185 @@
                 <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Minimal</dependency></dependencies></setting>
             </group>
         </category>
+        <category id="next_episode" label="47000">
+            <group id="g_next_episode" label="">
+                <setting id="next_episode_enabled" type="boolean" label="47001" help="47002">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                </setting>
+                <setting id="next_episode_autoplay" type="boolean" label="47003" help="47004">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_still_watching" type="boolean" label="47060" help="47061">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_autoplay">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_still_watching_after" type="integer" label="47062" help="47063">
+                    <level>1</level>
+                    <default>3</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <maximum>10</maximum>
+                        <step>1</step>
+                    </constraints>
+                    <control type="spinner" format="integer"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_autoplay">true</dependency>
+                        <dependency type="visible" setting="next_episode_still_watching">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_lead_seconds" type="integer" label="47005" help="47006">
+                    <level>0</level>
+                    <default>45</default>
+                    <constraints>
+                        <minimum>10</minimum>
+                        <maximum>300</maximum>
+                        <step>5</step>
+                    </constraints>
+                    <control type="spinner" format="integer"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_start_at_credits" type="boolean" label="47064" help="47065">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_style" type="string" label="47030" help="47031">
+                    <level>0</level>
+                    <default>Custom</default>
+                    <constraints>
+                        <options>
+                            <option label="Custom">Custom</option>
+                            <option label="Native toast">Native</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="settings_action_customize_next_episode_popup" type="action" label="47032" help="47033">
+                    <level>0</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,customize_next_episode_popup)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_hide_skip_dialogs" type="boolean" label="47007" help="47008">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_mark_watched" type="boolean" label="47009" help="47010">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_skip_watched" type="boolean" label="47011" help="47012">
+                    <level>2</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_resume" type="boolean" label="47013" help="47014">
+                    <level>2</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_position" type="string" label="47034" help="47035">
+                    <level>1</level>
+                    <default>BottomRight</default>
+                    <constraints>
+                        <options>
+                            <option label="Bottom Right">BottomRight</option>
+                            <option label="Top Right">TopRight</option>
+                            <option label="Top Left">TopLeft</option>
+                            <option label="Bottom Left">BottomLeft</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_thumbnail" type="boolean" label="47036" help="47037">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_countdown" type="boolean" label="47038" help="47039">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_progress" type="boolean" label="47040" help="47041">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_focus" type="string" label="47042" help="47043">
+                    <level>2</level>
+                    <default>Play</default>
+                    <constraints>
+                        <options>
+                            <option label="Play now">Play</option>
+                            <option label="Close">Close</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+            </group>
+        </category>
         <category id="sources" label="30004">
             <group id="g_tv0" label="32036">
                 <setting id="tv_tmdb_resolve_missing_ids" type="boolean" label="32031" help="32035">

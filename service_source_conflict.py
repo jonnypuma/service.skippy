@@ -65,7 +65,7 @@ def find_source_conflicts(local_items, remote_items, tol=TOLERANCE_S):
 
 # ------------------------------------------------------------------ choices
 def _load_choices() -> dict:
-    data = read_json(profile_path(CHOICES_FILE), {})
+    data = read_json(profile_path(CHOICES_FILE), {}, recover=True)
     return data if isinstance(data, dict) else {}
 
 
@@ -85,7 +85,7 @@ def save_choice(path, bucket, choice) -> bool:
     data[path] = entry  # most recent last
     while len(data) > MAX_STORED_FILES:
         data.pop(next(iter(data)))
-    return write_json(profile_path(CHOICES_FILE), data)
+    return write_json(profile_path(CHOICES_FILE), data, keep_backup=True)
 
 
 def apply_source_choices(path, parsed, local_list, remote_list):

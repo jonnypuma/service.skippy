@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Next episode popup. next_episode_dialog.py moves the panel to its corner and sizes or hides the
+     rows; the numbers below are the default layout (picture, time left and progress bar all on). -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+
+  <zorder>3</zorder>
+  <defaultcontrol>5008</defaultcontrol>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="250" />
+  </animation>
+
+  <controls>
+    <control type="group" id="5000">
+      <posx>1110</posx>
+      <posy>777</posy>
+      <width>780</width>
+      <height>273</height>
+      <visible>String.IsEqual(Window.Property(skippy_dialog_ready),true)</visible>
+      <animation type="Visible">
+        <effect type="fade" start="0" end="100" time="300" />
+      </animation>
+
+      <control type="image" id="5001">
+        <left>0</left>
+        <top>0</top>
+        <width>780</width>
+        <height>273</height>
+        <texture>white.png</texture>
+        <colordiffuse>F0000000</colordiffuse>
+      </control>
+
+      <control type="image" id="5002">
+        <left>15</left>
+        <top>15</top>
+        <width>180</width>
+        <height>102</height>
+        <texture>$INFO[Window.Property(next_ep_thumb)]</texture>
+        <aspectratio>scale</aspectratio>
+        <visible>String.IsEqual(Window.Property(next_ep_has_thumb),true)</visible>
+      </control>
+
+      <control type="label" id="5003">
+        <left>210</left>
+        <top>15</top>
+        <width>555</width>
+        <height>36</height>
+        <label>$INFO[Window.Property(next_ep_heading)]</label>
+        <font>font10</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <control type="label" id="5004">
+        <left>210</left>
+        <top>57</top>
+        <width>555</width>
+        <height>78</height>
+        <label>$INFO[Window.Property(next_ep_label)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <wrapmultiline>true</wrapmultiline>
+        <align>left</align>
+      </control>
+
+      <control type="label" id="5005">
+        <left>15</left>
+        <top>141</top>
+        <width>750</width>
+        <height>30</height>
+        <label>$INFO[Window.Property(next_ep_countdown)]</label>
+        <font>font10</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <control type="image" id="5006">
+        <left>15</left>
+        <top>177</top>
+        <width>750</width>
+        <height>15</height>
+        <texture>progress_background.png</texture>
+        <aspectratio>stretch</aspectratio>
+      </control>
+
+      <control type="image" id="5007">
+        <left>15</left>
+        <top>177</top>
+        <width>750</width>
+        <height>15</height>
+        <texture>progress_tiled_segmented_teal_h15.png</texture>
+        <aspectratio align="left" aligny="center">scale</aspectratio>
+      </control>
+
+      <control type="image" id="5010">
+        <left>15</left>
+        <top>207</top>
+        <width>368</width>
+        <height>51</height>
+        <texture>white.png</texture>
+        <colordiffuse>22FFFFFF</colordiffuse>
+      </control>
+
+      <control type="image" id="5011">
+        <left>398</left>
+        <top>207</top>
+        <width>368</width>
+        <height>51</height>
+        <texture>white.png</texture>
+        <colordiffuse>22FFFFFF</colordiffuse>
+      </control>
+
+      <control type="button" id="5008">
+        <left>15</left>
+        <top>207</top>
+        <width>368</width>
+        <height>51</height>
+        <label>Play now</label>
+        <onright>5009</onright>
+        <font>font16</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>3</shadowoffsetx>
+        <shadowoffsety>3</shadowoffsety>
+        <aligny>center</aligny>
+        <textoffsety>-5</textoffsety>
+        <align>center</align>
+      </control>
+
+      <control type="button" id="5009">
+        <left>398</left>
+        <top>207</top>
+        <width>368</width>
+        <height>51</height>
+        <label>Close</label>
+        <onleft>5008</onleft>
+        <font>font16</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>3</shadowoffsetx>
+        <shadowoffsety>3</shadowoffsety>
+        <aligny>center</aligny>
+        <textoffsety>-5</textoffsety>
+        <align>center</align>
+      </control>
+    </control>
+  </controls>
+</window>

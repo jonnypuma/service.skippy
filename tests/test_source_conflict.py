@@ -54,7 +54,7 @@ class ChoiceTests(unittest.TestCase):
     def setUp(self):
         self.store = {}
         self.patches = [
-            patch.object(sc, "read_json", side_effect=lambda _p, default=None: dict(self.store)),
+            patch.object(sc, "read_json", side_effect=lambda _p, default=None, **_kw: dict(self.store)),
             patch.object(sc, "write_json", side_effect=self._write),
             patch.object(sc, "profile_path", return_value="x"),
         ]
@@ -64,7 +64,7 @@ class ChoiceTests(unittest.TestCase):
         self.local = seg(20, 70, source="xml")
         self.remote = merged_online()
 
-    def _write(self, _path, data):
+    def _write(self, _path, data, **_kw):
         self.store.clear()
         self.store.update(data)
         return True

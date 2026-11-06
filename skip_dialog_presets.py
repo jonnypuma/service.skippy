@@ -640,7 +640,7 @@ def _store_path():
 
 
 def load_user_presets() -> dict:
-    data = read_json(_store_path(), {})
+    data = read_json(_store_path(), {}, recover=True)
     raw = data.get("presets") if isinstance(data, dict) else None
     out = {}
     if isinstance(raw, dict):
@@ -657,7 +657,7 @@ def _write_user_presets(presets: dict) -> bool:
         "schema": USER_PRESETS_SCHEMA,
         "presets": {name: {"values": vals} for name, vals in sorted(presets.items())},
     }
-    return write_json(_store_path(), payload)
+    return write_json(_store_path(), payload, keep_backup=True)
 
 
 def list_presets() -> list:

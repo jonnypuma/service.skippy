@@ -2057,3 +2057,193 @@ msgstr "Χρήση online"
 msgctxt "#46054"
 msgid "Close"
 msgstr "Κλείσιμο"
+
+# Next episode
+
+msgctxt "#47000"
+msgid "Next episode"
+msgstr "Επόμενο επεισόδιο"
+
+msgctxt "#47001"
+msgid "Enable play next episode"
+msgstr "Ενεργοποίηση αναπαραγωγής επόμενου επεισοδίου"
+
+msgctxt "#47002"
+msgid "Near the end of a TV episode, offer to play the next one. The next episode must be in your video library or in the current playlist."
+msgstr "Κοντά στο τέλος ενός επεισοδίου σειράς, προτείνει την αναπαραγωγή του επόμενου. Το επόμενο επεισόδιο πρέπει να βρίσκεται στη βιβλιοθήκη βίντεο ή στην τρέχουσα λίστα αναπαραγωγής."
+
+msgctxt "#47003"
+msgid "Play the next episode automatically"
+msgstr "Αυτόματη αναπαραγωγή του επόμενου επεισοδίου"
+
+msgctxt "#47004"
+msgid "Start the next episode on its own instead of asking, at the time set below."
+msgstr "Ξεκινά μόνο του το επόμενο επεισόδιο αντί να ρωτά, τη στιγμή που ορίζεται παρακάτω."
+
+msgctxt "#47005"
+msgid "Seconds before the end"
+msgstr "Δευτερόλεπτα πριν το τέλος"
+
+msgctxt "#47006"
+msgid "How many seconds before the end of the episode the prompt appears, or the next episode starts when autoplay is on."
+msgstr "Πόσα δευτερόλεπτα πριν το τέλος του επεισοδίου εμφανίζεται η πρόταση ή ξεκινά το επόμενο επεισόδιο όταν η αυτόματη αναπαραγωγή είναι ενεργή."
+
+msgctxt "#47007"
+msgid "Hide skip dialogs during the prompt"
+msgstr "Απόκρυψη διαλόγων παράλειψης κατά την πρόταση"
+
+msgctxt "#47008"
+msgid "From the moment the next episode prompt is due until the episode ends, Skippy does not offer to skip segments. Turn off to keep skip dialogs working at the end."
+msgstr "Από τη στιγμή που πρέπει να εμφανιστεί η πρόταση επόμενου επεισοδίου έως το τέλος του επεισοδίου, το Skippy δεν προσφέρει παράλειψη τμημάτων. Απενεργοποιήστε το για να λειτουργούν οι διάλογοι παράλειψης και στο τέλος."
+
+msgctxt "#47009"
+msgid "Mark the episode as watched when moving on"
+msgstr "Σήμανση του επεισοδίου ως προβεβλημένου όταν προχωράτε"
+
+msgctxt "#47010"
+msgid "When you move on to the next episode before Kodi would count the current one as watched, Skippy marks it as watched."
+msgstr "Όταν προχωράτε στο επόμενο επεισόδιο πριν το Kodi θεωρήσει το τρέχον ως προβεβλημένο, το Skippy το σημειώνει ως προβεβλημένο."
+
+msgctxt "#47011"
+msgid "Skip episodes already watched"
+msgstr "Παράλειψη επεισοδίων που έχουν ήδη προβληθεί"
+
+msgctxt "#47012"
+msgid "Offer the next unwatched episode instead of the episode that follows directly."
+msgstr "Πρόταση του επόμενου επεισοδίου που δεν έχει προβληθεί αντί για αυτό που ακολουθεί άμεσα."
+
+msgctxt "#47013"
+msgid "Resume a partly watched next episode"
+msgstr "Συνέχιση μερικώς προβεβλημένου επόμενου επεισοδίου"
+
+msgctxt "#47014"
+msgid "Continue from the saved position instead of starting from the beginning."
+msgstr "Συνέχεια από την αποθηκευμένη θέση αντί για έναρξη από την αρχή."
+
+msgctxt "#47020"
+msgid "Play next episode?"
+msgstr "Αναπαραγωγή επόμενου επεισοδίου;"
+
+msgctxt "#47021"
+msgid "Press OK to play"
+msgstr "Πατήστε OK για αναπαραγωγή"
+
+msgctxt "#47022"
+msgid "Up Next is turned on, so Skippy's next episode prompt stays off."
+msgstr "Το Up Next είναι ενεργό, οπότε η πρόταση επόμενου επεισοδίου του Skippy μένει ανενεργή."
+
+# Next episode popup
+
+msgctxt "#47030"
+msgid "Popup style"
+msgstr "Στυλ αναδυόμενου παραθύρου"
+
+msgctxt "#47031"
+msgid "Custom shows Skippy's own popup. Native toast uses a Kodi notification, and OK plays the next episode."
+msgstr "Το Προσαρμοσμένο εμφανίζει το δικό του παράθυρο του Skippy. Η Εγγενής ειδοποίηση χρησιμοποιεί ειδοποίηση του Kodi και το OK παίζει το επόμενο επεισόδιο."
+
+msgctxt "#47032"
+msgid "Customize next episode popup"
+msgstr "Προσαρμογή παραθύρου επόμενου επεισοδίου"
+
+msgctxt "#47033"
+msgid "Change how the next episode popup looks and preview it."
+msgstr "Αλλάξτε την εμφάνιση του παραθύρου του επόμενου επεισοδίου και δείτε προεπισκόπηση."
+
+msgctxt "#47034"
+msgid "Popup position"
+msgstr "Θέση παραθύρου"
+
+msgctxt "#47035"
+msgid "Which corner of the screen the popup appears in."
+msgstr "Σε ποια γωνία της οθόνης εμφανίζεται το παράθυρο."
+
+msgctxt "#47036"
+msgid "Show episode picture"
+msgstr "Εμφάνιση εικόνας επεισοδίου"
+
+msgctxt "#47037"
+msgid "Show the picture of the next episode in the popup when Kodi has one."
+msgstr "Εμφανίζει την εικόνα του επόμενου επεισοδίου στο παράθυρο, όταν το Kodi διαθέτει μία."
+
+msgctxt "#47038"
+msgid "Show time left"
+msgstr "Εμφάνιση υπολειπόμενου χρόνου"
+
+msgctxt "#47039"
+msgid "Show how much of the current episode is left."
+msgstr "Εμφανίζει πόσο απομένει από το τρέχον επεισόδιο."
+
+msgctxt "#47040"
+msgid "Show progress bar"
+msgstr "Εμφάνιση γραμμής προόδου"
+
+msgctxt "#47041"
+msgid "Show a bar that runs down to the end of the episode."
+msgstr "Εμφανίζει μια γραμμή που τρέχει μέχρι το τέλος του επεισοδίου."
+
+msgctxt "#47042"
+msgid "Default button"
+msgstr "Προεπιλεγμένο κουμπί"
+
+msgctxt "#47043"
+msgid "Which button is selected when the popup opens."
+msgstr "Ποιο κουμπί είναι επιλεγμένο όταν ανοίγει το παράθυρο."
+
+msgctxt "#47050"
+msgid "Play now"
+msgstr "Αναπαραγωγή τώρα"
+
+msgctxt "#47051"
+msgid "Episode ends in %s"
+msgstr "Το επεισόδιο τελειώνει σε %s"
+
+msgctxt "#47052"
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+msgctxt "#47053"
+msgid "Episode title"
+msgstr "Τίτλος επεισοδίου"
+
+# Next episode: still watching and credits start
+
+msgctxt "#47060"
+msgid "Ask if you are still watching"
+msgstr "Ερώτηση αν ακόμα παρακολουθείς"
+
+msgctxt "#47061"
+msgid "When episodes start on their own and nobody has pressed a button for several episodes in a row, Skippy asks if you are still watching instead of starting the next one."
+msgstr "Όταν τα επεισόδια ξεκινούν μόνα τους και κανείς δεν έχει πατήσει κουμπί για αρκετά επεισόδια στη σειρά, το Skippy ρωτά αν ακόμα παρακολουθείς αντί να ξεκινήσει το επόμενο."
+
+msgctxt "#47062"
+msgid "Episodes in a row before asking"
+msgstr "Επεισόδια στη σειρά πριν την ερώτηση"
+
+msgctxt "#47063"
+msgid "How many episodes may play in a row without any button press before Skippy asks. The episode that is playing counts as one."
+msgstr "Πόσα επεισόδια μπορούν να παιχτούν στη σειρά χωρίς πάτημα κουμπιού πριν ρωτήσει το Skippy. Το επεισόδιο που παίζει τώρα μετράει ως ένα."
+
+msgctxt "#47064"
+msgid "Start at the credits"
+msgstr "Έναρξη στους τίτλους τέλους"
+
+msgctxt "#47065"
+msgid "When an episode has a Credits segment, the prompt (or the automatic start) begins when it starts instead of Seconds before the end. Without a Credits segment the usual time applies."
+msgstr "Όταν ένα επεισόδιο έχει τμήμα Credits, η προτροπή (ή η αυτόματη έναρξη) ξεκινά όταν αρχίζει αυτό, αντί για Δευτερόλεπτα πριν το τέλος. Χωρίς τμήμα Credits ισχύει ο συνήθης χρόνος."
+
+msgctxt "#47070"
+msgid "Still watching?"
+msgstr "Ακόμα παρακολουθείς;"
+
+msgctxt "#47071"
+msgid "Continue"
+msgstr "Συνέχεια"
+
+msgctxt "#47072"
+msgid "Stop"
+msgstr "Διακοπή"
+
+msgctxt "#47073"
+msgid "Press OK to continue"
+msgstr "Πάτα OK για συνέχεια"

@@ -193,7 +193,13 @@ def _segments_from_rows(rows, segment_player):
             elif total_s > start_sec:
                 end_sec = total_s
             else:
-                end_sec = start_sec + 300.0
+                # The last chapter ends where the file ends. Without a total time
+                # the end is unknown, and a guessed end could skip real content.
+                log(
+                    "Embedded chapter '%s' [%s-?] dropped: last chapter and the total "
+                    "time is unknown, so its end is unknown" % (name, start_sec)
+                )
+                continue
         else:
             end_sec = float(end_sec)
         type_row = resolve_segment_type(label)

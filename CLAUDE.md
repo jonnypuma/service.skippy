@@ -26,7 +26,7 @@ Run generators from the add-on root:
 
 Layout changes: edit `720p`, then run `gen_skin_1080i.py` (add `--overwrite` only when you mean it). The user runs 1080i.
 
-Strings: add the new id to `resources/language/English/strings.po`, then to every other folder under `resources/language/` (10 languages, folder names are the English language name, e.g. `Portuguese (Brazil)`). Ids used so far reach 46054. `addon.xml` also carries translated `<summary>` / `<description>` per language.
+Strings: add the new id to `resources/language/resource.language.en_gb/strings.po`, then to every other folder under `resources/language/` (10 languages). Folder names must be Kodi's language add-on ids (`resource.language.de_de`, `resource.language.pt_br`, ...), never English names such as `German`: Kodi 23 nightlies no longer find those, and then every settings label is blank (`tests/test_language_pack_sync.py` guards this). Ids used so far reach 47073 (47000-47073 is the Next episode block). `addon.xml` also carries translated `<summary>` / `<description>` per language.
 
 Do not add files named `_*.png`, `tools/_*.py` or `*-Jon.*` to commits — they are scratch/personal files.
 

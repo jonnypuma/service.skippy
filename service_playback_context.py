@@ -160,7 +160,14 @@ def _fetch_player_item_via_jsonrpc(
         "method": "Player.GetItem",
         "params": {
             "playerid": player_id,
-            "properties": ["file", "title", "showtitle", "episode"],
+            "properties": [
+                "file",
+                "title",
+                "showtitle",
+                "episode",
+                "season",
+                "tvshowid",
+            ],
         },
     }
     if log_jsonrpc:

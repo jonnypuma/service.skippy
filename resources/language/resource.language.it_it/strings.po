@@ -2057,3 +2057,193 @@ msgstr "Usa online"
 msgctxt "#46054"
 msgid "Close"
 msgstr "Chiudi"
+
+# Next episode
+
+msgctxt "#47000"
+msgid "Next episode"
+msgstr "Episodio successivo"
+
+msgctxt "#47001"
+msgid "Enable play next episode"
+msgstr "Attiva la riproduzione dell'episodio successivo"
+
+msgctxt "#47002"
+msgid "Near the end of a TV episode, offer to play the next one. The next episode must be in your video library or in the current playlist."
+msgstr "Verso la fine di un episodio di una serie TV, propone di riprodurre il successivo. L'episodio successivo deve trovarsi nella libreria video o nella playlist corrente."
+
+msgctxt "#47003"
+msgid "Play the next episode automatically"
+msgstr "Riproduci automaticamente l'episodio successivo"
+
+msgctxt "#47004"
+msgid "Start the next episode on its own instead of asking, at the time set below."
+msgstr "Avvia da solo l'episodio successivo invece di chiedere, al momento impostato qui sotto."
+
+msgctxt "#47005"
+msgid "Seconds before the end"
+msgstr "Secondi prima della fine"
+
+msgctxt "#47006"
+msgid "How many seconds before the end of the episode the prompt appears, or the next episode starts when autoplay is on."
+msgstr "Quanti secondi prima della fine dell'episodio compare la richiesta, o parte l'episodio successivo se la riproduzione automatica è attiva."
+
+msgctxt "#47007"
+msgid "Hide skip dialogs during the prompt"
+msgstr "Nascondi le finestre di salto durante la richiesta"
+
+msgctxt "#47008"
+msgid "From the moment the next episode prompt is due until the episode ends, Skippy does not offer to skip segments. Turn off to keep skip dialogs working at the end."
+msgstr "Da quando la richiesta dell'episodio successivo è dovuta fino alla fine dell'episodio, Skippy non propone di saltare i segmenti. Disattiva per mantenere le finestre di salto anche alla fine."
+
+msgctxt "#47009"
+msgid "Mark the episode as watched when moving on"
+msgstr "Segna l'episodio come visto quando si prosegue"
+
+msgctxt "#47010"
+msgid "When you move on to the next episode before Kodi would count the current one as watched, Skippy marks it as watched."
+msgstr "Se passi all'episodio successivo prima che Kodi consideri visto quello attuale, Skippy lo segna come visto."
+
+msgctxt "#47011"
+msgid "Skip episodes already watched"
+msgstr "Salta gli episodi già visti"
+
+msgctxt "#47012"
+msgid "Offer the next unwatched episode instead of the episode that follows directly."
+msgstr "Proponi il prossimo episodio non visto invece di quello che segue direttamente."
+
+msgctxt "#47013"
+msgid "Resume a partly watched next episode"
+msgstr "Riprendi un episodio successivo visto in parte"
+
+msgctxt "#47014"
+msgid "Continue from the saved position instead of starting from the beginning."
+msgstr "Continua dalla posizione salvata invece di ricominciare dall'inizio."
+
+msgctxt "#47020"
+msgid "Play next episode?"
+msgstr "Riprodurre l'episodio successivo?"
+
+msgctxt "#47021"
+msgid "Press OK to play"
+msgstr "Premi OK per riprodurre"
+
+msgctxt "#47022"
+msgid "Up Next is turned on, so Skippy's next episode prompt stays off."
+msgstr "Up Next è attivo, quindi la richiesta di Skippy per l'episodio successivo resta disattivata."
+
+# Next episode popup
+
+msgctxt "#47030"
+msgid "Popup style"
+msgstr "Stile del popup"
+
+msgctxt "#47031"
+msgid "Custom shows Skippy's own popup. Native toast uses a Kodi notification, and OK plays the next episode."
+msgstr "Personalizzato mostra il popup di Skippy. Notifica nativa usa una notifica di Kodi e OK riproduce l'episodio successivo."
+
+msgctxt "#47032"
+msgid "Customize next episode popup"
+msgstr "Personalizza il popup dell'episodio successivo"
+
+msgctxt "#47033"
+msgid "Change how the next episode popup looks and preview it."
+msgstr "Cambia l'aspetto del popup dell'episodio successivo e guarda un'anteprima."
+
+msgctxt "#47034"
+msgid "Popup position"
+msgstr "Posizione del popup"
+
+msgctxt "#47035"
+msgid "Which corner of the screen the popup appears in."
+msgstr "In quale angolo dello schermo compare il popup."
+
+msgctxt "#47036"
+msgid "Show episode picture"
+msgstr "Mostra l'immagine dell'episodio"
+
+msgctxt "#47037"
+msgid "Show the picture of the next episode in the popup when Kodi has one."
+msgstr "Mostra nel popup l'immagine dell'episodio successivo, se Kodi ne ha una."
+
+msgctxt "#47038"
+msgid "Show time left"
+msgstr "Mostra il tempo rimanente"
+
+msgctxt "#47039"
+msgid "Show how much of the current episode is left."
+msgstr "Mostra quanto resta dell'episodio in corso."
+
+msgctxt "#47040"
+msgid "Show progress bar"
+msgstr "Mostra la barra di avanzamento"
+
+msgctxt "#47041"
+msgid "Show a bar that runs down to the end of the episode."
+msgstr "Mostra una barra che scorre fino alla fine dell'episodio."
+
+msgctxt "#47042"
+msgid "Default button"
+msgstr "Pulsante predefinito"
+
+msgctxt "#47043"
+msgid "Which button is selected when the popup opens."
+msgstr "Quale pulsante è selezionato all'apertura del popup."
+
+msgctxt "#47050"
+msgid "Play now"
+msgstr "Riproduci ora"
+
+msgctxt "#47051"
+msgid "Episode ends in %s"
+msgstr "L'episodio finisce tra %s"
+
+msgctxt "#47052"
+msgid "Preview"
+msgstr "Anteprima"
+
+msgctxt "#47053"
+msgid "Episode title"
+msgstr "Titolo dell'episodio"
+
+# Next episode: still watching and credits start
+
+msgctxt "#47060"
+msgid "Ask if you are still watching"
+msgstr "Chiedi se stai ancora guardando"
+
+msgctxt "#47061"
+msgid "When episodes start on their own and nobody has pressed a button for several episodes in a row, Skippy asks if you are still watching instead of starting the next one."
+msgstr "Quando gli episodi partono da soli e nessuno preme un pulsante per più episodi di fila, Skippy chiede se stai ancora guardando invece di avviare il successivo."
+
+msgctxt "#47062"
+msgid "Episodes in a row before asking"
+msgstr "Episodi di fila prima di chiedere"
+
+msgctxt "#47063"
+msgid "How many episodes may play in a row without any button press before Skippy asks. The episode that is playing counts as one."
+msgstr "Quanti episodi possono essere riprodotti di fila senza premere alcun pulsante prima che Skippy chieda. L'episodio in riproduzione conta come uno."
+
+msgctxt "#47064"
+msgid "Start at the credits"
+msgstr "Avvia ai titoli di coda"
+
+msgctxt "#47065"
+msgid "When an episode has a Credits segment, the prompt (or the automatic start) begins when it starts instead of Seconds before the end. Without a Credits segment the usual time applies."
+msgstr "Quando un episodio ha un segmento Credits, l'avviso (o l'avvio automatico) inizia quando questo comincia, invece di Secondi prima della fine. Senza un segmento Credits vale il tempo abituale."
+
+msgctxt "#47070"
+msgid "Still watching?"
+msgstr "Stai ancora guardando?"
+
+msgctxt "#47071"
+msgid "Continue"
+msgstr "Continua"
+
+msgctxt "#47072"
+msgid "Stop"
+msgstr "Ferma"
+
+msgctxt "#47073"
+msgid "Press OK to continue"
+msgstr "Premi OK per continuare"

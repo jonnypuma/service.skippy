@@ -231,6 +231,89 @@ class WriteJsonDurabilityTests(unittest.TestCase):
                 self.assertEqual(json.load(handle), {"keep": True})
 
 
+class JsonBackupAndRecoveryTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.path = os.path.join(self._tmp.name, "data.json")
+
+    def _read(self, path):
+        with open(path, encoding="utf-8") as handle:
+            return json.load(handle)
+
+    def _corrupt(self, text=""):
+        with open(self.path, "w", encoding="utf-8") as handle:
+            handle.write(text)
+
+    def test_keep_backup_copies_the_previous_good_file(self):
+        write = skippy_profile_store.write_json
+        self.assertTrue(write(self.path, {"v": 1}, keep_backup=True))
+        self.assertFalse(os.path.exists(self.path + ".bak"))  # nothing to back up yet
+        self.assertTrue(write(self.path, {"v": 2}, keep_backup=True))
+        self.assertEqual(self._read(self.path), {"v": 2})
+        self.assertEqual(self._read(self.path + ".bak"), {"v": 1})
+
+    def test_no_backup_unless_asked(self):
+        write = skippy_profile_store.write_json
+        write(self.path, {"v": 1})
+        write(self.path, {"v": 2})
+        self.assertFalse(os.path.exists(self.path + ".bak"))
+
+    def test_a_damaged_file_never_replaces_a_good_backup(self):
+        write = skippy_profile_store.write_json
+        write(self.path, {"v": 1}, keep_backup=True)
+        write(self.path, {"v": 2}, keep_backup=True)  # .bak = v1
+        self._corrupt("{truncated")
+        write(self.path, {"v": 3}, keep_backup=True)
+        self.assertEqual(self._read(self.path + ".bak"), {"v": 1})
+        self.assertEqual(self._read(self.path), {"v": 3})
+
+    def test_recover_restores_the_backup_and_keeps_the_damaged_file(self):
+        write = skippy_profile_store.write_json
+        write(self.path, {"v": 1}, keep_backup=True)
+        write(self.path, {"v": 2}, keep_backup=True)  # .bak = v1
+        self._corrupt("")
+        data = skippy_profile_store.read_json(self.path, {}, recover=True)
+        self.assertEqual(data, {"v": 1})
+        self.assertEqual(self._read(self.path), {"v": 1})  # main file is whole again
+        self.assertTrue(os.path.exists(self.path + ".corrupt"))
+
+    def test_recover_without_a_backup_keeps_the_damaged_file_aside(self):
+        self._corrupt("{oops")
+        data = skippy_profile_store.read_json(self.path, {"d": 1}, recover=True)
+        self.assertEqual(data, {"d": 1})
+        self.assertFalse(os.path.exists(self.path))
+        with open(self.path + ".corrupt", encoding="utf-8") as handle:
+            self.assertEqual(handle.read(), "{oops")
+
+    def test_plain_read_is_unchanged(self):
+        self._corrupt("{oops")
+        self.assertEqual(skippy_profile_store.read_json(self.path, {"d": 1}), {"d": 1})
+        self.assertTrue(os.path.exists(self.path))
+        self.assertFalse(os.path.exists(self.path + ".corrupt"))
+
+    def test_segment_types_catalog_survives_corruption(self):
+        import segment_types
+
+        set_catalog_for_tests(None)
+        self.addCleanup(set_catalog_for_tests, None)
+        catalog = os.path.join(self._tmp.name, "segment_types.json")
+        with patch.object(segment_types, "catalog_path", return_value=catalog):
+            segment_types.invalidate_catalog_cache()
+            types = segment_types.clone_types(seeded_builtin_types())
+            row, err = segment_types.add_custom_type(types, "Hook")
+            self.assertIsNone(err)
+            self.assertTrue(segment_types.save_catalog(types))
+            self.assertTrue(segment_types.save_catalog(types))  # second save creates .bak
+            self.assertTrue(os.path.exists(catalog + ".bak"))
+            with open(catalog, "w", encoding="utf-8") as handle:
+                handle.write("")  # what a power cut can leave behind
+            segment_types.invalidate_catalog_cache()
+            ids = [t["id"] for t in segment_types.ensure_catalog()]
+        self.assertIn("hook", ids, "custom type must come back from the backup")
+        self.assertTrue(os.path.exists(catalog + ".corrupt"))
+
+
 class SkipDialogLifecycleTests(unittest.TestCase):
     def _dialog(self, player):
         dlg = skipdialog.SkipDialog.__new__(skipdialog.SkipDialog)
@@ -355,9 +438,11 @@ class NestedSelfParentTests(unittest.TestCase):
 class _FakeVfs:
     """Dict-backed xbmcvfs for the write paths."""
 
-    def __init__(self, files=None, fail_writes=False):
+    def __init__(self, files=None, fail_writes=False, fail_payloads=()):
         self.files = dict(files or {})
         self.fail_writes = fail_writes
+        # Fail only writes of these payloads (a transient error on the new content).
+        self.fail_payloads = set(fail_payloads)
         outer = self
 
         class File:
@@ -367,10 +452,10 @@ class _FakeVfs:
                     outer.files[path] = b""  # opening for write creates an empty file
 
             def write(self, data):
-                if outer.fail_writes:
-                    return False
                 if isinstance(data, str):
                     data = data.encode("utf-8")
+                if outer.fail_writes or bytes(data) in outer.fail_payloads:
+                    return False
                 outer.files[self.path] = bytes(data)
                 return True
 
@@ -387,6 +472,10 @@ class _FakeVfs:
 
     def exists(self, path):
         return path in self.files
+
+    def Stat(self, path):
+        size = len(self.files.get(path, b""))
+        return types.SimpleNamespace(st_size=lambda: size)
 
     def delete(self, path):
         self.files.pop(path, None)
@@ -433,6 +522,45 @@ class SafeWriteTests(unittest.TestCase):
             with patch.object(segment_editor_parser, "_restore_vfs_bytes", _restore):
                 ok, _n = segment_editor_parser.safe_file_write("/v.edl", "new")
         self.assertFalse(ok)
+        self.assertEqual(fake.files["/v.edl"], b"10 20 4\n")
+
+    def test_empty_file_after_a_failed_write_is_a_failure_and_original_returns(self):
+        # write() fails once for the new content; the restore then works.
+        fake = _FakeVfs({"/v.edl": b"10 20 4\n"}, fail_payloads={b"new"})
+        with self._patched(fake), patch.object(segment_editor_parser.time, "sleep", lambda _s: None):
+            ok, _n = segment_editor_parser.safe_file_write("/v.edl", "new")
+        self.assertFalse(ok)
+        self.assertEqual(fake.files["/v.edl"], b"10 20 4\n")
+
+    def test_failed_restore_is_not_reported_as_restored(self):
+        fake = _FakeVfs({"/v.edl": b"10 20 4\n"}, fail_writes=True)
+        with self._patched(fake), patch.object(segment_editor_parser.time, "sleep", lambda _s: None):
+            ok, _n = segment_editor_parser.safe_file_write("/v.edl", "new")
+        self.assertFalse(ok)
+        self.assertFalse(
+            segment_editor_parser._restore_vfs_bytes("/v.edl", b"10 20 4\n")
+        )
+
+    def test_empty_file_with_nothing_to_restore_is_removed(self):
+        fake = _FakeVfs({}, fail_writes=True)
+        with self._patched(fake), patch.object(segment_editor_parser.time, "sleep", lambda _s: None):
+            ok, _n = segment_editor_parser.safe_file_write("/new.edl", "10 20 4\n")
+        self.assertFalse(ok)
+        self.assertNotIn("/new.edl", fake.files)
+
+    def test_content_counts_as_success_even_if_write_reports_false(self):
+        fake = _FakeVfs({})
+        original_file = fake.File
+
+        class _OddBackend(original_file):
+            def write(self, data):
+                super().write(data)
+                return False  # content landed, but the backend says False
+
+        fake.File = _OddBackend
+        with self._patched(fake), patch.object(segment_editor_parser.time, "sleep", lambda _s: None):
+            ok, _n = segment_editor_parser.safe_file_write("/v.edl", "10 20 4\n")
+        self.assertTrue(ok)
         self.assertEqual(fake.files["/v.edl"], b"10 20 4\n")
 
     def test_marker_write_raises_when_the_write_fails(self):

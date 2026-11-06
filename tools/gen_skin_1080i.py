@@ -40,6 +40,13 @@ def convert(xml):
         lambda m: m.group(1) + _s(m.group(2)) + m.group(3),
         xml,
     )
+    # progress_tiled_segmented_teal_h10.png: that texture is made for a bar of exactly this
+    # many pixels high, so its name follows the scaled height.
+    xml = re.sub(
+        r"(progress_tiled_segmented_\w+?_h)(\d+)(\.png)",
+        lambda m: m.group(1) + _s(m.group(2)) + m.group(3),
+        xml,
+    )
     # <effect type="slide" start="0,-150" end="0,0" ...>
     def effect(m):
         tag = m.group(0)

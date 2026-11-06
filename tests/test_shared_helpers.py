@@ -14,6 +14,7 @@ from segment_relations import (
     JUMP_KIND_REMAINING,
     RELATION_NESTED,
     RELATION_OVERLAPPING,
+    forward_jump_target,
     iter_forward_overlaps,
     jump_info_nested,
     jump_info_overlapping,
@@ -81,6 +82,56 @@ class SegmentRelationTests(unittest.TestCase):
     def test_abutting_segments_are_not_related(self):
         segments = [_seg(0, 60), _seg(60, 90, "credits")]
         self.assertEqual(list(iter_forward_overlaps(segments, 0)), [])
+
+    def test_forward_jump_without_related_segments_goes_to_the_end(self):
+        self.assertEqual(
+            forward_jump_target([_seg(0, 60), _seg(70, 90, "credits")], 0, 10),
+            (None, None),
+        )
+
+    def test_forward_jump_stops_at_a_nested_segment_ahead(self):
+        segments = [_seg(0, 100, "recap"), _seg(20, 40, "prologue")]
+        self.assertEqual(
+            forward_jump_target(segments, 0, 5), (20, "nested segment 'prologue'")
+        )
+        self.assertEqual(
+            forward_jump_target(segments, 0, None), (20, "nested segment 'prologue'")
+        )
+
+    def test_forward_jump_ignores_a_nested_segment_already_reached(self):
+        segments = [_seg(0, 100, "recap"), _seg(20, 40, "prologue")]
+        self.assertEqual(forward_jump_target(segments, 0, 20), (None, None))
+        self.assertEqual(forward_jump_target(segments, 0, 70), (None, None))
+
+    def test_forward_jump_visits_every_nested_segment_in_turn(self):
+        segments = [
+            _seg(0, 100, "recap"),
+            _seg(10, 20, "prologue"),
+            _seg(50, 60, "ad"),
+        ]
+        by_time = {
+            None: (10, "nested segment 'prologue'"),
+            5: (10, "nested segment 'prologue'"),
+            15: (50, "nested segment 'ad'"),
+            20: (50, "nested segment 'ad'"),
+            55: (None, None),
+            70: (None, None),
+        }
+        for current_time, expected in by_time.items():
+            with self.subTest(current_time=current_time):
+                self.assertEqual(
+                    forward_jump_target(segments, 0, current_time), expected
+                )
+
+    def test_forward_jump_falls_through_to_an_overlap_after_passed_nested(self):
+        segments = [
+            _seg(0, 100, "recap"),
+            _seg(10, 20, "prologue"),
+            _seg(90, 130, "credits"),
+        ]
+        self.assertEqual(
+            forward_jump_target(segments, 0, 15), (90, "overlapping segment 'credits'")
+        )
 
     def test_jump_info_round_trips(self):
         self.assertEqual(

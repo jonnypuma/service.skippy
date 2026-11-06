@@ -1,5 +1,73 @@
 # Changelog
 
+## [7.3.4] - 2026-11-06
+
+### Fixed
+
+- **The progress bar in the next episode popup is no longer squeezed.** As the episode ran down, the whole bar was shrunk, so its segments got narrower and narrower. The bar now loses whole segments from the right instead: they disappear one by one and keep their size, like the segmented progress bar in the skip dialog.
+
+## [7.3.3] - 2026-11-06
+
+### Added
+
+- **"Still watching?" guard.** With **Play the next episode automatically** on, Skippy now counts the episodes that played one after another without anyone pressing a button. After **Episodes in a row before asking** (default 3, 1 to 10; the episode playing counts as one) it asks **Still watching?** with **Continue** and **Stop** instead of starting the next episode. **Continue** starts it and the count begins again. **Stop**, or no answer, leaves the next episode unstarted, so the episode finishes and playback ends. A button press during an episode, or starting an episode yourself, starts the count over. The question uses the popup, or the toast when **Popup style** is **Native toast**, and **Continue** is always the button under the cursor. It is on by default and only matters with automatic play; **Ask if you are still watching** turns it off. Kodi carries on through a playlist by itself, so when nobody answers there Skippy stops playback a few seconds before the end.
+- **Start at the credits.** A new **Start at the credits** setting (off by default) makes the prompt, or the automatic start, begin when the episode's **Credits** segment starts instead of **Seconds before the end**. The segment has to begin in the second half of the episode and at least 10 seconds before its end; otherwise, and when the episode has no Credits segment, the usual time applies. The countdown and the progress bar in the popup run from that moment to the end of the episode.
+
+## [7.3.2] - 2026-11-06
+
+### Added
+
+- **A real popup for the next episode.** The "Play next episode?" prompt is now a small popup in a screen corner instead of a Kodi toast. It shows the next episode's picture, its number and title, **Episode ends in 00:42** with a progress bar that runs down to the end of the episode, and two buttons, **Play now** and **Close**. **Back** also dismisses it, and it goes away by itself when the episode ends or playback stops. It works on 720p and 1080i skins. If the popup cannot be shown, Skippy falls back to the toast so the prompt is never lost.
+- **Popup style.** A new **Popup style** setting (Basic) chooses between **Custom** (the popup) and **Native toast** (the plain Kodi toast used before).
+- **Customize next episode popup.** A new button in the Next episode settings opens a screen with **Popup style**, **Popup position** (any corner), **Show episode picture**, **Show time left**, **Show progress bar** and **Default button**. **Preview** shows the result with an example episode and a countdown that starts over, **Save** stores only what you changed, **Cancel** discards everything. The same options are also available as ordinary settings (position, picture, time left and progress bar at Standard level while the style is Custom, default button at Advanced).
+- **Episode pictures.** Skippy now asks Kodi for the next episode's artwork, from the library or from the playlist item, and uses its thumbnail (or fanart) in the popup.
+
+### Changed
+
+- **The setting that turns the feature on is now called "Enable play next episode"** (it was "Offer the next episode"), in all 11 languages.
+
+## [7.3.1] - 2026-11-06
+
+### Fixed
+
+- **Settings showed no text on recent Kodi builds.** On a current Kodi master build (23.0 nightly) every Skippy setting and category name was blank, and the toggles and values had no labels. Those builds no longer look in language folders named after the English language name (`English`, `German`, `Portuguese (Brazil)`, ...), so none of Skippy's texts were loaded. The language folders are now named the way Kodi names its language add-ons (`resource.language.en_gb`, `resource.language.de_de`, `resource.language.pt_br`, ...), which every Kodi version from 19 on understands. The texts themselves are unchanged. This was not caused by the Next episode category; the problem was already there on that build.
+- **A guard against it coming back.** The tests now fail if a language folder is not named after a Kodi language add-on, and if a settings label or help id has no English text.
+
+## [7.3.0] - 2026-11-06
+
+### Added
+
+- **Next episode.** A new **Next episode** settings category lets Skippy offer the next episode near the end of a TV episode, like the Up Next add-on. It is off by default. **Offer the next episode** turns it on; **Seconds before the end** (default 45) says when. At that moment a Kodi toast asks "Play next episode?" with the episode's number and title: **OK** plays it now, **Back** dismisses it for the rest of the episode. **Play the next episode automatically** skips the question and starts the next episode at that moment instead.
+- **Where the next episode comes from.** If the current playlist has an item after this one, that is the next episode. Otherwise it is the next episode of the same show in the video library, in season and episode order (numbering gaps are fine, specials are not offered after a regular episode, and a file that holds several episodes is not played twice). **Skip episodes already watched** (Advanced) offers the next unwatched one instead. **Resume a partly watched next episode** (Advanced, on) continues from the saved position.
+- **Hide skip dialogs during the prompt** (Standard, on). From the moment the prompt is due until the episode ends, Skippy does not offer to skip segments, so a credits skip dialog does not compete with it. This only applies when a next episode was found; turn it off to keep skip dialogs working at the end.
+- **Mark the episode as watched when moving on** (Standard, on). Moving on 45 seconds before the end can fall short of Kodi's watched threshold, which would leave the episode unwatched. A few seconds after the switch Skippy marks it as watched if Kodi did not.
+- **Up Next add-on.** If `service.upnext` is turned on, Skippy's prompt stays off so you do not get two popups, and Skippy says so once per Kodi session.
+- **Playback details.** Skippy now also asks Kodi for the show id and season of the playing item.
+
+## [7.2.7] - 2026-11-05
+
+### Fixed
+
+- **A segment with two or more nested segments now stops at each of them.** Take a Recap with a Prologue and an Ad inside it. "Skip Recap" went to the Prologue, but once the Prologue was over, the Recap's skip jumped straight to the end of the Recap, past the Ad. Starting or resuming playback in between worked the skip out differently again and went to the Ad. Both now follow one rule: the skip stops at the next nested segment that is still ahead of the playhead, and goes to the end only when none is left. Each stop says where it lands (for example "Skip to Ad at 00:50"), and every nested segment now reliably says "Skip to remaining Recap"; a later one could miss that when playback started before the first. A single nested segment and overlapping segments behave as before.
+
+## [7.2.6] - 2026-11-05
+
+### Fixed
+
+- **Embedded chapters: no more guessed end for the last chapter.** When a file's chapters carry no end times and Kodi does not report the total running time, the last chapter used to be given an end of 300 seconds after its start. Its real end is unknown, and a guessed end could skip real content, so that chapter is now left out. Every other chapter still ends where the next one starts, and the last chapter still ends at the total time whenever Kodi reports it.
+
+## [7.2.5] - 2026-11-02
+
+### Fixed
+
+- **A damaged Segment types list no longer silently resets to the defaults.** If `segment_types.json` ended up empty or unreadable (for example after a power cut), Skippy started over with the built-in types and overwrote the file, so your custom types and aliases were gone. The file is now kept as `segment_types.json.corrupt`, and your types are restored from `segment_types.json.bak`, a copy of the last good file that is refreshed on every save (and never replaced by a damaged one). The same safety net covers your saved skip dialog presets and the remembered local/online choices.
+
+## [7.2.4] - 2026-11-02
+
+### Fixed
+
+- **A failed sidecar save no longer counts as success when it left an empty file.** Opening a file for writing creates it, so when the write itself failed (read-only share, full disk) an empty file stayed behind and the save was still reported as done, with the original already deleted. The result is now judged by the file's size, not by what the write call returned: an empty file is a failed save, it is cleared, and the original file is put back.
+
 ## [7.2.3] - 2026-11-02
 
 ### Fixed

@@ -82,6 +82,11 @@ def main():
 
             show_skip_dialog_customize()
             return
+        if command == "customize_next_episode_popup":
+            from next_episode_customize_ui import show_next_episode_customize
+
+            show_next_episode_customize()
+            return
         if command == "label_width_probe":
             from skip_label_width_probe import run_label_width_probe
 

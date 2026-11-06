@@ -10,6 +10,7 @@ from tests.kodi_stubs import install_kodi_stubs
 install_kodi_stubs()
 
 import service_main_loop
+from service_loop_next_episode import IDLE_TICK, NextEpisodeTick
 from service_main_loop import ServiceLoopBindings, run_service_main_loop
 
 
@@ -79,7 +80,16 @@ def _bindings(monitor, player):
     )
 
 
-def _run_one_tick(monitor, player, *, parsed_time=10.0, parse_fn=None):
+def _run_one_tick(
+    monitor,
+    player,
+    *,
+    parsed_time=10.0,
+    parse_fn=None,
+    next_episode=IDLE_TICK,
+    skip_calls=None,
+    next_episode_calls=None,
+):
     if parse_fn is None:
         def parse_fn(_ctx, _video, _current_time, _playback_type):
             return parsed_time
@@ -94,7 +104,9 @@ def _run_one_tick(monitor, player, *, parsed_time=10.0, parse_fn=None):
         service_main_loop, "handle_rewind_and_nested_segments", return_value=False
     ) as rewind, patch.object(
         service_main_loop, "process_segment_skips"
-    ) as skips:
+    ) as skips, patch.object(
+        service_main_loop, "handle_next_episode", return_value=next_episode
+    ) as next_step:
         refresh.return_value = types.SimpleNamespace(
             video_path="episode.mkv",
             current_time=10.0,
@@ -105,8 +117,13 @@ def _run_one_tick(monitor, player, *, parsed_time=10.0, parse_fn=None):
             used_pause_fast_path=False,
             toast_movies=False,
             toast_episodes=False,
+            player_item={"type": "episode", "id": 7},
         )
         run_service_main_loop(_bindings(monitor, player))
+    if skip_calls is not None:
+        skip_calls.extend(skips.call_args_list)
+    if next_episode_calls is not None:
+        next_episode_calls.extend(next_step.call_args_list)
     return rewind.call_count, skips.call_count
 
 
@@ -139,6 +156,47 @@ class MainLoopDedupTests(unittest.TestCase):
         rewinds, skips = _run_one_tick(monitor, _Player(10.0), parsed_time=10.0)
         self.assertEqual(rewinds, 1)
         self.assertEqual(skips, 1)
+
+
+class NextEpisodeLoopTests(unittest.TestCase):
+    def test_step_gets_the_playback_details(self):
+        calls = []
+        _run_one_tick(
+            _Monitor([_segment(0.0, 60.0)]), _Player(10.0), next_episode_calls=calls
+        )
+        self.assertEqual(len(calls), 1)
+        kwargs = calls[0].kwargs
+        self.assertEqual(kwargs["video"], "episode.mkv")
+        self.assertEqual(kwargs["playback_type"], "episode")
+        self.assertEqual(kwargs["current_time"], 10.0)
+        self.assertEqual(kwargs["player_item"], {"type": "episode", "id": 7})
+
+    def test_skip_dialogs_stay_on_by_default(self):
+        skip_calls = []
+        _run_one_tick(
+            _Monitor([_segment(0.0, 60.0)]), _Player(10.0), skip_calls=skip_calls
+        )
+        self.assertTrue(skip_calls)
+        self.assertTrue(all(c.kwargs["show_dialogs"] for c in skip_calls))
+
+    def test_prompt_window_hides_skip_dialogs(self):
+        skip_calls = []
+        _run_one_tick(
+            _Monitor([_segment(0.0, 60.0)]),
+            _Player(10.0),
+            next_episode=NextEpisodeTick(hide_skip_dialogs=True),
+            skip_calls=skip_calls,
+        )
+        self.assertTrue(skip_calls)
+        self.assertTrue(all(c.kwargs["show_dialogs"] is False for c in skip_calls))
+
+    def test_switching_episodes_ends_the_tick(self):
+        rewinds, skips = _run_one_tick(
+            _Monitor([_segment(0.0, 60.0)]),
+            _Player(10.0),
+            next_episode=NextEpisodeTick(switched=True),
+        )
+        self.assertEqual((rewinds, skips), (0, 0))
 
 
 class IdleParseSkipTests(unittest.TestCase):

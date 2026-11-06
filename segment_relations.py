@@ -66,6 +66,32 @@ def iter_forward_overlaps(segments, index):
             yield candidate, None
 
 
+def forward_jump_target(segments, index, current_time=None):
+    """
+    Where a skip from ``segments[index]`` lands first: ``(start, info)``, or
+    ``(None, None)`` when it should go straight to the segment's own end.
+
+    This is the single rule behind both the parse-time linking pass and the
+    rewind-time re-evaluation, so the two cannot disagree. Walking the later
+    segments in start order, the skip stops at
+
+    * the first nested segment that is still ahead of the playhead (or any
+      nested segment when ``current_time`` is None); nested segments the
+      playhead has already passed are skipped over, and
+    * the start of an overlapping segment.
+
+    With several nested segments the skip therefore stops at each one in turn:
+    leaving the first brings the parent's dialog back, now pointing at the next.
+    """
+    for other, relation in iter_forward_overlaps(segments, index):
+        if relation == RELATION_NESTED:
+            if current_time is None or current_time < other.start_seconds:
+                return other.start_seconds, jump_info_nested(other)
+        elif relation == RELATION_OVERLAPPING:
+            return other.start_seconds, jump_info_overlapping(other)
+    return None, None
+
+
 def jump_info_nested(segment) -> str:
     return "nested segment '%s'" % segment.segment_type_label
 

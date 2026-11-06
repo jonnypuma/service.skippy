@@ -1,15 +1,24 @@
 # -*- coding: utf-8 -*-
 """Pass 1/2 segment processing."""
 
+import copy
+import types
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from tests.kodi_stubs import install_kodi_stubs
 
 install_kodi_stubs()
 
 from segment_item import SegmentItem
-from service_segment_processing import re_evaluate_segment_jump_points
+from service_segment_processed_cache import (
+    store_segment_processed_cache,
+    try_get_processed_cache,
+)
+from service_segment_processing import (
+    parse_and_process_segments,
+    re_evaluate_segment_jump_points,
+)
 from service_segment_sources import parse_edl
 from service_segment_processing import (
     build_nested_parent_map,
@@ -143,6 +152,153 @@ class ParseAndProcessTests(unittest.TestCase):
             [(s.start_seconds, s.end_seconds, s.segment_type_label) for s in segments],
             [(0.0, 10.0, "intro")],
         )
+
+
+def _layout(*rows):
+    return [SegmentItem(s, e, label, source="xml") for s, e, label in rows]
+
+
+def _first_parse(rows, current_time):
+    """Run the real parse-and-link pipeline over ``rows`` with overlaps kept."""
+    segments = _layout(*rows)
+    monitor = types.SimpleNamespace(
+        segment_parse_cache=None,
+        skippy_skipping_since=None,
+        toast_overlap_shown=True,
+        overlap_editor_opened_for_path=None,
+    )
+    player = types.SimpleNamespace(isPlayingVideo=lambda: True)
+    with patch.multiple(
+        "service_segment_processing",
+        get_addon=lambda: MagicMock(),
+        addon_get_bool=lambda _addon, _key, default=False: False,
+        show_overlapping_toast=lambda: False,
+        try_get_processed_cache=lambda *a, **k: (None, "miss"),
+        store_segment_processed_cache=lambda *a, **k: None,
+        _source_settings_signature=lambda *a, **k: (),
+    ):
+        return parse_and_process_segments(
+            "episode.mkv",
+            current_time,
+            "episode",
+            get_cached_source_segments=lambda _path, _type: segments,
+            segment_monitor=monitor,
+            segment_player=player,
+            overlap_toast_icon_path="",
+            log_if_changed=lambda _key, _msg: None,
+        )
+
+
+def _link(segment):
+    return segment.next_segment_start, segment.next_segment_info
+
+
+# A recap with two nested segments: the case where the parse-time linking and the
+# rewind-time re-evaluation used to disagree.
+TWO_NESTED = (
+    (0.0, 100.0, "recap"),
+    (10.0, 20.0, "prologue"),
+    (50.0, 60.0, "ad"),
+)
+PLAYHEADS = (None, 0.0, 5.0, 10.0, 15.0, 20.0, 30.0, 50.0, 55.0, 60.0, 70.0, 99.0)
+
+
+class MultipleNestedSegmentTests(unittest.TestCase):
+    def test_parent_skip_stops_at_each_nested_segment_in_turn(self):
+        expected = {
+            None: (10.0, "nested segment 'prologue'"),
+            5.0: (10.0, "nested segment 'prologue'"),
+            15.0: (50.0, "nested segment 'ad'"),
+            30.0: (50.0, "nested segment 'ad'"),
+            55.0: (None, None),
+            70.0: (None, None),
+        }
+        for current_time, link in expected.items():
+            with self.subTest(current_time=current_time):
+                recap = _first_parse(TWO_NESTED, current_time)[0]
+                self.assertEqual(_link(recap), link)
+
+    def test_rewind_reevaluation_agrees_with_the_first_parse(self):
+        for current_time in PLAYHEADS:
+            if current_time is None:
+                continue
+            with self.subTest(current_time=current_time):
+                parsed = _first_parse(TWO_NESTED, current_time)
+                rewound = _layout(*TWO_NESTED)
+                re_evaluate_segment_jump_points(rewound, current_time)
+                self.assertEqual(_link(parsed[0]), _link(rewound[0]))
+
+    def test_every_nested_segment_lands_back_inside_the_parent(self):
+        for current_time in PLAYHEADS:
+            with self.subTest(current_time=current_time):
+                _recap, prologue, ad = _first_parse(TWO_NESTED, current_time)
+                self.assertEqual(_link(prologue), (20.0, "remaining 'recap'"))
+                self.assertEqual(_link(ad), (60.0, "remaining 'recap'"))
+
+    def test_leaving_a_nested_segment_points_the_parent_at_the_next_one(self):
+        segments = _first_parse(TWO_NESTED, 0.0)
+        recap = segments[0]
+        self.assertEqual(_link(recap), (10.0, "nested segment 'prologue'"))
+
+        # The playhead leaves the prologue: the service re-evaluates at that point.
+        recap.next_segment_start = None
+        recap.next_segment_info = None
+        re_evaluate_segment_jump_points(segments, 20.5)
+        self.assertEqual(_link(recap), (50.0, "nested segment 'ad'"))
+
+        # ...and once the ad is behind as well, the parent skips straight to its end.
+        re_evaluate_segment_jump_points(segments, 60.5)
+        self.assertEqual(_link(recap), (None, None))
+
+    def test_overlap_after_a_passed_nested_segment_is_still_the_next_stop(self):
+        rows = (
+            (0.0, 100.0, "recap"),
+            (10.0, 20.0, "prologue"),
+            (90.0, 130.0, "credits"),
+        )
+        expected = (90.0, "overlapping segment 'credits'")
+        parsed = _first_parse(rows, 15.0)
+        rewound = _layout(*rows)
+        re_evaluate_segment_jump_points(rewound, 15.0)
+        self.assertEqual(_link(parsed[0]), expected)
+        self.assertEqual(_link(rewound[0]), expected)
+
+    def test_single_nested_segment_keeps_its_behaviour(self):
+        rows = ((0.0, 50.0, "intro"), (20.0, 40.0, "recap"))
+        self.assertEqual(
+            _link(_first_parse(rows, 0.0)[0]), (20.0, "nested segment 'recap'")
+        )
+        self.assertEqual(_link(_first_parse(rows, 30.0)[0]), (None, None))
+        self.assertEqual(
+            _link(_first_parse(rows, 0.0)[1]), (40.0, "remaining 'intro'")
+        )
+
+    def test_cached_links_follow_the_same_rule_when_the_playhead_moves(self):
+        monitor = types.SimpleNamespace(segment_processed_cache=None)
+        pass1 = _layout(*TWO_NESTED)
+        processed = _first_parse(TWO_NESTED, 0.0)
+        kwargs = dict(source_settings_sig=(), sidecar_signature="sig")
+        store_segment_processed_cache(
+            monitor, "episode.mkv", "episode", pass1, pass1, processed, 0.0, **kwargs
+        )
+
+        def cached_recap_link(current_time):
+            result, status = try_get_processed_cache(
+                monitor,
+                "episode.mkv",
+                "episode",
+                pass1,
+                current_time,
+                clone_pass1_fn=lambda segs: [copy.copy(s) for s in segs],
+                log_if_changed=lambda _key, _msg: None,
+                **kwargs,
+            )
+            return status, _link(result[0])
+
+        self.assertEqual(
+            cached_recap_link(15.0), ("phase_reeval", (50.0, "nested segment 'ad'"))
+        )
+        self.assertEqual(cached_recap_link(55.0), ("phase_reeval", (None, None)))
 
 
 if __name__ == "__main__":

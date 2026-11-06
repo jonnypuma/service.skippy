@@ -408,6 +408,48 @@ class EmbeddedChaptersJsonRpcTests(unittest.TestCase):
         self.assertEqual(len(segs), 1)
         self.assertEqual(segs[0].segment_type_label, "intro")
 
+    def _segments_for(self, rows, total):
+        from service_embedded_chapters import _segments_from_rows
+
+        player = MagicMock()
+        player.getTotalTime.return_value = total
+        return _segments_from_rows(rows, player)
+
+    def test_last_chapter_ends_at_total_time(self):
+        segs = self._segments_for(
+            [{"name": "Intro", "start": 0.0, "end": None},
+             {"name": "Credits", "start": 90.0, "end": None}],
+            120.0,
+        )
+        self.assertEqual(
+            [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in segs],
+            [("intro", 0.0, 90.0), ("credits", 90.0, 120.0)],
+        )
+
+    def test_last_chapter_is_dropped_when_total_time_is_unknown(self):
+        for total in (0.0, None):
+            segs = self._segments_for(
+                [{"name": "Intro", "start": 0.0, "end": None},
+                 {"name": "Credits", "start": 90.0, "end": None}],
+                total,
+            )
+            # The first chapter's end is the next chapter's start, so it is known.
+            self.assertEqual(
+                [(s.segment_type_label, s.start_seconds, s.end_seconds) for s in segs],
+                [("intro", 0.0, 90.0)],
+            )
+
+    def test_last_chapter_with_its_own_end_is_kept_without_total_time(self):
+        segs = self._segments_for(
+            [{"name": "Intro", "start": 0.0, "end": 60.0},
+             {"name": "Credits", "start": 90.0, "end": 100.0}],
+            0.0,
+        )
+        self.assertEqual(
+            [(s.segment_type_label, s.end_seconds) for s in segs],
+            [("intro", 60.0), ("credits", 100.0)],
+        )
+
     def test_unknown_embedded_names_are_kept(self):
         player = MagicMock()
         player.getTotalTime.return_value = 100.0

@@ -41,7 +41,8 @@ service.skippy/
 ├── service.py                      # Kodi service entry
 ├── skippy_runscript_entry.py       # RunScript router (marker, editor, backup, keymaps, …)
 ├── service_main_loop.py            # Playback monitor loop
-├── service_loop_*.py               # Skip / nested / playback / toast tick helpers
+├── service_loop_*.py               # Skip / nested / playback / toast / next-episode tick helpers
+├── next_episode_*.py               # Next episode: lookup, hand-off, prompt (popup / toast), Customize modal, still-watching guard, credits start, window state
 ├── service_segment_*.py            # Parse, sources, prefetch, caches
 ├── service_online_*.py             # Online lookup pause, sidecar save, policy
 ├── service_playback_context.py     # Player path / metadata snapshot for the loop
@@ -65,9 +66,9 @@ service.skippy/
 ├── resources/
 │   ├── settings.xml
 │   ├── language/
-│   │   ├── English/strings.po
-│   │   ├── German/ / Dutch/ / French/ / Spanish/
-│   │   ├── Norwegian/ / Swedish/ / Danish/ / Italian/ / Greek/ / Portuguese (Brazil)/
+│   │   ├── resource.language.en_gb/strings.po
+│   │   ├── resource.language.de_de/ / nl_nl/ / fr_fr/ / es_es/
+│   │   ├── resource.language.nb_no/ / sv_se/ / da_dk/ / it_it/ / el_gr/ / pt_br/
 │   └── skins/default/
 │       ├── Font.xml / colors/defaults.xml
 │       ├── 720p/ + 1080i/          # SkipDialog*, Minimal_Skip_*, SegmentEditor*, SegmentTypesEditor, Marker pickers
@@ -87,7 +88,7 @@ Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
 | Linux (CoreELEC) | Tested |
 | Windows 11 | Tested |
 
-**Languages:** Settings and runtime UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, Italian, Greek, and Brazilian Portuguese** (`resources/language/*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
+**Languages:** Settings and runtime UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, Italian, Greek, and Brazilian Portuguese** (`resources/language/resource.language.*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
 
 Third-party skins—and sometimes **individual themes or colour schemes** within those skins—can **override** Skippy’s **Skip dialogue font colour** on add-on dialogs. Skippy resolves your setting and applies it in bundled WindowXML plus Python `setLabel`, but Kodi still renders those controls in the **active skin’s** font and button context (fonts are not loaded from Skippy’s bundled `Font.xml`). **Estuary** generally matches expectations. Heavily customised skins may restyle label and button text globally regardless of Skippy’s setting.
 
@@ -163,6 +164,7 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
 - **Per-title auto-skip** (opt-in, default off): After you confirm an Ask skip, Skippy can remember to auto-skip that segment type for that show or movie, keyed on its **TMDB id** so the choice follows the title across other versions of the same file. See **Per-title auto-skip** below.
 - **Statistics**: Time saved, segments skipped in total and per type, and online segments downloaded / uploaded. See **Statistics** below.
+- **Next episode** (opt-in, default off): Near the end of a TV episode, a toast offers the next episode, or Skippy starts it for you at a time you choose. See **Next episode** below.
 
 ---
 
@@ -388,6 +390,28 @@ The identity is read from Kodi's library metadata only — never from a network 
 
 ---
 
+## Next episode
+
+Near the end of a TV episode Skippy can offer to play the next one, or start it for you, much like the Up Next add-on. Everything lives in the **Next episode** settings category and is **off** by default.
+
+- **Enable play next episode** turns the feature on. It only applies to TV episodes.
+- **Seconds before the end** (default **45**, 10 to 300) says when it happens, whatever the mode: the prompt appears this many seconds before the end of the episode, or, with **Play the next episode automatically** on, the next episode starts at that moment without asking. Videos shorter than this time plus 30 seconds never prompt.
+- The prompt is a small popup in a corner of the screen with the heading **Play next episode?**, the episode number and title, and the episode's picture. It counts down to the end of the episode (**Episode ends in 00:42**, with a progress bar) and has two buttons: **Play now** and **Close**. Press **Play now** to start the next episode, **Close** or **Back** to dismiss it. The popup stays up until the episode ends. A dismissed prompt stays away for the rest of the episode; seeking back well before the window brings it back. If the popup cannot be shown for any reason, Skippy falls back to the Kodi toast.
+- **Popup style** (Basic level): **Custom** is the popup described above; **Native toast** shows the plain Kodi toast instead (**OK** plays now, **Back** dismisses).
+- **Customize next episode popup…** (Basic level) opens a screen where you pick **Popup style**, **Popup position** (one of the four corners), whether to show the **episode picture**, the **time left** text and the **progress bar**, and which button has focus first. **Preview** shows the popup as it would look with an example episode and a countdown that starts over (or the toast, if the style is **Native toast**); press **Close** or **Back** to return, nothing is changed. **Save** stores only what you changed; **Cancel** discards it. The same options are also in the Next episode settings, where the position, picture, time left and progress bar rows are shown while the style is **Custom** (Standard level) and the first-focused button at Advanced level.
+- **Start at the credits** (default **off**): when the episode has a **Credits** segment that begins in its second half (from an EDL or chapter file, or from online lookup), the prompt, or the automatic start, begins when that segment starts instead of **Seconds before the end**. Without a Credits segment, or when it begins less than 10 seconds before the end, the usual time applies. Credits found later (for example by the online lookup) are picked up as long as the prompt has not appeared yet.
+- **Hide skip dialogs during the prompt** (Standard level, default **on**): from the moment the prompt is due until the episode ends, Skippy does not offer to skip segments, so a credits skip dialog does not compete with it. It only applies when a next episode was found, and Auto skips are not affected. Turn it off to keep skip dialogs working at the end; whichever prompt opens first then holds the other back until it closes.
+
+**Still watching?** With **Play the next episode automatically** on, Skippy counts the episodes that played one after another without anyone pressing a button (the one playing counts). After **Episodes in a row before asking** (Standard level, default **3**, 1 to 10), the next hand-off shows **Still watching?** with **Continue** and **Stop** instead of starting the next episode on its own. **Continue** starts it and the count begins again. **Stop**, or no answer, leaves the next episode unstarted, so the episode finishes and playback ends; with a playlist, which Kodi would carry on with by itself, Skippy stops playback a few seconds before the end. A button press during an episode starts the count over, and so does starting an episode yourself. It looks like the popup, or like the toast when **Popup style** is **Native toast**. Turn it off with **Ask if you are still watching** (Standard level, default **on**); both settings only show while automatic play is on.
+
+**Where the next episode comes from.** If the current playlist has an item after this one, that is the next episode (Kodi would play it next anyway). Otherwise it is the next episode of the same show in your video library, in season and episode order: gaps in the numbering are fine, specials are never offered after a regular episode, and a file that holds several episodes is not played twice. **Skip episodes already watched** (Advanced) offers the next unwatched one instead of the one that follows directly. **Resume a partly watched next episode** (Advanced, default on) continues from the saved position. Add-on (plugin) sources are only covered when they use a playlist.
+
+**Marking the episode watched.** Kodi only counts an episode as watched past its threshold (90 % by default), so moving on well before the end would leave it unwatched. With **Mark the episode as watched when moving on** (Standard, default on), Skippy checks a few seconds after the switch and marks the episode you left as watched if Kodi did not.
+
+**Up Next add-on.** If `service.upnext` is turned on, Skippy's prompt stays off so you do not get two popups, and Skippy says so once per Kodi session. Turn one of them off.
+
+---
+
 ## Statistics
 
 The **Statistics** category opens a modal with:
@@ -486,6 +510,26 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | show_toast_for_skipped_segment | Enable toast notification for skipped segment |
 | show_toast_for_segment_marker | Enable toast notifications for segment marker (start/end times and cancel) |
 | toast_online_segments_applied | Enable toast when online segments are loaded for the current video (default: true) |
+
+| Category: | Next episode |
+| ----------------------------- | ---------------------------------------------------------------- |
+| next_episode_enabled | Enable play next episode: offer the next episode near the end of a TV episode (default off) |
+| next_episode_autoplay | Start the next episode on its own instead of asking (default off) |
+| next_episode_lead_seconds | Seconds before the end when the prompt appears or autoplay starts (default 45, 10 to 300) |
+| next_episode_start_at_credits | Start the prompt or autoplay when the Credits segment begins instead (default off) |
+| next_episode_still_watching | Standard, automatic play only: ask "Still watching?" after several episodes without a button press (default on) |
+| next_episode_still_watching_after | Standard, automatic play only: episodes in a row before asking (default 3, 1 to 10) |
+| next_episode_hide_skip_dialogs | Standard: no skip dialogs from the moment the prompt is due until the episode ends (default on) |
+| next_episode_mark_watched | Standard: mark the episode you leave as watched if Kodi did not (default on) |
+| next_episode_skip_watched | Advanced: offer the next unwatched episode, not the one that follows directly (default off) |
+| next_episode_resume | Advanced: continue a partly watched next episode from its saved position (default on) |
+| next_episode_popup_style | Basic: **Custom** popup or **Native toast** (default Custom) |
+| settings_action_customize_next_episode_popup | Button: Customize next episode popup (style, position, picture, time left, progress bar, with Preview; Save commits, Cancel discards) |
+| next_episode_popup_position | Standard, Custom style: BottomRight, TopRight, TopLeft or BottomLeft (default BottomRight) |
+| next_episode_popup_thumbnail | Standard, Custom style: show the next episode's picture (default on) |
+| next_episode_popup_countdown | Standard, Custom style: show **Episode ends in …** (default on) |
+| next_episode_popup_progress | Standard, Custom style: show the progress bar (default on) |
+| next_episode_popup_focus | Advanced, Custom style: button focused first, **Play now** or **Close** (default Play now) |
 
 | Category: | Statistics |
 | ----------------------------- | ---------------------------------------------------------------- |
@@ -979,6 +1023,14 @@ Example: Intro (0-50s) with Recap (20-40s) nested inside
 - **Intro dialog** appears at 0s: Shows **Skip to Recap at 00:20**
 - **Recap dialog** appears at 20s: Shows **Skip to remaining Intro at 00:40**
 - **Intro dialog** reappears at 40s: Shows normal skip (no nested segments remaining)
+
+With several nested segments the parent stops at each one in turn.
+Example: Recap (0-100s) with Prologue (10-20s) and Ad (50-60s) nested inside
+- **Recap dialog** appears at 0s: Shows **Skip to Prologue at 00:10**
+- **Prologue dialog** appears at 10s: Shows **Skip to remaining Recap at 00:20**
+- **Recap dialog** reappears at 20s: Shows **Skip to Ad at 00:50**
+- **Ad dialog** appears at 50s: Shows **Skip to remaining Recap at 01:00**
+- **Recap dialog** reappears at 60s: Shows normal skip (no nested segments remaining)
 
 ### Partially Overlapping Segments
 Example: Segment A (45-133s) overlaps with Segment B (50-160s)

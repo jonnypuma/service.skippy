@@ -746,6 +746,94 @@ def main():
         ),
     )
 
+    # ---- 47000 next episode ----
+    cat = ET.SubElement(section, "category", id="next_episode", label="47000")
+    g = ET.SubElement(cat, "group", id="g_next_episode", label="")
+    _ne_on = [("next_episode_enabled", "true")]
+    bool_setting(g, "next_episode_enabled", 0, "47001", "47002", False)
+    bool_setting(g, "next_episode_autoplay", 0, "47003", "47004", False, vis=_ne_on)
+    _ne_auto = _ne_on + [("next_episode_autoplay", "true")]
+    bool_setting(
+        g, "next_episode_still_watching", 1, "47060", "47061", True, vis=_ne_auto
+    )
+    int_setting(
+        g,
+        "next_episode_still_watching_after",
+        1,
+        "47062",
+        "47063",
+        3,
+        minimum=1,
+        maximum=10,
+        step=1,
+        slider=True,
+        vis=_ne_auto + [("next_episode_still_watching", "true")],
+    )
+    int_setting(
+        g,
+        "next_episode_lead_seconds",
+        0,
+        "47005",
+        "47006",
+        45,
+        minimum=10,
+        maximum=300,
+        step=5,
+        slider=True,
+        vis=_ne_on,
+    )
+    bool_setting(g, "next_episode_start_at_credits", 0, "47064", "47065", False, vis=_ne_on)
+    labelenum_setting(
+        g,
+        "next_episode_popup_style",
+        0,
+        "47030",
+        "47031",
+        "Custom",
+        enum_a("Custom|Native toast", "Custom|Native"),
+        vis=_ne_on,
+    )
+    action_setting(
+        g,
+        "settings_action_customize_next_episode_popup",
+        0,
+        "47032",
+        "47033",
+        "RunScript(service.skippy,customize_next_episode_popup)",
+        vis=_ne_on,
+    )
+    bool_setting(g, "next_episode_hide_skip_dialogs", 1, "47007", "47008", True, vis=_ne_on)
+    bool_setting(g, "next_episode_mark_watched", 1, "47009", "47010", True, vis=_ne_on)
+    bool_setting(g, "next_episode_skip_watched", 2, "47011", "47012", False, vis=_ne_on)
+    bool_setting(g, "next_episode_resume", 2, "47013", "47014", True, vis=_ne_on)
+    _ne_custom = _ne_on + [("next_episode_popup_style", "Custom")]
+    labelenum_setting(
+        g,
+        "next_episode_popup_position",
+        1,
+        "47034",
+        "47035",
+        "BottomRight",
+        enum_a(
+            "Bottom Right|Top Right|Top Left|Bottom Left",
+            "BottomRight|TopRight|TopLeft|BottomLeft",
+        ),
+        vis=_ne_custom,
+    )
+    bool_setting(g, "next_episode_popup_thumbnail", 1, "47036", "47037", True, vis=_ne_custom)
+    bool_setting(g, "next_episode_popup_countdown", 1, "47038", "47039", True, vis=_ne_custom)
+    bool_setting(g, "next_episode_popup_progress", 1, "47040", "47041", True, vis=_ne_custom)
+    labelenum_setting(
+        g,
+        "next_episode_popup_focus",
+        2,
+        "47042",
+        "47043",
+        "Play",
+        enum_a("Play now|Close", "Play|Close"),
+        vis=_ne_custom,
+    )
+
     # ---- 30004 sources ----
     cat = ET.SubElement(section, "category", id="sources", label="30004")
     g = ET.SubElement(cat, "group", id="g_tv0", label="32036")

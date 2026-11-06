@@ -53,6 +53,8 @@ def init_playback_session(monitor: Any) -> None:
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
+    monitor.next_episode_state = None
+    monitor.next_episode_upnext_notified = False
     clear_prefetch_segment_cache()
     monitor.prefetch_tv_scheduled_path = None
     monitor.prefetch_tv_lock = threading.Lock()
@@ -82,6 +84,7 @@ def reset_playback_session(monitor: Any, *, clear_deferred, log_prefix: str, log
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
+    monitor.next_episode_state = None
     monitor.prefetch_tv_scheduled_path = None
     monitor.nested_parent_map = {}
     monitor.online_segments_toast_shown_for_path = None

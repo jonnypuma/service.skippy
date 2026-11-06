@@ -12,6 +12,7 @@ import xbmcgui
 
 from segment_editor_utils import get_home_window
 from service_loop_nested import handle_rewind_and_nested_segments
+from service_loop_next_episode import handle_next_episode
 from service_loop_playback import handle_replay_detection, handle_video_change
 from service_loop_skip import process_segment_skips
 from service_loop_toast import (
@@ -335,6 +336,25 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
 
             handle_replay_detection(ctx, video, current_time)
             handle_video_change(ctx, video)
+
+            next_episode = handle_next_episode(
+                ctx,
+                video=video,
+                playback_type=playback_type,
+                current_time=current_time,
+                player_item=playback.player_item,
+            )
+            if next_episode.switched:
+                if ctx.monitor.waitForAbort(ctx.check_interval):
+                    log("🛑 Abort requested — exiting monitor loop")
+                    break
+                continue
+            if next_episode.hide_skip_dialogs:
+                ctx.log_if_changed(
+                    "next_episode_hides_skip",
+                    "⏭️ Next episode prompt is due — skip dialogs hidden until the episode ends",
+                )
+                show_dialogs = False
 
             # Prefer skip dialogs before deferred online probe/sync (can take seconds).
             early_pass_done = False
