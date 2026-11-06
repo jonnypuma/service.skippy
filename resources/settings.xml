@@ -881,6 +881,229 @@
                         <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
                     </dependencies>
                 </setting>
+                <setting id="next_episode_popup_text_color" type="string" label="47105" help="47112">
+                    <level>1</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="White">FFFFFFFF</option>
+                            <option label="Light grey">FF8E8E8E</option>
+                            <option label="Grey">FF6E6E6E</option>
+                            <option label="Dark grey">FF3D3D3D</option>
+                            <option label="Black">FF000000</option>
+                            <option label="Blue">FF1976D2</option>
+                            <option label="Red">FFE5392F</option>
+                            <option label="Green">FF43A047</option>
+                            <option label="Aquamarine">FF00ACC1</option>
+                            <option label="Pink">FFE91E63</option>
+                            <option label="Purple">FF8E24AA</option>
+                            <option label="Peach">FFFF8A65</option>
+                            <option label="Orange">FFEF6C00</option>
+                            <option label="Yellow">FFF9A825</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_heading_color" type="string" label="47106" help="47113">
+                    <level>2</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="White">FFFFFFFF</option>
+                            <option label="Light grey">FF8E8E8E</option>
+                            <option label="Grey">FF6E6E6E</option>
+                            <option label="Dark grey">FF3D3D3D</option>
+                            <option label="Black">FF000000</option>
+                            <option label="Blue">FF1976D2</option>
+                            <option label="Red">FFE5392F</option>
+                            <option label="Green">FF43A047</option>
+                            <option label="Aquamarine">FF00ACC1</option>
+                            <option label="Pink">FFE91E63</option>
+                            <option label="Purple">FF8E24AA</option>
+                            <option label="Peach">FFFF8A65</option>
+                            <option label="Orange">FFEF6C00</option>
+                            <option label="Yellow">FFF9A825</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_all_caps" type="string" label="47107" help="47114">
+                    <level>1</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="On">On</option>
+                            <option label="Off">Off</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_focus_style" type="string" label="47108" help="47115">
+                    <level>1</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="Default">button_focus.png</option>
+                            <option label="Aqua">button_focus_aqua.png</option>
+                            <option label="Aqua Bevel">button_focus_aqua_bevel.png</option>
+                            <option label="Aqua Dark">button_focus_aqua_dark.png</option>
+                            <option label="Aqua Vignette">button_focus_aqua_vignette.png</option>
+                            <option label="Aqua Rounded">button_focus_aqua_rounded.png</option>
+                            <option label="Blue">button_focus_blue.png</option>
+                            <option label="Blue Rectangular 3D">button_focus_blue_rectangular_3d.png</option>
+                            <option label="Blue Rounded 3D">button_focus_blue_rounded_3d.png</option>
+                            <option label="Gold Rectangular 3D">button_focus_gold_rectangular_3d.png</option>
+                            <option label="Green 3D">button_focus_3d_green.png</option>
+                            <option label="Pink 3D">button_focus_3d_pink.png</option>
+                            <option label="Light Pink 3D">button_focus_3d_light_pink.png</option>
+                            <option label="Cyan 3D">button_focus_3d_cyan.png</option>
+                            <option label="Silver 3D">button_focus_3d_silver.png</option>
+                            <option label="Orange 3D">button_focus_3d_orange.png</option>
+                            <option label="Violet 3D">button_focus_3d_violet.png</option>
+                            <option label="Graphite 3D">button_focus_3d_graphite.png</option>
+                            <option label="Ice 3D">button_focus_3d_ice.png</option>
+                            <option label="Flat Blue">button_focus_flat_blue.png</option>
+                            <option label="Flat Teal">button_focus_flat_teal.png</option>
+                            <option label="Flat Green">button_focus_flat_green.png</option>
+                            <option label="Flat Rose">button_focus_flat_rose.png</option>
+                            <option label="Flat Orange">button_focus_flat_orange.png</option>
+                            <option label="Flat Violet">button_focus_flat_violet.png</option>
+                            <option label="Flat Slate">button_focus_flat_slate.png</option>
+                            <option label="Flat White">button_focus_flat_white.png</option>
+                            <option label="Glass White">button_focus_glass_white.png</option>
+                            <option label="Glass Blue">button_focus_glass_blue.png</option>
+                            <option label="Glass Dark">button_focus_glass_dark.png</option>
+                            <option label="Outline White">button_focus_outline_white.png</option>
+                            <option label="Outline Cyan">button_focus_outline_cyan.png</option>
+                            <option label="Underline White">button_focus_underline_white.png</option>
+                            <option label="Underline Cyan">button_focus_underline_cyan.png</option>
+                            <option label="Frosted White">button_focus_frosted_white.png</option>
+                            <option label="Brushed Steel">button_focus_steel.png</option>
+                            <option label="Neon Cyan">button_focus_neon_cyan.png</option>
+                            <option label="Neon Magenta">button_focus_neon_magenta.png</option>
+                            <option label="Gold Leaf">button_focus_gold.png</option>
+                            <option label="Pastel Mint">button_focus_pastel_mint.png</option>
+                            <option label="Pastel Peach">button_focus_pastel_peach.png</option>
+                            <option label="Pastel Lavender">button_focus_pastel_lavender.png</option>
+                            <option label="Bracket White">button_focus_bracket_white.png</option>
+                            <option label="Bracket Cyan">button_focus_bracket_cyan.png</option>
+                            <option label="Bracket Green">button_focus_bracket_green.png</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_bar_style" type="string" label="47109" help="47116">
+                    <level>2</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="Green (Default)">progress_mid.png</option>
+                            <option label="Blue/purple gradient">progress_mid_blue_purple.png</option>
+                            <option label="Dark yellow">progress_mid_darkyellow.png</option>
+                            <option label="Green/blue gradient">progress_mid_green_blue.png</option>
+                            <option label="Light blue">progress_mid_lightblue.png</option>
+                            <option label="Light green">progress_mid_lightgreen.png</option>
+                            <option label="Light yellow">progress_mid_lightyellow.png</option>
+                            <option label="Pink">progress_mid_pink.png</option>
+                            <option label="Pink/light blue gradient">progress_mid_pink_lightblue.png</option>
+                            <option label="Purple">progress_mid_purple.png</option>
+                            <option label="Yellow/red gradient">progress_mid_yellow_red.png</option>
+                            <option label="Cyan 3D">progress_mid_3d_cyan.png</option>
+                            <option label="Silver 3D">progress_mid_3d_silver.png</option>
+                            <option label="Orange 3D">progress_mid_3d_orange.png</option>
+                            <option label="Violet 3D">progress_mid_3d_violet.png</option>
+                            <option label="Graphite 3D">progress_mid_3d_graphite.png</option>
+                            <option label="Ice 3D">progress_mid_3d_ice.png</option>
+                            <option label="Flat Blue">progress_mid_flat_blue.png</option>
+                            <option label="Flat Teal">progress_mid_flat_teal.png</option>
+                            <option label="Flat Green">progress_mid_flat_green.png</option>
+                            <option label="Flat Rose">progress_mid_flat_rose.png</option>
+                            <option label="Flat Orange">progress_mid_flat_orange.png</option>
+                            <option label="Flat Violet">progress_mid_flat_violet.png</option>
+                            <option label="Flat Slate">progress_mid_flat_slate.png</option>
+                            <option label="Flat White">progress_mid_flat_white.png</option>
+                            <option label="Gradient Ocean">progress_mid_grad_ocean.png</option>
+                            <option label="Gradient Aurora">progress_mid_grad_aurora.png</option>
+                            <option label="Gradient Sunset">progress_mid_grad_sunset.png</option>
+                            <option label="Segmented White">progress_mid_segmented_white.png</option>
+                            <option label="Segmented Teal">progress_mid_segmented_teal.png</option>
+                            <option label="Segmented Green">progress_mid_segmented_green.png</option>
+                            <option label="Glow Cyan">progress_mid_glow_cyan.png</option>
+                            <option label="Glow Magenta">progress_mid_glow_magenta.png</option>
+                            <option label="Striped Blue">progress_mid_striped_blue.png</option>
+                            <option label="Striped Orange">progress_mid_striped_orange.png</option>
+                            <option label="Gradient Gold">progress_mid_grad_gold.png</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                        <dependency type="visible" setting="next_episode_popup_progress">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_card_opacity" type="string" label="47110" help="47117">
+                    <level>2</level>
+                    <default>Look</default>
+                    <constraints>
+                        <options>
+                            <option label="47111">Look</option>
+                            <option label="0%">0</option>
+                            <option label="5%">5</option>
+                            <option label="10%">10</option>
+                            <option label="15%">15</option>
+                            <option label="20%">20</option>
+                            <option label="25%">25</option>
+                            <option label="30%">30</option>
+                            <option label="35%">35</option>
+                            <option label="40%">40</option>
+                            <option label="45%">45</option>
+                            <option label="50%">50</option>
+                            <option label="55%">55</option>
+                            <option label="60%">60</option>
+                            <option label="65%">65</option>
+                            <option label="70%">70</option>
+                            <option label="75%">75</option>
+                            <option label="80%">80</option>
+                            <option label="85%">85</option>
+                            <option label="90%">90</option>
+                            <option label="95%">95</option>
+                            <option label="100%">100</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="next_episode_popup_position" type="string" label="47034" help="47035">
                     <level>1</level>
                     <default>BottomRight</default>

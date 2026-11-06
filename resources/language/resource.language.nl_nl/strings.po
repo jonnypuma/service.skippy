@@ -2351,3 +2351,57 @@ msgstr "Geen opgeslagen keuzes voor automatisch afspelen om te wissen."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Kies een serie"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Tekstkleur"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Kleur van de kop"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Alles in hoofdletters"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Knopmarkering"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Stijl van de voortgangsbalk"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Dekking van de kaart"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Zoals het uiterlijk"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Kleur van de afleveringsnaam, de resterende tijd en de knoptekst. Zoals het uiterlijk gebruikt de kleur van het gekozen uiterlijk."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Kleur van de kop Volgende aflevering afspelen? Zoals het uiterlijk gebruikt de kleur van het gekozen uiterlijk."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "De tekst van de pop-up in hoofdletters tonen. Zoals het uiterlijk gebruikt de keuze van het gekozen uiterlijk."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "De markering achter de knop die focus heeft. Zoals het uiterlijk gebruikt die van het gekozen uiterlijk."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Het uiterlijk van de voortgangsbalk. Balken die uit vierkantjes bestaan verliezen hele vierkantjes naarmate de tijd verstrijkt, de andere krimpen van rechts. Zoals het uiterlijk gebruikt dat van het gekozen uiterlijk."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Hoe dekkend de kaart achter de pop-up is, van 0 % (geen kaart) tot 100 %. Zoals het uiterlijk gebruikt die van het gekozen uiterlijk."

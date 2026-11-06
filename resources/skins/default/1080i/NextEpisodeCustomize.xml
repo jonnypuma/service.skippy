@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Customize next episode popup. next_episode_customize_ui.py shows only the rows that apply and
-     moves the buttons up; the numbers below are the full layout (Custom style, all seven rows).
+<!-- Customize next episode popup. next_episode_customize_ui.py shows only the rows that apply,
+     moves the buttons up and squeezes the rows together when there are more than fit; the numbers
+     below are the full layout (Custom style, all thirteen rows).
      Focus moves only in Python (no onup/ondown/onleft/onright here): Kodi would move it a second time. -->
 <window>
   <coordinates>
@@ -26,15 +27,15 @@
 
     <control type="group" id="6000">
       <posx>540</posx>
-      <posy>212</posy>
+      <posy>62</posy>
       <width>840</width>
-      <height>657</height>
+      <height>956</height>
 
       <control type="image" id="6001">
         <left>0</left>
         <top>0</top>
         <width>840</width>
-        <height>657</height>
+        <height>956</height>
         <texture>white.png</texture>
         <colordiffuse>F2101418</colordiffuse>
       </control>
@@ -58,7 +59,7 @@
         <left>30</left>
         <top>90</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -74,9 +75,117 @@
       </control>
       <control type="button" id="6017">
         <left>30</left>
-        <top>156</top>
+        <top>149</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6030">
+        <left>30</left>
+        <top>207</top>
+        <width>780</width>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6031">
+        <left>30</left>
+        <top>266</top>
+        <width>780</width>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6032">
+        <left>30</left>
+        <top>324</top>
+        <width>780</width>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6033">
+        <left>30</left>
+        <top>383</top>
+        <width>780</width>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6034">
+        <left>30</left>
+        <top>441</top>
+        <width>780</width>
+        <height>53</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>21</textoffsetx>
+      </control>
+      <control type="button" id="6035">
+        <left>30</left>
+        <top>500</top>
+        <width>780</width>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -92,9 +201,9 @@
       </control>
       <control type="button" id="6012">
         <left>30</left>
-        <top>222</top>
+        <top>558</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -110,9 +219,9 @@
       </control>
       <control type="button" id="6013">
         <left>30</left>
-        <top>288</top>
+        <top>617</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -128,9 +237,9 @@
       </control>
       <control type="button" id="6014">
         <left>30</left>
-        <top>354</top>
+        <top>675</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -146,9 +255,9 @@
       </control>
       <control type="button" id="6015">
         <left>30</left>
-        <top>420</top>
+        <top>734</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -164,9 +273,9 @@
       </control>
       <control type="button" id="6016">
         <left>30</left>
-        <top>486</top>
+        <top>792</top>
         <width>780</width>
-        <height>60</height>
+        <height>53</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -182,7 +291,7 @@
       </control>
       <control type="button" id="6020">
         <left>30</left>
-        <top>567</top>
+        <top>866</top>
         <width>240</width>
         <height>60</height>
         <label>Preview</label>
@@ -199,7 +308,7 @@
       </control>
       <control type="button" id="6021">
         <left>300</left>
-        <top>567</top>
+        <top>866</top>
         <width>240</width>
         <height>60</height>
         <label>Save</label>
@@ -216,7 +325,7 @@
       </control>
       <control type="button" id="6022">
         <left>570</left>
-        <top>567</top>
+        <top>866</top>
         <width>240</width>
         <height>60</height>
         <label>Cancel</label>

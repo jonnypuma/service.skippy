@@ -32,7 +32,19 @@ from next_episode_appearance import (
     is_native_style,
     load_popup_draft,
 )
-from next_episode_look import LOOK_LABELS
+from next_episode_look import (
+    CAPS_ON,
+    FOLLOW_LOOK,
+    KEY_ALL_CAPS,
+    KEY_BAR_STYLE,
+    KEY_CARD_OPACITY,
+    KEY_FOCUS_STYLE,
+    KEY_HEADING_COLOR,
+    KEY_TEXT_COLOR,
+    LOOK_LABELS,
+    OVERRIDE_KEYS,
+    override_label,
+)
 from settings_utils import get_addon, get_localized
 
 XML_NAME = "NextEpisodeCustomize.xml"
@@ -51,6 +63,12 @@ ROW_IDS = {
     KEY_PROGRESS: 6015,
     KEY_FOCUS: 6016,
     KEY_LOOK: 6017,
+    KEY_TEXT_COLOR: 6030,
+    KEY_HEADING_COLOR: 6031,
+    KEY_ALL_CAPS: 6032,
+    KEY_FOCUS_STYLE: 6033,
+    KEY_BAR_STYLE: 6034,
+    KEY_CARD_OPACITY: 6035,
 }
 FOOTER_IDS = (ID_PREVIEW, ID_SAVE, ID_CANCEL)
 
@@ -63,12 +81,22 @@ ROW_LABEL_IDS = {
     KEY_COUNTDOWN: (47038, "Show time left"),
     KEY_PROGRESS: (47040, "Show progress bar"),
     KEY_FOCUS: (47042, "Default button"),
+    KEY_TEXT_COLOR: (47105, "Text colour"),
+    KEY_HEADING_COLOR: (47106, "Heading colour"),
+    KEY_ALL_CAPS: (47107, "All caps"),
+    KEY_FOCUS_STYLE: (47108, "Button highlight"),
+    KEY_BAR_STYLE: (47109, "Progress bar style"),
+    KEY_CARD_OPACITY: (47110, "Card opacity"),
 }
 
 _PANEL_W = 560
 _ROW_TOP = 60
 _ROW_H = 40
 _ROW_STEP = 44
+# The rows never take more than this (720p units), so the panel always fits the screen:
+# with more rows than fit at the full step they sit closer together.
+_ROWS_MAX_H = 510
+_ROW_GAP = _ROW_STEP - _ROW_H
 _FOOTER_H = 40
 _PANEL_BOTTOM_PAD = 20
 _CANCEL_ACTIONS = (10, 92, 216)
@@ -78,10 +106,17 @@ _MOVE_UP = getattr(xbmcgui, "ACTION_MOVE_UP", 3)
 _MOVE_DOWN = getattr(xbmcgui, "ACTION_MOVE_DOWN", 4)
 
 
+def row_metrics(count):
+    """``(distance between row tops, row height)`` in 720p units for this many rows."""
+    step = min(_ROW_STEP, _ROWS_MAX_H // count) if count else _ROW_STEP
+    return step, step - _ROW_GAP
+
+
 def row_layout(rows):
     """``(row tops, footer top, panel height)`` in 720p units for the visible rows."""
-    tops = [_ROW_TOP + _ROW_STEP * n for n in range(len(rows))]
-    footer_top = _ROW_TOP + _ROW_STEP * len(rows) + 10
+    step, _height = row_metrics(len(rows))
+    tops = [_ROW_TOP + step * n for n in range(len(rows))]
+    footer_top = _ROW_TOP + step * len(rows) + 10
     return tops, footer_top, footer_top + _FOOTER_H + _PANEL_BOTTOM_PAD
 
 
@@ -104,6 +139,16 @@ def value_text(addon, draft, key) -> str:
         return STYLE_LABELS[value]
     if key == KEY_LOOK:
         return LOOK_LABELS[value]
+    if key in OVERRIDE_KEYS:
+        if value == FOLLOW_LOOK:
+            return get_localized(addon, 47111, "Same as look")
+        if key == KEY_ALL_CAPS:
+            return (
+                get_localized(addon, 44105, "Yes")
+                if value == CAPS_ON
+                else get_localized(addon, 44106, "No")
+            )
+        return override_label(key, value)
     if key == KEY_POSITION:
         return POSITION_LABELS[value]
     return FOCUS_LABELS[value]
@@ -115,6 +160,11 @@ def nudge(draft, key, delta) -> None:
         draft[key] = not draft.get(key)
     elif key in CHOICE_KEYS:
         draft[key] = cycle_choice(key, draft.get(key), delta)
+        if key == KEY_LOOK:
+            # A new look starts clean, like applying a preset in the skip dialog: what was
+            # changed on top of the old look no longer applies.
+            for override in OVERRIDE_KEYS:
+                draft[override] = FOLLOW_LOOK
 
 
 class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
@@ -179,6 +229,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         addon = self.addon
         shown = customize_rows(self._draft)
         tops, footer_top, panel_h = row_layout(shown)
+        _step, row_h = row_metrics(len(shown))
         for key, cid in ROW_IDS.items():
             ctrl = self._ctrl(cid)
             if ctrl is None:
@@ -195,7 +246,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
                 ctrl.setLabel(label=name, label2=value_text(addon, self._draft, key))
             except Exception:
                 pass
-            self._place(cid, 20, tops[shown.index(key)], 520, _ROW_H)
+            self._place(cid, 20, tops[shown.index(key)], 520, row_h)
         for n, cid in enumerate(FOOTER_IDS):
             self._place(cid, 20 + 180 * n, footer_top, 160, _FOOTER_H)
         self._place(ID_BACKDROP, 0, 0, _PANEL_W, panel_h)

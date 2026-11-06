@@ -7,7 +7,19 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from next_episode_look import LOOK_CHOICES, LOOK_DEFAULT, LOOK_LABELS  # noqa: E402
+from next_episode_look import (  # noqa: E402
+    FOLLOW_LOOK,
+    KEY_ALL_CAPS,
+    KEY_BAR_STYLE,
+    KEY_CARD_OPACITY,
+    KEY_FOCUS_STYLE,
+    KEY_HEADING_COLOR,
+    KEY_TEXT_COLOR,
+    LOOK_CHOICES,
+    LOOK_DEFAULT,
+    LOOK_LABELS,
+    override_pairs,
+)
 
 ADDON_ID = "service.skippy"
 
@@ -119,6 +131,11 @@ def int_setting(
         sub(ctrl, "heading", str(label))
     add_deps(s, vis, en, visible_or=vis_or)
     return s
+
+
+def _follow_pairs(key):
+    """The Customize-popup choices of ``key`` with the first one ("Same as look") as a string id."""
+    return [("47111", FOLLOW_LOOK)] + list(override_pairs(key))[1:]
 
 
 def labelenum_setting(g, sid, level, label, help_s, default_val, pairs, vis=None, en=None):
@@ -848,6 +865,67 @@ def main():
         "47081",
         LOOK_DEFAULT,
         [(LOOK_LABELS[choice], choice) for choice in LOOK_CHOICES],
+        vis=_ne_custom,
+    )
+    # What can be changed on top of the look. "Same as look" leaves a part to the look.
+    labelenum_setting(
+        g,
+        "next_episode_popup_text_color",
+        1,
+        "47105",
+        "47112",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_TEXT_COLOR),
+        vis=_ne_custom,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_heading_color",
+        2,
+        "47106",
+        "47113",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_HEADING_COLOR),
+        vis=_ne_custom,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_all_caps",
+        1,
+        "47107",
+        "47114",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_ALL_CAPS),
+        vis=_ne_custom,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_focus_style",
+        1,
+        "47108",
+        "47115",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_FOCUS_STYLE),
+        vis=_ne_custom,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_bar_style",
+        2,
+        "47109",
+        "47116",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_BAR_STYLE),
+        vis=_ne_custom + [("next_episode_popup_progress", "true")],
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_card_opacity",
+        2,
+        "47110",
+        "47117",
+        FOLLOW_LOOK,
+        _follow_pairs(KEY_CARD_OPACITY),
         vis=_ne_custom,
     )
     labelenum_setting(

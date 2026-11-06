@@ -2345,3 +2345,57 @@ msgstr "Nenhuma escolha de reprodução automática salva para limpar."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Escolher uma série"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Cor do texto"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Cor do título"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Tudo em maiúsculas"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Destaque do botão"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Estilo da barra de progresso"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Opacidade do cartão"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Igual à aparência"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Cor do nome do episódio, do tempo restante e do texto dos botões. Igual à aparência usa a cor da aparência escolhida."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Cor do título Reproduzir o próximo episódio? Igual à aparência usa a cor da aparência escolhida."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Mostrar o texto da janela em maiúsculas. Igual à aparência usa a escolha da aparência escolhida."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "O destaque atrás do botão que tem o foco. Igual à aparência usa o da aparência escolhida."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "A aparência da barra de progresso. Barras desenhadas com quadrados perdem quadrados inteiros conforme o tempo acaba, as outras encolhem pela direita. Igual à aparência usa a da aparência escolhida."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Quão opaco é o cartão atrás da janela, de 0 % (sem cartão) a 100 %. Igual à aparência usa a da aparência escolhida."

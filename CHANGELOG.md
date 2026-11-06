@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.5.0] - 2026-11-06
+
+### Added
+
+- **Change the popup's colours, button highlight and bar one by one.** **Customize next episode popup…** now has the same kind of rows as **Customize Skip Dialog**, so you can start from a **Popup look** and change single parts of it: **Text colour**, **Heading colour** (the "Play next episode?" line), **All caps**, **Button highlight**, **Progress bar style** and **Card opacity**. The colour, focus and bar lists are the skip dialog's own, so every colour, highlight texture and bar style you can pick there can be picked here. Each row starts at **Same as look**, which leaves that part to the chosen look; any other choice replaces it. Left and Right (or OK) step through the choices and the screen redraws, **Preview** shows the result, **Save** stores only what you changed and **Cancel** discards it. Picking another **Popup look** in the screen clears the individual choices again, the way applying a preset does in the skip dialog. **Progress bar style** is only listed while **Show progress bar** is on. The six choices are also ordinary settings under the **Popup look** setting (Standard level for text colour, all caps, button focus style; Advanced for heading colour, progress bar style and card opacity), shown while the style is **Custom**, so the settings and the screen always agree. With the default choices the popup looks exactly as before.
+
 ## [7.4.0] - 2026-11-06
 
 ### Added

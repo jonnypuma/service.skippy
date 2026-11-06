@@ -2351,3 +2351,57 @@ msgstr "Inga sparade val för automatisk uppspelning att rensa."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Välj en serie"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Textfärg"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Rubrikfärg"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Bara versaler"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Knappmarkering"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Förloppsindikatorns stil"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Kortets täckning"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Som utseendet"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Färgen på avsnittsnamnet, tiden som är kvar och knapptexten. Som utseendet använder färgen från det valda utseendet."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Färgen på rubriken Spela nästa avsnitt? Som utseendet använder färgen från det valda utseendet."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Visa popupens text med versaler. Som utseendet använder det valda utseendets val."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "Markeringen bakom knappen som har fokus. Som utseendet använder det valda utseendets."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Förloppsindikatorns utseende. Indikatorer ritade som rutor förlorar hela rutor när tiden går, de andra krymper från höger. Som utseendet använder det valda utseendets."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Hur ogenomskinligt kortet bakom popupen är, från 0 % (inget kort) till 100 %. Som utseendet använder det valda utseendets."

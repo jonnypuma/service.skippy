@@ -2351,3 +2351,57 @@ msgstr "Ingen lagrede valg for automatisk avspilling å tømme."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Velg en serie"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Tekstfarge"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Overskriftsfarge"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Bare store bokstaver"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Knappefremheving"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Stil på fremdriftslinjen"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Kortets dekkevne"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Som utseendet"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Fargen på episodenavnet, tiden som er igjen og knappeteksten. Som utseendet bruker fargen fra det valgte utseendet."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Fargen på overskriften Spille av neste episode? Som utseendet bruker fargen fra det valgte utseendet."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Vis teksten i popupen med store bokstaver. Som utseendet bruker valget fra det valgte utseendet."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "Fremhevingen bak knappen som har fokus. Som utseendet bruker den fra det valgte utseendet."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Utseendet på fremdriftslinjen. Linjer tegnet som firkanter mister hele firkanter etter hvert som tiden går, de andre krymper fra høyre. Som utseendet bruker den fra det valgte utseendet."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Hvor tett kortet bak popupen er, fra 0 % (ingen kort) til 100 %. Som utseendet bruker den fra det valgte utseendet."

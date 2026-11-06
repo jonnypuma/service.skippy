@@ -27,7 +27,6 @@ from next_episode_appearance import (
     HEADING_H,
     KEY_COUNTDOWN,
     KEY_FOCUS,
-    KEY_LOOK,
     KEY_POSITION,
     KEY_PROGRESS,
     KEY_THUMBNAIL,
@@ -41,7 +40,7 @@ from next_episode_appearance import (
     window_fraction_left,
 )
 from next_episode_lookup import episode_label
-from next_episode_look import resolve_look
+from next_episode_look import resolve_popup_look
 from next_episode_state import END_GUARD_S
 from settings_utils import addon_get_setting_text, get_localized, log
 from skip_dialog_appearance import (
@@ -210,7 +209,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
 
     def _apply_look(self):
         """Colours, focus texture and bar texture of the chosen look, as skin properties."""
-        look = resolve_look(self.draft.get(KEY_LOOK), self.addon)
+        look = resolve_popup_look(self.draft, self.addon)
         self._look = look
         tiled = progress_tiled_variant(look.bar_texture, self._sc(BAR_H))
         self._bar_tiled = bool(tiled)

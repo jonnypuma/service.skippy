@@ -2351,3 +2351,57 @@ msgstr "Ingen gemte valg for automatisk afspilning at rydde."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Vælg en serie"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Tekstfarve"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Overskriftsfarve"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Kun store bogstaver"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Knapfremhævning"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Statuslinjens stil"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Kortets uigennemsigtighed"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Som udseendet"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Farven på afsnitsnavnet, den resterende tid og knapteksten. Som udseendet bruger farven fra det valgte udseende."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Farven på overskriften Afspil næste afsnit? Som udseendet bruger farven fra det valgte udseende."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Vis popuppens tekst med store bogstaver. Som udseendet bruger det valgte udseendes valg."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "Fremhævningen bag den knap, der har fokus. Som udseendet bruger det valgte udseendes."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Statuslinjens udseende. Linjer tegnet som firkanter mister hele firkanter, efterhånden som tiden løber ud, de andre skrumper fra højre. Som udseendet bruger det valgte udseendes."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Hvor tæt kortet bag popuppen er, fra 0 % (intet kort) til 100 %. Som udseendet bruger det valgte udseendes."

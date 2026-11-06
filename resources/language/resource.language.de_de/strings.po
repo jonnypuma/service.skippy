@@ -2351,3 +2351,57 @@ msgstr "Keine gespeicherte Wahl zum Löschen."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Serie auswählen"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Textfarbe"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Überschriftfarbe"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Nur Großbuchstaben"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Tastenhervorhebung"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Fortschrittsbalken-Stil"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Deckkraft der Karte"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Wie das Aussehen"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Farbe des Folgennamens, der Restzeit und des Tastentextes. Wie das Aussehen verwendet die Farbe des gewählten Aussehens."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Farbe der Überschrift Nächste Folge abspielen? Wie das Aussehen verwendet die Farbe des gewählten Aussehens."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Den Text des Popups in Großbuchstaben zeigen. Wie das Aussehen verwendet die Wahl des gewählten Aussehens."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "Die Hervorhebung hinter der Taste mit Fokus. Wie das Aussehen verwendet die des gewählten Aussehens."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Das Aussehen des Fortschrittsbalkens. Als Quadrate gezeichnete Balken verlieren mit ablaufender Zeit ganze Quadrate, die anderen schrumpfen von rechts. Wie das Aussehen verwendet den des gewählten Aussehens."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Wie deckend die Karte hinter dem Popup ist, von 0 % (keine Karte) bis 100 %. Wie das Aussehen verwendet die des gewählten Aussehens."

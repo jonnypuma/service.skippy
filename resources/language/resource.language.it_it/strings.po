@@ -2351,3 +2351,57 @@ msgstr "Nessuna scelta di riproduzione automatica salvata da cancellare."
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Scegli una serie"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Colore del testo"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Colore del titolo"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Tutto maiuscolo"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Evidenziazione del pulsante"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Stile della barra di avanzamento"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Opacità della scheda"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Come l'aspetto"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Colore del nome dell'episodio, del tempo rimanente e del testo dei pulsanti. Come l'aspetto usa il colore dell'aspetto scelto."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Colore del titolo Riprodurre l'episodio successivo? Come l'aspetto usa il colore dell'aspetto scelto."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Mostra il testo del popup in maiuscolo. Come l'aspetto usa la scelta dell'aspetto scelto."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "L'evidenziazione dietro il pulsante con il focus. Come l'aspetto usa quella dell'aspetto scelto."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "L'aspetto della barra di avanzamento. Le barre disegnate con quadrati perdono interi quadrati mentre il tempo scorre, le altre si restringono da destra. Come l'aspetto usa quello dell'aspetto scelto."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Quanto è opaca la scheda dietro il popup, da 0 % (nessuna scheda) a 100 %. Come l'aspetto usa quella dell'aspetto scelto."

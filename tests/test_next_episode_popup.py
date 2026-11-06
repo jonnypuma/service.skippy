@@ -145,7 +145,7 @@ class DraftTests(unittest.TestCase):
         custom = app.customize_rows(app.DEFAULT_DRAFT)
         self.assertEqual(custom[0], app.KEY_STYLE)
         self.assertEqual(custom[1], app.KEY_LOOK)
-        self.assertEqual(len(custom), 7)
+        self.assertEqual(len(custom), 13)
 
     def test_every_default_is_a_known_option(self):
         for key, options in app.CHOICE_KEYS.items():

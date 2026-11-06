@@ -2351,3 +2351,57 @@ msgstr "Δεν υπάρχουν αποθηκευμένες επιλογές αυ
 msgctxt "#47104"
 msgid "Choose a show"
 msgstr "Επιλέξτε σειρά"
+
+# Next episode: popup look, own choices on top
+
+msgctxt "#47105"
+msgid "Text colour"
+msgstr "Χρώμα κειμένου"
+
+msgctxt "#47106"
+msgid "Heading colour"
+msgstr "Χρώμα επικεφαλίδας"
+
+msgctxt "#47107"
+msgid "All caps"
+msgstr "Όλα κεφαλαία"
+
+msgctxt "#47108"
+msgid "Button highlight"
+msgstr "Επισήμανση κουμπιού"
+
+msgctxt "#47109"
+msgid "Progress bar style"
+msgstr "Στυλ γραμμής προόδου"
+
+msgctxt "#47110"
+msgid "Card opacity"
+msgstr "Αδιαφάνεια κάρτας"
+
+msgctxt "#47111"
+msgid "Same as look"
+msgstr "Όπως η εμφάνιση"
+
+msgctxt "#47112"
+msgid "Colour of the episode name, the time left and the button text. Same as look uses the colour of the chosen look."
+msgstr "Το χρώμα του ονόματος του επεισοδίου, του χρόνου που απομένει και του κειμένου των κουμπιών. Το Όπως η εμφάνιση χρησιμοποιεί το χρώμα της επιλεγμένης εμφάνισης."
+
+msgctxt "#47113"
+msgid "Colour of the Play next episode? heading. Same as look uses the colour of the chosen look."
+msgstr "Το χρώμα της επικεφαλίδας Αναπαραγωγή επόμενου επεισοδίου; Το Όπως η εμφάνιση χρησιμοποιεί το χρώμα της επιλεγμένης εμφάνισης."
+
+msgctxt "#47114"
+msgid "Show the popup text in upper case. Same as look uses the choice of the chosen look."
+msgstr "Εμφάνιση του κειμένου του αναδυόμενου παραθύρου με κεφαλαία. Το Όπως η εμφάνιση χρησιμοποιεί την επιλογή της επιλεγμένης εμφάνισης."
+
+msgctxt "#47115"
+msgid "The highlight behind the button that has focus. Same as look uses the one of the chosen look."
+msgstr "Η επισήμανση πίσω από το κουμπί που έχει εστίαση. Το Όπως η εμφάνιση χρησιμοποιεί αυτήν της επιλεγμένης εμφάνισης."
+
+msgctxt "#47116"
+msgid "The look of the progress bar. Bars drawn as squares lose whole squares as the time runs down, the others shrink from the right. Same as look uses the one of the chosen look."
+msgstr "Η εμφάνιση της γραμμής προόδου. Οι γραμμές που σχεδιάζονται με τετράγωνα χάνουν ολόκληρα τετράγωνα καθώς τελειώνει ο χρόνος, οι υπόλοιπες μικραίνουν από δεξιά. Το Όπως η εμφάνιση χρησιμοποιεί αυτήν της επιλεγμένης εμφάνισης."
+
+msgctxt "#47117"
+msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
+msgstr "Πόσο συμπαγής είναι η κάρτα πίσω από το αναδυόμενο παράθυρο, από 0 % (χωρίς κάρτα) έως 100 %. Το Όπως η εμφάνιση χρησιμοποιεί αυτήν της επιλεγμένης εμφάνισης."

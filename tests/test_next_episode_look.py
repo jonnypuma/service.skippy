@@ -290,5 +290,439 @@ class CustomizeLookTests(unittest.TestCase):
         self.assertEqual(app.load_popup_draft(_Addon())[app.KEY_LOOK], look_mod.LOOK_DEFAULT)
 
 
+class OverrideChoiceTests(unittest.TestCase):
+    def test_the_choice_lists_are_the_skip_dialogs_own(self):
+        import skip_dialog_customize_ui as skip_ui
+
+        self.assertEqual(look_mod.COLOR_PAIRS, tuple(skip_ui.FONT_COLORS))
+        self.assertEqual(look_mod.FOCUS_PAIRS, tuple(skip_ui.BUTTON_FOCUS))
+        self.assertEqual(look_mod.BAR_PAIRS, tuple(skip_ui.PROGRESS_STYLES))
+
+    def test_every_override_starts_with_same_as_look(self):
+        for key in look_mod.OVERRIDE_KEYS:
+            pairs = look_mod.override_pairs(key)
+            self.assertEqual(pairs[0], (look_mod.FOLLOW_LOOK_LABEL, look_mod.FOLLOW_LOOK), key)
+            self.assertEqual(look_mod.override_options(key)[0], look_mod.FOLLOW_LOOK)
+            values = [value for _label, value in pairs]
+            self.assertEqual(len(set(values)), len(values), key)
+
+    def test_the_stored_values_are_plain_ascii_without_spaces(self):
+        for key in look_mod.OVERRIDE_KEYS:
+            for value in look_mod.override_options(key):
+                self.assertTrue(value.isascii() and " " not in value, (key, value))
+
+    def test_every_texture_choice_points_at_a_file_that_exists(self):
+        for key in (look_mod.KEY_FOCUS_STYLE, look_mod.KEY_BAR_STYLE):
+            for value in look_mod.override_options(key)[1:]:
+                self.assertTrue(os.path.isfile(os.path.join(MEDIA, value)), (key, value))
+        for key in (look_mod.KEY_TEXT_COLOR, look_mod.KEY_HEADING_COLOR):
+            for value in look_mod.override_options(key)[1:]:
+                if value.endswith(".png"):
+                    self.assertTrue(os.path.isfile(os.path.join(MEDIA, value)), (key, value))
+
+    def test_the_opacity_choices_run_from_nothing_to_solid_in_fives(self):
+        values = look_mod.override_options(look_mod.KEY_CARD_OPACITY)[1:]
+        self.assertEqual(values, tuple(str(n) for n in range(0, 101, 5)))
+
+    def test_normalize_override_accepts_case_and_falls_back_to_the_look(self):
+        key = look_mod.KEY_FOCUS_STYLE
+        self.assertEqual(
+            look_mod.normalize_override(key, "BUTTON_FOCUS_FLAT_TEAL.PNG"), "button_focus_flat_teal.png"
+        )
+        self.assertEqual(look_mod.normalize_override(look_mod.KEY_ALL_CAPS, " on "), look_mod.CAPS_ON)
+        self.assertEqual(look_mod.normalize_override(look_mod.KEY_CARD_OPACITY, "40"), "40")
+        for junk in (None, "", "nonsense", 7, "150"):
+            self.assertEqual(look_mod.normalize_override(key, junk), look_mod.FOLLOW_LOOK, junk)
+        self.assertEqual(look_mod.normalize_override(look_mod.KEY_CARD_OPACITY, "150"), look_mod.FOLLOW_LOOK)
+
+    def test_override_label_names_a_stored_choice(self):
+        self.assertEqual(look_mod.override_label(look_mod.KEY_TEXT_COLOR, "FF1976D2"), "Blue")
+        self.assertEqual(
+            look_mod.override_label(look_mod.KEY_FOCUS_STYLE, look_mod.FOLLOW_LOOK), "Same as look"
+        )
+        self.assertEqual(look_mod.override_label(look_mod.KEY_CARD_OPACITY, "35"), "35%")
+
+
+class OverrideLookTests(unittest.TestCase):
+    base = look_mod.DEFAULT_LOOK
+
+    def over(self, **values):
+        return look_mod.look_with_overrides(self.base, values)
+
+    def test_nothing_chosen_leaves_the_look_untouched(self):
+        self.assertIs(look_mod.look_with_overrides(self.base, None), self.base)
+        self.assertIs(look_mod.look_with_overrides(self.base, {}), self.base)
+        everything_follows = {key: look_mod.FOLLOW_LOOK for key in look_mod.OVERRIDE_KEYS}
+        self.assertIs(look_mod.look_with_overrides(self.base, everything_follows), self.base)
+
+    def test_a_text_colour_replaces_the_follow_the_skip_dialog_default(self):
+        found = self.over(**{look_mod.KEY_TEXT_COLOR: "FF1976D2"})
+        self.assertEqual(found.text_color, "FF1976D2")
+        self.assertEqual(found.heading_color, self.base.heading_color)
+
+    def test_a_heading_colour_only_changes_the_heading(self):
+        found = self.over(**{look_mod.KEY_HEADING_COLOR: "FFFFFFFF"})
+        self.assertEqual(found.heading_color, "FFFFFFFF")
+        self.assertEqual(found.text_color, self.base.text_color)
+
+    def test_upper_case_can_be_forced_either_way(self):
+        shouting = look_mod.resolve_look("Terminal", None)
+        self.assertTrue(shouting.all_caps)
+        self.assertFalse(look_mod.look_with_overrides(shouting, {look_mod.KEY_ALL_CAPS: "Off"}).all_caps)
+        self.assertTrue(self.over(**{look_mod.KEY_ALL_CAPS: "On"}).all_caps)
+        self.assertTrue(look_mod.look_with_overrides(shouting, {look_mod.KEY_ALL_CAPS: "Look"}).all_caps)
+
+    def test_a_focus_texture_brings_the_matching_border(self):
+        flat = self.over(**{look_mod.KEY_FOCUS_STYLE: "button_focus_flat_teal.png"})
+        self.assertEqual(flat.focus_border, look_mod.BORDER_ALL)
+        three_d = self.over(**{look_mod.KEY_FOCUS_STYLE: "button_focus_3d_cyan.png"})
+        self.assertEqual(three_d.focus_texture, "button_focus_3d_cyan.png")
+        self.assertEqual(three_d.focus_border, look_mod.BORDER_SIDES)
+        plain = self.over(**{look_mod.KEY_FOCUS_STYLE: "button_focus.png"})
+        self.assertEqual(plain.focus_border, look_mod.BORDER_NONE)
+
+    def test_every_focus_choice_gets_a_known_border(self):
+        for value in look_mod.override_options(look_mod.KEY_FOCUS_STYLE)[1:]:
+            found = self.over(**{look_mod.KEY_FOCUS_STYLE: value})
+            self.assertEqual(found.focus_texture, value)
+            self.assertIn(
+                found.focus_border, (look_mod.BORDER_ALL, look_mod.BORDER_SIDES, look_mod.BORDER_NONE), value
+            )
+
+    def test_a_bar_texture_replaces_the_looks_bar(self):
+        found = self.over(**{look_mod.KEY_BAR_STYLE: "progress_mid_flat_blue.png"})
+        self.assertEqual(found.bar_texture, "progress_mid_flat_blue.png")
+        self.assertEqual(found.focus_texture, self.base.focus_texture)
+
+    def test_card_opacity_uses_the_skip_dialogs_maths(self):
+        for pct in (5, 35, 70, 100):
+            found = self.over(**{look_mod.KEY_CARD_OPACITY: str(pct)})
+            self.assertEqual(found.card_color, look_mod.card_color(True, pct), pct)
+
+    def test_zero_percent_means_no_card_at_all(self):
+        self.assertEqual(self.over(**{look_mod.KEY_CARD_OPACITY: "0"}).card_color, "00000000")
+
+    def test_a_card_can_be_added_to_a_look_without_one(self):
+        glass = look_mod.resolve_look("Glass", None)
+        self.assertEqual(glass.card_color, "00000000")
+        found = look_mod.look_with_overrides(glass, {look_mod.KEY_CARD_OPACITY: "60"})
+        self.assertEqual(found.card_color, look_mod.card_color(True, 60))
+
+    def test_unusable_values_change_nothing(self):
+        junk = {key: "nonsense" for key in look_mod.OVERRIDE_KEYS}
+        self.assertIs(look_mod.look_with_overrides(self.base, junk), self.base)
+
+    def test_overrides_never_change_the_look_they_were_applied_to(self):
+        self.over(**{look_mod.KEY_BAR_STYLE: "progress_mid_flat_blue.png"})
+        self.assertEqual(self.base.bar_texture, "progress_mid_segmented_teal.png")
+
+    def test_resolve_popup_look_puts_the_choices_on_top_of_the_chosen_look(self):
+        values = {
+            look_mod.KEY_LOOK: "Terminal",
+            look_mod.KEY_TEXT_COLOR: "FF1976D2",
+            look_mod.KEY_ALL_CAPS: "Off",
+        }
+        found = look_mod.resolve_popup_look(values, None)
+        terminal = look_mod.resolve_look("Terminal", None)
+        self.assertEqual(found.text_color, "FF1976D2")
+        self.assertFalse(found.all_caps)
+        self.assertEqual(found.bar_texture, terminal.bar_texture)
+        self.assertEqual(found.card_color, terminal.card_color)
+
+    def test_resolve_popup_look_copes_with_missing_values(self):
+        self.assertEqual(look_mod.resolve_popup_look(None, None), look_mod.DEFAULT_LOOK)
+        self.assertEqual(look_mod.resolve_popup_look({}, None), look_mod.DEFAULT_LOOK)
+
+    def test_following_the_skip_dialog_still_takes_the_choices_on_top(self):
+        addon = _Addon(skip_dialog_font_color="FFFFD54F", progress_bar_style="progress_mid_flat_blue.png")
+        values = {look_mod.KEY_LOOK: look_mod.LOOK_SKIP_DIALOG, look_mod.KEY_BAR_STYLE: "progress_mid_flat_rose.png"}
+        found = look_mod.resolve_popup_look(values, addon)
+        self.assertEqual(found.text_color, "FFFFD54F")
+        self.assertEqual(found.bar_texture, "progress_mid_flat_rose.png")
+
+
+class OverrideDialogTests(unittest.TestCase):
+    def test_the_dialog_draws_with_the_chosen_overrides(self):
+        dialog = _dialog(_Addon(skip_dialog_font_color="FFEEEEEE"))
+        dialog.draft.update(
+            {
+                look_mod.KEY_TEXT_COLOR: "FF1976D2",
+                look_mod.KEY_HEADING_COLOR: "FFFFFFFF",
+                look_mod.KEY_ALL_CAPS: "On",
+                look_mod.KEY_FOCUS_STYLE: "button_focus_3d_cyan.png",
+                look_mod.KEY_BAR_STYLE: "progress_mid_flat_blue.png",
+                look_mod.KEY_CARD_OPACITY: "50",
+            }
+        )
+        dialog._apply_look()
+        self.assertEqual(dialog.props["skip_dialog_text_color"], "FF1976D2")
+        self.assertEqual(dialog.props["next_ep_heading_color"], "FFFFFFFF")
+        self.assertEqual(dialog.props["next_ep_focus_texture"], "button_focus_3d_cyan.png")
+        self.assertEqual(dialog.props["next_ep_focus_border"], "sides")
+        self.assertEqual(dialog.props["next_ep_bar_texture"], "progress_mid_flat_blue.png")
+        self.assertEqual(dialog.props["next_ep_card_color"], look_mod.card_color(True, 50))
+        self.assertEqual(dialog._caps("Play now"), "PLAY NOW")
+
+    def test_a_flat_bar_choice_switches_the_bar_to_stretched(self):
+        dialog = _dialog(_Addon())
+        dialog.draft[look_mod.KEY_BAR_STYLE] = "progress_mid_flat_blue.png"
+        dialog._apply_look()
+        self.assertFalse(dialog._bar_tiled)
+        self.assertEqual(dialog.props["next_ep_bar_tiled"], "false")
+
+    def test_a_dialog_with_no_overrides_looks_exactly_as_before(self):
+        plain = _dialog(_Addon())
+        plain._apply_look()
+        self.assertEqual(plain.props["next_ep_card_color"], "F0000000")
+        self.assertEqual(plain.props["next_ep_bar_texture"], "progress_mid_segmented_teal.png")
+
+
+class CustomizeOverrideTests(unittest.TestCase):
+    def test_the_custom_style_lists_thirteen_rows_in_the_skip_dialog_order(self):
+        self.assertEqual(
+            app.customize_rows(app.DEFAULT_DRAFT),
+            [
+                app.KEY_STYLE,
+                app.KEY_LOOK,
+                look_mod.KEY_TEXT_COLOR,
+                look_mod.KEY_HEADING_COLOR,
+                look_mod.KEY_ALL_CAPS,
+                look_mod.KEY_FOCUS_STYLE,
+                look_mod.KEY_BAR_STYLE,
+                look_mod.KEY_CARD_OPACITY,
+                app.KEY_POSITION,
+                app.KEY_THUMBNAIL,
+                app.KEY_COUNTDOWN,
+                app.KEY_PROGRESS,
+                app.KEY_FOCUS,
+            ],
+        )
+
+    def test_the_bar_style_row_goes_away_with_the_progress_bar(self):
+        draft = dict(app.DEFAULT_DRAFT, **{app.KEY_PROGRESS: False})
+        rows = app.customize_rows(draft)
+        self.assertNotIn(look_mod.KEY_BAR_STYLE, rows)
+        self.assertEqual(len(rows), 12)
+        self.assertIn(look_mod.KEY_FOCUS_STYLE, rows)
+
+    def test_the_toast_style_hides_every_override_row(self):
+        rows = app.customize_rows({app.KEY_STYLE: "Native"})
+        for key in look_mod.OVERRIDE_KEYS:
+            self.assertNotIn(key, rows)
+
+    def test_every_override_has_a_row_control_and_three_label_strings(self):
+        ids = list(cust.ROW_IDS.values())
+        self.assertEqual(len(set(ids)), len(ids))
+        for key in look_mod.OVERRIDE_KEYS:
+            self.assertIn(key, cust.ROW_IDS)
+            self.assertIn(key, cust.ROW_LABEL_IDS)
+        self.assertEqual(
+            [cust.ROW_LABEL_IDS[key][0] for key in look_mod.OVERRIDE_KEYS], list(range(47105, 47111))
+        )
+
+    def test_defaults_follow_the_look(self):
+        for key in look_mod.OVERRIDE_KEYS:
+            self.assertEqual(app.DEFAULT_DRAFT[key], look_mod.FOLLOW_LOOK)
+            self.assertEqual(app.CHOICE_KEYS[key], look_mod.override_options(key))
+
+    def test_each_row_cycles_through_its_choices_and_wraps(self):
+        for key in look_mod.OVERRIDE_KEYS:
+            options = look_mod.override_options(key)
+            draft = dict(app.DEFAULT_DRAFT)
+            seen = [draft[key]]
+            for _ in range(len(options) - 1):
+                cust.nudge(draft, key, 1)
+                seen.append(draft[key])
+            self.assertEqual(seen, list(options), key)
+            cust.nudge(draft, key, 1)
+            self.assertEqual(draft[key], look_mod.FOLLOW_LOOK, key)
+            cust.nudge(draft, key, -1)
+            self.assertEqual(draft[key], options[-1], key)
+
+    def test_choosing_another_look_clears_what_was_changed_on_top(self):
+        draft = dict(app.DEFAULT_DRAFT)
+        for key in look_mod.OVERRIDE_KEYS:
+            cust.nudge(draft, key, 1)
+            self.assertNotEqual(draft[key], look_mod.FOLLOW_LOOK)
+        cust.nudge(draft, app.KEY_LOOK, 1)
+        for key in look_mod.OVERRIDE_KEYS:
+            self.assertEqual(draft[key], look_mod.FOLLOW_LOOK, key)
+
+    def test_changing_an_override_does_not_touch_the_look_or_the_others(self):
+        draft = dict(app.DEFAULT_DRAFT, **{app.KEY_LOOK: "Modern"})
+        cust.nudge(draft, look_mod.KEY_BAR_STYLE, 1)
+        self.assertEqual(draft[app.KEY_LOOK], "Modern")
+        self.assertNotEqual(draft[look_mod.KEY_BAR_STYLE], look_mod.FOLLOW_LOOK)
+        self.assertEqual(draft[look_mod.KEY_TEXT_COLOR], look_mod.FOLLOW_LOOK)
+
+    def test_the_value_text_names_each_choice(self):
+        draft = dict(app.DEFAULT_DRAFT)
+        for key in look_mod.OVERRIDE_KEYS:
+            self.assertEqual(cust.value_text(None, draft, key), "Same as look", key)
+        draft[look_mod.KEY_TEXT_COLOR] = "FF1976D2"
+        draft[look_mod.KEY_FOCUS_STYLE] = "button_focus_flat_teal.png"
+        draft[look_mod.KEY_BAR_STYLE] = "progress_mid_flat_blue.png"
+        draft[look_mod.KEY_CARD_OPACITY] = "35"
+        self.assertEqual(cust.value_text(None, draft, look_mod.KEY_TEXT_COLOR), "Blue")
+        self.assertEqual(
+            cust.value_text(None, draft, look_mod.KEY_FOCUS_STYLE),
+            look_mod.override_label(look_mod.KEY_FOCUS_STYLE, "button_focus_flat_teal.png"),
+        )
+        self.assertEqual(
+            cust.value_text(None, draft, look_mod.KEY_BAR_STYLE),
+            look_mod.override_label(look_mod.KEY_BAR_STYLE, "progress_mid_flat_blue.png"),
+        )
+        self.assertEqual(cust.value_text(None, draft, look_mod.KEY_CARD_OPACITY), "35%")
+
+    def test_upper_case_reads_yes_or_no(self):
+        draft = dict(app.DEFAULT_DRAFT, **{look_mod.KEY_ALL_CAPS: "On"})
+        self.assertEqual(cust.value_text(None, draft, look_mod.KEY_ALL_CAPS), "Yes")
+        draft[look_mod.KEY_ALL_CAPS] = "Off"
+        self.assertEqual(cust.value_text(None, draft, look_mod.KEY_ALL_CAPS), "No")
+
+    def test_saving_writes_only_the_overrides_that_changed(self):
+        original = dict(app.DEFAULT_DRAFT)
+        draft = dict(original)
+        draft[look_mod.KEY_BAR_STYLE] = "progress_mid_flat_blue.png"
+        draft[look_mod.KEY_CARD_OPACITY] = "40"
+        self.assertEqual(
+            cust.changed_payload(draft, original),
+            {
+                look_mod.KEY_BAR_STYLE: "progress_mid_flat_blue.png",
+                look_mod.KEY_CARD_OPACITY: "40",
+            },
+        )
+
+    def test_going_back_to_same_as_look_is_saved_as_a_change(self):
+        original = dict(app.DEFAULT_DRAFT, **{look_mod.KEY_TEXT_COLOR: "FF1976D2"})
+        draft = dict(original, **{look_mod.KEY_TEXT_COLOR: look_mod.FOLLOW_LOOK})
+        self.assertEqual(
+            cust.changed_payload(draft, original), {look_mod.KEY_TEXT_COLOR: look_mod.FOLLOW_LOOK}
+        )
+
+    def test_the_stored_overrides_are_read_back_into_the_draft(self):
+        addon = _Addon(
+            **{
+                look_mod.KEY_TEXT_COLOR: "ff1976d2",
+                look_mod.KEY_ALL_CAPS: "on",
+                look_mod.KEY_CARD_OPACITY: "45",
+                look_mod.KEY_BAR_STYLE: "garbage",
+            }
+        )
+        draft = app.load_popup_draft(addon)
+        self.assertEqual(draft[look_mod.KEY_TEXT_COLOR], "FF1976D2")
+        self.assertEqual(draft[look_mod.KEY_ALL_CAPS], "On")
+        self.assertEqual(draft[look_mod.KEY_CARD_OPACITY], "45")
+        self.assertEqual(draft[look_mod.KEY_BAR_STYLE], look_mod.FOLLOW_LOOK)
+        self.assertEqual(draft[look_mod.KEY_HEADING_COLOR], look_mod.FOLLOW_LOOK)
+
+    def test_the_preview_uses_the_draft_overrides(self):
+        draft = dict(app.DEFAULT_DRAFT, **{look_mod.KEY_BAR_STYLE: "progress_mid_flat_blue.png"})
+        dialog = _dialog(_Addon())
+        dialog.draft = draft
+        dialog._apply_look()
+        self.assertEqual(dialog.props["next_ep_bar_texture"], "progress_mid_flat_blue.png")
+
+
+class CustomizeSkinRowTests(unittest.TestCase):
+    def controls(self, res):
+        path = os.path.join(ROOT, "resources", "skins", "default", res, "NextEpisodeCustomize.xml")
+        out = {}
+        for ctrl in ET.parse(path).getroot().iter("control"):
+            cid = ctrl.get("id")
+            if cid is None:
+                continue
+            out[int(cid)] = {
+                tag: int(ctrl.findtext(tag))
+                for tag in ("top", "height", "width")
+                if ctrl.findtext(tag) is not None
+            }
+        return out
+
+    def test_every_row_exists_in_both_skins_with_the_computed_height(self):
+        rows = app.customize_rows(app.DEFAULT_DRAFT)
+        _step, height = cust.row_metrics(len(rows))
+        for res, factor in (("720p", 1), ("1080i", 1.5)):
+            found = self.controls(res)
+            for key in rows:
+                cid = cust.ROW_IDS[key]
+                self.assertIn(cid, found, (res, key))
+                self.assertEqual(found[cid]["height"], int(height * factor + 0.5), (res, key))
+
+    def test_the_rows_fit_inside_the_screen(self):
+        for count in (7, 12, 13):
+            tops, footer, panel_h = cust.row_layout(list(range(count)))
+            self.assertLessEqual(panel_h, app.BASE_SCREEN_H, count)
+            self.assertGreaterEqual(footer, tops[-1] + cust.row_metrics(count)[1])
+
+    def test_rows_shrink_only_when_they_would_not_fit(self):
+        self.assertEqual(cust.row_metrics(7), (cust._ROW_STEP, cust._ROW_H))
+        step, height = cust.row_metrics(13)
+        self.assertLess(step, cust._ROW_STEP)
+        self.assertEqual(step - height, cust._ROW_STEP - cust._ROW_H)
+        self.assertGreaterEqual(height, 30)
+
+    def test_the_two_skin_resolutions_agree_on_row_tops(self):
+        rows = app.customize_rows(app.DEFAULT_DRAFT)
+        small, big = self.controls("720p"), self.controls("1080i")
+        for key in rows:
+            cid = cust.ROW_IDS[key]
+            self.assertEqual(big[cid]["top"], int(small[cid]["top"] * 1.5 + 0.5), key)
+
+
+class OverrideSettingsTests(unittest.TestCase):
+    def settings(self):
+        tree = ET.parse(os.path.join(ROOT, "resources", "settings.xml"))
+        return {s.get("id"): s for s in tree.getroot().iter("setting")}
+
+    def test_each_override_has_a_setting_that_lists_exactly_its_choices(self):
+        found = self.settings()
+        for key in look_mod.OVERRIDE_KEYS:
+            setting = found[key]
+            self.assertEqual(setting.findtext("default"), look_mod.FOLLOW_LOOK, key)
+            options = [o.text for o in setting.iter("option")]
+            self.assertEqual(options, list(look_mod.override_options(key)), key)
+
+    def test_every_option_label_is_a_string_id_or_a_plain_name(self):
+        found = self.settings()
+        for key in look_mod.OVERRIDE_KEYS:
+            labels = [o.get("label") for o in found[key].iter("option")]
+            self.assertEqual(labels[0], "47111", key)
+            self.assertTrue(all(label for label in labels), key)
+
+    def test_all_overrides_are_hidden_with_the_toast_style(self):
+        found = self.settings()
+        for key in look_mod.OVERRIDE_KEYS:
+            deps = {
+                (d.get("setting"), d.text) for d in found[key].iter("dependency") if d.get("type") == "visible"
+            }
+            self.assertIn(("next_episode_popup_style", "Custom"), deps, key)
+
+    def test_the_bar_style_also_needs_the_progress_bar(self):
+        found = self.settings()
+        deps = {
+            (d.get("setting"), d.text)
+            for d in found[look_mod.KEY_BAR_STYLE].iter("dependency")
+            if d.get("type") == "visible"
+        }
+        self.assertIn(("next_episode_popup_progress", "true"), deps)
+        for key in look_mod.OVERRIDE_KEYS:
+            if key != look_mod.KEY_BAR_STYLE:
+                other = {d.get("setting") for d in found[key].iter("dependency")}
+                self.assertNotIn("next_episode_popup_progress", other, key)
+
+    def test_the_overrides_sit_right_under_the_look_setting(self):
+        order = [s.get("id") for s in ET.parse(os.path.join(ROOT, "resources", "settings.xml")).getroot().iter("setting")]
+        start = order.index(look_mod.KEY_LOOK)
+        self.assertEqual(order[start + 1 : start + 7], list(look_mod.OVERRIDE_KEYS))
+
+    def test_the_override_labels_exist_in_every_language_pack(self):
+        langs = os.path.join(ROOT, "resources", "language")
+        for pack in sorted(os.listdir(langs)):
+            text = open(os.path.join(langs, pack, "strings.po"), encoding="utf-8").read()
+            for sid in range(47105, 47118):
+                self.assertIn('msgctxt "#%d"' % sid, text, (pack, sid))
+
+
 if __name__ == "__main__":
     unittest.main()

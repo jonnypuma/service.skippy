@@ -12,7 +12,7 @@ Nothing here needs Kodi to be imported, so the settings generator can read the c
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Optional
 
 KEY_LOOK = "next_episode_popup_look"
@@ -45,6 +45,178 @@ LOOK_LABELS.update({token: name for token, name in PRESET_TOKENS.items()})
 BORDER_ALL = "all"  # nine-slice with a 12 px border all round
 BORDER_SIDES = "sides"  # 12 px on the left and right only (the 3D textures)
 BORDER_NONE = "none"  # stretched as one piece
+
+# --- the user's own choices on top of a look -------------------------------------------------
+# Each is stored as a setting. ``FOLLOW_LOOK`` ("Same as look") leaves that part to the look; any
+# other value replaces it. Picking another look in the Customize screen clears them again.
+FOLLOW_LOOK = "Look"
+FOLLOW_LOOK_LABEL = "Same as look"
+
+KEY_TEXT_COLOR = "next_episode_popup_text_color"
+KEY_HEADING_COLOR = "next_episode_popup_heading_color"
+KEY_ALL_CAPS = "next_episode_popup_all_caps"
+KEY_FOCUS_STYLE = "next_episode_popup_focus_style"
+KEY_BAR_STYLE = "next_episode_popup_bar_style"
+KEY_CARD_OPACITY = "next_episode_popup_card_opacity"
+OVERRIDE_KEYS = (
+    KEY_TEXT_COLOR,
+    KEY_HEADING_COLOR,
+    KEY_ALL_CAPS,
+    KEY_FOCUS_STYLE,
+    KEY_BAR_STYLE,
+    KEY_CARD_OPACITY,
+)
+
+CAPS_ON = "On"
+CAPS_OFF = "Off"
+
+# The skip dialog"s font colours (skip_dialog_customize_ui.FONT_COLORS); a test keeps them in step.
+COLOR_PAIRS = (
+    ("White", "FFFFFFFF"),
+    ("Light grey", "FF8E8E8E"),
+    ("Grey", "FF6E6E6E"),
+    ("Dark grey", "FF3D3D3D"),
+    ("Black", "FF000000"),
+    ("Blue", "FF1976D2"),
+    ("Red", "FFE5392F"),
+    ("Green", "FF43A047"),
+    ("Aquamarine", "FF00ACC1"),
+    ("Pink", "FFE91E63"),
+    ("Purple", "FF8E24AA"),
+    ("Peach", "FFFF8A65"),
+    ("Orange", "FFEF6C00"),
+    ("Yellow", "FFF9A825"),
+)
+
+# The skip dialog"s button highlight textures (BUTTON_FOCUS).
+FOCUS_PAIRS = (
+    ("Default", "button_focus.png"),
+    ("Aqua", "button_focus_aqua.png"),
+    ("Aqua Bevel", "button_focus_aqua_bevel.png"),
+    ("Aqua Dark", "button_focus_aqua_dark.png"),
+    ("Aqua Vignette", "button_focus_aqua_vignette.png"),
+    ("Aqua Rounded", "button_focus_aqua_rounded.png"),
+    ("Blue", "button_focus_blue.png"),
+    ("Blue Rectangular 3D", "button_focus_blue_rectangular_3d.png"),
+    ("Blue Rounded 3D", "button_focus_blue_rounded_3d.png"),
+    ("Gold Rectangular 3D", "button_focus_gold_rectangular_3d.png"),
+    ("Green 3D", "button_focus_3d_green.png"),
+    ("Pink 3D", "button_focus_3d_pink.png"),
+    ("Light Pink 3D", "button_focus_3d_light_pink.png"),
+    ("Cyan 3D", "button_focus_3d_cyan.png"),
+    ("Silver 3D", "button_focus_3d_silver.png"),
+    ("Orange 3D", "button_focus_3d_orange.png"),
+    ("Violet 3D", "button_focus_3d_violet.png"),
+    ("Graphite 3D", "button_focus_3d_graphite.png"),
+    ("Ice 3D", "button_focus_3d_ice.png"),
+    ("Flat Blue", "button_focus_flat_blue.png"),
+    ("Flat Teal", "button_focus_flat_teal.png"),
+    ("Flat Green", "button_focus_flat_green.png"),
+    ("Flat Rose", "button_focus_flat_rose.png"),
+    ("Flat Orange", "button_focus_flat_orange.png"),
+    ("Flat Violet", "button_focus_flat_violet.png"),
+    ("Flat Slate", "button_focus_flat_slate.png"),
+    ("Flat White", "button_focus_flat_white.png"),
+    ("Glass White", "button_focus_glass_white.png"),
+    ("Glass Blue", "button_focus_glass_blue.png"),
+    ("Glass Dark", "button_focus_glass_dark.png"),
+    ("Outline White", "button_focus_outline_white.png"),
+    ("Outline Cyan", "button_focus_outline_cyan.png"),
+    ("Underline White", "button_focus_underline_white.png"),
+    ("Underline Cyan", "button_focus_underline_cyan.png"),
+    ("Frosted White", "button_focus_frosted_white.png"),
+    ("Brushed Steel", "button_focus_steel.png"),
+    ("Neon Cyan", "button_focus_neon_cyan.png"),
+    ("Neon Magenta", "button_focus_neon_magenta.png"),
+    ("Gold Leaf", "button_focus_gold.png"),
+    ("Pastel Mint", "button_focus_pastel_mint.png"),
+    ("Pastel Peach", "button_focus_pastel_peach.png"),
+    ("Pastel Lavender", "button_focus_pastel_lavender.png"),
+    ("Bracket White", "button_focus_bracket_white.png"),
+    ("Bracket Cyan", "button_focus_bracket_cyan.png"),
+    ("Bracket Green", "button_focus_bracket_green.png"),
+)
+
+# The skip dialog"s progress bar styles (PROGRESS_STYLES).
+BAR_PAIRS = (
+    ("Green (Default)", "progress_mid.png"),
+    ("Blue/purple gradient", "progress_mid_blue_purple.png"),
+    ("Dark yellow", "progress_mid_darkyellow.png"),
+    ("Green/blue gradient", "progress_mid_green_blue.png"),
+    ("Light blue", "progress_mid_lightblue.png"),
+    ("Light green", "progress_mid_lightgreen.png"),
+    ("Light yellow", "progress_mid_lightyellow.png"),
+    ("Pink", "progress_mid_pink.png"),
+    ("Pink/light blue gradient", "progress_mid_pink_lightblue.png"),
+    ("Purple", "progress_mid_purple.png"),
+    ("Yellow/red gradient", "progress_mid_yellow_red.png"),
+    ("Cyan 3D", "progress_mid_3d_cyan.png"),
+    ("Silver 3D", "progress_mid_3d_silver.png"),
+    ("Orange 3D", "progress_mid_3d_orange.png"),
+    ("Violet 3D", "progress_mid_3d_violet.png"),
+    ("Graphite 3D", "progress_mid_3d_graphite.png"),
+    ("Ice 3D", "progress_mid_3d_ice.png"),
+    ("Flat Blue", "progress_mid_flat_blue.png"),
+    ("Flat Teal", "progress_mid_flat_teal.png"),
+    ("Flat Green", "progress_mid_flat_green.png"),
+    ("Flat Rose", "progress_mid_flat_rose.png"),
+    ("Flat Orange", "progress_mid_flat_orange.png"),
+    ("Flat Violet", "progress_mid_flat_violet.png"),
+    ("Flat Slate", "progress_mid_flat_slate.png"),
+    ("Flat White", "progress_mid_flat_white.png"),
+    ("Gradient Ocean", "progress_mid_grad_ocean.png"),
+    ("Gradient Aurora", "progress_mid_grad_aurora.png"),
+    ("Gradient Sunset", "progress_mid_grad_sunset.png"),
+    ("Segmented White", "progress_mid_segmented_white.png"),
+    ("Segmented Teal", "progress_mid_segmented_teal.png"),
+    ("Segmented Green", "progress_mid_segmented_green.png"),
+    ("Glow Cyan", "progress_mid_glow_cyan.png"),
+    ("Glow Magenta", "progress_mid_glow_magenta.png"),
+    ("Striped Blue", "progress_mid_striped_blue.png"),
+    ("Striped Orange", "progress_mid_striped_orange.png"),
+    ("Gradient Gold", "progress_mid_grad_gold.png"),
+)
+
+CAPS_PAIRS = ((CAPS_ON, CAPS_ON), (CAPS_OFF, CAPS_OFF))
+# Card opacity in steps of 5 %, like the skip dialog's own setting; 0 % is no card at all.
+OPACITY_PAIRS = tuple(("%d%%" % pct, str(pct)) for pct in range(0, 101, 5))
+
+OVERRIDE_PAIRS = {
+    KEY_TEXT_COLOR: COLOR_PAIRS,
+    KEY_HEADING_COLOR: COLOR_PAIRS,
+    KEY_ALL_CAPS: CAPS_PAIRS,
+    KEY_FOCUS_STYLE: FOCUS_PAIRS,
+    KEY_BAR_STYLE: BAR_PAIRS,
+    KEY_CARD_OPACITY: OPACITY_PAIRS,
+}
+
+
+def override_pairs(key):
+    """``(label, stored value)`` choices for an override, "Same as look" first."""
+    return ((FOLLOW_LOOK_LABEL, FOLLOW_LOOK),) + tuple(OVERRIDE_PAIRS[key])
+
+
+def override_options(key):
+    """Stored values for an override, ``FOLLOW_LOOK`` first."""
+    return tuple(value for _label, value in override_pairs(key))
+
+
+def override_label(key, stored) -> str:
+    """The English name of a stored choice."""
+    for label, value in override_pairs(key):
+        if value == stored:
+            return label
+    return str(stored)
+
+
+def normalize_override(key, value) -> str:
+    """A stored override, or ``FOLLOW_LOOK`` when the text is not one of the choices."""
+    text = str(value if value is not None else "").strip().lower()
+    for stored in override_options(key):
+        if stored.lower() == text:
+            return stored
+    return FOLLOW_LOOK
+
 
 
 @dataclass(frozen=True)
@@ -166,3 +338,38 @@ def resolve_look(choice, addon) -> PopupLook:
     except Exception:
         pass
     return DEFAULT_LOOK
+
+
+def look_with_overrides(look, values) -> PopupLook:
+    """``look`` with the user's own choices on top. Never raises: unusable values change nothing."""
+    values = values or {}
+    changes = {}
+    text = normalize_override(KEY_TEXT_COLOR, values.get(KEY_TEXT_COLOR))
+    if text != FOLLOW_LOOK:
+        changes["text_color"] = text
+    heading = normalize_override(KEY_HEADING_COLOR, values.get(KEY_HEADING_COLOR))
+    if heading != FOLLOW_LOOK:
+        changes["heading_color"] = heading
+    caps = normalize_override(KEY_ALL_CAPS, values.get(KEY_ALL_CAPS))
+    if caps != FOLLOW_LOOK:
+        changes["all_caps"] = caps == CAPS_ON
+    focus = normalize_override(KEY_FOCUS_STYLE, values.get(KEY_FOCUS_STYLE))
+    if focus != FOLLOW_LOOK:
+        changes["focus_texture"] = focus
+        try:
+            changes["focus_border"] = focus_border(focus)
+        except Exception:
+            changes["focus_border"] = BORDER_ALL
+    bar = normalize_override(KEY_BAR_STYLE, values.get(KEY_BAR_STYLE))
+    if bar != FOLLOW_LOOK:
+        changes["bar_texture"] = bar
+    opacity = normalize_override(KEY_CARD_OPACITY, values.get(KEY_CARD_OPACITY))
+    if opacity != FOLLOW_LOOK:
+        changes["card_color"] = card_color(True, int(opacity))
+    return replace(look, **changes) if changes else look
+
+
+def resolve_popup_look(values, addon) -> PopupLook:
+    """The look the popup is drawn with: the chosen look plus the user's own choices."""
+    values = values or {}
+    return look_with_overrides(resolve_look(values.get(KEY_LOOK), addon), values)

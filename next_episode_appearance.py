@@ -6,7 +6,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from next_episode_look import KEY_LOOK, LOOK_CHOICES, LOOK_DEFAULT, LOOK_LABELS
+from next_episode_look import (
+    FOLLOW_LOOK,
+    KEY_ALL_CAPS,
+    KEY_BAR_STYLE,
+    KEY_CARD_OPACITY,
+    KEY_FOCUS_STYLE,
+    KEY_HEADING_COLOR,
+    KEY_LOOK,
+    KEY_TEXT_COLOR,
+    LOOK_CHOICES,
+    LOOK_DEFAULT,
+    LOOK_LABELS,
+    OVERRIDE_KEYS,
+    override_options,
+)
 
 KEY_STYLE = "next_episode_popup_style"
 KEY_POSITION = "next_episode_popup_position"
@@ -36,6 +50,12 @@ FOCUS_LABELS = {FOCUS_PLAY: "Play now", FOCUS_CLOSE: "Close"}
 DEFAULT_DRAFT = {
     KEY_STYLE: STYLE_CUSTOM,
     KEY_LOOK: LOOK_DEFAULT,
+    KEY_TEXT_COLOR: FOLLOW_LOOK,
+    KEY_HEADING_COLOR: FOLLOW_LOOK,
+    KEY_ALL_CAPS: FOLLOW_LOOK,
+    KEY_FOCUS_STYLE: FOLLOW_LOOK,
+    KEY_BAR_STYLE: FOLLOW_LOOK,
+    KEY_CARD_OPACITY: FOLLOW_LOOK,
     KEY_POSITION: "BottomRight",
     KEY_THUMBNAIL: True,
     KEY_COUNTDOWN: True,
@@ -49,6 +69,8 @@ CHOICE_KEYS = {
     KEY_POSITION: POSITIONS,
     KEY_FOCUS: FOCUS_CHOICES,
 }
+# The user's own choices on top of the look: each is "Same as look" or one stored value.
+CHOICE_KEYS.update({key: override_options(key) for key in OVERRIDE_KEYS})
 
 # --- layout in 720p units (the skin folder scales them by 1.5 for 1080i) ---
 PANEL_W = 520
@@ -203,7 +225,11 @@ def customize_rows(draft) -> list:
     """Setting ids shown in the Customize modal, top to bottom, for this draft."""
     rows = [KEY_STYLE]
     if not is_native_style(draft):
-        rows += [KEY_LOOK, KEY_POSITION, KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS, KEY_FOCUS]
+        # The look, then what can be changed on top of it, then what is shown and where.
+        rows += [KEY_LOOK, KEY_TEXT_COLOR, KEY_HEADING_COLOR, KEY_ALL_CAPS, KEY_FOCUS_STYLE]
+        if (draft or {}).get(KEY_PROGRESS, True):
+            rows.append(KEY_BAR_STYLE)
+        rows += [KEY_CARD_OPACITY, KEY_POSITION, KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS, KEY_FOCUS]
     return rows
 
 
