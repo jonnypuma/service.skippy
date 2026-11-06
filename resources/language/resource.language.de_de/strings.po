@@ -2247,3 +2247,107 @@ msgstr "Stopp"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Zum Fortfahren OK drücken"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Popup-Aussehen"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "Aussehen des Popups: Default, dasselbe Aussehen wie der Überspringen-Dialog oder eine seiner Voreinstellungen. Geändert werden Karte, Text, Tastenhervorhebung und Fortschrittsbalken, nicht das Layout."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Automatisches Abspielen pro Serie merken"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "Nach Jetzt abspielen in der Abfrage zur nächsten Folge wird gefragt, ob diese Serie ihre nächste Folge künftig automatisch abspielen soll. Eine Serie mit gespeicherter Antwort behält ihre Wahl, und eine Serie mit Erst fragen zeigt die Abfrage immer, auch wenn automatisches Abspielen eingeschaltet ist."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Automatisches Abspielen pro Serie verwalten"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Die Serien ansehen, die automatisch abspielen oder erst fragen, eine Wahl ändern oder vergessen oder eine Serie aus der Bibliothek hinzufügen."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Gespeicherte Abspiel-Wahl löschen"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Die Wahl aller Serien vergessen, sodass jede Serie wieder der Einstellung Nächste Folge automatisch abspielen folgt."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Automatisch abspielen pro Serie"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Eine Serie auswählen, um ihre Wahl zu ändern oder zu vergessen."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Serie hinzufügen..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Automatisch abspielen"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Erst fragen"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Diese Serie vergessen"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "Noch keine Serien in der Bibliothek."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Die Serie konnte nicht erkannt werden."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Nächste Folge immer abspielen?"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Die nächste Folge von %s künftig automatisch starten?"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Die nächste Folge dieser Serie künftig automatisch starten?"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Weiter fragen"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Automatisches Abspielen für diese Serie gespeichert"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Wahl für %s vergessen"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "%d gespeicherte Wahl(en) gelöscht."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "Keine gespeicherte Wahl zum Löschen."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Serie auswählen"

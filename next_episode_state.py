@@ -36,6 +36,9 @@ class NextEpisodeState:
     started: bool = False
     failed: bool = False
     last_prompt_mono: float = 0.0
+    # The show's per-show autoplay key and title (empty when unknown or the feature is off).
+    show_key: Optional[str] = None
+    show_title: str = ""
     created_mono: float = field(default_factory=lambda: time.monotonic())
     # "Still watching?" guard: decided once per episode, and the watchdog that stops a playlist.
     guard_checked: bool = False

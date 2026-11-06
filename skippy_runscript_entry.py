@@ -77,6 +77,29 @@ def main():
 
             show_manage_title_autoskip_modal()
             return
+        if command == "manage_next_episode_shows":
+            from next_episode_shows_ui import show_manage_next_episode_shows_modal
+
+            show_manage_next_episode_shows_modal()
+            return
+        if command == "clear_next_episode_shows":
+            from next_episode_shows import clear_all
+            from settings_utils import get_localized, notify_skippy
+
+            addon = _addon()
+            removed = clear_all()
+            if removed:
+                message = get_localized(
+                    addon, 47102, "Cleared %d saved autoplay choice(s).", removed
+                )
+            else:
+                message = get_localized(
+                    addon, 47103, "No saved autoplay choices to clear."
+                )
+            notify_skippy(
+                addon, message, title=get_localized(addon, 43000, "Skippy")
+            )
+            return
         if command == "customize_skip_dialog":
             from skip_dialog_customize_ui import show_skip_dialog_customize
 

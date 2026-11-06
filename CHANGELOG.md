@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.4.0] - 2026-11-06
+
+### Added
+
+- **Popup look.** A new **Popup look** setting, also a row in **Customize next episode popup…**, changes how the next episode popup looks without moving anything: the card behind it, the text colours, upper case, the highlight behind the focused button and the progress bar. **Default** is the look the popup has always had and stays the default. **Same as skip dialog** follows the skip dialog's own settings as you change them (progress bar style, button focus style, card opacity, font colour and all caps). The other 34 choices are the skip dialog's Full and Compact Full presets, from **Classic** to **Underline**, so a preset you like there looks the same here. **Preview** shows the look you picked. A progress bar drawn as squares keeps their size and loses whole squares as the time runs down; the other bar styles shrink from the right.
+- **Autoplay per show.** A new **Remember autoplay per show** setting (off by default) lets each show have its own answer to "start the next episode by itself?". With it on, pressing **Play now** on the prompt for a show Skippy has no choice for makes Skippy ask, a few seconds into the next episode, **Always play the next episode?** **Yes** starts that show's next episodes automatically from then on, even while **Play the next episode automatically** is off; **Keep asking** keeps the prompt for that show, even while automatic play is on. Either answer is remembered and asked only once per show. A show is recognised by its TMDB id (IMDb id as fallback), the same way the per-title auto-skip rules do it, so every copy of its episodes counts; shows Skippy cannot identify just follow the global setting. **Manage autoplay by show** lists the shows with a choice, lets you switch a show between **Play automatically** and **Ask first** or forget it, and has **Add a show...** to pick any show from your library in advance. **Clear saved autoplay choices** forgets them all. The "Still watching?" question applies to automatic play from a show's own choice as well, so its rows now show while either kind of automatic play is on. The choices are included in **Back up profile data** and restored by merging.
+
 ## [7.3.4] - 2026-11-06
 
 ### Fixed

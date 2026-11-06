@@ -2247,3 +2247,107 @@ msgstr "Ferma"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Premi OK per continuare"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Aspetto del popup"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "L'aspetto del popup: Default, lo stesso aspetto della finestra di salto o uno dei suoi preset. Cambia la scheda, il testo, l'evidenziazione dei pulsanti e la barra di avanzamento, non la disposizione."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Ricorda la riproduzione automatica per serie"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "Dopo aver premuto Riproduci ora nell'avviso dell'episodio successivo, viene chiesto se quella serie debba riprodurre automaticamente il proprio episodio successivo d'ora in poi. Una serie con risposta salvata mantiene la sua scelta, e una serie impostata su Chiedi prima mostra sempre l'avviso, anche con la riproduzione automatica attiva."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Gestisci la riproduzione automatica per serie"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Consulta le serie impostate per la riproduzione automatica o su Chiedi prima, cambia o dimentica una scelta, oppure aggiungi una serie dalla libreria."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Cancella le scelte di riproduzione automatica salvate"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Dimentica la scelta di ogni serie, così ogni serie torna a seguire l'impostazione Riproduci automaticamente l'episodio successivo."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Riproduzione automatica per serie"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Seleziona una serie per cambiare o dimenticare la sua scelta."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Aggiungi una serie..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Riproduci automaticamente"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Chiedi prima"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Dimentica questa serie"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "Ancora nessuna serie TV nella libreria."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Impossibile capire di quale serie si tratti."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Riprodurre sempre l'episodio successivo?"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Avviare automaticamente l'episodio successivo di %s d'ora in poi?"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Avviare automaticamente l'episodio successivo di questa serie d'ora in poi?"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Continua a chiedere"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Riproduzione automatica salvata per questa serie"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Scelta di riproduzione automatica dimenticata per %s"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "Cancellate %d scelte di riproduzione automatica salvate."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "Nessuna scelta di riproduzione automatica salvata da cancellare."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Scegli una serie"

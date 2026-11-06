@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Customize next episode popup. next_episode_customize_ui.py shows only the rows that apply and
-     moves the buttons up; the numbers below are the full layout (Custom style, all six rows).
+     moves the buttons up; the numbers below are the full layout (Custom style, all seven rows).
      Focus moves only in Python (no onup/ondown/onleft/onright here): Kodi would move it a second time. -->
 <window>
   <coordinates>
@@ -26,15 +26,15 @@
 
     <control type="group" id="6000">
       <posx>360</posx>
-      <posy>163</posy>
+      <posy>141</posy>
       <width>560</width>
-      <height>394</height>
+      <height>438</height>
 
       <control type="image" id="6001">
         <left>0</left>
         <top>0</top>
         <width>560</width>
-        <height>394</height>
+        <height>438</height>
         <texture>white.png</texture>
         <colordiffuse>F2101418</colordiffuse>
       </control>
@@ -72,7 +72,7 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
-      <control type="button" id="6012">
+      <control type="button" id="6017">
         <left>20</left>
         <top>104</top>
         <width>520</width>
@@ -90,7 +90,7 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
-      <control type="button" id="6013">
+      <control type="button" id="6012">
         <left>20</left>
         <top>148</top>
         <width>520</width>
@@ -108,7 +108,7 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
-      <control type="button" id="6014">
+      <control type="button" id="6013">
         <left>20</left>
         <top>192</top>
         <width>520</width>
@@ -126,7 +126,7 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
-      <control type="button" id="6015">
+      <control type="button" id="6014">
         <left>20</left>
         <top>236</top>
         <width>520</width>
@@ -144,7 +144,7 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
-      <control type="button" id="6016">
+      <control type="button" id="6015">
         <left>20</left>
         <top>280</top>
         <width>520</width>
@@ -162,9 +162,27 @@
         <aligny>center</aligny>
         <textoffsetx>14</textoffsetx>
       </control>
+      <control type="button" id="6016">
+        <left>20</left>
+        <top>324</top>
+        <width>520</width>
+        <height>40</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
       <control type="button" id="6020">
         <left>20</left>
-        <top>334</top>
+        <top>378</top>
         <width>160</width>
         <height>40</height>
         <label>Preview</label>
@@ -181,7 +199,7 @@
       </control>
       <control type="button" id="6021">
         <left>200</left>
-        <top>334</top>
+        <top>378</top>
         <width>160</width>
         <height>40</height>
         <label>Save</label>
@@ -198,7 +216,7 @@
       </control>
       <control type="button" id="6022">
         <left>380</left>
-        <top>334</top>
+        <top>378</top>
         <width>160</width>
         <height>40</height>
         <label>Cancel</label>

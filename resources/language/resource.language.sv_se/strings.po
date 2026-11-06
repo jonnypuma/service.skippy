@@ -2247,3 +2247,107 @@ msgstr "Stopp"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Tryck på OK för att fortsätta"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Utseende på popupen"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "Hur popupen ser ut: Default, samma utseende som hoppdialogrutan eller en av dess förinställningar. Ändrar kortet, texten, knappmarkeringen och förloppsindikatorn, inte layouten."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Kom ihåg automatisk uppspelning per serie"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "Efter Spela nu i frågan om nästa avsnitt frågas det om serien ska spela upp sitt nästa avsnitt automatiskt från och med nu. En serie med sparat svar behåller sitt val, och en serie inställd på Fråga först visar alltid frågan, även när automatisk uppspelning är på."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Hantera automatisk uppspelning per serie"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Granska serierna som spelas upp automatiskt eller frågar först, ändra eller glöm ett val, eller lägg till en serie från biblioteket."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Rensa sparade val för automatisk uppspelning"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Glöm varje series val, så att varje serie åter följer inställningen Spela nästa avsnitt automatiskt."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Automatisk uppspelning per serie"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Välj en serie för att ändra eller glömma dess val."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Lägg till en serie..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Spela upp automatiskt"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Fråga först"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Glöm den här serien"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "Inga tv-serier i biblioteket ännu."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Det gick inte att avgöra vilken serie det är."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Alltid spela nästa avsnitt?"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Starta nästa avsnitt av %s automatiskt från och med nu?"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Starta nästa avsnitt av den här serien automatiskt från och med nu?"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Fortsätt fråga"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Automatisk uppspelning sparad för den här serien"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Glömde valet för automatisk uppspelning för %s"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "Rensade %d sparade val för automatisk uppspelning."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "Inga sparade val för automatisk uppspelning att rensa."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Välj en serie"

@@ -1094,6 +1094,9 @@ class SettingsDefinitionTests(unittest.TestCase):
         expected = {
             "next_episode_enabled": ("false", "0"),
             "next_episode_autoplay": ("false", "0"),
+            "next_episode_per_show": ("false", "0"),
+            "settings_action_manage_next_episode_shows": (None, "0"),
+            "settings_action_clear_next_episode_shows": (None, "0"),
             "next_episode_lead_seconds": ("45", "0"),
             "next_episode_still_watching": ("true", "1"),
             "next_episode_still_watching_after": ("3", "1"),
@@ -1104,6 +1107,7 @@ class SettingsDefinitionTests(unittest.TestCase):
             "next_episode_resume": ("true", "2"),
             "next_episode_popup_style": ("Custom", "0"),
             "settings_action_customize_next_episode_popup": (None, "0"),
+            "next_episode_popup_look": ("Default", "1"),
             "next_episode_popup_position": ("BottomRight", "1"),
             "next_episode_popup_thumbnail": ("true", "1"),
             "next_episode_popup_countdown": ("true", "1"),
@@ -1137,12 +1141,20 @@ class SettingsDefinitionTests(unittest.TestCase):
                 if d.get("type") == "visible"
             }
 
-        self.assertIn(("next_episode_autoplay", "true"), deps("next_episode_still_watching"))
+        def any_of(sid):
+            return {
+                (c.get("setting"), c.text)
+                for d in found[sid].iter("dependency")
+                if d.get("type") == "visible"
+                for c in d.iter("condition")
+            }
+
+        # Global autoplay or a show set to autoplay can reach the guard, so either shows its rows.
+        either = {("next_episode_autoplay", "true"), ("next_episode_per_show", "true")}
+        self.assertEqual(any_of("next_episode_still_watching"), either)
+        self.assertEqual(any_of("next_episode_still_watching_after"), either)
         self.assertIn(
             ("next_episode_still_watching", "true"), deps("next_episode_still_watching_after")
-        )
-        self.assertIn(
-            ("next_episode_autoplay", "true"), deps("next_episode_still_watching_after")
         )
         self.assertNotIn(("next_episode_autoplay", "true"), deps("next_episode_start_at_credits"))
         constraints = found["next_episode_still_watching_after"].find("constraints")

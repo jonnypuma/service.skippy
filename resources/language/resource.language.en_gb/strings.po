@@ -2241,3 +2241,107 @@ msgstr "Stop"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Press OK to continue"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Popup look"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Remember autoplay per show"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Manage autoplay by show"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Clear saved autoplay choices"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Autoplay by show"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Select a show to change or forget its choice."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Add a show..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Play automatically"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Ask first"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Forget this show"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "No TV shows in your library yet."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Could not tell which show that is."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Always play the next episode?"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Start the next episode of %s automatically from now on?"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Start the next episode of this show automatically from now on?"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Keep asking"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Autoplay saved for this show"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Forgot the autoplay choice for %s"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "Cleared %d saved autoplay choice(s)."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "No saved autoplay choices to clear."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Choose a show"

@@ -19,6 +19,7 @@ from next_episode_appearance import (
     FOCUS_LABELS,
     KEY_COUNTDOWN,
     KEY_FOCUS,
+    KEY_LOOK,
     KEY_POSITION,
     KEY_PROGRESS,
     KEY_STYLE,
@@ -31,6 +32,7 @@ from next_episode_appearance import (
     is_native_style,
     load_popup_draft,
 )
+from next_episode_look import LOOK_LABELS
 from settings_utils import get_addon, get_localized
 
 XML_NAME = "NextEpisodeCustomize.xml"
@@ -48,12 +50,14 @@ ROW_IDS = {
     KEY_COUNTDOWN: 6014,
     KEY_PROGRESS: 6015,
     KEY_FOCUS: 6016,
+    KEY_LOOK: 6017,
 }
 FOOTER_IDS = (ID_PREVIEW, ID_SAVE, ID_CANCEL)
 
 # Row names are the setting labels, so the modal and the settings page agree.
 ROW_LABEL_IDS = {
     KEY_STYLE: (47030, "Popup style"),
+    KEY_LOOK: (47080, "Popup look"),
     KEY_POSITION: (47034, "Popup position"),
     KEY_THUMBNAIL: (47036, "Show episode picture"),
     KEY_COUNTDOWN: (47038, "Show time left"),
@@ -98,6 +102,8 @@ def value_text(addon, draft, key) -> str:
         return get_localized(addon, 44105, "Yes") if value else get_localized(addon, 44106, "No")
     if key == KEY_STYLE:
         return STYLE_LABELS[value]
+    if key == KEY_LOOK:
+        return LOOK_LABELS[value]
     if key == KEY_POSITION:
         return POSITION_LABELS[value]
     return FOCUS_LABELS[value]

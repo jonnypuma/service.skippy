@@ -144,7 +144,8 @@ class DraftTests(unittest.TestCase):
         )
         custom = app.customize_rows(app.DEFAULT_DRAFT)
         self.assertEqual(custom[0], app.KEY_STYLE)
-        self.assertEqual(len(custom), 6)
+        self.assertEqual(custom[1], app.KEY_LOOK)
+        self.assertEqual(len(custom), 7)
 
     def test_every_default_is_a_known_option(self):
         for key, options in app.CHOICE_KEYS.items():
@@ -279,20 +280,77 @@ class PopupSkinTests(unittest.TestCase):
                 zorder(res, "NextEpisodeDialog.xml"), zorder(res, "NextEpisodeCustomize.xml"), res
             )
 
+    def _control(self, res, cid):
+        root = ET.parse(self.path(res, "NextEpisodeDialog.xml")).getroot()
+        return [c for c in root.iter("control") if c.get("id") == str(cid)][0]
+
     def test_the_bar_fill_is_a_cropped_tiled_image(self):
         """A stretched image is squeezed as it shrinks; a left-aligned crop of a tiled one is not."""
         for res in ("720p", "1080i"):
-            root = ET.parse(self.path(res, "NextEpisodeDialog.xml")).getroot()
-            fill = [c for c in root.iter("control") if c.get("id") == str(dlg_mod.ID_BAR_FILL)][0]
+            fill = self._control(res, dlg_mod.ID_BAR_FILL)
             self.assertEqual(fill.get("type"), "image", res)
             aspect = fill.find("aspectratio")
             self.assertEqual((aspect.text, aspect.get("align")), ("scale", "left"), res)
-            height = int(fill.findtext("height"))
-            texture = fill.findtext("texture")
-            self.assertEqual(texture, "progress_tiled_segmented_teal_h%d.png" % height, res)
-            self.assertTrue(
-                os.path.isfile(os.path.join(SKINS, "media", texture)), "%s: %s" % (res, texture)
+            self.assertEqual(
+                fill.findtext("texture"), "$INFO[Window.Property(next_ep_bar_tiled_texture)]", res
             )
+            self.assertIn("next_ep_bar_tiled),true)", fill.findtext("visible"), res)
+            self.assertNotIn("!String", fill.findtext("visible"), res)
+
+    def test_a_bar_texture_without_a_tiled_version_gets_a_stretched_fill(self):
+        for res in ("720p", "1080i"):
+            fill = self._control(res, dlg_mod.ID_BAR_FILL)
+            plain = self._control(res, dlg_mod.ID_BAR_FILL_STRETCH)
+            self.assertEqual(plain.findtext("aspectratio"), "stretch", res)
+            self.assertEqual(
+                plain.findtext("texture"), "$INFO[Window.Property(next_ep_bar_texture)]", res
+            )
+            self.assertIn("!String.IsEqual(Window.Property(next_ep_bar_tiled),true)",
+                          plain.findtext("visible"), res)
+            for tag in ("left", "top", "width", "height"):
+                self.assertEqual(plain.findtext(tag), fill.findtext(tag), (res, tag))
+            for control in (fill, plain):
+                self.assertIn("next_ep_has_bar", control.findtext("visible"), res)
+
+    def test_the_default_look_has_a_tiled_bar_at_both_skin_heights(self):
+        import skip_dialog_appearance as skip_app
+        from next_episode_look import DEFAULT_LOOK
+
+        for res, height in (("720p", app.BAR_H), ("1080i", int(app.BAR_H * 1.5))):
+            fill = self._control(res, dlg_mod.ID_BAR_FILL)
+            self.assertEqual(int(fill.findtext("height")), height, res)
+            variant = skip_app.progress_tiled_variant(DEFAULT_LOOK.bar_texture, height)
+            self.assertIsNotNone(variant, res)
+
+    def test_each_button_has_three_focus_cuts_and_none_of_its_own(self):
+        """The focus texture is a property, so one cut per border style is shown, not a fixed file."""
+        expected = {"all": "12,12,12,12", "sides": "12,0,12,0", "none": None}
+        for res in ("720p", "1080i"):
+            for button, images in dlg_mod.FOCUS_IMAGES.items():
+                self.assertEqual(self._control(res, button).findtext("texturefocus"), "-", res)
+                button_geom = {
+                    t: self._control(res, button).findtext(t) for t in ("left", "top", "width", "height")
+                }
+                for image_id, (variant, border) in zip(images, expected.items()):
+                    image = self._control(res, image_id)
+                    texture = image.find("texture")
+                    self.assertEqual(
+                        texture.text, "$INFO[Window.Property(next_ep_focus_texture)]", (res, image_id)
+                    )
+                    self.assertEqual(texture.get("border"), border, (res, image_id))
+                    condition = image.findtext("visible")
+                    self.assertIn("Control.HasFocus(%d)" % button, condition)
+                    self.assertIn("next_ep_focus_border),%s)" % variant, condition)
+                    for tag, value in button_geom.items():
+                        self.assertEqual(image.findtext(tag), value, (res, image_id, tag))
+
+    def test_the_focus_images_are_drawn_under_the_buttons(self):
+        root = ET.parse(self.path("720p", "NextEpisodeDialog.xml")).getroot()
+        order = [int(c.get("id")) for c in root.iter("control") if c.get("id")]
+        buttons = [order.index(b) for b in dlg_mod.FOCUS_IMAGES]
+        for images in dlg_mod.FOCUS_IMAGES.values():
+            for image_id in images:
+                self.assertLess(order.index(image_id), min(buttons))
 
     def test_the_customize_skin_leaves_focus_movement_to_python(self):
         """Native onup/ondown links as well as the Python handler would move focus twice per key."""
@@ -305,7 +363,8 @@ class PopupSkinTests(unittest.TestCase):
         with open(self.path("720p", "NextEpisodeDialog.xml"), encoding="utf-8") as fh:
             text = fh.read()
         for prop in ("next_ep_heading", "next_ep_label", "next_ep_countdown", "next_ep_thumb",
-                     "next_ep_has_thumb", "skip_dialog_text_color", "skippy_dialog_ready"):
+                     "next_ep_has_thumb", "skip_dialog_text_color", "skippy_dialog_ready",
+                     "next_ep_card_color", "next_ep_heading_color"):
             self.assertIn("Window.Property(%s)" % prop, text)
 
 
@@ -332,7 +391,10 @@ class PopupSettingsTests(unittest.TestCase):
 
     def test_the_popup_look_only_shows_for_the_custom_style(self):
         found = self.settings()
-        look = (app.KEY_POSITION, app.KEY_THUMBNAIL, app.KEY_COUNTDOWN, app.KEY_PROGRESS, app.KEY_FOCUS)
+        look = (
+            app.KEY_LOOK, app.KEY_POSITION, app.KEY_THUMBNAIL, app.KEY_COUNTDOWN,
+            app.KEY_PROGRESS, app.KEY_FOCUS,
+        )
         for key in look:
             deps = {(d.get("setting"), d.text) for d in found[key].iter("dependency")}
             self.assertIn((app.KEY_STYLE, "Custom"), deps, key)

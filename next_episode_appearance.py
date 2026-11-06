@@ -6,6 +6,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+from next_episode_look import KEY_LOOK, LOOK_CHOICES, LOOK_DEFAULT, LOOK_LABELS
+
 KEY_STYLE = "next_episode_popup_style"
 KEY_POSITION = "next_episode_popup_position"
 KEY_THUMBNAIL = "next_episode_popup_thumbnail"
@@ -33,6 +35,7 @@ FOCUS_LABELS = {FOCUS_PLAY: "Play now", FOCUS_CLOSE: "Close"}
 
 DEFAULT_DRAFT = {
     KEY_STYLE: STYLE_CUSTOM,
+    KEY_LOOK: LOOK_DEFAULT,
     KEY_POSITION: "BottomRight",
     KEY_THUMBNAIL: True,
     KEY_COUNTDOWN: True,
@@ -42,6 +45,7 @@ DEFAULT_DRAFT = {
 BOOL_KEYS = (KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS)
 CHOICE_KEYS = {
     KEY_STYLE: STYLES,
+    KEY_LOOK: LOOK_CHOICES,
     KEY_POSITION: POSITIONS,
     KEY_FOCUS: FOCUS_CHOICES,
 }
@@ -199,7 +203,7 @@ def customize_rows(draft) -> list:
     """Setting ids shown in the Customize modal, top to bottom, for this draft."""
     rows = [KEY_STYLE]
     if not is_native_style(draft):
-        rows += [KEY_POSITION, KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS, KEY_FOCUS]
+        rows += [KEY_LOOK, KEY_POSITION, KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS, KEY_FOCUS]
     return rows
 
 

@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import os
+import sys
 import xml.etree.ElementTree as ET
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from next_episode_look import LOOK_CHOICES, LOOK_DEFAULT, LOOK_LABELS  # noqa: E402
 
 ADDON_ID = "service.skippy"
 
@@ -94,6 +98,7 @@ def int_setting(
     slider=False,
     vis=None,
     en=None,
+    vis_or=None,
 ):
     s = ET.SubElement(g, "setting", id=sid, type="integer", label=str(label), help=help_s)
     sub(s, "level", str(level))
@@ -112,7 +117,7 @@ def int_setting(
     else:
         ctrl = sub(s, "control", type="edit", format="integer")
         sub(ctrl, "heading", str(label))
-    add_deps(s, vis, en)
+    add_deps(s, vis, en, visible_or=vis_or)
     return s
 
 
@@ -752,9 +757,16 @@ def main():
     _ne_on = [("next_episode_enabled", "true")]
     bool_setting(g, "next_episode_enabled", 0, "47001", "47002", False)
     bool_setting(g, "next_episode_autoplay", 0, "47003", "47004", False, vis=_ne_on)
-    _ne_auto = _ne_on + [("next_episode_autoplay", "true")]
+    _ne_any_auto = [("next_episode_autoplay", "true"), ("next_episode_per_show", "true")]
     bool_setting(
-        g, "next_episode_still_watching", 1, "47060", "47061", True, vis=_ne_auto
+        g,
+        "next_episode_still_watching",
+        1,
+        "47060",
+        "47061",
+        True,
+        vis=_ne_on,
+        vis_or=_ne_any_auto,
     )
     int_setting(
         g,
@@ -767,8 +779,29 @@ def main():
         maximum=10,
         step=1,
         slider=True,
-        vis=_ne_auto + [("next_episode_still_watching", "true")],
+        vis=_ne_on + [("next_episode_still_watching", "true")],
+        vis_or=_ne_any_auto,
     )
+    bool_setting(g, "next_episode_per_show", 0, "47082", "47083", False, vis=_ne_on)
+    action_setting(
+        g,
+        "settings_action_manage_next_episode_shows",
+        0,
+        "47084",
+        "47085",
+        "RunScript(service.skippy,manage_next_episode_shows)",
+        vis=_ne_on,
+    )
+    action_setting(
+        g,
+        "settings_action_clear_next_episode_shows",
+        0,
+        "47086",
+        "47087",
+        "RunScript(service.skippy,clear_next_episode_shows)",
+        vis=_ne_on,
+    )
+
     int_setting(
         g,
         "next_episode_lead_seconds",
@@ -807,6 +840,16 @@ def main():
     bool_setting(g, "next_episode_skip_watched", 2, "47011", "47012", False, vis=_ne_on)
     bool_setting(g, "next_episode_resume", 2, "47013", "47014", True, vis=_ne_on)
     _ne_custom = _ne_on + [("next_episode_popup_style", "Custom")]
+    labelenum_setting(
+        g,
+        "next_episode_popup_look",
+        1,
+        "47080",
+        "47081",
+        LOOK_DEFAULT,
+        [(LOOK_LABELS[choice], choice) for choice in LOOK_CHOICES],
+        vis=_ne_custom,
+    )
     labelenum_setting(
         g,
         "next_episode_popup_position",

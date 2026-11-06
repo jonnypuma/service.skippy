@@ -38,6 +38,12 @@ from next_episode_state import (
     window_start,
 )
 from next_episode_prompt import show_next_episode_prompt
+from next_episode_shows import (
+    lookup_mode,
+    per_show_autoplay_enabled,
+    resolve_autoplay,
+    show_key_for_identity,
+)
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
@@ -49,6 +55,12 @@ from settings_utils import (
 )
 
 UPNEXT_ADDON_ID = "service.upnext"
+
+# The "always play this show automatically?" question comes this far into the episode
+# the user just started with Play now, and is dropped when no episode starts within
+# REMEMBER_EXPIRES_S.
+REMEMBER_DELAY_S = 8.0
+REMEMBER_EXPIRES_S = 180.0
 
 
 @dataclass(frozen=True)
@@ -96,11 +108,14 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
         return IDLE_TICK
 
     state = _state_for(monitor, video)
+    per_show = per_show_autoplay_enabled(addon)
+    _maybe_ask_remember(ctx, monitor, addon, video, current_time, per_show)
     if state.lookup == LOOKUP_IDLE:
         _start_lookup(
             state,
             player_item,
             skip_watched=addon_get_bool(addon, "next_episode_skip_watched", False),
+            resolve_show=per_show,
         )
         return IDLE_TICK
     if state.lookup != LOOKUP_FOUND:
@@ -119,7 +134,10 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
     if state.started or state.dismissed or state.failed:
         return held
 
-    autoplay = addon_get_bool(addon, "next_episode_autoplay", False)
+    show_mode = lookup_mode(state.show_key) if per_show and state.show_key else None
+    autoplay = resolve_autoplay(
+        addon_get_bool(addon, "next_episode_autoplay", False), per_show, show_mode
+    )
     ask_still_watching = autoplay and _still_watching_due(monitor, state, addon)
     if autoplay and not ask_still_watching:
         return NextEpisodeTick(
@@ -145,9 +163,10 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
     if answer is True:
         if ask_still_watching:
             _stand_down_watchdog(state)
-        return NextEpisodeTick(
-            hide_skip_dialogs=hide, switched=_start_next(monitor, state, addon)
-        )
+        switched = _start_next(monitor, state, addon)
+        if switched and per_show and show_mode is None and not autoplay:
+            _queue_remember(monitor, state)
+        return NextEpisodeTick(hide_skip_dialogs=hide, switched=switched)
     if answer is False:
         state.dismissed = True
         log("Next episode: prompt dismissed")
@@ -224,18 +243,69 @@ def _stand_down_watchdog(state) -> None:
         cancel.set()
 
 
-def _start_lookup(state, player_item, *, skip_watched) -> None:
+def _queue_remember(monitor, state) -> None:
+    """Note that the episode just started with Play now may earn a per-show autoplay question."""
+    if not state.show_key:
+        return
+    monitor.next_episode_remember = {
+        "key": state.show_key,
+        "title": state.show_title,
+        "video": state.video,
+        "mono": time.monotonic(),
+    }
+
+
+def _maybe_ask_remember(ctx, monitor, addon, video, current_time, per_show) -> None:
+    """Ask the queued question once the next episode is playing; never raises into the loop."""
+    pending = getattr(monitor, "next_episode_remember", None)
+    if not pending or video == pending["video"]:
+        return
+    if not per_show or time.monotonic() - pending["mono"] > REMEMBER_EXPIRES_S:
+        monitor.next_episode_remember = None
+        return
+    try:
+        if float(current_time) < REMEMBER_DELAY_S:
+            return
+    except (TypeError, ValueError):
+        return
+    monitor.next_episode_remember = None
+    if lookup_mode(pending["key"]) is not None:
+        return
+    from next_episode_shows_ui import ask_autoplay_for_show
+
+    ask_autoplay_for_show(ctx, addon, pending["key"], pending["title"])
+
+
+def _resolve_show(state, item, current) -> None:
+    """Fill the per-show key and title; a show that cannot be identified stays on the global setting."""
+    try:
+        from remote_library import library_title_identity
+
+        episode = dict(item or {})
+        episode.setdefault("type", "episode")
+        if current.get("tvshowid"):
+            episode["tvshowid"] = current["tvshowid"]
+        identity = library_title_identity(episode)
+        state.show_key = show_key_for_identity(identity)
+        state.show_title = ((identity or {}).get("title") or item.get("showtitle") or "").strip()
+    except Exception as exc:
+        log("Next episode: could not identify the show (%s)" % exc)
+
+
+def _start_lookup(state, player_item, *, skip_watched, resolve_show=False) -> None:
     state.lookup = LOOKUP_RUNNING
     item = dict(player_item or {})
     threading.Thread(
-        target=run_lookup, args=(state, item, skip_watched), daemon=True
+        target=run_lookup, args=(state, item, skip_watched, resolve_show), daemon=True
     ).start()
 
 
-def run_lookup(state, item, skip_watched) -> None:
+def run_lookup(state, item, skip_watched, resolve_show=False) -> None:
     """Resolve the next episode and the facts needed later; runs off the service thread."""
     try:
         current = describe_current_episode(item)
+        if resolve_show:
+            _resolve_show(state, item, current)
         nxt = find_next_episode(item, skip_watched=skip_watched, current=current)
         state.current_episode_id = current.get("id")
         state.current_playcount = current.get("playcount")

@@ -21,6 +21,8 @@ from online_segment_upload import (
     load_upload_submission_history,
     merge_upload_submission_history,
 )
+from next_episode_shows import export_all as export_autoplay_shows
+from next_episode_shows import merge_from_backup as merge_autoplay_shows
 from per_show_overrides import export_all_overrides, merge_overrides_from_backup
 from settings_backup import (
     ADDON_ID,
@@ -103,6 +105,7 @@ def export_to_path(addon, dest_json_path: str) -> dict:
         "fingerprint_count": fingerprint_count,
         "show_overrides": overrides,
         "override_title_count": len(overrides),
+        "next_episode_shows": export_autoplay_shows(),
         "statistics": stats,
         "segment_types": catalog,
         "segment_type_count": len(catalog.get("types") or []),
@@ -138,6 +141,7 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
         "override_titles": 0,
         "override_segments_added": 0,
         "override_segments_updated": 0,
+        "autoplay_shows": 0,
         "stats_merged": False,
         "segment_types_merged": False,
         "presets_added": 0,
@@ -157,6 +161,9 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
             summary["override_titles"] = titles
             summary["override_segments_added"] = added
             summary["override_segments_updated"] = updated
+        if "next_episode_shows" in data:
+            added, updated = merge_autoplay_shows(data.get("next_episode_shows"))
+            summary["autoplay_shows"] = added + updated
         if "statistics" in data:
             summary["stats_merged"] = bool(
                 merge_statistics_from_backup(data.get("statistics"))

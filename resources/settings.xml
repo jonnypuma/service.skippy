@@ -699,8 +699,13 @@
                     <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
+                        <dependency type="visible">
+                            <or>
+                                <condition setting="next_episode_autoplay">true</condition>
+                                <condition setting="next_episode_per_show">true</condition>
+                            </or>
+                        </dependency>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
-                        <dependency type="visible" setting="next_episode_autoplay">true</dependency>
                     </dependencies>
                 </setting>
                 <setting id="next_episode_still_watching_after" type="integer" label="47062" help="47063">
@@ -713,9 +718,40 @@
                     </constraints>
                     <control type="spinner" format="integer"></control>
                     <dependencies>
+                        <dependency type="visible">
+                            <or>
+                                <condition setting="next_episode_autoplay">true</condition>
+                                <condition setting="next_episode_per_show">true</condition>
+                            </or>
+                        </dependency>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
-                        <dependency type="visible" setting="next_episode_autoplay">true</dependency>
                         <dependency type="visible" setting="next_episode_still_watching">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_per_show" type="boolean" label="47082" help="47083">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="settings_action_manage_next_episode_shows" type="action" label="47084" help="47085">
+                    <level>0</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,manage_next_episode_shows)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="settings_action_clear_next_episode_shows" type="action" label="47086" help="47087">
+                    <level>0</level>
+                    <control type="button" format="action">
+                        <data>RunScript(service.skippy,clear_next_episode_shows)</data>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
                     </dependencies>
                 </setting>
                 <setting id="next_episode_lead_seconds" type="integer" label="47005" help="47006">
@@ -793,6 +829,56 @@
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_look" type="string" label="47080" help="47081">
+                    <level>1</level>
+                    <default>Default</default>
+                    <constraints>
+                        <options>
+                            <option label="Default">Default</option>
+                            <option label="Same as skip dialog">SkipDialog</option>
+                            <option label="Classic">Classic</option>
+                            <option label="Modern">Modern</option>
+                            <option label="Stylish">Stylish</option>
+                            <option label="Colorful">Colorful</option>
+                            <option label="Vibrant">Vibrant</option>
+                            <option label="Glass">Glass</option>
+                            <option label="Outline">Outline</option>
+                            <option label="Subtle">Subtle</option>
+                            <option label="Sleek">Sleek</option>
+                            <option label="Clean">Clean</option>
+                            <option label="Mono">Mono</option>
+                            <option label="Slate">Slate</option>
+                            <option label="Gold">Gold</option>
+                            <option label="Neon">Neon</option>
+                            <option label="Neon Pink">NeonPink</option>
+                            <option label="Frosted">Frosted</option>
+                            <option label="Steel">Steel</option>
+                            <option label="Retro">Retro</option>
+                            <option label="Segments">Segments</option>
+                            <option label="Stripes">Stripes</option>
+                            <option label="Sunset">Sunset</option>
+                            <option label="Big &amp; Bold">BigBold</option>
+                            <option label="Ghost">Ghost</option>
+                            <option label="Accessible">Accessible</option>
+                            <option label="Arcade">Arcade</option>
+                            <option label="Terminal">Terminal</option>
+                            <option label="Blueprint">Blueprint</option>
+                            <option label="Lava">Lava</option>
+                            <option label="Deep Sea">DeepSea</option>
+                            <option label="Candy">Candy</option>
+                            <option label="Noir">Noir</option>
+                            <option label="Aurora">Aurora</option>
+                            <option label="Pill">Pill</option>
+                            <option label="Underline">Underline</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
                     </dependencies>
                 </setting>
                 <setting id="next_episode_popup_position" type="string" label="47034" help="47035">

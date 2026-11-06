@@ -2247,3 +2247,107 @@ msgstr "Arrêter"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Appuyez sur OK pour continuer"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Apparence de la fenêtre"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "L'apparence de la fenêtre : Default, la même apparence que le dialogue de saut ou l'un de ses préréglages. Cela change la carte, le texte, la surbrillance des boutons et la barre de progression, pas la disposition."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Mémoriser la lecture automatique par série"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "Après un clic sur Lire maintenant dans l'invite de l'épisode suivant, on demande si cette série doit lire son épisode suivant automatiquement à partir de maintenant. Une série dont la réponse est enregistrée garde son choix, et une série réglée sur Demander d'abord affiche toujours l'invite, même quand la lecture automatique est activée."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Gérer la lecture automatique par série"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Consulter les séries lues automatiquement ou avec demande d'abord, modifier ou oublier un choix, ou ajouter une série de la bibliothèque."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Effacer les choix de lecture automatique enregistrés"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Oublier le choix de chaque série, afin que chaque série suive de nouveau le réglage Lire l'épisode suivant automatiquement."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Lecture automatique par série"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Sélectionnez une série pour modifier ou oublier son choix."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Ajouter une série..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Lecture automatique"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Demander d'abord"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Oublier cette série"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "Aucune série TV dans la bibliothèque pour l'instant."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Impossible de déterminer de quelle série il s'agit."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Toujours lire l'épisode suivant ?"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Lancer automatiquement l'épisode suivant de %s à partir de maintenant ?"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Lancer automatiquement l'épisode suivant de cette série à partir de maintenant ?"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Continuer à demander"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Lecture automatique enregistrée pour cette série"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Choix de lecture automatique oublié pour %s"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "%d choix de lecture automatique enregistré(s) effacé(s)."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "Aucun choix de lecture automatique enregistré à effacer."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Choisir une série"

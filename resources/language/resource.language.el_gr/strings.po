@@ -2247,3 +2247,107 @@ msgstr "Διακοπή"
 msgctxt "#47073"
 msgid "Press OK to continue"
 msgstr "Πάτα OK για συνέχεια"
+
+# Next episode: popup look
+
+msgctxt "#47080"
+msgid "Popup look"
+msgstr "Εμφάνιση αναδυόμενου παραθύρου"
+
+msgctxt "#47081"
+msgid "How the popup looks: Default, the same look as the skip dialog, or one of the skip dialog presets. It changes the card, text, button highlight and progress bar, not the layout."
+msgstr "Η εμφάνιση του αναδυόμενου παραθύρου: Default, η ίδια εμφάνιση με τον Διάλογο Παράλειψης ή μία από τις προεπιλογές του. Αλλάζουν η κάρτα, το κείμενο, η επισήμανση των κουμπιών και η γραμμή προόδου, όχι η διάταξη."
+
+# Next episode: autoplay by show
+
+msgctxt "#47082"
+msgid "Remember autoplay per show"
+msgstr "Απομνημόνευση αυτόματης αναπαραγωγής ανά σειρά"
+
+msgctxt "#47083"
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
+msgstr "Μετά το Αναπαραγωγή τώρα στο μήνυμα για το επόμενο επεισόδιο, ρωτά αν η σειρά πρέπει να παίζει αυτόματα το επόμενο επεισόδιό της από εδώ και πέρα. Μια σειρά με αποθηκευμένη απάντηση κρατά την επιλογή της και μια σειρά με Ρώτα πρώτα εμφανίζει πάντα το μήνυμα, ακόμη και όταν η αυτόματη αναπαραγωγή είναι ενεργή."
+
+msgctxt "#47084"
+msgid "Manage autoplay by show"
+msgstr "Διαχείριση αυτόματης αναπαραγωγής ανά σειρά"
+
+msgctxt "#47085"
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
+msgstr "Προβολή των σειρών που παίζουν αυτόματα ή ρωτούν πρώτα, αλλαγή ή διαγραφή μιας επιλογής, ή προσθήκη σειράς από τη βιβλιοθήκη."
+
+msgctxt "#47086"
+msgid "Clear saved autoplay choices"
+msgstr "Εκκαθάριση αποθηκευμένων επιλογών αυτόματης αναπαραγωγής"
+
+msgctxt "#47087"
+msgid "Forget every show's autoplay choice, so each show follows the Play the next episode automatically setting again."
+msgstr "Διαγραφή της επιλογής κάθε σειράς, ώστε κάθε σειρά να ακολουθεί ξανά τη ρύθμιση Αυτόματη αναπαραγωγή του επόμενου επεισοδίου."
+
+msgctxt "#47088"
+msgid "Autoplay by show"
+msgstr "Αυτόματη αναπαραγωγή ανά σειρά"
+
+msgctxt "#47089"
+msgid "Select a show to change or forget its choice."
+msgstr "Επιλέξτε μια σειρά για να αλλάξετε ή να ξεχάσετε την επιλογή της."
+
+msgctxt "#47090"
+msgid "Add a show..."
+msgstr "Προσθήκη σειράς..."
+
+msgctxt "#47091"
+msgid "Play automatically"
+msgstr "Αυτόματη αναπαραγωγή"
+
+msgctxt "#47092"
+msgid "Ask first"
+msgstr "Ρώτα πρώτα"
+
+msgctxt "#47093"
+msgid "Forget this show"
+msgstr "Διαγραφή αυτής της σειράς"
+
+msgctxt "#47094"
+msgid "No TV shows in your library yet."
+msgstr "Δεν υπάρχουν ακόμη τηλεοπτικές σειρές στη βιβλιοθήκη."
+
+msgctxt "#47095"
+msgid "Could not tell which show that is."
+msgstr "Δεν ήταν δυνατό να εντοπιστεί ποια σειρά είναι."
+
+msgctxt "#47096"
+msgid "Always play the next episode?"
+msgstr "Να παίζεται πάντα το επόμενο επεισόδιο;"
+
+msgctxt "#47097"
+msgid "Start the next episode of %s automatically from now on?"
+msgstr "Να ξεκινά αυτόματα το επόμενο επεισόδιο της σειράς %s από εδώ και πέρα;"
+
+msgctxt "#47098"
+msgid "Start the next episode of this show automatically from now on?"
+msgstr "Να ξεκινά αυτόματα το επόμενο επεισόδιο αυτής της σειράς από εδώ και πέρα;"
+
+msgctxt "#47099"
+msgid "Keep asking"
+msgstr "Να ρωτάω ξανά"
+
+msgctxt "#47100"
+msgid "Autoplay saved for this show"
+msgstr "Η αυτόματη αναπαραγωγή αποθηκεύτηκε για αυτή τη σειρά"
+
+msgctxt "#47101"
+msgid "Forgot the autoplay choice for %s"
+msgstr "Διαγράφηκε η επιλογή αυτόματης αναπαραγωγής για τη σειρά %s"
+
+msgctxt "#47102"
+msgid "Cleared %d saved autoplay choice(s)."
+msgstr "Εκκαθαρίστηκαν %d αποθηκευμένες επιλογές αυτόματης αναπαραγωγής."
+
+msgctxt "#47103"
+msgid "No saved autoplay choices to clear."
+msgstr "Δεν υπάρχουν αποθηκευμένες επιλογές αυτόματης αναπαραγωγής για εκκαθάριση."
+
+msgctxt "#47104"
+msgid "Choose a show"
+msgstr "Επιλέξτε σειρά"
