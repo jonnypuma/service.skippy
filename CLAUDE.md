@@ -64,6 +64,7 @@ Python and skin XML are cached by Kodi: after changing Python or a skip-dialog X
 Skip-dialog notes learned the hard way:
 
 - Skip/Close buttons are repositioned from Python (`skip_dialog_appearance.py`) when the dialog opens, so skin `<left>/<top>` values are only defaults.
+- The Customize skip dialog and Customize next episode popup screens share one look: navy panel, tinted rows with a rounded teal highlight, the name of a row at the left and its value at the right (`setLabel(label=…, label2=…)`), the same footer buttons. A change to the look of one goes into the other; `tests/test_skip_customize_style.py` compares their skin files.
 - Kodi ignores `<textoffsety>` on buttons with `<aligny>center</aligny>`; the Customize preview uses label controls and is nudged in Python (`preview_label_nudge`).
 - Python writes to add-on settings do not refresh an open settings page.
 - The seek bar (`Player.HasPerformedSeek`) cannot be suppressed from an add-on; the optional `Skippy.Skipping` Home property needs a per-skin edit (see README).

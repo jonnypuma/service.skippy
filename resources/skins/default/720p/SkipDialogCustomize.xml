@@ -20,128 +20,175 @@
       <left>0</left><top>0</top>
       <width>1280</width><height>720</height>
       <texture>white.png</texture>
-      <colordiffuse>D0000000</colordiffuse>
+      <colordiffuse>99000000</colordiffuse>
     </control>
 
     <control type="group" id="4080">
       <left>16</left><top>16</top>
       <width>500</width><height>688</height>
-      <control type="image">
+      <control type="image" id="4081">
         <left>0</left><top>0</top>
         <width>500</width><height>688</height>
         <texture>white.png</texture>
-        <colordiffuse>F0222222</colordiffuse>
+        <colordiffuse>F2101418</colordiffuse>
       </control>
       <control type="label" id="4090">
         <left>16</left><top>12</top>
         <width>230</width><height>32</height>
         <label>Customize skip dialog</label>
-        <font>font16</font>
-        <textcolor>FFFFFFFF</textcolor>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
         <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
         <align>left</align>
         <aligny>center</aligny>
       </control>
       <!-- onup/ondown/onleft/onright self-bound: Python owns navigation (avoids double-jump). -->
       <control type="button" id="4100">
-        <left>16</left><top>52</top><width>468</width><height>34</height>
+        <left>16</left><top>52</top><width>468</width><height>30</height>
         <label>Skip dialog mode</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4100</onup><ondown>4100</ondown><onleft>4100</onleft><onright>4100</onright>
       </control>
       <control type="button" id="4140">
-        <left>16</left><top>52</top><width>468</width><height>34</height>
+        <left>16</left><top>52</top><width>468</width><height>30</height>
         <label>Preset</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4140</onup><ondown>4140</ondown><onleft>4140</onleft><onright>4140</onright>
       </control>
       <control type="button" id="4143">
         <left>250</left><top>12</top><width>234</width><height>30</height>
         <label>Preview type</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4143</onup><ondown>4143</ondown><onleft>4143</onleft><onright>4143</onright>
       </control>
       <control type="button" id="4141">
-        <left>16</left><top>52</top><width>468</width><height>34</height>
+        <left>16</left><top>52</top><width>468</width><height>30</height>
         <label>Show card background</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4141</onup><ondown>4141</ondown><onleft>4141</onleft><onright>4141</onright>
       </control>
       <control type="button" id="4142">
-        <left>16</left><top>52</top><width>468</width><height>34</height>
+        <left>16</left><top>52</top><width>468</width><height>30</height>
         <label>Card opacity (%)</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4142</onup><ondown>4142</ondown><onleft>4142</onleft><onright>4142</onright>
       </control>
       <control type="button" id="4101">
-        <left>16</left><top>86</top><width>468</width><height>34</height>
+        <left>16</left><top>86</top><width>468</width><height>30</height>
         <label>Hide ending text</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
         <onup>4101</onup><ondown>4101</ondown><onleft>4101</onleft><onright>4101</onright>
       </control>
       <control type="button" id="4102">
-        <left>16</left><top>120</top><width>468</width><height>34</height>
+        <left>16</left><top>120</top><width>468</width><height>30</height>
         <label>Font color</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4102</onup><ondown>4102</ondown><onleft>4102</onleft><onright>4102</onright>
       </control>
       <control type="button" id="4104">
-        <left>16</left><top>154</top><width>468</width><height>34</height>
+        <left>16</left><top>154</top><width>468</width><height>30</height>
         <label>Skip dialog text in ALL CAPS</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <onup>4104</onup><ondown>4104</ondown><onleft>4104</onleft><onright>4104</onright>
       </control>
 
       <control type="button" id="4103">
-        <left>16</left><top>154</top><width>468</width><height>34</height>
+        <left>16</left><top>154</top><width>468</width><height>30</height>
         <label>Ignore overlapping</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4103</onup><ondown>4103</ondown><onleft>4103</onleft><onright>4103</onright>
       </control>
@@ -153,158 +200,223 @@
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
       </control>
       <control type="button" id="4111">
-        <left>16</left><top>218</top><width>468</width><height>34</height>
+        <left>16</left><top>218</top><width>468</width><height>30</height>
         <label>Show progress bar</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
         <onup>4111</onup><ondown>4111</ondown><onleft>4111</onleft><onright>4111</onright>
       </control>
       <control type="button" id="4112">
-        <left>16</left><top>252</top><width>468</width><height>34</height>
+        <left>16</left><top>252</top><width>468</width><height>30</height>
         <label>Progress countdown</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4112</onup><ondown>4112</ondown><onleft>4112</onleft><onright>4112</onright>
       </control>
       <control type="button" id="4114">
-        <left>16</left><top>286</top><width>468</width><height>34</height>
+        <left>16</left><top>286</top><width>468</width><height>30</height>
         <label>Progress bar style</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
         <onup>4114</onup><ondown>4114</ondown><onleft>4114</onleft><onright>4114</onright>
       </control>
       <control type="button" id="4113">
-        <left>16</left><top>320</top><width>468</width><height>34</height>
+        <left>16</left><top>320</top><width>468</width><height>30</height>
         <label>Progress bar height</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
         <onup>4113</onup><ondown>4113</ondown><onleft>4113</onleft><onright>4113</onright>
       </control>
       <control type="button" id="4115">
-        <left>16</left><top>354</top><width>468</width><height>34</height>
+        <left>16</left><top>354</top><width>468</width><height>30</height>
         <label>Skip dialog position</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4115</onup><ondown>4115</ondown><onleft>4115</onleft><onright>4115</onright>
       </control>
       <control type="button" id="4116">
-        <left>16</left><top>388</top><width>468</width><height>34</height>
+        <left>16</left><top>388</top><width>468</width><height>30</height>
         <label>Button focus style</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4116</onup><ondown>4116</ondown><onleft>4116</onleft><onright>4116</onright>
       </control>
       <control type="button" id="4117">
-        <left>16</left><top>422</top><width>468</width><height>34</height>
+        <left>16</left><top>422</top><width>468</width><height>30</height>
         <label>Skip button format</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4117</onup><ondown>4117</ondown><onleft>4117</onleft><onright>4117</onright>
       </control>
       <control type="button" id="4121">
-        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <left>16</left><top>456</top><width>468</width><height>30</height>
         <label>Combined skip and progress</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4121</onup><ondown>4121</ondown><onleft>4121</onleft><onright>4121</onright>
       </control>
       <control type="button" id="4122">
-        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <left>16</left><top>456</top><width>468</width><height>30</height>
         <label>Skip duration format</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
         <onup>4122</onup><ondown>4122</ondown><onleft>4122</onleft><onright>4122</onright>
       </control>
       <control type="button" id="4123">
-        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <left>16</left><top>456</top><width>468</width><height>30</height>
         <label>Skip duration content</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
         <onup>4123</onup><ondown>4123</ondown><onleft>4123</onleft><onright>4123</onright>
       </control>
       <control type="button" id="4118">
-        <left>16</left><top>456</top><width>468</width><height>34</height>
+        <left>16</left><top>456</top><width>468</width><height>30</height>
         <label>Hide close button</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
         <onup>4118</onup><ondown>4118</ondown><onleft>4118</onleft><onright>4118</onright>
       </control>
       <control type="button" id="4120">
-        <left>16</left><top>490</top><width>468</width><height>34</height>
+        <left>16</left><top>490</top><width>468</width><height>30</height>
         <label>Hide Skip and Close Icons</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
         <onup>4120</onup><ondown>4120</ondown><onleft>4120</onleft><onright>4120</onright>
       </control>
       <control type="button" id="4119">
-        <left>16</left><top>524</top><width>468</width><height>34</height>
+        <left>16</left><top>524</top><width>468</width><height>30</height>
         <label>Show skip button focus frame</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + String.IsEqual(Window.Property(skippy_customize_hide_close),true) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
         <onup>4119</onup><ondown>4119</ondown><onleft>4119</onleft><onright>4119</onright>
       </control>
@@ -316,61 +428,82 @@
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
       </control>
       <control type="button" id="4131">
-        <left>16</left><top>218</top><width>468</width><height>34</height>
+        <left>16</left><top>218</top><width>468</width><height>30</height>
         <label>Minimal plate style</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4131</onup><ondown>4131</ondown><onleft>4131</onleft><onright>4131</onright>
       </control>
       <control type="button" id="4132">
-        <left>16</left><top>252</top><width>468</width><height>34</height>
+        <left>16</left><top>252</top><width>468</width><height>30</height>
         <label>Minimal skip label format</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4132</onup><ondown>4132</ondown><onleft>4132</onleft><onright>4132</onright>
       </control>
       <control type="button" id="4133">
-        <left>16</left><top>286</top><width>468</width><height>34</height>
+        <left>16</left><top>286</top><width>468</width><height>30</height>
         <label>Minimal skip dialog position</label>
         <font>font12</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
         <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
         <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
         <onup>4133</onup><ondown>4133</ondown><onleft>4133</onleft><onright>4133</onright>
       </control>
       <control type="button" id="4190">
-        <left>16</left><top>636</top><width>220</width><height>36</height>
+        <left>16</left><top>632</top><width>229</width><height>40</height>
         <label>Save</label>
-        <font>font13</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
         <align>center</align>
         <aligny>center</aligny>
         <onup>4190</onup><ondown>4190</ondown><onleft>4190</onleft><onright>4190</onright>
       </control>
       <control type="button" id="4191">
-        <left>252</left><top>636</top><width>220</width><height>36</height>
+        <left>255</left><top>632</top><width>229</width><height>40</height>
         <label>Cancel</label>
-        <font>font13</font>
-        <texturefocus>button_focus.png</texturefocus>
-        <texturenofocus>-</texturenofocus>
-        <textcolor>FFC0C0C0</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
         <align>center</align>
         <aligny>center</aligny>
         <onup>4191</onup><ondown>4191</ondown><onleft>4191</onleft><onright>4191</onright>

@@ -18,12 +18,14 @@ def _loc(addon, sid, default, *args):
     return get_localized(addon, sid, default, *args)
 
 
-def preset_row_label(addon, draft) -> str:
+def preset_row_parts(addon, draft) -> tuple:
+    """``(name, value)`` of the Preset row: the row's name and the preset the draft matches."""
     name = sp.detect_preset(draft)
-    return "%s: %s" % (
-        _loc(addon, 46015, "Preset"),
-        name if name else _loc(addon, 46016, "Custom"),
-    )
+    return _loc(addon, 46015, "Preset"), name if name else _loc(addon, 46016, "Custom")
+
+
+def preset_row_label(addon, draft) -> str:
+    return "%s: %s" % preset_row_parts(addon, draft)
 
 
 def _select(heading, items, preselect=-1):

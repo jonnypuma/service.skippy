@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.11.2] - 2026-11-07
+
+### Changed
+
+- **The Customize skip dialog screen now looks like Customize next episode popup.** Same dark blue panel and dimming behind it, the same small blue heading, the same rows (a faint tint with a gap between them, white text with a shadow, a rounded teal highlight on the row you are on) and the same two-column rows: the name of the setting at the left and its value at the right, instead of one line like `Card opacity (%): 95`. **Save** and **Cancel** are the same kind of button as the ones in the other screen, side by side under the rows with the width of the rows. Nothing about what the screen does has changed: the same rows, the same order, the same keys.
+  - The panel now ends right below **Save** and **Cancel**, as in the other screen, so a short list (Minimal mode) no longer leaves an empty grey slab under it. With many rows (Full mode with every option) the rows sit a little closer together, as before, and the panel still fits the screen.
+  - The section headings (**Full mode**, **Minimal mode**) keep their blue and their place; the live preview on the right is unchanged.
+  - Both skin resolutions are done (the 1080i file is generated from the 720p one as before). The row names are the same translated strings as before; they are just no longer joined to the value.
+
 ## [7.11.1] - 2026-11-07
 
 ### Changed

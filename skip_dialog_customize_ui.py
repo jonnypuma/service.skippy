@@ -24,7 +24,7 @@ from settings_utils import (
 import skip_dialog_presets as sp
 from skip_dialog_presets_ui import (
     present_preset_menu,
-    preset_row_label,
+    preset_row_parts,
     prompt_save_preset,
 )
 from skip_dialog_appearance import (
@@ -67,6 +67,7 @@ from skip_dialog_appearance import (
 )
 
 ID_TITLE = 4090
+ID_PANEL_BG = 4081
 ID_MODE = 4100
 ID_PRESET = 4140
 ID_PREVIEW_TYPE = 4143
@@ -478,39 +479,53 @@ def customize_section_header_before(nav_ids):
 
 
 def customize_left_pane_layout(nav_ids, sc):
-    """Pack rows above pinned Save/Cancel. Shrink row height if the list would overlap."""
+    """Pack the rows under the heading and the buttons right below them, as the next episode modal does.
+
+    ``row_h`` is the step from one row to the next (it shrinks, down to a minimum, when there are
+    more rows than the screen has room for); each row is drawn ``row_gap`` shorter than that, so the
+    tinted rows do not touch. ``panel_h`` is the height of the panel behind it all and never goes
+    beyond the room the screen has for it.
+    """
     ids = [cid for cid in nav_ids if cid not in (ID_SAVE, ID_CANCEL)]
     starts = customize_section_header_before(ids)
     n_headers = sum(1 for cid in ids if cid in starts)
+    left = sc(16)
+    row_w = sc(468)
     start_y = sc(52)
     header_h = sc(24)
-    save_h = sc(36)
-    pane_h = sc(688)
-    save_y = pane_h - sc(16) - save_h
-    gap = sc(8)
+    save_h = sc(40)
+    max_panel_h = sc(688)
+    bottom_pad = sc(16)
+    gap = sc(10)
     default_row = sc(34)
     min_row = sc(26)
-    budget = save_y - gap - start_y - n_headers * header_h
+    budget = max_panel_h - bottom_pad - save_h - gap - start_y - n_headers * header_h
     row_h = default_row
     if ids:
         if budget > 0:
             row_h = min(default_row, max(min_row, budget // len(ids)))
         else:
             row_h = min_row
+    row_gap = sc(4) if row_h >= sc(30) else sc(2)
     content_bottom = start_y + n_headers * header_h + len(ids) * row_h
+    save_y = content_bottom + gap
+    save_w = (row_w - sc(10)) // 2
     return {
         "ids": ids,
         "starts": starts,
-        "left": sc(16),
+        "left": left,
         "start_y": start_y,
         "header_h": header_h,
         "row_h": row_h,
+        "row_gap": row_gap,
+        "button_h": row_h - row_gap,
         "save_y": save_y,
         "save_h": save_h,
-        "save_w": sc(220),
-        "cancel_x": sc(252),
+        "save_w": save_w,
+        "cancel_x": left + row_w - save_w,
         "gap": gap,
         "content_bottom": content_bottom,
+        "panel_h": save_y + save_h + bottom_pad,
     }
 
 
@@ -536,6 +551,15 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             return self.getControl(cid)
         except Exception:
             return None
+
+    def _set_row(self, cid, name, value):
+        """A row shows its name at the left and its value at the right, as in the next episode modal."""
+        ctrl = self._ctrl(cid)
+        if ctrl:
+            try:
+                ctrl.setLabel(label=name, label2=str(value))
+            except Exception:
+                pass
 
     def _set_label(self, cid, text):
         ctrl = self._ctrl(cid)
@@ -733,6 +757,12 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         header_h = metrics["header_h"]
         ids = metrics["ids"]
         section_start = metrics["starts"]
+        backdrop = self._ctrl(ID_PANEL_BG)
+        if backdrop:
+            try:
+                backdrop.setHeight(metrics["panel_h"])
+            except Exception:
+                pass
         for cid in ids:
             if cid in section_start:
                 header_id = ID_MIN_HEADER if cid == ID_PLATE else ID_FULL_HEADER
@@ -750,7 +780,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 except Exception:
                     pass
                 try:
-                    ctrl.setHeight(row_h)
+                    ctrl.setHeight(metrics["button_h"])
                 except Exception:
                     pass
                 try:
@@ -816,195 +846,126 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
     def _refresh_row_labels(self):
         addon = self.addon
         d = self._draft
-        self._set_label(ID_PRESET, preset_row_label(addon, d))
-        self._set_label(
+        self._set_row(ID_PRESET, *preset_row_parts(addon, d))
+        self._set_row(
             ID_PREVIEW_TYPE,
-            "%s: %s"
-            % (
-                get_localized(addon, 46034, "Preview type"),
-                display_segment_label(getattr(self, "_preview_type", MOCK_SEGMENT_LABEL)),
-            ),
+            get_localized(addon, 46034, "Preview type"),
+            display_segment_label(getattr(self, "_preview_type", MOCK_SEGMENT_LABEL)),
         )
-        self._set_label(
+        self._set_row(
             ID_CARD,
-            "%s: %s"
-            % (
-                get_localized(addon, 46011, "Show card background"),
-                _yes_no(addon, d.get("skip_card_enabled", True)),
-            ),
+            get_localized(addon, 46011, "Show card background"),
+            _yes_no(addon, d.get("skip_card_enabled", True)),
         )
-        self._set_label(
+        self._set_row(
             ID_OPACITY,
-            "%s: %s"
-            % (
-                get_localized(addon, 46012, "Card opacity (%)"),
-                d.get("skip_card_opacity", 95),
-            ),
+            get_localized(addon, 46012, "Card opacity (%)"),
+            d.get("skip_card_opacity", 95),
         )
-        self._set_label(
+        self._set_row(
             ID_MODE,
-            "%s: %s"
-            % (get_localized(addon, 32020, "Skip dialog mode"), _pair_label(MODE_LABELS, d.get("skip_dialog_mode", "Full"))),
+            get_localized(addon, 32020, "Skip dialog mode"),
+            _pair_label(MODE_LABELS, d.get("skip_dialog_mode", "Full")),
         )
-        self._set_label(
+        self._set_row(
             ID_HIDE_ENDING,
-            "%s: %s"
-            % (
-                get_localized(addon, 32016, "Hide ending text"),
-                _yes_no(addon, d.get("hide_ending_text")),
-            ),
+            get_localized(addon, 32016, "Hide ending text"),
+            _yes_no(addon, d.get("hide_ending_text")),
         )
-        self._set_label(
+        self._set_row(
             ID_FONT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32026, "Skip dialog font color"),
-                _pair_label(FONT_COLORS, d.get("skip_dialog_font_color")),
-            ),
+            get_localized(addon, 32026, "Skip dialog font color"),
+            _pair_label(FONT_COLORS, d.get("skip_dialog_font_color")),
         )
-        self._set_label(
+        self._set_row(
             ID_ALL_CAPS,
-            "%s: %s"
-            % (
-                get_localized(addon, 32099, "Skip dialog text in ALL CAPS"),
-                _yes_no(addon, d.get("skip_dialog_all_caps")),
-            ),
+            get_localized(addon, 32099, "Skip dialog text in ALL CAPS"),
+            _yes_no(addon, d.get("skip_dialog_all_caps")),
         )
-        self._set_label(
+        self._set_row(
             ID_OVERLAP,
-            "%s: %s"
-            % (
-                get_localized(addon, 31007, "Ignore overlapping segments"),
-                _yes_no(addon, d.get("skip_overlapping_segments")),
-            ),
+            get_localized(addon, 31007, "Ignore overlapping segments"),
+            _yes_no(addon, d.get("skip_overlapping_segments")),
         )
-        self._set_label(
+        self._set_row(
             ID_PROGRESS,
-            "%s: %s"
-            % (
-                get_localized(addon, 32007, "Show Progress Bar in Skip Dialog"),
-                _yes_no(addon, d.get("show_progress_bar")),
-            ),
+            get_localized(addon, 32007, "Show Progress Bar in Skip Dialog"),
+            _yes_no(addon, d.get("show_progress_bar")),
         )
-        self._set_label(
+        self._set_row(
             ID_COUNTDOWN,
-            "%s: %s"
-            % (
-                get_localized(addon, 32027, "Progress bar shows remaining (countdown)"),
-                _yes_no(addon, d.get("progress_bar_countdown")),
-            ),
+            get_localized(addon, 32027, "Progress bar shows remaining (countdown)"),
+            _yes_no(addon, d.get("progress_bar_countdown")),
         )
-        self._set_label(
+        self._set_row(
             ID_PROGRESS_STYLE,
-            "%s: %s"
-            % (
-                get_localized(addon, 32079, "Progress bar style"),
-                _pair_label(PROGRESS_STYLES, d.get("progress_bar_style")),
-            ),
+            get_localized(addon, 32079, "Progress bar style"),
+            _pair_label(PROGRESS_STYLES, d.get("progress_bar_style")),
         )
-        self._set_label(
+        self._set_row(
             ID_HEIGHT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32080, "Progress bar height (pixels)"),
-                d.get("progress_bar_height", 16),
-            ),
+            get_localized(addon, 32080, "Progress bar height (pixels)"),
+            d.get("progress_bar_height", 16),
         )
-        self._set_label(
+        self._set_row(
             ID_POSITION,
-            "%s: %s"
-            % (
-                get_localized(addon, 32009, "Skip Dialog Position"),
-                _pair_label(POSITIONS, d.get("skip_dialog_position")),
-            ),
+            get_localized(addon, 32009, "Skip Dialog Position"),
+            _pair_label(POSITIONS, d.get("skip_dialog_position")),
         )
-        self._set_label(
+        self._set_row(
             ID_FOCUS_STYLE,
-            "%s: %s"
-            % (
-                get_localized(addon, 32000, "Button Focus Style"),
-                _pair_label(BUTTON_FOCUS, d.get("button_focus_style")),
-            ),
+            get_localized(addon, 32000, "Button Focus Style"),
+            _pair_label(BUTTON_FOCUS, d.get("button_focus_style")),
         )
-        self._set_label(
+        self._set_row(
             ID_SKIP_FORMAT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32013, "Skip button format"),
-                d.get("skip_button_format", "Skip + Type + Duration"),
-            ),
+            get_localized(addon, 32013, "Skip button format"),
+            d.get("skip_button_format", "Skip + Type + Duration"),
         )
-        self._set_label(
+        self._set_row(
             ID_COMBINED,
-            "%s: %s"
-            % (
-                get_localized(addon, 32101, "Combined skip and progress"),
-                _yes_no(addon, d.get("compact_full_combined")),
-            ),
+            get_localized(addon, 32101, "Combined skip and progress"),
+            _yes_no(addon, d.get("compact_full_combined")),
         )
-        self._set_label(
+        self._set_row(
             ID_DURATION_FORMAT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32102, "Skip duration format"),
-                _pair_label(DURATION_FORMATS, d.get("skip_duration_format", "1m30s")),
-            ),
+            get_localized(addon, 32102, "Skip duration format"),
+            _pair_label(DURATION_FORMATS, d.get("skip_duration_format", "1m30s")),
         )
-        self._set_label(
+        self._set_row(
             ID_DURATION_CONTENT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32103, "Skip duration content"),
-                _pair_label(DURATION_CONTENTS, d.get("skip_duration_content", "total")),
-            ),
+            get_localized(addon, 32103, "Skip duration content"),
+            _pair_label(DURATION_CONTENTS, d.get("skip_duration_content", "total")),
         )
-        self._set_label(
+        self._set_row(
             ID_HIDE_CLOSE,
-            "%s: %s"
-            % (
-                get_localized(addon, 32014, "Hide Close button"),
-                _yes_no(addon, d.get("hide_close_button")),
-            ),
+            get_localized(addon, 32014, "Hide Close button"),
+            _yes_no(addon, d.get("hide_close_button")),
         )
-        self._set_label(
+        self._set_row(
             ID_HIDE_ICONS,
-            "%s: %s"
-            % (
-                get_localized(addon, 32015, "Hide Skip and Close Icons"),
-                _yes_no(addon, d.get("hide_skip_icon")),
-            ),
+            get_localized(addon, 32015, "Hide Skip and Close Icons"),
+            _yes_no(addon, d.get("hide_skip_icon")),
         )
-        self._set_label(
+        self._set_row(
             ID_FOCUS_FRAME,
-            "%s: %s"
-            % (
-                get_localized(addon, 32081, "Show skip button focus frame"),
-                _yes_no(addon, d.get("show_skip_button_focus_texture")),
-            ),
+            get_localized(addon, 32081, "Show skip button focus frame"),
+            _yes_no(addon, d.get("show_skip_button_focus_texture")),
         )
-        self._set_label(
+        self._set_row(
             ID_PLATE,
-            "%s: %s"
-            % (
-                get_localized(addon, 32023, "Minimal plate style"),
-                _pair_label(MINIMAL_PLATES, d.get("minimal_button_style")),
-            ),
+            get_localized(addon, 32023, "Minimal plate style"),
+            _pair_label(MINIMAL_PLATES, d.get("minimal_button_style")),
         )
-        self._set_label(
+        self._set_row(
             ID_MIN_FORMAT,
-            "%s: %s"
-            % (
-                get_localized(addon, 32025, "Minimal skip label format"),
-                d.get("minimal_skip_button_format", "Skip + Type"),
-            ),
+            get_localized(addon, 32025, "Minimal skip label format"),
+            d.get("minimal_skip_button_format", "Skip + Type"),
         )
-        self._set_label(
+        self._set_row(
             ID_MIN_POSITION,
-            "%s: %s"
-            % (
-                get_localized(addon, 32024, "Minimal skip dialog position"),
-                _pair_label(POSITIONS, d.get("minimal_skip_dialog_position")),
-            ),
+            get_localized(addon, 32024, "Minimal skip dialog position"),
+            _pair_label(POSITIONS, d.get("minimal_skip_dialog_position")),
         )
 
     def _nudge(self, control_id, delta):
