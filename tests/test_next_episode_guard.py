@@ -159,6 +159,19 @@ class WatchChainTests(unittest.TestCase):
         guard.begin_episode(chain)
         self.assertEqual((chain.unattended, chain.autoplay_pending), (2, False))
 
+    def test_a_hand_off_nobody_started_keeps_the_run(self):
+        chain = guard.WatchChain(unattended=2)
+        guard.begin_episode(chain, carried=True)
+        self.assertEqual((chain.unattended, chain.autoplay_pending), (2, False))
+        chain = guard.WatchChain(unattended=2, autoplay_pending=True)
+        guard.begin_episode(chain, carried=True)
+        self.assertEqual((chain.unattended, chain.autoplay_pending), (2, False))
+
+    def test_the_run_ends_unless_the_hand_off_carried_it(self):
+        chain = guard.WatchChain(unattended=2)
+        guard.begin_episode(chain, carried=False)
+        self.assertEqual(chain.unattended, 0)
+
     def test_input_needs_to_be_clearly_after_the_start(self):
         self.assertFalse(guard.input_since(0.0, 1400.0, 1400.0))
         self.assertFalse(guard.input_since(0.0, 1400.0, 1395.0))
@@ -198,6 +211,49 @@ class WatchChainTests(unittest.TestCase):
         self.assertFalse(guard.evaluate(chain, 0.0, 1400.0, 1400.0, 0))
         self.assertFalse(guard.evaluate(chain, 0.0, 1400.0, 1400.0, "x"))
         self.assertFalse(guard.evaluate(chain, 0.0, 1400.0, 1400.0, None))
+
+
+def played_state(**kw):
+    values = dict(total=1500.0, last_time=1497.0, last_seen_mono=100.0, answered=False, started=False)
+    values.update(kw)
+    return types.SimpleNamespace(**values)
+
+
+class EndedOnItsOwnTests(unittest.TestCase):
+    def test_an_episode_that_played_on_to_its_end_counts(self):
+        self.assertTrue(guard.ended_on_its_own(played_state(), 104.0))
+
+    def test_the_end_may_be_a_few_seconds_away(self):
+        near = 1500.0 - guard.HANDOFF_END_S
+        self.assertTrue(guard.ended_on_its_own(played_state(last_time=near), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(last_time=near - 0.5), 104.0))
+        self.assertTrue(guard.ended_on_its_own(played_state(last_time=1490.0), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(last_time=1470.0), 104.0))
+
+    def test_the_next_video_may_take_a_while_to_start(self):
+        gap = guard.HANDOFF_GAP_S
+        self.assertTrue(guard.ended_on_its_own(played_state(), 100.0 + gap))
+        self.assertFalse(guard.ended_on_its_own(played_state(), 100.0 + gap + 0.5))
+        self.assertTrue(guard.ended_on_its_own(played_state(), 130.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(), 220.0))
+
+    def test_an_answered_prompt_means_somebody_was_there(self):
+        self.assertFalse(guard.ended_on_its_own(played_state(answered=True), 104.0))
+
+    def test_an_episode_whose_next_one_was_started_does_not_count(self):
+        self.assertFalse(guard.ended_on_its_own(played_state(started=True), 104.0))
+
+    def test_an_episode_never_seen_playing_does_not_count(self):
+        self.assertFalse(guard.ended_on_its_own(played_state(total=0.0), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(last_seen_mono=0.0), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(last_seen_mono=0.0), 30.0))
+        self.assertFalse(guard.ended_on_its_own(NextEpisodeState(video="v"), 104.0))
+
+    def test_unreadable_values_do_not_count_and_do_not_raise(self):
+        self.assertFalse(guard.ended_on_its_own(played_state(total="x"), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(last_time=None), 104.0))
+        self.assertFalse(guard.ended_on_its_own(played_state(), "x"))
+        self.assertFalse(guard.ended_on_its_own(types.SimpleNamespace(), 104.0))
 
 
 class _Player:

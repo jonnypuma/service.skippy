@@ -2207,8 +2207,8 @@ msgid "Ask if you are still watching"
 msgstr "Perguntar se ainda está assistindo"
 
 msgctxt "#47061"
-msgid "When episodes start on their own and nobody has pressed a button for several episodes in a row, Skippy asks if you are still watching instead of starting the next one."
-msgstr "Quando os episódios começam sozinhos e ninguém aperta um botão por vários episódios seguidos, o Skippy pergunta se você ainda está assistindo em vez de iniciar o próximo."
+msgid "When episodes start on their own and nobody has pressed a button for several episodes in a row, Skippy asks if you are still watching instead of starting the next one. It works whether Skippy, Kodi or a playlist starts the next episode."
+msgstr "Quando os episódios começam sozinhos e ninguém aperta um botão por vários episódios seguidos, o Skippy pergunta se você ainda está assistindo em vez de iniciar o próximo. Funciona tanto se o próximo episódio for iniciado pelo Skippy quanto pelo Kodi ou por uma lista de reprodução."
 
 msgctxt "#47062"
 msgid "Episodes in a row before asking"

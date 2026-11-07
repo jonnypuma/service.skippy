@@ -536,6 +536,14 @@ class HandlerTests(unittest.TestCase):
         self.tick(1460.0)
         self.assertFalse(getattr(self.monitor, "next_episode_remember", None))
 
+    def test_no_question_after_continue_with_global_autoplay_off(self):
+        self.found_state()
+        self.guard_ask = True  # the "still watching?" question, asked although nothing autoplays
+        self.answers = [True]
+        self.assertTrue(self.tick(1460.0).switched)
+        self.assertEqual(self.prompts, [True])
+        self.assertFalse(getattr(self.monitor, "next_episode_remember", None))
+
     def test_no_question_for_an_unidentified_show(self):
         self.found_state(key=None, title="")
         self.answers = [True]

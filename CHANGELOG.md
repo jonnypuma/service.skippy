@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.11.1] - 2026-11-07
+
+### Changed
+
+- **"Still watching?" no longer depends on automatic play.** **Ask if you are still watching** and **Episodes in a row before asking** used to show only while **Play the next episode automatically** (or autoplay per show) was on, and the question was only asked when Skippy was about to start the next episode by itself. Both settings now show whenever **Enable play next episode** is on, and the question works on its own.
+  - Skippy counts the episodes that played one after another without a button press, whoever starts the next one: its own automatic play, Kodi's own **Play next video automatically**, or a playlist. After the chosen number, the prompt of the next hand-off is **Still watching?** (with **Continue** and **Stop**) in place of the usual prompt or the automatic start. With automatic play off and a limit of **1**, it replaces the usual prompt after every episode you pressed nothing during.
+  - An episode counts as started by Kodi or a playlist when it begins within a minute of the previous one playing on to its last seconds without you answering its prompt. This is a best guess: **Play now**, **Close**, **Continue**, **Stop** and starting an episode yourself all start the count over, as does any button press during an episode.
+  - **Stop**, or no answer, now stops playback a few seconds before the end for any source (before only a playlist), so Kodi's own play next video cannot carry on by itself. **Continue** stands that down.
+  - **Continue** is only an answer to "still watching?", not a choice about the show, so it never leads to the "Always play the next episode?" question of **Remember autoplay per show**, with or without automatic play.
+  - The help text of **Ask if you are still watching** says it works whether Skippy, Kodi or a playlist starts the next episode (translated in all 11 language packs).
+
 ## [7.11.0] - 2026-11-07
 
 ### Added

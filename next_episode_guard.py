@@ -15,6 +15,10 @@ STOP_BEFORE_END_S = 3.0
 _WATCHDOG_TICK_S = 0.25
 # The viewer went back before the window: somebody is there, the watchdog stands down.
 _SEEK_BACK_S = 1.5
+# An episode that was this close to its end when it was last seen played on to the end; the next
+# one counts as started by itself when it began within the gap (the loop may skip a few ticks).
+HANDOFF_END_S = 15.0
+HANDOFF_GAP_S = 60.0
 
 
 @dataclass
@@ -25,11 +29,35 @@ class WatchChain:
     autoplay_pending: bool = False
 
 
-def begin_episode(chain) -> None:
-    """A new episode started: a run of automatic hand-offs goes on, anything else ends it."""
-    if not chain.autoplay_pending:
+def begin_episode(chain, carried=False) -> None:
+    """A new episode started: a run of hand-offs nobody pressed a button for goes on, anything else ends it.
+
+    ``carried`` says the episode before it played to its end and the next one began by itself
+    (Kodi's own "play next video", a playlist), which Skippy did not start either.
+    """
+    if not (chain.autoplay_pending or carried):
         chain.unattended = 0
     chain.autoplay_pending = False
+
+
+def ended_on_its_own(state, now) -> bool:
+    """Whether the episode of ``state`` played on to its end without anyone answering its prompt.
+
+    Then whatever started the next video did so by itself. An episode the viewer moved on from
+    (Play now, Close, Stop), or one Skippy started the next of, does not count.
+    """
+    if getattr(state, "answered", False) or getattr(state, "started", False):
+        return False
+    try:
+        total = float(getattr(state, "total", 0.0))
+        last = float(getattr(state, "last_time", 0.0))
+        seen = float(getattr(state, "last_seen_mono", 0.0))
+        now = float(now)
+    except (TypeError, ValueError):
+        return False
+    if total <= 0 or seen <= 0:
+        return False
+    return total - last <= HANDOFF_END_S and now - seen <= HANDOFF_GAP_S
 
 
 def input_since(started_mono, now, idle_seconds) -> bool:

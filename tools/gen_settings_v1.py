@@ -774,17 +774,9 @@ def main():
     _ne_on = [("next_episode_enabled", "true")]
     bool_setting(g, "next_episode_enabled", 0, "47001", "47002", False)
     bool_setting(g, "next_episode_autoplay", 0, "47003", "47004", False, vis=_ne_on)
-    _ne_any_auto = [("next_episode_autoplay", "true"), ("next_episode_per_show", "true")]
-    bool_setting(
-        g,
-        "next_episode_still_watching",
-        1,
-        "47060",
-        "47061",
-        True,
-        vis=_ne_on,
-        vis_or=_ne_any_auto,
-    )
+    # The still watching question does not depend on automatic play: it also counts the episodes
+    # Kodi or a playlist starts by itself.
+    bool_setting(g, "next_episode_still_watching", 1, "47060", "47061", True, vis=_ne_on)
     int_setting(
         g,
         "next_episode_still_watching_after",
@@ -797,7 +789,6 @@ def main():
         step=1,
         slider=True,
         vis=_ne_on + [("next_episode_still_watching", "true")],
-        vis_or=_ne_any_auto,
     )
     bool_setting(g, "next_episode_per_show", 0, "47082", "47083", False, vis=_ne_on)
     action_setting(

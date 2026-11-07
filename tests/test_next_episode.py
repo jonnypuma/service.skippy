@@ -17,7 +17,7 @@ import next_episode_lookup as lookup
 import next_episode_play as play
 import next_episode_toast as toast
 import service_loop_next_episode as step
-from next_episode_guard import WatchChain
+from next_episode_guard import HANDOFF_GAP_S, WatchChain
 from next_episode_state import (
     LOOKUP_FOUND,
     LOOKUP_IDLE,
@@ -806,11 +806,27 @@ class HandlerTests(unittest.TestCase):
         state.current_playcount = 1
         return state
 
-    def finish_unattended(self, state, video):
+    def finish_unattended(self, state, video, at=1456.0):
         """The viewer pressed nothing since the episode began: reach the prompt window."""
         self.now = state.created_mono + 1400.0
         self.idle = 1400.0
-        return self.tick(1456.0, video=video)
+        return self.tick(at, video=video)
+
+    def play_out(self, video):
+        """Nobody answered the prompt and the episode played on to its last seconds."""
+        self.now += 1.0
+        self.tick(1497.0, video=video)
+
+    def hand_off(self, video, after=4.0):
+        """Kodi (play next video, a playlist) starts the next video by itself; the old state stays."""
+        self.now += after
+        self.tick(10.0, video=video)
+        state = self.monitor.next_episode_state
+        state.lookup = LOOKUP_FOUND
+        state.next_item = LIBRARY_NEXT
+        state.current_episode_id = 8
+        state.current_playcount = 1
+        return state
 
     def chain(self):
         return self.monitor.next_episode_chain
@@ -888,12 +904,120 @@ class HandlerTests(unittest.TestCase):
         self.assertTrue(self.finish_unattended(state, "e1.mkv").switched)
         self.assertEqual(self.still_calls, [])
 
-    def test_without_autoplay_the_prompt_is_the_usual_one(self):
+    def test_the_guard_can_be_turned_off_without_autoplay_too(self):
+        self.settings["next_episode_still_watching"] = False
         state = self.new_episode("e1.mkv")
         self.chain().unattended = 9
         self.finish_unattended(state, "e1.mkv")
         self.assertEqual(self.still_calls, [False])
-        self.assertEqual(self.chain().unattended, 9)
+
+    def test_without_autoplay_the_first_prompt_is_the_usual_one(self):
+        state = self.new_episode("e1.mkv")
+        self.finish_unattended(state, "e1.mkv")
+        self.assertEqual(self.still_calls, [False])
+        self.assertEqual(self.chain().unattended, 1)
+
+    def test_without_autoplay_the_question_replaces_the_prompt_at_the_limit(self):
+        state = self.new_episode("e1.mkv")
+        self.chain().unattended = 2
+        result = self.finish_unattended(state, "e1.mkv")
+        self.assertEqual(self.still_calls, [True])
+        self.assertEqual(result, step.NextEpisodeTick(hide_skip_dialogs=True, switched=False))
+        self.assertEqual(self.plays, [])
+        self.assertEqual(self.chain().unattended, 3)
+
+    def test_without_autoplay_the_question_runs_to_the_end_of_the_file(self):
+        self.settings["next_episode_popup_duration"] = 20
+        self.settings["next_episode_popup_end_action"] = "Play"
+        state = self.new_episode("e1.mkv")
+        self.chain().unattended = 2
+        self.finish_unattended(state, "e1.mkv")
+        self.assertEqual(self.span_calls, [(False, "Close")])
+
+    def test_without_autoplay_continue_plays_the_next_episode_and_starts_over(self):
+        state = self.new_episode("e1.mkv")
+        self.chain().unattended = 2
+        self.answers = [True]
+        result = self.finish_unattended(state, "e1.mkv")
+        self.assertTrue(result.switched)
+        self.assertEqual(self.plays, [(LIBRARY_NEXT, True)])
+        self.assertFalse(self.chain().autoplay_pending)
+        self.new_episode("e2.mkv")
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_without_autoplay_stop_keeps_the_next_episode_from_starting(self):
+        state = self.new_episode("e1.mkv")
+        self.chain().unattended = 2
+        self.answers = [False]
+        result = self.finish_unattended(state, "e1.mkv")
+        self.assertFalse(result.switched)
+        self.assertTrue(state.dismissed)
+        self.assertEqual(self.plays, [])
+
+    # --- episodes Kodi or a playlist starts by itself ------------------------
+
+    def test_an_episode_kodi_starts_by_itself_is_counted(self):
+        self.settings["next_episode_still_watching_after"] = 2
+        state = self.new_episode("e1.mkv")
+        self.finish_unattended(state, "e1.mkv")
+        self.play_out("e1.mkv")
+        self.assertEqual(self.still_calls, [False])
+        state = self.hand_off("e2.mkv")
+        self.assertEqual(self.chain().unattended, 1)
+        self.finish_unattended(state, "e2.mkv")
+        self.assertEqual(self.still_calls, [False, True])
+        self.assertEqual(self.chain().unattended, 2)
+
+    def test_a_video_started_after_a_long_gap_starts_the_count_over(self):
+        state = self.new_episode("e1.mkv")
+        self.finish_unattended(state, "e1.mkv")
+        self.play_out("e1.mkv")
+        self.hand_off("e2.mkv", after=HANDOFF_GAP_S + 5.0)
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_an_episode_left_before_its_end_starts_the_count_over(self):
+        state = self.new_episode("e1.mkv")
+        self.finish_unattended(state, "e1.mkv")
+        self.hand_off("e2.mkv")
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_closing_the_prompt_counts_as_being_there(self):
+        state = self.new_episode("e1.mkv")
+        self.answers = [False]
+        self.finish_unattended(state, "e1.mkv")
+        self.play_out("e1.mkv")
+        self.hand_off("e2.mkv")
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_play_now_counts_as_being_there_even_when_it_failed(self):
+        self.play_result = False
+        state = self.new_episode("e1.mkv")
+        self.answers = [True]
+        self.finish_unattended(state, "e1.mkv")
+        self.assertTrue(state.answered)
+        self.assertFalse(state.started)
+        self.play_out("e1.mkv")
+        self.hand_off("e2.mkv")
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_play_now_late_in_the_prompt_counts_as_being_there(self):
+        state = self.new_episode("e1.mkv")
+        self.answers = [True]
+        self.finish_unattended(state, "e1.mkv", at=1497.0)
+        self.hand_off("e2.mkv")
+        self.assertEqual(self.chain().unattended, 0)
+
+    def test_the_playhead_is_remembered_for_the_next_episode(self):
+        state = self.new_episode("e1.mkv")
+        self.now = 2000.0
+        self.tick(900.0, video="e1.mkv")
+        self.assertEqual((state.last_time, state.total, state.last_seen_mono), (900.0, 1500.0, 2000.0))
+
+    def test_an_unreadable_playhead_is_ignored(self):
+        state = self.found_state()
+        step._note_progress(state, "x", 1500.0)
+        step._note_progress(state, None, None)
+        self.assertEqual((state.last_time, state.total, state.last_seen_mono), (0.0, 0.0, 0.0))
 
     def test_a_manual_start_ends_the_run(self):
         self.settings["next_episode_autoplay"] = True
@@ -951,10 +1075,32 @@ class HandlerTests(unittest.TestCase):
         self.assertEqual([(s, t) for s, t, _ in events], [(1455.0, 1500.0)])
         self.assertTrue(events[0][2].is_set())
 
-    def test_a_library_episode_needs_no_watchdog(self):
+    def test_a_library_episode_gets_a_watchdog_too(self):
         self.settings["next_episode_autoplay"] = True
         state = self.new_episode("e1.mkv")
         self.chain().unattended = 2
+        with patch.object(step, "start_stop_watchdog") as watchdog:
+            self.finish_unattended(state, "e1.mkv")
+        watchdog.assert_called_once_with(self.ctx.player, 1455.0, 1500.0)
+
+    def test_without_autoplay_the_question_gets_a_watchdog_and_continue_stands_it_down(self):
+        events = []
+
+        def fake_watchdog(player, start, total):
+            event = threading.Event()
+            events.append(event)
+            return event
+
+        state = self.new_episode("e1.mkv")
+        self.chain().unattended = 2
+        self.answers = [True]
+        with patch.object(step, "start_stop_watchdog", fake_watchdog):
+            self.finish_unattended(state, "e1.mkv")
+        self.assertEqual(len(events), 1)
+        self.assertTrue(events[0].is_set())
+
+    def test_the_usual_prompt_needs_no_watchdog(self):
+        state = self.new_episode("e1.mkv")
         with patch.object(step, "start_stop_watchdog") as watchdog:
             self.finish_unattended(state, "e1.mkv")
         watchdog.assert_not_called()
@@ -1179,13 +1325,16 @@ class SettingsDefinitionTests(unittest.TestCase):
                 for c in d.iter("condition")
             }
 
-        # Global autoplay or a show set to autoplay can reach the guard, so either shows its rows.
-        either = {("next_episode_autoplay", "true"), ("next_episode_per_show", "true")}
-        self.assertEqual(any_of("next_episode_still_watching"), either)
-        self.assertEqual(any_of("next_episode_still_watching_after"), either)
-        self.assertIn(
-            ("next_episode_still_watching", "true"), deps("next_episode_still_watching_after")
+        # The question is independent of automatic play: Kodi's own play next video and playlists
+        # reach it too, so both rows show whenever the feature is on.
+        enabled = ("next_episode_enabled", "true")
+        self.assertEqual(deps("next_episode_still_watching"), {enabled})
+        self.assertEqual(
+            deps("next_episode_still_watching_after"),
+            {enabled, ("next_episode_still_watching", "true")},
         )
+        self.assertEqual(any_of("next_episode_still_watching"), set())
+        self.assertEqual(any_of("next_episode_still_watching_after"), set())
         self.assertNotIn(("next_episode_autoplay", "true"), deps("next_episode_start_at_credits"))
         constraints = found["next_episode_still_watching_after"].find("constraints")
         self.assertEqual(

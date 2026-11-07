@@ -699,12 +699,6 @@
                     <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
-                        <dependency type="visible">
-                            <or>
-                                <condition setting="next_episode_autoplay">true</condition>
-                                <condition setting="next_episode_per_show">true</condition>
-                            </or>
-                        </dependency>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                     </dependencies>
                 </setting>
@@ -718,12 +712,6 @@
                     </constraints>
                     <control type="spinner" format="integer"></control>
                     <dependencies>
-                        <dependency type="visible">
-                            <or>
-                                <condition setting="next_episode_autoplay">true</condition>
-                                <condition setting="next_episode_per_show">true</condition>
-                            </or>
-                        </dependency>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                         <dependency type="visible" setting="next_episode_still_watching">true</dependency>
                     </dependencies>

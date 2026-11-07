@@ -58,6 +58,12 @@ class NextEpisodeState:
     guard_checked: bool = False
     guard_ask: bool = False
     guard_cancel: Optional[object] = None
+    # How the episode went, for the same guard: the last playhead position and total length seen,
+    # when (monotonic), and whether the viewer answered its prompt with a button.
+    last_time: float = 0.0
+    total: float = 0.0
+    last_seen_mono: float = 0.0
+    answered: bool = False
     # What the video add-on said about the next episode (Up Next's upnext_data), and whether this
     # is playback Skippy otherwise ignores (an add-on or stream URL), which has no library entry.
     provider: Optional[object] = None

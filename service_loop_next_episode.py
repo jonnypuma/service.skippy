@@ -15,13 +15,13 @@ from next_episode_credits import credits_start_seconds
 from next_episode_guard import (
     WatchChain,
     begin_episode,
+    ended_on_its_own,
     evaluate,
     start_stop_watchdog,
 )
 from next_episode_lookup import (
     KIND_EPISODE,
     KIND_MOVIE,
-    SOURCE_PLAYLIST,
     describe_current_episode,
     describe_current_movie,
     episode_label,
@@ -151,6 +151,7 @@ def _handle(
         return IDLE_TICK
 
     total = _total_time(ctx.player)
+    _note_progress(state, current_time, total)
     lead = addon_get_int(addon, "next_episode_lead_seconds", 45, minimum=10, maximum=300)
     credits = _credits_start(monitor, addon, total, state)
     if rearm_if_before_window(state, current_time, total, lead, credits):
@@ -172,7 +173,9 @@ def _handle(
     autoplay = resolve_autoplay(
         addon_get_bool(addon, "next_episode_autoplay", False), per_show, show_mode
     )
-    ask_still_watching = autoplay and _still_watching_due(monitor, state, addon)
+    # The question does not depend on automatic play: it counts the episodes that went on without
+    # a button press, whoever started them (Skippy, Kodi's own play next video, a playlist).
+    ask_still_watching = _still_watching_due(monitor, state, addon)
     if autoplay and not ask_still_watching:
         return NextEpisodeTick(
             hide_skip_dialogs=hide,
@@ -211,13 +214,15 @@ def _handle(
         log("Next episode: countdown ran out - prompt closed")
         return held
     if answer is True:
+        state.answered = True
         if ask_still_watching:
             _stand_down_watchdog(state)
         switched = _start_next(monitor, state, addon)
-        if switched and per_show and show_mode is None and not autoplay:
+        if switched and per_show and show_mode is None and not autoplay and not ask_still_watching:
             _queue_remember(monitor, state)
         return NextEpisodeTick(hide_skip_dialogs=hide, switched=switched)
     if answer is False:
+        state.answered = True
         state.dismissed = True
         log("Next episode: prompt dismissed")
     return held
@@ -320,12 +325,24 @@ def handle_remote_next_episode(ctx: Any) -> NextEpisodeTick:
 def _state_for(monitor, video) -> NextEpisodeState:
     state = getattr(monitor, "next_episode_state", None)
     if state is None or state.video != video:
+        carried = False
         if state is not None:
+            carried = ended_on_its_own(state, time.monotonic())
             reset_guard(state)
         state = NextEpisodeState(video=video)
         monitor.next_episode_state = state
-        begin_episode(_chain_for(monitor))
+        begin_episode(_chain_for(monitor), carried=carried)
     return state
+
+
+def _note_progress(state, current_time, total) -> None:
+    """Remember how far the episode got, so the next one can tell whether this one ended by itself."""
+    try:
+        state.last_time = float(current_time)
+        state.total = float(total)
+        state.last_seen_mono = time.monotonic()
+    except (TypeError, ValueError):
+        pass
 
 
 def _chain_for(monitor) -> WatchChain:
@@ -384,9 +401,10 @@ def _still_watching_due(monitor, state, addon) -> bool:
 
 
 def _arm_stop_watchdog(ctx, state, start, total) -> None:
-    """A playlist would carry on by itself, so stop it before the end if nobody answers."""
-    if (state.next_item or {}).get("source") != SOURCE_PLAYLIST:
-        return
+    """Kodi (a playlist, its own play next video) would carry on by itself.
+
+    So playback is stopped before the end if nobody answers the question.
+    """
     cancel = state.guard_cancel
     if cancel is not None and not cancel.is_set():
         return
