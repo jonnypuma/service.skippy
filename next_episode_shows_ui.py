@@ -10,6 +10,8 @@ import xbmcgui
 from next_episode_shows import (
     MODE_ASK,
     MODE_AUTO,
+    MODE_NEVER,
+    MODES,
     delete_show,
     list_entries,
     save_mode,
@@ -24,6 +26,8 @@ from settings_utils import get_addon, get_localized, log, notify_skippy
 def mode_word(addon, mode) -> str:
     if mode == MODE_AUTO:
         return get_localized(addon, 47091, "Play automatically")
+    if mode == MODE_NEVER:
+        return get_localized(addon, 47145, "Never offer")
     return get_localized(addon, 47092, "Ask first")
 
 
@@ -135,17 +139,15 @@ def _identify_show(show: dict):
 def _pick_mode(addon, heading, preselect=0) -> str | None:
     from skippy_editor_modal_skin import show_editor_list_pick
 
-    options = [mode_word(addon, MODE_AUTO), mode_word(addon, MODE_ASK)]
+    options = [mode_word(addon, mode) for mode in MODES]
     index = show_editor_list_pick(
         heading,
         options,
         preselect=preselect,
         cancel_label=get_localized(addon, 35019, "Cancel"),
     )
-    if index == 0:
-        return MODE_AUTO
-    if index == 1:
-        return MODE_ASK
+    if isinstance(index, int) and 0 <= index < len(MODES):
+        return MODES[index]
     return None
 
 
@@ -172,22 +174,16 @@ def _edit_show(addon, entry: dict) -> None:
     from skippy_editor_modal_skin import show_editor_list_pick
 
     forget_label = get_localized(addon, 47093, "Forget this show")
-    options = [
-        mode_word(addon, MODE_AUTO),
-        mode_word(addon, MODE_ASK),
-        forget_label,
-    ]
+    options = [mode_word(addon, mode) for mode in MODES] + [forget_label]
     index = show_editor_list_pick(
         entry["title"],
         options,
-        preselect=0 if entry["mode"] == MODE_AUTO else 1,
+        preselect=MODES.index(entry["mode"]) if entry["mode"] in MODES else 0,
         cancel_label=get_localized(addon, 35019, "Cancel"),
     )
-    if index == 0:
-        save_mode(entry["key"], MODE_AUTO)
-    elif index == 1:
-        save_mode(entry["key"], MODE_ASK)
-    elif index == 2 and delete_show(entry["key"]):
+    if isinstance(index, int) and 0 <= index < len(MODES):
+        save_mode(entry["key"], MODES[index])
+    elif index == len(MODES) and delete_show(entry["key"]):
         _toast(
             addon,
             get_localized(

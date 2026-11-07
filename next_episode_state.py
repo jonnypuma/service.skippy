@@ -24,6 +24,18 @@ MIN_REPROMPT_S = 3.0
 # A credits segment that leaves less than this before the end is not worth a prompt of its own.
 MIN_CREDITS_REMAINING_S = 10.0
 
+# What happens when the prompt's countdown reaches zero and nobody has answered.
+END_CLOSE = "Close"
+END_PLAY = "Play"
+END_ACTIONS = (END_CLOSE, END_PLAY)
+# The settings that decide how long the prompt stays up and what it does when that runs out.
+KEY_POPUP_DURATION = "next_episode_popup_duration"
+KEY_END_ACTION = "next_episode_popup_end_action"
+# The most seconds the prompt can be asked to stay up (0 keeps it up until the episode ends).
+MAX_POPUP_DURATION_S = 120
+# What the prompt returns when its countdown ran out; True / False / None keep their meaning.
+TIMED_OUT = "timed_out"
+
 
 @dataclass
 class NextEpisodeState:
@@ -32,6 +44,8 @@ class NextEpisodeState:
     next_item: Optional[dict] = None
     current_episode_id: Optional[int] = None
     current_playcount: Optional[int] = None
+    # "episode" or "movie": what is playing, which decides how it is marked as watched.
+    current_kind: str = "episode"
     dismissed: bool = False
     started: bool = False
     failed: bool = False
@@ -44,6 +58,10 @@ class NextEpisodeState:
     guard_checked: bool = False
     guard_ask: bool = False
     guard_cancel: Optional[object] = None
+    # What the video add-on said about the next episode (Up Next's upnext_data), and whether this
+    # is playback Skippy otherwise ignores (an add-on or stream URL), which has no library entry.
+    provider: Optional[object] = None
+    remote: bool = False
 
 
 def reset_guard(state) -> None:
@@ -117,3 +135,37 @@ def rearm_if_before_window(
     state.failed = False
     reset_guard(state)
     return changed
+
+
+def normalize_end_action(value) -> str:
+    """A stored "when the countdown ends" value, or Close when it is not one of the options."""
+    text = str(value or "").strip().lower()
+    for option in END_ACTIONS:
+        if option.lower() == text:
+            return option
+    return END_CLOSE
+
+
+def popup_span(window_start, current_time, total_time, duration):
+    """
+    ``(begin, end, timed)``: the stretch of the file the prompt counts down over.
+
+    ``duration`` 0 counts down over the whole window, up to the end of the file. Any other
+    value counts down that many seconds from where the prompt appears (never before the
+    window starts); when that reaches the end of the file anyway, the prompt simply runs to
+    the end and ``timed`` is False.
+    """
+    try:
+        start = float(window_start)
+        now = float(current_time)
+        total = float(total_time)
+        length = float(duration)
+    except (TypeError, ValueError):
+        return window_start, total_time, False
+    if length <= 0:
+        return start, total, False
+    begin = max(start, now)
+    end = begin + length
+    if end >= total - END_GUARD_S:
+        return begin, total, False
+    return begin, end, True

@@ -47,14 +47,19 @@ def convert(xml):
         lambda m: m.group(1) + _s(m.group(2)) + m.group(3),
         xml,
     )
-    # <effect type="slide" start="0,-150" end="0,0" ...>
+    # <effect type="slide" start="0,-150" end="0,0" ...>; for a zoom only the centre is a distance
+    # (<effect type="zoom" start="100" end="125" center="1260,700" ...>, start and end are percent).
     def effect(m):
         tag = m.group(0)
-        if 'type="slide"' not in tag:
-            return tag
-        return re.sub(
-            r'\b(start|end)="([^"]*)"', lambda a: '%s="%s"' % (a.group(1), _scale_pair(a.group(2))), tag
-        )
+        if 'type="slide"' in tag:
+            return re.sub(
+                r'\b(start|end)="([^"]*)"', lambda a: '%s="%s"' % (a.group(1), _scale_pair(a.group(2))), tag
+            )
+        if 'type="zoom"' in tag:
+            return re.sub(
+                r'\b(center)="([^"]*)"', lambda a: '%s="%s"' % (a.group(1), _scale_pair(a.group(2))), tag
+            )
+        return tag
 
     xml = re.sub(r"<effect\b[^>]*>", effect, xml)
     # <itemlayout width="960" height="48"> sizes

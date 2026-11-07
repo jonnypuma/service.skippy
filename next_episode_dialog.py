@@ -29,9 +29,13 @@ from next_episode_appearance import (
     popup_origin,
     seconds_left,
     window_fraction_left,
+    zoom_corner,
 )
-from next_episode_state import END_GUARD_S
+from next_episode_lookup import is_movie_item
+from next_episode_state import END_CLOSE, END_GUARD_S, END_PLAY, TIMED_OUT
 from next_episode_view import (
+    countdown_mode,
+    countdown_settings,
     countdown_text,
     fill_width,
     look_properties,
@@ -71,6 +75,11 @@ def _text_color(addon) -> str:
 
 
 class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
+    next_episode: dict = {}
+    still_watching = False
+    timed = False
+    end_action = END_CLOSE
+
     def __init__(self, *args, **kwargs):
         self._skin_resolution = init_window_xml_dialog(super(NextEpisodeDialog, self), args)
         self._xml_layout = args[0] if args else XML_NAME
@@ -83,6 +92,14 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         self.total = float(kwargs.get("total") or 0.0)
         self.preview = bool(kwargs.get("preview"))
         self.still_watching = bool(kwargs.get("still_watching"))
+        # ``total`` is where the countdown ends: the end of the file, or sooner when the prompt
+        # is set to stay up for a fixed time (``timed``). ``end_action`` is what happens there.
+        self.timed = bool(kwargs.get("timed")) and not self.still_watching
+        self.end_action = (
+            END_PLAY
+            if kwargs.get("end_action") == END_PLAY and not self.still_watching
+            else END_CLOSE
+        )
         self.result = None
         self._layout = None
         self._look = None
@@ -212,6 +229,8 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         self._show(ID_BAR_BG, has_bar)
         try:
             self.setProperty("next_ep_has_bar", "true" if has_bar else "false")
+            # The size: the skin grows the popup from this corner ("" keeps the normal size).
+            self.setProperty("next_ep_zoom", zoom_corner(self.draft))
         except Exception:
             pass
         if has_bar:
@@ -219,7 +238,8 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
 
     def _head(self) -> float:
         if self.preview:
-            return self.window_start + (time.monotonic() - self._started) % _PREVIEW_LOOP_S
+            loop = max(1.0, self.total - self.window_start)
+            return self.window_start + (time.monotonic() - self._started) % loop
         try:
             return float(self.player.getTime())
         except Exception:
@@ -231,9 +251,16 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             return
         try:
             if layout.countdown_y is not None:
+                mode = countdown_mode(self.end_action, self.timed, self.still_watching)
                 self.setProperty(
                     "next_ep_countdown",
-                    countdown_text(self.addon, self._caps_on(), seconds_left(head, self.total)),
+                    countdown_text(
+                        self.addon,
+                        self._caps_on(),
+                        seconds_left(head, self.total),
+                        mode,
+                        movie=is_movie_item(self.next_episode),
+                    ),
                 )
             if layout.bar_y is not None:
                 tiled = getattr(self, "_bar_tiled", True)
@@ -261,12 +288,14 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             except Exception:
                 playing = False
             head = self._head()
-            if (
-                not playing
-                or head >= self.total - END_GUARD_S
-                or head < self.window_start - 1.0
-            ):
+            if not playing or head < self.window_start - 1.0:
                 self._finish(None)
+                return
+            # A prompt that runs to the end of the file stops a moment before it, where Kodi's
+            # own end-of-file handling takes over; a timed one stops exactly where it was set to.
+            limit = self.total if self.timed else self.total - END_GUARD_S
+            if head >= limit:
+                self._finish(TIMED_OUT if self.timed or self.end_action == END_PLAY else None)
                 return
             self._update_countdown(head)
 
@@ -330,11 +359,17 @@ def show_next_episode_dialog(
     draft=None,
     preview=False,
     still_watching=False,
+    timed=False,
+    end_action=END_CLOSE,
 ):
     """
     Show the popup until it is answered or no longer applies.
 
-    Returns True (Play now), False (Close / Back) or None (it closed by itself:
+    ``total`` is where the countdown ends (the end of the file, or sooner for a ``timed``
+    popup) and ``end_action`` is what the caller will do then.
+
+    Returns True (Play now), False (Close / Back), ``TIMED_OUT`` (the countdown ran out of a
+    timed popup, or out of one whose end action is Play) or None (it closed by itself:
     playback stopped, the file ended, or the playhead left the window).
     """
     dialog = NextEpisodeDialog(
@@ -349,6 +384,8 @@ def show_next_episode_dialog(
         total=total,
         preview=preview,
         still_watching=still_watching,
+        timed=timed,
+        end_action=end_action,
     )
     try:
         dialog.doModal()
@@ -359,14 +396,25 @@ def show_next_episode_dialog(
     return result
 
 
+def preview_countdown(addon):
+    """``(seconds, timed, end action)`` the preview loops over, from the saved prompt settings."""
+    seconds, action = countdown_settings(addon)
+    if seconds > 0:
+        return float(seconds), True, action
+    return _PREVIEW_LOOP_S, False, action
+
+
 def show_preview(addon, draft) -> None:
     """Open the popup with an example episode and a looping countdown."""
+    seconds, timed, action = preview_countdown(addon)
     show_next_episode_dialog(
         addon,
         None,
         mock_episode(addon),
         0.0,
-        _PREVIEW_LOOP_S,
+        seconds,
         draft=draft,
         preview=True,
+        timed=timed,
+        end_action=action,
     )

@@ -21,9 +21,11 @@ from next_episode_appearance import (
     KEY_LOOK,
     KEY_POSITION,
     KEY_PROGRESS,
+    KEY_SIZE,
     KEY_STYLE,
     KEY_THUMBNAIL,
     POSITION_LABELS,
+    SIZE_LARGE,
     STYLE_LABELS,
     customize_rows,
     cycle_choice,
@@ -34,6 +36,7 @@ from next_episode_appearance import (
     popup_origin,
     seconds_left,
     window_fraction_left,
+    zoom_corner,
 )
 from next_episode_dialog import mock_episode
 from next_episode_look import (
@@ -52,6 +55,8 @@ from next_episode_look import (
 from next_episode_toast import build_toast_texts
 from next_episode_view import (
     MOCK_ID_OFFSET,
+    countdown_mode,
+    countdown_settings,
     countdown_text,
     fill_width,
     focus_is_close,
@@ -71,9 +76,11 @@ ID_TITLE = 6002
 ID_PREVIEW = 6020
 ID_SAVE = 6021
 ID_CANCEL = 6022
+ID_LOOKS = 6023
 ROW_IDS = {
     KEY_STYLE: 6011,
     KEY_POSITION: 6012,
+    KEY_SIZE: 6036,
     KEY_THUMBNAIL: 6013,
     KEY_COUNTDOWN: 6014,
     KEY_PROGRESS: 6015,
@@ -86,13 +93,15 @@ ROW_IDS = {
     KEY_BAR_STYLE: 6034,
     KEY_CARD_OPACITY: 6035,
 }
-FOOTER_IDS = (ID_PREVIEW, ID_SAVE, ID_CANCEL)
+# Left to right; the order is the order of the buttons on screen.
+FOOTER_IDS = (ID_PREVIEW, ID_LOOKS, ID_SAVE, ID_CANCEL)
 
 # Row names are the setting labels, so the modal and the settings page agree.
 ROW_LABEL_IDS = {
     KEY_STYLE: (47030, "Popup style"),
     KEY_LOOK: (47080, "Popup look"),
     KEY_POSITION: (47034, "Popup position"),
+    KEY_SIZE: (47151, "Popup size"),
     KEY_THUMBNAIL: (47036, "Show episode picture"),
     KEY_COUNTDOWN: (47038, "Show time left"),
     KEY_PROGRESS: (47040, "Show progress bar"),
@@ -119,6 +128,19 @@ _MOCK_MARGIN = 20
 # The example the mockup shows: 31 seconds left of a 45 second window.
 MOCK_WINDOW_S = 45.0
 MOCK_HEAD_S = 14.0
+
+
+def mock_countdown_text(addon, caps_on) -> str:
+    """The mockup's countdown line, as the saved "Show the prompt for" and "When the countdown ends" read.
+
+    The bar stands where it always does (31 of 45 left); a prompt that stays up for a fixed time
+    shows the same share of that time.
+    """
+    duration, action = countdown_settings(addon)
+    left = seconds_left(MOCK_HEAD_S, MOCK_WINDOW_S)
+    if duration > 0:
+        left = int(round(duration * left / MOCK_WINDOW_S))
+    return countdown_text(addon, caps_on, left, countdown_mode(action, duration > 0))
 _ROW_TOP = 60
 _ROW_H = 40
 _ROW_STEP = 44
@@ -127,6 +149,9 @@ _ROW_STEP = 44
 _ROWS_MAX_H = 510
 _ROW_GAP = _ROW_STEP - _ROW_H
 _FOOTER_H = 40
+# Four buttons share the 520 px of a row: 122 px wide with 10 px between them.
+_FOOTER_W = 122
+_FOOTER_STEP = 132
 _PANEL_BOTTOM_PAD = 20
 _CANCEL_ACTIONS = (10, 92, 216)
 _MOVE_LEFT = getattr(xbmcgui, "ACTION_MOVE_LEFT", 1)
@@ -180,6 +205,10 @@ def value_text(addon, draft, key) -> str:
         return override_label(key, value)
     if key == KEY_POSITION:
         return POSITION_LABELS[value]
+    if key == KEY_SIZE:
+        if value == SIZE_LARGE:
+            return get_localized(addon, 47154, "Large")
+        return get_localized(addon, 47153, "Normal")
     return FOCUS_LABELS[value]
 
 
@@ -252,6 +281,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         for cid, text in (
             (ID_TITLE, get_localized(addon, 47032, "Customize next episode popup")),
             (ID_PREVIEW, get_localized(addon, 47052, "Preview")),
+            (ID_LOOKS, get_localized(addon, 47128, "Looks…")),
             (ID_SAVE, get_localized(addon, 44103, "Save")),
             (ID_CANCEL, get_localized(addon, 44104, "Cancel")),
         ):
@@ -291,7 +321,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
                 pass
             self._place(cid, 20, tops[shown.index(key)], 520, row_h)
         for n, cid in enumerate(FOOTER_IDS):
-            self._place(cid, 20 + 180 * n, footer_top, 160, _FOOTER_H)
+            self._place(cid, 20 + _FOOTER_STEP * n, footer_top, _FOOTER_W, _FOOTER_H)
         self._place(ID_BACKDROP, 0, 0, _PANEL_W, panel_h)
         self._place(ID_PANEL, _PANEL_X, _PANEL_Y, _PANEL_W, panel_h)
         self._refresh_mock()
@@ -331,6 +361,8 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         for name, value in props.items():
             self._set_prop(name, value)
         self._set_prop("next_ep_mock_focus", "close" if focus_is_close(draft) else "play")
+        # The size: the skin grows the mock popup from the corner it sits in.
+        self._set_prop("next_ep_zoom", zoom_corner(draft))
         texts = popup_texts(addon, look.all_caps, episode)
         self._set_prop("next_ep_heading", texts["heading"])
         self._set_prop("next_ep_label", texts["label"])
@@ -341,8 +373,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         self._set_prop("next_ep_has_bar", "true" if has_bar else "false")
         if has_countdown:
             self._set_prop(
-                "next_ep_countdown",
-                countdown_text(addon, look.all_caps, seconds_left(MOCK_HEAD_S, MOCK_WINDOW_S)),
+                "next_ep_countdown", mock_countdown_text(addon, look.all_caps)
             )
         x, y = popup_origin(
             draft.get(KEY_POSITION),
@@ -386,7 +417,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
     def _move_focus(self, delta):
         ids = nav_ids(self._draft)
         current = self._focus_id()
-        if current in (ID_SAVE, ID_CANCEL):
+        if current in FOOTER_IDS:
             current = ID_PREVIEW
         if current not in ids:
             current = ids[0]
@@ -442,6 +473,20 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         except Exception:
             pass
 
+    def _open_looks_menu(self):
+        """Reset / save / load / delete a look, then redraw the rows and the mockup."""
+        from next_episode_looks_ui import present_looks_menu
+
+        try:
+            present_looks_menu(self.addon, self._draft)
+        except Exception as exc:
+            log("Next episode customize: the looks menu failed: %s" % exc)
+        self._refresh()
+        try:
+            self.setFocusId(ID_LOOKS)
+        except Exception:
+            pass
+
     def _save_and_close(self):
         addon = self.addon
         changes = changed_payload(self._draft, self._original)
@@ -465,6 +510,8 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
             self.close()
         elif cid == ID_PREVIEW:
             self._preview()
+        elif cid == ID_LOOKS:
+            self._open_looks_menu()
         elif cid in ROW_IDS.values():
             self._nudge(cid, 1)
 

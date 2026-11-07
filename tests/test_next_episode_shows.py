@@ -2,6 +2,7 @@
 """Per-show autoplay: the store, the autoplay decision, the question and the Manage window."""
 
 import os
+import re
 import sys
 import tempfile
 import types
@@ -55,6 +56,21 @@ class ResolveAutoplayTests(unittest.TestCase):
         self.assertIs(shows.resolve_autoplay(1, False, None), True)
         self.assertIs(shows.resolve_autoplay(None, True, None), False)
 
+    def test_a_show_set_to_never_offer_does_not_autoplay_either(self):
+        self.assertFalse(shows.resolve_autoplay(True, True, shows.MODE_NEVER))
+        self.assertFalse(shows.resolve_autoplay(False, True, shows.MODE_NEVER))
+
+    def test_never_offer_only_counts_while_per_show_is_on(self):
+        self.assertTrue(shows.never_offer(True, shows.MODE_NEVER))
+        self.assertFalse(shows.never_offer(False, shows.MODE_NEVER))
+        self.assertFalse(shows.never_offer(True, shows.MODE_ASK))
+        self.assertFalse(shows.never_offer(True, shows.MODE_AUTO))
+        self.assertFalse(shows.never_offer(True, None))
+        self.assertIs(shows.never_offer(1, shows.MODE_NEVER), True)
+
+    def test_there_are_three_modes_in_the_order_the_windows_list_them(self):
+        self.assertEqual(shows.MODES, ("auto", "ask", "never"))
+
 
 class ShowKeyTests(unittest.TestCase):
     def test_an_episode_is_keyed_on_the_show_tmdb_id(self):
@@ -93,6 +109,15 @@ class StoreTests(_ProfileTempDir):
             shows.list_entries(),
             [{"key": "tv_tmdb_1", "title": "Friends", "mode": "auto"}],
         )
+
+    def test_never_offer_is_saved_and_listed(self):
+        self.assertTrue(shows.save_mode("tv_tmdb_9", shows.MODE_NEVER, "Arrow"))
+        self.assertEqual(shows.lookup_mode("tv_tmdb_9"), "never")
+        self.assertEqual(
+            shows.list_entries(), [{"key": "tv_tmdb_9", "title": "Arrow", "mode": "never"}]
+        )
+        shows.clear_cache()
+        self.assertEqual(shows.lookup_mode("tv_tmdb_9"), "never")
 
     def test_a_change_keeps_the_saved_title(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
@@ -196,13 +221,21 @@ class BackupTests(_ProfileTempDir):
             "tv_tmdb_1": {"mode": "ask", "title": "A"},
             "tv_tmdb_3": {"mode": "auto", "title": "C"},
             "junk": "x",
-            "tv_tmdb_4": {"mode": "never"},
+            "tv_tmdb_4": {"mode": "sometimes"},
         }
         self.assertEqual(shows.merge_from_backup(incoming), (1, 1))
         self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "ask")
         self.assertEqual(shows.lookup_mode("tv_tmdb_2"), "auto")
         self.assertEqual(shows.lookup_mode("tv_tmdb_3"), "auto")
         self.assertIsNone(shows.lookup_mode("tv_tmdb_4"))
+
+    def test_the_backup_carries_never_offer(self):
+        shows.save_mode("tv_tmdb_1", shows.MODE_NEVER, "A")
+        exported = shows.export_all()
+        self.assertEqual(exported["tv_tmdb_1"]["mode"], "never")
+        shows.clear_all()
+        self.assertEqual(shows.merge_from_backup(exported), (1, 0))
+        self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "never")
 
     def test_merge_keeps_a_local_title_the_backup_lacks(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
@@ -300,6 +333,7 @@ class HandlerTests(unittest.TestCase):
                 "addon_get_int",
                 lambda _a, key, default=0, minimum=None, maximum=None: self.settings.get(key, default),
             ),
+            patch.object(step, "countdown_settings", lambda _a: (0, "Close")),
             patch.object(step, "per_show_autoplay_enabled", lambda _a: self.per_show),
             patch.object(step, "lookup_mode", lambda key: self.modes.get(key)),
             patch.object(step, "_upnext_enabled", lambda: False),
@@ -319,7 +353,9 @@ class HandlerTests(unittest.TestCase):
             p.start()
             self.addCleanup(p.stop)
 
-    def _prompt(self, addon, player, item, start, total, still_watching=False):
+    def _prompt(
+        self, addon, player, item, start, total, still_watching=False, timed=False, end_action="Close"
+    ):
         self.prompts.append(still_watching)
         return self.answers.pop(0) if self.answers else None
 
@@ -366,6 +402,61 @@ class HandlerTests(unittest.TestCase):
         self.answers = [False]
         self.tick(1460.0)
         self.assertEqual((self.prompts, self.plays), ([False], []))
+
+    def test_a_show_set_to_never_offer_gets_no_prompt_and_no_autoplay(self):
+        self.settings["next_episode_autoplay"] = True
+        self.found_state()
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        result = self.tick(1460.0)
+        self.assertEqual((self.prompts, self.plays), ([], []))
+        self.assertFalse(result.switched)
+
+    def test_a_show_set_to_never_offer_leaves_the_skip_dialogs_alone(self):
+        self.found_state()
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.assertFalse(self.tick(1460.0).hide_skip_dialogs)
+
+    def test_a_show_that_is_not_set_to_never_offer_still_hides_the_skip_dialogs(self):
+        self.found_state()
+        self.answers = [None]
+        self.assertTrue(self.tick(1460.0).hide_skip_dialogs)
+
+    def test_never_offer_is_ignored_when_per_show_is_off(self):
+        self.per_show = False
+        self.found_state()
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.answers = [False]
+        self.tick(1460.0)
+        self.assertEqual(self.prompts, [False])
+
+    def test_an_unidentified_show_is_not_affected_by_never_offer(self):
+        self.found_state(key=None, title="")
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.answers = [False]
+        self.tick(1460.0)
+        self.assertEqual(self.prompts, [False])
+
+    def test_another_show_is_not_affected_by_never_offer(self):
+        self.found_state(key="tv_tmdb_2")
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.answers = [False]
+        self.tick(1460.0)
+        self.assertEqual(self.prompts, [False])
+
+    def test_switching_never_offer_on_and_off_applies_to_the_running_episode(self):
+        self.found_state()
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.tick(1460.0)
+        self.assertEqual(self.prompts, [])
+        self.now += 60
+        del self.modes["tv_tmdb_1"]
+        self.answers = [None]
+        self.tick(1470.0)
+        self.assertEqual(self.prompts, [False])
+        self.now += 60
+        self.modes["tv_tmdb_1"] = shows.MODE_NEVER
+        self.tick(1480.0)
+        self.assertEqual(self.prompts, [False])
 
     def test_a_show_without_a_choice_follows_global_autoplay(self):
         self.settings["next_episode_autoplay"] = True
@@ -713,8 +804,45 @@ class ManageTests(_UiTests):
         heading, options, preselect = modal.pick_calls[1]
         self.assertEqual(
             (heading, options, preselect),
-            ("Friends", ["Play automatically", "Ask first", "Forget this show"], 0),
+            ("Friends", ["Play automatically", "Ask first", "Never offer", "Forget this show"], 0),
         )
+
+    def test_a_show_can_be_set_to_never_offer(self):
+        shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
+        modal = _FakeModal(picks=[1, 2, -1])
+        self.install(modal)
+        ui.show_manage_next_episode_shows_modal()
+        self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "never")
+        self.assertEqual(shows.list_entries()[0]["title"], "Friends")
+
+    def test_the_row_of_a_show_set_to_never_offer_says_so(self):
+        self.assertEqual(
+            ui.format_entry_label(None, {"title": "Arrow", "mode": "never"}), "Arrow — Never offer"
+        )
+
+    def test_never_offer_is_preselected_for_such_a_show(self):
+        shows.save_mode("tv_tmdb_1", shows.MODE_NEVER, "Friends")
+        modal = _FakeModal(picks=[1, -1, -1])
+        self.install(modal)
+        ui.show_manage_next_episode_shows_modal()
+        self.assertEqual(modal.pick_calls[1][2], 2)
+
+    def test_a_new_show_can_be_set_to_never_offer(self):
+        library = [{"tvshowid": 4, "title": "Arrow"}]
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 2, -1])
+        self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "never")
+
+    def test_a_pick_beyond_the_modes_for_a_new_show_saves_nothing(self):
+        library = [{"tvshowid": 4, "title": "Arrow"}]
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 3, -1])
+        self.assertEqual(shows.load_shows(), {})
+
+    def test_a_pick_beyond_the_modes_changes_nothing(self):
+        shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
+        modal = _FakeModal(picks=[1, 7, -1])
+        self.install(modal)
+        ui.show_manage_next_episode_shows_modal()
+        self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "auto")
 
     def test_the_current_choice_is_preselected(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_ASK, "Friends")
@@ -725,7 +853,7 @@ class ManageTests(_UiTests):
 
     def test_forgetting_a_show(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
-        modal = _FakeModal(picks=[1, 2, -1])
+        modal = _FakeModal(picks=[1, 3, -1])
         self.install(modal)
         ui.show_manage_next_episode_shows_modal()
         self.assertIsNone(shows.lookup_mode("tv_tmdb_1"))
@@ -762,7 +890,7 @@ class ManageTests(_UiTests):
         self.assertEqual(shows.lookup_mode("tv_tmdb_1668"), "auto")
         self.assertEqual(shows.list_entries()[0]["title"], "Friends")
         self.assertEqual(dialog.return_value.select.call_args.args[1], ["Arrow", "Friends"])
-        self.assertEqual(modal.pick_calls[1][1], ["Play automatically", "Ask first"])
+        self.assertEqual(modal.pick_calls[1][1], ["Play automatically", "Ask first", "Never offer"])
 
     def test_a_new_show_can_be_set_to_ask_first(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
@@ -833,6 +961,40 @@ class LibraryShowTests(unittest.TestCase):
             key, title = ui._identify_show({"tvshowid": 9, "title": "Breaking bad"})
         self.assertEqual((key, title), ("tv_tmdb_1396", "Breaking Bad"))
         self.assertEqual(fake.call_args.args[0]["tvshowid"], 9)
+
+
+def _po_entries(pack):
+    path = os.path.join(ROOT, "resources", "language", pack, "strings.po")
+    with open(path, encoding="utf-8") as handle:
+        text = handle.read()
+    return {
+        int(sid): msgstr
+        for sid, msgstr in re.findall(r'msgctxt "#(\d+)"\nmsgid ".*"\nmsgstr "(.*)"', text)
+    }
+
+
+class NeverOfferStringsTests(unittest.TestCase):
+    def packs(self):
+        langs = os.path.join(ROOT, "resources", "language")
+        return sorted(p for p in os.listdir(langs) if os.path.exists(os.path.join(langs, p, "strings.po")))
+
+    def test_the_mode_word_is_in_every_pack_and_translated(self):
+        english = _po_entries("resource.language.en_gb")[47145]
+        self.assertEqual(english, "Never offer")
+        for pack in self.packs():
+            word = _po_entries(pack).get(47145)
+            self.assertTrue(word, pack)
+            if not pack.endswith("en_gb"):
+                self.assertNotEqual(word, english, pack)
+
+    def test_the_help_texts_name_the_mode_the_way_the_pack_does(self):
+        for pack in self.packs():
+            entries = _po_entries(pack)
+            for sid in (47083, 47085):
+                self.assertIn(entries[47145], entries[sid], (pack, sid))
+
+    def test_the_mode_word_is_what_the_window_shows(self):
+        self.assertEqual(ui.mode_word(None, shows.MODE_NEVER), "Never offer")
 
 
 class RunScriptTests(_ProfileTempDir):

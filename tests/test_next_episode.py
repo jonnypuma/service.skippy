@@ -562,6 +562,14 @@ class HandlerTests(unittest.TestCase):
                 "addon_get_int",
                 lambda _a, key, default=0, minimum=None, maximum=None: self.settings.get(key, default),
             ),
+            patch.object(
+                step,
+                "countdown_settings",
+                lambda _a: (
+                    self.settings.get("next_episode_popup_duration", 0),
+                    self.settings.get("next_episode_popup_end_action", "Close"),
+                ),
+            ),
             patch.object(step, "_upnext_enabled", lambda: self.upnext),
             patch.object(step, "_idle_seconds", lambda: self.idle),
             patch.object(step, "show_next_episode_prompt", self._toast),
@@ -582,10 +590,14 @@ class HandlerTests(unittest.TestCase):
             self.addCleanup(p.stop)
         self.toast_calls = []
         self.still_calls = []
+        self.span_calls = []
 
-    def _toast(self, addon, player, item, start, total, still_watching=False):
+    def _toast(
+        self, addon, player, item, start, total, still_watching=False, timed=False, end_action="Close"
+    ):
         self.toast_calls.append((item, start, total))
         self.still_calls.append(still_watching)
+        self.span_calls.append((timed, end_action))
         return self.answers.pop(0) if self.answers else None
 
     def _play(self, item, resume=True):
@@ -619,10 +631,17 @@ class HandlerTests(unittest.TestCase):
         self.assertEqual(self.tick(1470.0), step.IDLE_TICK)
         self.assertEqual((self.toast_calls, self.plays), ([], []))
 
-    def test_only_tv_episodes_are_handled(self):
+    def test_only_episodes_and_movies_are_handled(self):
+        self.found_state()
+        for kind in ("", "musicvideo", "tvshow", "unknown"):
+            self.assertEqual(self.tick(1470.0, playback_type=kind), step.IDLE_TICK, kind)
+        self.assertEqual(self.toast_calls, [])
+
+    def test_a_movie_is_not_handled_while_the_movie_setting_is_off(self):
+        self.settings["next_episode_movies"] = False
         self.found_state()
         self.assertEqual(self.tick(1470.0, playback_type="movie"), step.IDLE_TICK)
-        self.assertEqual(self.toast_calls, [])
+        self.assertEqual((self.toast_calls, self.lookups), ([], []))
 
     def test_up_next_addon_keeps_the_prompt_off_and_is_announced_once(self):
         self.upnext = True
@@ -667,7 +686,7 @@ class HandlerTests(unittest.TestCase):
         self.assertEqual(result, step.NextEpisodeTick(hide_skip_dialogs=True, switched=True))
         self.assertEqual(self.toast_calls, [(LIBRARY_NEXT, 1455.0, 1500.0)])
         self.assertEqual(self.plays, [(LIBRARY_NEXT, True)])
-        self.assertEqual(self.marks, [(7, 1)])
+        self.assertEqual(self.marks, [(7, 1, "episode")])
         self.assertTrue(state.started)
 
     def test_nothing_is_started_twice(self):
@@ -1101,10 +1120,14 @@ class SettingsDefinitionTests(unittest.TestCase):
             "next_episode_still_watching": ("true", "1"),
             "next_episode_still_watching_after": ("3", "1"),
             "next_episode_start_at_credits": ("false", "0"),
+            "next_episode_popup_duration": ("0", "1"),
+            "next_episode_popup_end_action": ("Close", "1"),
             "next_episode_hide_skip_dialogs": ("true", "1"),
             "next_episode_mark_watched": ("true", "1"),
+            "next_episode_movies": ("true", "1"),
             "next_episode_skip_watched": ("false", "2"),
             "next_episode_resume": ("true", "2"),
+            "next_episode_use_provider_data": ("true", "2"),
             "next_episode_popup_style": ("Custom", "0"),
             "settings_action_customize_next_episode_popup": (None, "0"),
             "next_episode_popup_look": ("Default", "1"),
@@ -1115,6 +1138,7 @@ class SettingsDefinitionTests(unittest.TestCase):
             "next_episode_popup_bar_style": ("Look", "2"),
             "next_episode_popup_card_opacity": ("Look", "2"),
             "next_episode_popup_position": ("BottomRight", "1"),
+            "next_episode_popup_size": ("Normal", "1"),
             "next_episode_popup_thumbnail": ("true", "1"),
             "next_episode_popup_countdown": ("true", "1"),
             "next_episode_popup_progress": ("true", "1"),

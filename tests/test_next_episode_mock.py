@@ -466,7 +466,7 @@ class MockSkinTests(unittest.TestCase):
         self.assertLess(cust._PANEL_X + cust._PANEL_W, cust._STAGE_X)
         self.assertLessEqual(cust._STAGE_X + cust._STAGE_W, app.BASE_SCREEN_W)
         self.assertLessEqual(cust._STAGE_Y + cust._STAGE_H, app.BASE_SCREEN_H)
-        self.assertLessEqual(cust._PANEL_Y + cust.row_layout(list(range(13)))[2], app.BASE_SCREEN_H)
+        self.assertLessEqual(cust._PANEL_Y + cust.row_layout(list(range(14)))[2], app.BASE_SCREEN_H)
 
     def test_every_control_has_its_own_id_in_both_resolutions(self):
         for res in ("720p", "1080i"):
@@ -485,6 +485,9 @@ class MockSkinTests(unittest.TestCase):
             copy = mock.get(cid + view.MOCK_ID_OFFSET)
             self.assertIsNotNone(copy, cid)
             self.assertEqual(copy.get("type"), element.get("type"), cid)
+            if cid == view.popup_ids().zoom:
+                continue  # the size group covers the screen there and the stage here
+
             for tag in ("left", "top", "width", "height", "font", "label", "colordiffuse",
                         "textcolor", "align", "wrapmultiline", "aspectratio"):
                 self.assertEqual(copy.findtext(tag), element.findtext(tag), (cid, tag))

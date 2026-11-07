@@ -478,7 +478,7 @@ class OverrideDialogTests(unittest.TestCase):
 
 
 class CustomizeOverrideTests(unittest.TestCase):
-    def test_the_custom_style_lists_thirteen_rows_in_the_skip_dialog_order(self):
+    def test_the_custom_style_lists_fourteen_rows_in_the_skip_dialog_order(self):
         self.assertEqual(
             app.customize_rows(app.DEFAULT_DRAFT),
             [
@@ -491,6 +491,7 @@ class CustomizeOverrideTests(unittest.TestCase):
                 look_mod.KEY_BAR_STYLE,
                 look_mod.KEY_CARD_OPACITY,
                 app.KEY_POSITION,
+                app.KEY_SIZE,
                 app.KEY_THUMBNAIL,
                 app.KEY_COUNTDOWN,
                 app.KEY_PROGRESS,
@@ -502,7 +503,7 @@ class CustomizeOverrideTests(unittest.TestCase):
         draft = dict(app.DEFAULT_DRAFT, **{app.KEY_PROGRESS: False})
         rows = app.customize_rows(draft)
         self.assertNotIn(look_mod.KEY_BAR_STYLE, rows)
-        self.assertEqual(len(rows), 12)
+        self.assertEqual(len(rows), 13)
         self.assertIn(look_mod.KEY_FOCUS_STYLE, rows)
 
     def test_the_toast_style_hides_every_override_row(self):
@@ -650,14 +651,14 @@ class CustomizeSkinRowTests(unittest.TestCase):
                 self.assertEqual(found[cid]["height"], int(height * factor + 0.5), (res, key))
 
     def test_the_rows_fit_inside_the_screen(self):
-        for count in (7, 12, 13):
+        for count in (7, 12, 13, 14):
             tops, footer, panel_h = cust.row_layout(list(range(count)))
             self.assertLessEqual(panel_h, app.BASE_SCREEN_H, count)
             self.assertGreaterEqual(footer, tops[-1] + cust.row_metrics(count)[1])
 
     def test_rows_shrink_only_when_they_would_not_fit(self):
         self.assertEqual(cust.row_metrics(7), (cust._ROW_STEP, cust._ROW_H))
-        step, height = cust.row_metrics(13)
+        step, height = cust.row_metrics(14)
         self.assertLess(step, cust._ROW_STEP)
         self.assertEqual(step - height, cust._ROW_STEP - cust._ROW_H)
         self.assertGreaterEqual(height, 30)

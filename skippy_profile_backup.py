@@ -32,6 +32,7 @@ from settings_backup import (
     _write_json_file,
 )
 from skippy_stats import load_statistics, merge_statistics_from_backup
+from next_episode_saved_looks import export_user_looks, merge_user_looks_from_backup
 from skip_dialog_presets import export_user_presets, merge_user_presets_from_backup
 from segment_types import export_catalog, merge_catalog_from_backup
 
@@ -110,6 +111,7 @@ def export_to_path(addon, dest_json_path: str) -> dict:
         "segment_types": catalog,
         "segment_type_count": len(catalog.get("types") or []),
         "skip_dialog_presets": export_user_presets(),
+        "next_episode_looks": export_user_looks(),
     }
     _write_json_file(dest_json_path, payload)
     return {
@@ -145,6 +147,7 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
         "stats_merged": False,
         "segment_types_merged": False,
         "presets_added": 0,
+        "looks_added": 0,
     }
 
     raw_history = data.get("online_upload_submissions")
@@ -175,6 +178,10 @@ def import_merge_from_path(addon, src_json_path: str) -> tuple[dict, str]:
         if "skip_dialog_presets" in data:
             summary["presets_added"] = merge_user_presets_from_backup(
                 data.get("skip_dialog_presets")
+            )
+        if "next_episode_looks" in data:
+            summary["looks_added"] = merge_user_looks_from_backup(
+                data.get("next_episode_looks")
             )
 
     ver = data.get("addon_version_exported") or "?"

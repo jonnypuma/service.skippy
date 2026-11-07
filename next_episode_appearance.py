@@ -28,6 +28,7 @@ KEY_THUMBNAIL = "next_episode_popup_thumbnail"
 KEY_COUNTDOWN = "next_episode_popup_countdown"
 KEY_PROGRESS = "next_episode_popup_progress"
 KEY_FOCUS = "next_episode_popup_focus"
+KEY_SIZE = "next_episode_popup_size"
 
 STYLE_CUSTOM = "Custom"
 STYLE_NATIVE = "Native"
@@ -41,6 +42,14 @@ POSITION_LABELS = {
     "TopLeft": "Top Left",
     "BottomLeft": "Bottom Left",
 }
+
+SIZE_NORMAL = "Normal"
+SIZE_LARGE = "Large"
+SIZES = (SIZE_NORMAL, SIZE_LARGE)
+# Large shows the whole popup (text included) this many percent of its normal size, grown from
+# the corner it sits in. The skin does it with a zoom effect (NextEpisodeDialog.xml and the
+# mockup in NextEpisodeCustomize.xml), so the layout below stays the same for both sizes.
+LARGE_ZOOM_PERCENT = 125
 
 FOCUS_PLAY = "Play"
 FOCUS_CLOSE = "Close"
@@ -57,6 +66,7 @@ DEFAULT_DRAFT = {
     KEY_BAR_STYLE: FOLLOW_LOOK,
     KEY_CARD_OPACITY: FOLLOW_LOOK,
     KEY_POSITION: "BottomRight",
+    KEY_SIZE: SIZE_NORMAL,
     KEY_THUMBNAIL: True,
     KEY_COUNTDOWN: True,
     KEY_PROGRESS: True,
@@ -67,6 +77,7 @@ CHOICE_KEYS = {
     KEY_STYLE: STYLES,
     KEY_LOOK: LOOK_CHOICES,
     KEY_POSITION: POSITIONS,
+    KEY_SIZE: SIZES,
     KEY_FOCUS: FOCUS_CHOICES,
 }
 # The user's own choices on top of the look: each is "Same as look" or one stored value.
@@ -159,6 +170,30 @@ def popup_origin(
     return x, y
 
 
+def zoom_corner(draft_or_size, position=None) -> str:
+    """The corner the skin grows the popup from, or ``""`` for the normal size.
+
+    The skin shows the zoom of the matching corner name (``next_ep_zoom`` property), so the
+    popup grows toward the middle of the screen and its margin to the edges stays the same.
+    """
+    if isinstance(draft_or_size, dict):
+        size = draft_or_size.get(KEY_SIZE)
+        position = draft_or_size.get(KEY_POSITION) if position is None else position
+    else:
+        size = draft_or_size
+    if normalize_choice(KEY_SIZE, size) != SIZE_LARGE:
+        return ""
+    return normalize_choice(KEY_POSITION, position)
+
+
+def zoom_center(position, screen_w=BASE_SCREEN_W, screen_h=BASE_SCREEN_H, margin_x=SCREEN_MARGIN_X, margin_y=SCREEN_MARGIN_Y):
+    """``(x, y)`` of the corner of a popup in ``position``, which the zoom keeps in place."""
+    position = normalize_choice(KEY_POSITION, position)
+    x = margin_x if position.endswith("Left") else int(screen_w) - margin_x
+    y = margin_y if position.startswith("Top") else int(screen_h) - margin_y
+    return x, y
+
+
 # --- draft handling (used by the Customize modal and the dialog) ---
 
 
@@ -229,7 +264,15 @@ def customize_rows(draft) -> list:
         rows += [KEY_LOOK, KEY_TEXT_COLOR, KEY_HEADING_COLOR, KEY_ALL_CAPS, KEY_FOCUS_STYLE]
         if (draft or {}).get(KEY_PROGRESS, True):
             rows.append(KEY_BAR_STYLE)
-        rows += [KEY_CARD_OPACITY, KEY_POSITION, KEY_THUMBNAIL, KEY_COUNTDOWN, KEY_PROGRESS, KEY_FOCUS]
+        rows += [
+            KEY_CARD_OPACITY,
+            KEY_POSITION,
+            KEY_SIZE,
+            KEY_THUMBNAIL,
+            KEY_COUNTDOWN,
+            KEY_PROGRESS,
+            KEY_FOCUS,
+        ]
     return rows
 
 

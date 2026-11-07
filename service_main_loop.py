@@ -12,7 +12,7 @@ import xbmcgui
 
 from segment_editor_utils import get_home_window
 from service_loop_nested import handle_rewind_and_nested_segments
-from service_loop_next_episode import handle_next_episode
+from service_loop_next_episode import handle_next_episode, handle_remote_next_episode
 from service_loop_playback import handle_replay_detection, handle_video_change
 from service_loop_skip import process_segment_skips
 from service_loop_toast import (
@@ -296,6 +296,8 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
 
             playback = refresh_playback_context(ctx)
             if playback is None:
+                # Add-on and stream playback has no segments, but its add-on may say what comes next.
+                handle_remote_next_episode(ctx)
                 if ctx.monitor.waitForAbort(ctx.check_interval):
                     log("🛑 Abort requested — exiting monitor loop")
                     break

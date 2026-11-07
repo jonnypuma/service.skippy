@@ -2109,8 +2109,8 @@ msgid "Skip episodes already watched"
 msgstr "Παράλειψη επεισοδίων που έχουν ήδη προβληθεί"
 
 msgctxt "#47012"
-msgid "Offer the next unwatched episode instead of the episode that follows directly."
-msgstr "Πρόταση του επόμενου επεισοδίου που δεν έχει προβληθεί αντί για αυτό που ακολουθεί άμεσα."
+msgid "Offer the next unwatched episode instead of the episode that follows directly. This also applies to the next movie of a collection."
+msgstr "Πρόταση του επόμενου επεισοδίου που δεν έχει προβληθεί αντί για αυτό που ακολουθεί άμεσα. Ισχύει και για την επόμενη ταινία μιας συλλογής."
 
 msgctxt "#47013"
 msgid "Resume a partly watched next episode"
@@ -2265,16 +2265,16 @@ msgid "Remember autoplay per show"
 msgstr "Απομνημόνευση αυτόματης αναπαραγωγής ανά σειρά"
 
 msgctxt "#47083"
-msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
-msgstr "Μετά το Αναπαραγωγή τώρα στο μήνυμα για το επόμενο επεισόδιο, ρωτά αν η σειρά πρέπει να παίζει αυτόματα το επόμενο επεισόδιό της από εδώ και πέρα. Μια σειρά με αποθηκευμένη απάντηση κρατά την επιλογή της και μια σειρά με Ρώτα πρώτα εμφανίζει πάντα το μήνυμα, ακόμη και όταν η αυτόματη αναπαραγωγή είναι ενεργή."
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on. A show set to Never offer never shows the prompt and never plays automatically."
+msgstr "Μετά το Αναπαραγωγή τώρα στο μήνυμα για το επόμενο επεισόδιο, ρωτά αν η σειρά πρέπει να παίζει αυτόματα το επόμενο επεισόδιό της από εδώ και πέρα. Μια σειρά με αποθηκευμένη απάντηση κρατά την επιλογή της και μια σειρά με Ρώτα πρώτα εμφανίζει πάντα το μήνυμα, ακόμη και όταν η αυτόματη αναπαραγωγή είναι ενεργή. Μια σειρά με Να μην προτείνεται ποτέ δεν εμφανίζει ποτέ το μήνυμα και δεν παίζει ποτέ αυτόματα."
 
 msgctxt "#47084"
 msgid "Manage autoplay by show"
 msgstr "Διαχείριση αυτόματης αναπαραγωγής ανά σειρά"
 
 msgctxt "#47085"
-msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
-msgstr "Προβολή των σειρών που παίζουν αυτόματα ή ρωτούν πρώτα, αλλαγή ή διαγραφή μιας επιλογής, ή προσθήκη σειράς από τη βιβλιοθήκη."
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library. Choose Never offer to turn the prompt off for a show."
+msgstr "Προβολή των σειρών που παίζουν αυτόματα ή ρωτούν πρώτα, αλλαγή ή διαγραφή μιας επιλογής, ή προσθήκη σειράς από τη βιβλιοθήκη. Η επιλογή Να μην προτείνεται ποτέ απενεργοποιεί το μήνυμα για μια σειρά."
 
 msgctxt "#47086"
 msgid "Clear saved autoplay choices"
@@ -2405,3 +2405,151 @@ msgstr "Η εμφάνιση της γραμμής προόδου. Οι γραμ�
 msgctxt "#47117"
 msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
 msgstr "Πόσο συμπαγής είναι η κάρτα πίσω από το αναδυόμενο παράθυρο, από 0 % (χωρίς κάρτα) έως 100 %. Το Όπως η εμφάνιση χρησιμοποιεί αυτήν της επιλεγμένης εμφάνισης."
+
+msgctxt "#47118"
+msgid "Show the prompt for (seconds)"
+msgstr "Εμφάνιση της πρότασης για (δευτερόλεπτα)"
+
+msgctxt "#47119"
+msgid "How long the prompt stays up once it appears. 0 keeps it up until the episode ends. The countdown and the progress bar run over this time. The Still watching? question always stays up until the episode ends. It cannot be longer than Seconds before the end, unless Start at the credits is on; a time that is longer than what is left simply ends with the episode."
+msgstr "Για πόσο χρόνο μένει η πρόταση μόλις εμφανιστεί. Το 0 την κρατά μέχρι να τελειώσει το επεισόδιο. Η αντίστροφη μέτρηση και η γραμμή προόδου τρέχουν σε αυτόν τον χρόνο. Η ερώτηση Ακόμα παρακολουθείς; μένει πάντα μέχρι να τελειώσει το επεισόδιο. Δεν μπορεί να είναι μεγαλύτερο από Δευτερόλεπτα πριν το τέλος, εκτός αν είναι ενεργό το Έναρξη στους τίτλους τέλους· αν ο χρόνος είναι μεγαλύτερος από τον υπολειπόμενο, η πρόταση απλώς τελειώνει με το επεισόδιο."
+
+msgctxt "#47120"
+msgid "When the countdown ends"
+msgstr "Όταν τελειώνει η αντίστροφη μέτρηση"
+
+msgctxt "#47121"
+msgid "What happens if nobody answers before the countdown reaches zero: close the prompt, or play the next episode. Closing leaves the end of the episode to Kodi, which only moves on by itself if its own Play next video automatically setting is on."
+msgstr "Τι συμβαίνει αν κανείς δεν απαντήσει πριν η αντίστροφη μέτρηση φτάσει στο μηδέν: κλείνει η πρόταση ή παίζει το επόμενο επεισόδιο. Με το κλείσιμο, το τέλος του επεισοδίου αφήνεται στο Kodi, που προχωρά μόνο του μόνο αν είναι ενεργή η δική του ρύθμιση αυτόματης αναπαραγωγής του επόμενου βίντεο."
+
+msgctxt "#47122"
+msgid "Close the prompt"
+msgstr "Κλείσιμο της πρότασης"
+
+msgctxt "#47123"
+msgid "Play the next episode"
+msgstr "Αναπαραγωγή του επόμενου επεισοδίου"
+
+msgctxt "#47124"
+msgid "Next episode starts in %s"
+msgstr "Το επόμενο επεισόδιο ξεκινά σε %s"
+
+msgctxt "#47125"
+msgid "Closing in %s"
+msgstr "Κλείνει σε %s"
+
+msgctxt "#47126"
+msgid "Use next episode info from other add-ons"
+msgstr "Χρήση πληροφοριών επόμενου επεισοδίου από άλλα πρόσθετα"
+
+msgctxt "#47127"
+msgid "Video add-ons that support Up Next (Netflix, Jellyfin, Emby and others) tell the player which episode comes next and how to start it. With this on, Skippy uses that information, which also covers add-on videos that are not in your library. Ignored while the Up Next add-on is turned on."
+msgstr "Τα πρόσθετα βίντεο που υποστηρίζουν το Up Next (Netflix, Jellyfin, Emby και άλλα) λένε στο πρόγραμμα αναπαραγωγής ποιο επεισόδιο έρχεται και πώς ξεκινά. Όταν είναι ενεργό, το Skippy χρησιμοποιεί αυτές τις πληροφορίες, ακόμη και για βίντεο πρόσθετων που δεν υπάρχουν στη βιβλιοθήκη σας. Αγνοείται όσο το πρόσθετο Up Next είναι ενεργό."
+
+msgctxt "#47128"
+msgid "Looks…"
+msgstr "Εμφανίσεις…"
+
+msgctxt "#47129"
+msgid "Popup looks"
+msgstr "Εμφανίσεις αναδυόμενου παραθύρου"
+
+msgctxt "#47130"
+msgid "Reset to defaults"
+msgstr "Επαναφορά στις προεπιλογές"
+
+msgctxt "#47131"
+msgid "Save this look…"
+msgstr "Αποθήκευση αυτής της εμφάνισης…"
+
+msgctxt "#47132"
+msgid "Delete a saved look…"
+msgstr "Διαγραφή αποθηκευμένης εμφάνισης…"
+
+msgctxt "#47133"
+msgid "Look name"
+msgstr "Όνομα εμφάνισης"
+
+msgctxt "#47134"
+msgid "A saved look named %s already exists. Overwrite it?"
+msgstr "Υπάρχει ήδη αποθηκευμένη εμφάνιση με όνομα %s. Αντικατάσταση;"
+
+msgctxt "#47135"
+msgid "Look saved: %s"
+msgstr "Η εμφάνιση αποθηκεύτηκε: %s"
+
+msgctxt "#47136"
+msgid "Could not save the look."
+msgstr "Δεν ήταν δυνατή η αποθήκευση της εμφάνισης."
+
+msgctxt "#47137"
+msgid "This look is already saved as %s."
+msgstr "Αυτή η εμφάνιση είναι ήδη αποθηκευμένη ως %s."
+
+msgctxt "#47138"
+msgid "This is the built-in look %s."
+msgstr "Αυτή είναι η ενσωματωμένη εμφάνιση %s."
+
+msgctxt "#47139"
+msgid "There are no saved looks to delete."
+msgstr "Δεν υπάρχουν αποθηκευμένες εμφανίσεις για διαγραφή."
+
+msgctxt "#47140"
+msgid "Delete look %s?"
+msgstr "Διαγραφή της εμφάνισης %s;"
+
+msgctxt "#47141"
+msgid "Look deleted: %s"
+msgstr "Η εμφάνιση διαγράφηκε: %s"
+
+msgctxt "#47142"
+msgid "That name is used by a built-in look."
+msgstr "Το όνομα χρησιμοποιείται από ενσωματωμένη εμφάνιση."
+
+msgctxt "#47143"
+msgid "You can save up to %s looks. Delete one first."
+msgstr "Μπορείτε να αποθηκεύσετε έως %s εμφανίσεις. Διαγράψτε πρώτα μία."
+
+msgctxt "#47144"
+msgid "Show the prompt for was lowered to %s seconds: it cannot be longer than Seconds before the end."
+msgstr "Το Εμφάνιση της πρότασης για μειώθηκε σε %s δευτερόλεπτα: δεν μπορεί να είναι μεγαλύτερο από Δευτερόλεπτα πριν το τέλος."
+
+msgctxt "#47145"
+msgid "Never offer"
+msgstr "Να μην προτείνεται ποτέ"
+
+msgctxt "#47146"
+msgid "Play next movie?"
+msgstr "Αναπαραγωγή επόμενης ταινίας;"
+
+msgctxt "#47147"
+msgid "Movie ends in %s"
+msgstr "Η ταινία τελειώνει σε %s"
+
+msgctxt "#47148"
+msgid "Next movie starts in %s"
+msgstr "Η επόμενη ταινία ξεκινά σε %s"
+
+msgctxt "#47149"
+msgid "Offer the next movie in a collection"
+msgstr "Πρόταση επόμενης ταινίας μιας συλλογής"
+
+msgctxt "#47150"
+msgid "When a movie that is part of a Kodi collection (movie set) ends, offer the next movie of the collection, ordered by year. It uses the prompt, countdown, autoplay and Still watching? settings of the episodes; the choices per show do not apply to movies."
+msgstr "Όταν τελειώνει μια ταινία που ανήκει σε συλλογή του Kodi (σετ ταινιών), προτείνεται η επόμενη ταινία της συλλογής, ταξινομημένη κατά έτος. Ισχύουν οι ίδιες ρυθμίσεις για το μήνυμα, την αντίστροφη μέτρηση, την αυτόματη αναπαραγωγή και το Ακόμα παρακολουθείς; όπως στα επεισόδια· οι επιλογές ανά σειρά δεν ισχύουν για ταινίες."
+
+msgctxt "#47151"
+msgid "Popup size"
+msgstr "Μέγεθος παραθύρου"
+
+msgctxt "#47152"
+msgid "Normal is the usual size. Large makes the whole popup, text included, a quarter bigger, for a TV you watch from far away. It grows from the corner it sits in."
+msgstr "Το Κανονικό είναι το συνηθισμένο μέγεθος. Το Μεγάλο κάνει ολόκληρο το παράθυρο, και το κείμενο, κατά ένα τέταρτο μεγαλύτερο, για μια τηλεόραση που βλέπετε από μακριά. Μεγαλώνει από τη γωνία στην οποία βρίσκεται."
+
+msgctxt "#47153"
+msgid "Normal"
+msgstr "Κανονικό"
+
+msgctxt "#47154"
+msgid "Large"
+msgstr "Μεγάλο"

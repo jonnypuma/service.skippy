@@ -2109,8 +2109,8 @@ msgid "Skip episodes already watched"
 msgstr "Hoppa över avsnitt som redan setts"
 
 msgctxt "#47012"
-msgid "Offer the next unwatched episode instead of the episode that follows directly."
-msgstr "Erbjud nästa osedda avsnitt i stället för avsnittet som kommer direkt efter."
+msgid "Offer the next unwatched episode instead of the episode that follows directly. This also applies to the next movie of a collection."
+msgstr "Erbjud nästa osedda avsnitt i stället för avsnittet som kommer direkt efter. Gäller även nästa film i en samling."
 
 msgctxt "#47013"
 msgid "Resume a partly watched next episode"
@@ -2265,16 +2265,16 @@ msgid "Remember autoplay per show"
 msgstr "Kom ihåg automatisk uppspelning per serie"
 
 msgctxt "#47083"
-msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
-msgstr "Efter Spela nu i frågan om nästa avsnitt frågas det om serien ska spela upp sitt nästa avsnitt automatiskt från och med nu. En serie med sparat svar behåller sitt val, och en serie inställd på Fråga först visar alltid frågan, även när automatisk uppspelning är på."
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on. A show set to Never offer never shows the prompt and never plays automatically."
+msgstr "Efter Spela nu i frågan om nästa avsnitt frågas det om serien ska spela upp sitt nästa avsnitt automatiskt från och med nu. En serie med sparat svar behåller sitt val, och en serie inställd på Fråga först visar alltid frågan, även när automatisk uppspelning är på. En serie inställd på Erbjud aldrig visar aldrig frågan och spelas aldrig upp automatiskt."
 
 msgctxt "#47084"
 msgid "Manage autoplay by show"
 msgstr "Hantera automatisk uppspelning per serie"
 
 msgctxt "#47085"
-msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
-msgstr "Granska serierna som spelas upp automatiskt eller frågar först, ändra eller glöm ett val, eller lägg till en serie från biblioteket."
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library. Choose Never offer to turn the prompt off for a show."
+msgstr "Granska serierna som spelas upp automatiskt eller frågar först, ändra eller glöm ett val, eller lägg till en serie från biblioteket. Välj Erbjud aldrig för att stänga av frågan för en serie."
 
 msgctxt "#47086"
 msgid "Clear saved autoplay choices"
@@ -2405,3 +2405,151 @@ msgstr "Förloppsindikatorns utseende. Indikatorer ritade som rutor förlorar he
 msgctxt "#47117"
 msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
 msgstr "Hur ogenomskinligt kortet bakom popupen är, från 0 % (inget kort) till 100 %. Som utseendet använder det valda utseendets."
+
+msgctxt "#47118"
+msgid "Show the prompt for (seconds)"
+msgstr "Visa frågan i (sekunder)"
+
+msgctxt "#47119"
+msgid "How long the prompt stays up once it appears. 0 keeps it up until the episode ends. The countdown and the progress bar run over this time. The Still watching? question always stays up until the episode ends. It cannot be longer than Seconds before the end, unless Start at the credits is on; a time that is longer than what is left simply ends with the episode."
+msgstr "Hur länge frågan blir kvar när den har dykt upp. 0 låter den stå kvar tills avsnittet är slut. Nedräkningen och förloppsindikatorn löper över den tiden. Frågan Tittar du fortfarande? blir alltid kvar tills avsnittet är slut. Den kan inte vara längre än Sekunder före slutet, om inte Starta vid eftertexterna är på; är tiden längre än det som återstår tar frågan bara slut med avsnittet."
+
+msgctxt "#47120"
+msgid "When the countdown ends"
+msgstr "När nedräkningen tar slut"
+
+msgctxt "#47121"
+msgid "What happens if nobody answers before the countdown reaches zero: close the prompt, or play the next episode. Closing leaves the end of the episode to Kodi, which only moves on by itself if its own Play next video automatically setting is on."
+msgstr "Vad som händer om ingen svarar innan nedräkningen når noll: frågan stängs, eller nästa avsnitt spelas upp. Vid stängning lämnas slutet av avsnittet åt Kodi, som bara går vidare av sig självt om dess egen inställning för att spela upp nästa video automatiskt är på."
+
+msgctxt "#47122"
+msgid "Close the prompt"
+msgstr "Stäng frågan"
+
+msgctxt "#47123"
+msgid "Play the next episode"
+msgstr "Spela upp nästa avsnitt"
+
+msgctxt "#47124"
+msgid "Next episode starts in %s"
+msgstr "Nästa avsnitt startar om %s"
+
+msgctxt "#47125"
+msgid "Closing in %s"
+msgstr "Stängs om %s"
+
+msgctxt "#47126"
+msgid "Use next episode info from other add-ons"
+msgstr "Använd uppgifter om nästa avsnitt från andra tillägg"
+
+msgctxt "#47127"
+msgid "Video add-ons that support Up Next (Netflix, Jellyfin, Emby and others) tell the player which episode comes next and how to start it. With this on, Skippy uses that information, which also covers add-on videos that are not in your library. Ignored while the Up Next add-on is turned on."
+msgstr "Videotillägg som stöder Up Next (Netflix, Jellyfin, Emby och andra) berättar för spelaren vilket avsnitt som kommer härnäst och hur det startas. När detta är på använder Skippy de uppgifterna, även för tilläggsvideor som inte finns i ditt bibliotek. Ignoreras medan tillägget Up Next är aktiverat."
+
+msgctxt "#47128"
+msgid "Looks…"
+msgstr "Utseenden…"
+
+msgctxt "#47129"
+msgid "Popup looks"
+msgstr "Utseenden för popupen"
+
+msgctxt "#47130"
+msgid "Reset to defaults"
+msgstr "Återställ till standard"
+
+msgctxt "#47131"
+msgid "Save this look…"
+msgstr "Spara det här utseendet…"
+
+msgctxt "#47132"
+msgid "Delete a saved look…"
+msgstr "Ta bort ett sparat utseende…"
+
+msgctxt "#47133"
+msgid "Look name"
+msgstr "Namn på utseendet"
+
+msgctxt "#47134"
+msgid "A saved look named %s already exists. Overwrite it?"
+msgstr "Ett sparat utseende med namnet %s finns redan. Skriva över det?"
+
+msgctxt "#47135"
+msgid "Look saved: %s"
+msgstr "Utseende sparat: %s"
+
+msgctxt "#47136"
+msgid "Could not save the look."
+msgstr "Det gick inte att spara utseendet."
+
+msgctxt "#47137"
+msgid "This look is already saved as %s."
+msgstr "Det här utseendet är redan sparat som %s."
+
+msgctxt "#47138"
+msgid "This is the built-in look %s."
+msgstr "Det här är det inbyggda utseendet %s."
+
+msgctxt "#47139"
+msgid "There are no saved looks to delete."
+msgstr "Det finns inga sparade utseenden att ta bort."
+
+msgctxt "#47140"
+msgid "Delete look %s?"
+msgstr "Ta bort utseendet %s?"
+
+msgctxt "#47141"
+msgid "Look deleted: %s"
+msgstr "Utseende borttaget: %s"
+
+msgctxt "#47142"
+msgid "That name is used by a built-in look."
+msgstr "Namnet används av ett inbyggt utseende."
+
+msgctxt "#47143"
+msgid "You can save up to %s looks. Delete one first."
+msgstr "Du kan spara upp till %s utseenden. Ta bort ett först."
+
+msgctxt "#47144"
+msgid "Show the prompt for was lowered to %s seconds: it cannot be longer than Seconds before the end."
+msgstr "Visa frågan i sänktes till %s sekunder: den kan inte vara längre än Sekunder före slutet."
+
+msgctxt "#47145"
+msgid "Never offer"
+msgstr "Erbjud aldrig"
+
+msgctxt "#47146"
+msgid "Play next movie?"
+msgstr "Spela nästa film?"
+
+msgctxt "#47147"
+msgid "Movie ends in %s"
+msgstr "Filmen slutar om %s"
+
+msgctxt "#47148"
+msgid "Next movie starts in %s"
+msgstr "Nästa film startar om %s"
+
+msgctxt "#47149"
+msgid "Offer the next movie in a collection"
+msgstr "Erbjud nästa film i en samling"
+
+msgctxt "#47150"
+msgid "When a movie that is part of a Kodi collection (movie set) ends, offer the next movie of the collection, ordered by year. It uses the prompt, countdown, autoplay and Still watching? settings of the episodes; the choices per show do not apply to movies."
+msgstr "När en film som ingår i en Kodi-samling (filmset) är slut erbjuds nästa film i samlingen, sorterad efter år. Samma inställningar för frågan, nedräkningen, automatisk uppspelning och Tittar du fortfarande? som för avsnitt gäller; valen per serie gäller inte filmer."
+
+msgctxt "#47151"
+msgid "Popup size"
+msgstr "Popup-storlek"
+
+msgctxt "#47152"
+msgid "Normal is the usual size. Large makes the whole popup, text included, a quarter bigger, for a TV you watch from far away. It grows from the corner it sits in."
+msgstr "Normal är den vanliga storleken. Stor gör hela popupen, även texten, en fjärdedel större, för en tv som du tittar på från långt håll. Den växer från det hörn den sitter i."
+
+msgctxt "#47153"
+msgid "Normal"
+msgstr "Normal"
+
+msgctxt "#47154"
+msgid "Large"
+msgstr "Stor"

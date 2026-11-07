@@ -19,27 +19,43 @@ from next_episode_guard import (
     start_stop_watchdog,
 )
 from next_episode_lookup import (
+    KIND_EPISODE,
+    KIND_MOVIE,
     SOURCE_PLAYLIST,
     describe_current_episode,
+    describe_current_movie,
     episode_label,
     find_next_episode,
+    is_movie_playback,
 )
 from next_episode_play import play_next, schedule_mark_watched
+from next_episode_provider import (
+    ProviderData,
+    decode_notification,
+    parse_payload,
+    provider_id,
+)
 from next_episode_state import (
+    END_CLOSE,
+    END_PLAY,
     LOOKUP_FOUND,
     LOOKUP_IDLE,
     LOOKUP_NONE,
     LOOKUP_RUNNING,
     MIN_REPROMPT_S,
+    TIMED_OUT,
     NextEpisodeState,
     in_prompt_window,
+    popup_span,
     rearm_if_before_window,
     reset_guard,
     window_start,
 )
 from next_episode_prompt import show_next_episode_prompt
+from next_episode_view import countdown_settings
 from next_episode_shows import (
     lookup_mode,
+    never_offer,
     per_show_autoplay_enabled,
     resolve_autoplay,
     show_key_for_identity,
@@ -55,6 +71,9 @@ from settings_utils import (
 )
 
 UPNEXT_ADDON_ID = "service.upnext"
+KEY_USE_PROVIDER_DATA = "next_episode_use_provider_data"
+# Whether a movie that belongs to a Kodi collection offers the next movie of the collection.
+KEY_MOVIES = "next_episode_movies"
 
 # The "always play this show automatically?" question comes this far into the episode
 # the user just started with Play now, and is dropped when no episode starts within
@@ -75,7 +94,7 @@ IDLE_TICK = NextEpisodeTick()
 
 
 def handle_next_episode(
-    ctx: Any, *, video, playback_type, current_time, player_item
+    ctx: Any, *, video, playback_type, current_time, player_item, remote=False
 ) -> NextEpisodeTick:
     """Never raises: a failure here must not take the skip dialogs down with it."""
     try:
@@ -85,6 +104,7 @@ def handle_next_episode(
             playback_type=playback_type,
             current_time=current_time,
             player_item=player_item,
+            remote=remote,
         )
     except Exception as exc:
         signature = "%s: %s" % (type(exc).__name__, exc)
@@ -96,20 +116,29 @@ def handle_next_episode(
         return IDLE_TICK
 
 
-def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpisodeTick:
+def _handle(
+    ctx, *, video, playback_type, current_time, player_item, remote=False
+) -> NextEpisodeTick:
     monitor = ctx.monitor
     addon = get_addon()
     if not addon or not addon_get_bool(addon, "next_episode_enabled", False):
         return IDLE_TICK
-    if playback_type != "episode" or not video:
+    if not video:
+        return IDLE_TICK
+    if playback_type == "movie":
+        if not addon_get_bool(addon, KEY_MOVIES, True):
+            return IDLE_TICK
+    elif playback_type != "episode":
         return IDLE_TICK
     if _upnext_enabled():
         _note_upnext(monitor, addon)
         return IDLE_TICK
 
     state = _state_for(monitor, video)
+    state.remote = bool(remote)
     per_show = per_show_autoplay_enabled(addon)
     _maybe_ask_remember(ctx, monitor, addon, video, current_time, per_show)
+    _adopt_provider_data(monitor, state, video, addon)
     if state.lookup == LOOKUP_IDLE:
         _start_lookup(
             state,
@@ -123,10 +152,16 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
 
     total = _total_time(ctx.player)
     lead = addon_get_int(addon, "next_episode_lead_seconds", 45, minimum=10, maximum=300)
-    credits = _credits_start(monitor, addon, total)
+    credits = _credits_start(monitor, addon, total, state)
     if rearm_if_before_window(state, current_time, total, lead, credits):
         log("Next episode: playhead is before the window again - prompt re-armed")
     if not in_prompt_window(current_time, total, lead, credits):
+        return IDLE_TICK
+
+    show_mode = lookup_mode(state.show_key) if per_show and state.show_key else None
+    if never_offer(per_show, show_mode):
+        # A show set to "Never offer": no prompt, no automatic start, and the skip dialogs
+        # keep working as usual.
         return IDLE_TICK
 
     hide = addon_get_bool(addon, "next_episode_hide_skip_dialogs", True)
@@ -134,7 +169,6 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
     if state.started or state.dismissed or state.failed:
         return held
 
-    show_mode = lookup_mode(state.show_key) if per_show and state.show_key else None
     autoplay = resolve_autoplay(
         addon_get_bool(addon, "next_episode_autoplay", False), per_show, show_mode
     )
@@ -152,14 +186,30 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
     start = window_start(total, lead, credits)
     if ask_still_watching:
         _arm_stop_watchdog(ctx, state, start, total)
+    # The "still watching?" question always runs to the end of the file: a timeout must never
+    # stand in for an answer to it.
+    duration, action = (0, END_CLOSE) if ask_still_watching else countdown_settings(addon)
+    begin, end, timed = popup_span(start, current_time, total, duration)
     answer = show_next_episode_prompt(
         addon,
         ctx.player,
         state.next_item,
-        start,
-        total,
+        begin,
+        end,
         still_watching=ask_still_watching,
+        timed=timed,
+        end_action=action,
     )
+    if answer == TIMED_OUT:
+        if action == END_PLAY:
+            log("Next episode: countdown ran out - playing it")
+            return NextEpisodeTick(
+                hide_skip_dialogs=hide,
+                switched=_start_next(monitor, state, addon, autoplayed=True),
+            )
+        state.dismissed = True
+        log("Next episode: countdown ran out - prompt closed")
+        return held
     if answer is True:
         if ask_still_watching:
             _stand_down_watchdog(state)
@@ -171,6 +221,100 @@ def _handle(ctx, *, video, playback_type, current_time, player_item) -> NextEpis
         state.dismissed = True
         log("Next episode: prompt dismissed")
     return held
+
+
+def _use_provider_data(addon) -> bool:
+    return addon_get_bool(addon, KEY_USE_PROVIDER_DATA, True)
+
+
+def _adopt_provider_data(monitor, state, video, addon) -> None:
+    """Take the next episode a video add-on announced for this video, in place of a library lookup."""
+    found = getattr(monitor, "next_episode_provider", None)
+    if not isinstance(found, ProviderData) or found.video != video:
+        return
+    if not _use_provider_data(addon):
+        return
+    if isinstance(state.provider, ProviderData) and found.received_mono <= state.provider.received_mono:
+        return
+    state.provider = found
+    state.next_item = found.next_item
+    # Playback Skippy ignores has no library entry to look up; a library file still gets its lookup
+    # (for the episode it marks as watched) and keeps the add-on's answer for what comes next.
+    if state.remote or state.lookup != LOOKUP_IDLE:
+        state.lookup = LOOKUP_FOUND
+    log("Next episode: %s announced %s" % (found.provider, episode_label(found.next_item) or "an episode"))
+
+
+def _playing_file(player):
+    try:
+        path = player.getPlayingFile()
+    except Exception:
+        return ""
+    return path if isinstance(path, str) else ""
+
+
+def note_upnext_data(monitor, sender, method, data) -> None:
+    """Remember what a video add-on said about the next episode of what is playing now.
+
+    Called from the monitor's notification handler for Up Next's ``upnext_data`` signal; never raises.
+    """
+    try:
+        addon = get_addon()
+        if not addon or not addon_get_bool(addon, "next_episode_enabled", False):
+            return
+        if not _use_provider_data(addon):
+            return
+        provider = provider_id(sender)
+        if not provider:
+            return
+        found = parse_payload(provider, decode_notification(data))
+        if found is None:
+            log("Next episode: ignored an Up Next announcement from %s (no usable next episode)" % provider)
+            return
+        playing = _playing_file(xbmc.Player())
+        if not playing:
+            return
+        monitor.next_episode_provider = found.stamped(playing, time.monotonic())
+    except Exception as exc:
+        log_error("Next episode: reading an Up Next announcement failed: %s" % exc)
+
+
+def handle_remote_next_episode(ctx: Any) -> NextEpisodeTick:
+    """The next episode step for playback the main loop otherwise ignores (add-on and stream URLs).
+
+    Such playback has no sidecar segments and no library entry, so the only way to know what comes
+    next is the video add-on telling us. Without that, nothing happens. Never raises.
+    """
+    try:
+        monitor = ctx.monitor
+        found = getattr(monitor, "next_episode_provider", None)
+        if not isinstance(found, ProviderData):
+            return IDLE_TICK
+        addon = get_addon()
+        if not addon or not addon_get_bool(addon, "next_episode_enabled", False):
+            return IDLE_TICK
+        if not _use_provider_data(addon):
+            return IDLE_TICK
+        player = ctx.player
+        playing = _playing_file(player)
+        if not playing or playing != found.video:
+            return IDLE_TICK
+        if not player.isPlaying() or xbmc.getCondVisibility("Player.Paused"):
+            return IDLE_TICK
+        return handle_next_episode(
+            ctx,
+            video=playing,
+            playback_type="episode",
+            current_time=player.getTime(),
+            player_item={"type": "episode"},
+            remote=True,
+        )
+    except Exception as exc:
+        signature = "%s: %s" % (type(exc).__name__, exc)
+        if signature != getattr(ctx.monitor, "_next_episode_remote_error", None):
+            ctx.monitor._next_episode_remote_error = signature
+            log_error("Next episode step for add-on playback failed (%s)" % signature)
+        return IDLE_TICK
 
 
 def _state_for(monitor, video) -> NextEpisodeState:
@@ -192,11 +336,23 @@ def _chain_for(monitor) -> WatchChain:
     return chain
 
 
-def _credits_start(monitor, addon, total):
-    """Where the Credits segment starts, when the setting asks for it and there is one."""
+def _credits_start(monitor, addon, total, state=None):
+    """Where the Credits segment starts, when the setting asks for it and there is one.
+
+    Without a Credits segment of Skippy's own, the time the video add-on asked for is used.
+    Playback Skippy ignores has no segments: whatever the monitor holds belongs to an earlier video.
+    """
     if not addon_get_bool(addon, "next_episode_start_at_credits", False):
         return None
-    return credits_start_seconds(getattr(monitor, "current_segments", None), total)
+    remote = bool(getattr(state, "remote", False))
+    found = (
+        None
+        if remote
+        else credits_start_seconds(getattr(monitor, "current_segments", None), total)
+    )
+    if found is None and isinstance(getattr(state, "provider", None), ProviderData):
+        return state.provider.prompt_start(total)
+    return found
 
 
 def _idle_seconds():
@@ -303,12 +459,18 @@ def _start_lookup(state, player_item, *, skip_watched, resolve_show=False) -> No
 def run_lookup(state, item, skip_watched, resolve_show=False) -> None:
     """Resolve the next episode and the facts needed later; runs off the service thread."""
     try:
-        current = describe_current_episode(item)
-        if resolve_show:
+        movie = is_movie_playback(item)
+        current = describe_current_movie(item) if movie else describe_current_episode(item)
+        if resolve_show and not movie:
             _resolve_show(state, item, current)
         nxt = find_next_episode(item, skip_watched=skip_watched, current=current)
+        state.current_kind = KIND_MOVIE if movie else KIND_EPISODE
         state.current_episode_id = current.get("id")
         state.current_playcount = current.get("playcount")
+        if state.provider is not None:
+            # The video add-on already said what comes next; that wins over the library.
+            state.lookup = LOOKUP_FOUND
+            return
         state.next_item = nxt
         state.lookup = LOOKUP_FOUND if nxt else LOOKUP_NONE
         if nxt:
@@ -332,7 +494,7 @@ def _start_next(monitor, state, addon, *, autoplayed=False) -> bool:
     log("Next episode: started %s" % episode_label(state.next_item))
     if addon_get_bool(addon, "next_episode_mark_watched", True):
         schedule_mark_watched(
-            monitor, state.current_episode_id, state.current_playcount
+            monitor, state.current_episode_id, state.current_playcount, state.current_kind
         )
     return True
 

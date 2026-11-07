@@ -27,7 +27,15 @@ from next_episode_appearance import (
     bar_fill_width,
 )
 from next_episode_look import resolve_popup_look
-from settings_utils import addon_get_setting_text, get_localized
+from next_episode_state import (
+    END_CLOSE,
+    END_PLAY,
+    KEY_END_ACTION,
+    KEY_POPUP_DURATION,
+    MAX_POPUP_DURATION_S,
+    normalize_end_action,
+)
+from settings_utils import addon_get_int, addon_get_setting_text, get_localized
 from skip_dialog_appearance import (
     apply_skip_dialog_caps,
     countdown_mmss,
@@ -38,9 +46,15 @@ from skip_dialog_appearance import (
 # The mockup in the Customize screen has its own copy of every popup control, this many ids higher.
 MOCK_ID_OFFSET = 2000
 
+# What the countdown line says it is counting down to.
+COUNTDOWN_ENDS = "ends"  # the episode is ending
+COUNTDOWN_PLAYS = "plays"  # the next episode starts when it reaches zero
+COUNTDOWN_CLOSES = "closes"  # the prompt goes away when it reaches zero
+
 
 @dataclass(frozen=True)
 class PopupIds:
+    zoom: int  # covers the whole screen (or the whole stage); the Large size zooms it
     panel: int
     backdrop: int
     thumb: int
@@ -61,6 +75,7 @@ class PopupIds:
 def popup_ids(offset=0) -> PopupIds:
     """Control ids of the popup skin (``offset`` 0) or of the copy in the Customize mockup."""
     return PopupIds(
+        zoom=5099 + offset,
         panel=5000 + offset,
         backdrop=5001 + offset,
         thumb=5002 + offset,
@@ -142,7 +157,7 @@ def look_properties(draft, addon, bar_h_px, fallback_text_color):
 
 def popup_texts(addon, caps_on, next_episode, *, still_watching=False) -> dict:
     """Heading, episode line and the two button labels, already upper-cased when the look says so."""
-    from next_episode_lookup import episode_label
+    from next_episode_lookup import episode_label, is_movie_item
 
     def caps(text):
         return apply_skip_dialog_caps(text, bool(caps_on))
@@ -152,7 +167,10 @@ def popup_texts(addon, caps_on, next_episode, *, still_watching=False) -> dict:
         play = get_localized(addon, 47071, "Continue")
         close = get_localized(addon, 47072, "Stop")
     else:
-        heading = get_localized(addon, 47020, "Play next episode?")
+        if is_movie_item(next_episode):
+            heading = get_localized(addon, 47146, "Play next movie?")
+        else:
+            heading = get_localized(addon, 47020, "Play next episode?")
         play = get_localized(addon, 47050, "Play now")
         close = get_localized(addon, 40001, "Close")
     return {
@@ -163,10 +181,43 @@ def popup_texts(addon, caps_on, next_episode, *, still_watching=False) -> dict:
     }
 
 
-def countdown_text(addon, caps_on, seconds) -> str:
-    """``Episode ends in 00:42``."""
+def countdown_settings(addon):
+    """``(seconds the prompt stays up, what happens when they run out)``; 0 seconds means to the end."""
+    duration = addon_get_int(
+        addon, KEY_POPUP_DURATION, 0, minimum=0, maximum=MAX_POPUP_DURATION_S
+    )
+    action = normalize_end_action(addon_get_setting_text(addon, KEY_END_ACTION, END_CLOSE))
+    return duration, action
+
+
+def countdown_mode(end_action, timed, still_watching=False) -> str:
+    """What the countdown line says: the episode ends, the next one starts, or the prompt closes."""
+    if still_watching:
+        return COUNTDOWN_ENDS
+    if end_action == END_PLAY:
+        return COUNTDOWN_PLAYS
+    return COUNTDOWN_CLOSES if timed else COUNTDOWN_ENDS
+
+
+_COUNTDOWN_STRINGS = {
+    COUNTDOWN_ENDS: (47051, "Episode ends in %s"),
+    COUNTDOWN_PLAYS: (47124, "Next episode starts in %s"),
+    COUNTDOWN_CLOSES: (47125, "Closing in %s"),
+}
+# The same lines when the next thing is a movie of a collection ("Closing in" is the same).
+_COUNTDOWN_STRINGS_MOVIE = {
+    COUNTDOWN_ENDS: (47147, "Movie ends in %s"),
+    COUNTDOWN_PLAYS: (47148, "Next movie starts in %s"),
+    COUNTDOWN_CLOSES: (47125, "Closing in %s"),
+}
+
+
+def countdown_text(addon, caps_on, seconds, mode=COUNTDOWN_ENDS, movie=False) -> str:
+    """``Episode ends in 00:42``, ``Next episode starts in 00:20`` or ``Closing in 00:20`` (``Movie ends in ...`` for a movie)."""
+    table = _COUNTDOWN_STRINGS_MOVIE if movie else _COUNTDOWN_STRINGS
+    string_id, fallback = table.get(mode, table[COUNTDOWN_ENDS])
     return apply_skip_dialog_caps(
-        get_localized(addon, 47051, "Episode ends in %s", countdown_mmss(seconds)), bool(caps_on)
+        get_localized(addon, string_id, fallback, countdown_mmss(seconds)), bool(caps_on)
     )
 
 

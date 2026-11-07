@@ -8,7 +8,8 @@ import types
 
 import xbmcgui
 
-from next_episode_lookup import episode_label
+from next_episode_lookup import episode_label, is_movie_item
+from next_episode_state import END_CLOSE, END_PLAY, TIMED_OUT
 from skip_dialog_native import (
     SkipToastKeys,
     _TOAST_MIN_MS,
@@ -25,7 +26,10 @@ def build_toast_texts(addon, next_episode, still_watching=False):
         heading = get_localized(addon, 47070, "Still watching?")
         press = get_localized(addon, 47073, "Press OK to continue")
     else:
-        heading = get_localized(addon, 47020, "Play next episode?")
+        if is_movie_item(next_episode):
+            heading = get_localized(addon, 47146, "Play next movie?")
+        else:
+            heading = get_localized(addon, 47020, "Play next episode?")
         press = get_localized(addon, 47021, "Press OK to play")
     label = episode_label(next_episode)
     body = "%s \u00b7 %s" % (label, press) if label else press
@@ -33,13 +37,23 @@ def build_toast_texts(addon, next_episode, still_watching=False):
 
 
 def show_next_episode_toast(
-    addon, player, next_episode, window_start, total, still_watching=False
+    addon,
+    player,
+    next_episode,
+    window_start,
+    total,
+    still_watching=False,
+    timed=False,
+    end_action=END_CLOSE,
 ):
     """
-    Show the toast until the episode ends and wait for OK / Back.
+    Show the toast until its countdown ends and wait for OK / Back.
 
-    Returns True (OK: play now), False (Back: dismissed) or None (the prompt closed
-    by itself: playback stopped, the file ended, or the playhead left the window).
+    ``total`` is where the toast ends: the end of the file, or sooner when it is ``timed``.
+
+    Returns True (OK: play now), False (Back: dismissed), ``TIMED_OUT`` (a timed toast, or
+    one whose end action is Play, ran out) or None (the prompt closed by itself: playback
+    stopped, the file ended, or the playhead left the window).
     """
     heading, body = build_toast_texts(addon, next_episode, still_watching)
     icon = addon.getAddonInfo("icon") or ""
@@ -57,9 +71,27 @@ def show_next_episode_toast(
     window = types.SimpleNamespace(
         start_seconds=float(window_start), end_seconds=float(total)
     )
+    runs_out = (bool(timed) or end_action == END_PLAY) and not still_watching
+
+    def close():
+        # The keep-alive calls this when playback left the stretch or reached its end; only
+        # reaching the end is a timeout.
+        reached_end = False
+        if runs_out:
+            try:
+                reached_end = bool(player.isPlaying()) and (
+                    _playhead(player, window_start) >= float(total) - 1.0
+                )
+            except Exception:
+                reached_end = False
+        if reached_end:
+            dlg._finish(TIMED_OUT)
+        else:
+            dlg.close()
+
     threading.Thread(
         target=_toast_keepalive,
-        args=(player, window, post, dlg.close, stop),
+        args=(player, window, post, close, stop),
         daemon=True,
     ).start()
     try:

@@ -29,13 +29,13 @@
       <posx>16</posx>
       <posy>41</posy>
       <width>560</width>
-      <height>637</height>
+      <height>634</height>
 
       <control type="image" id="6001">
         <left>0</left>
         <top>0</top>
         <width>560</width>
-        <height>637</height>
+        <height>634</height>
         <texture>white.png</texture>
         <colordiffuse>F2101418</colordiffuse>
       </control>
@@ -59,7 +59,7 @@
         <left>20</left>
         <top>60</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -75,9 +75,9 @@
       </control>
       <control type="button" id="6017">
         <left>20</left>
-        <top>99</top>
+        <top>96</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -93,9 +93,9 @@
       </control>
       <control type="button" id="6030">
         <left>20</left>
-        <top>138</top>
+        <top>132</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -111,9 +111,9 @@
       </control>
       <control type="button" id="6031">
         <left>20</left>
-        <top>177</top>
+        <top>168</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -129,9 +129,9 @@
       </control>
       <control type="button" id="6032">
         <left>20</left>
-        <top>216</top>
+        <top>204</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -147,9 +147,9 @@
       </control>
       <control type="button" id="6033">
         <left>20</left>
-        <top>255</top>
+        <top>240</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -165,9 +165,9 @@
       </control>
       <control type="button" id="6034">
         <left>20</left>
-        <top>294</top>
+        <top>276</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -183,9 +183,9 @@
       </control>
       <control type="button" id="6035">
         <left>20</left>
-        <top>333</top>
+        <top>312</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -201,9 +201,27 @@
       </control>
       <control type="button" id="6012">
         <left>20</left>
-        <top>372</top>
+        <top>348</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+      </control>
+      <control type="button" id="6036">
+        <left>20</left>
+        <top>384</top>
+        <width>520</width>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -219,9 +237,9 @@
       </control>
       <control type="button" id="6013">
         <left>20</left>
-        <top>411</top>
+        <top>420</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -237,9 +255,9 @@
       </control>
       <control type="button" id="6014">
         <left>20</left>
-        <top>450</top>
+        <top>456</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -255,9 +273,9 @@
       </control>
       <control type="button" id="6015">
         <left>20</left>
-        <top>489</top>
+        <top>492</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -275,7 +293,7 @@
         <left>20</left>
         <top>528</top>
         <width>520</width>
-        <height>35</height>
+        <height>32</height>
         <label></label>
         <font>font12</font>
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
@@ -291,8 +309,8 @@
       </control>
       <control type="button" id="6020">
         <left>20</left>
-        <top>577</top>
-        <width>160</width>
+        <top>574</top>
+        <width>122</width>
         <height>40</height>
         <label>Preview</label>
         <font>font12</font>
@@ -306,10 +324,27 @@
         <align>center</align>
         <aligny>center</aligny>
       </control>
+      <control type="button" id="6023">
+        <left>152</left>
+        <top>574</top>
+        <width>122</width>
+        <height>40</height>
+        <label>Looks…</label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
       <control type="button" id="6021">
-        <left>200</left>
-        <top>577</top>
-        <width>160</width>
+        <left>284</left>
+        <top>574</top>
+        <width>122</width>
         <height>40</height>
         <label>Save</label>
         <font>font12</font>
@@ -324,9 +359,9 @@
         <aligny>center</aligny>
       </control>
       <control type="button" id="6022">
-        <left>380</left>
-        <top>577</top>
-        <width>160</width>
+        <left>416</left>
+        <top>574</top>
+        <width>122</width>
         <height>40</height>
         <label>Cancel</label>
         <font>font12</font>
@@ -369,221 +404,241 @@
         <colordiffuse>66FFFFFF</colordiffuse>
       </control>
 
-      <control type="group" id="7000">
-        <posx>132</posx>
-        <posy>302</posy>
-        <width>520</width>
-        <height>182</height>
-        <visible>String.IsEqual(Window.Property(next_ep_mock_ready),true) + !String.IsEqual(Window.Property(next_ep_mock_native),true)</visible>
-        <animation type="Visible">
-          <effect type="fade" start="0" end="100" time="300" />
+      <!-- Size Large: the popup grows from its corner, as in NextEpisodeDialog.xml. This group covers the
+           stage, so a centre below is a corner of the stage, 20 from its edges. -->
+      <control type="group" id="7099">
+        <posx>0</posx>
+        <posy>0</posy>
+        <width>672</width>
+        <height>504</height>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(next_ep_zoom),BottomRight)">
+          <effect type="zoom" start="125" end="125" time="0" center="652,484" />
         </animation>
-
-        <control type="image" id="7001">
-          <left>0</left>
-          <top>0</top>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(next_ep_zoom),TopRight)">
+          <effect type="zoom" start="125" end="125" time="0" center="652,20" />
+        </animation>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(next_ep_zoom),TopLeft)">
+          <effect type="zoom" start="125" end="125" time="0" center="20,20" />
+        </animation>
+        <animation type="Conditional" condition="String.IsEqual(Window.Property(next_ep_zoom),BottomLeft)">
+          <effect type="zoom" start="125" end="125" time="0" center="20,484" />
+        </animation>
+        <control type="group" id="7000">
+          <posx>132</posx>
+          <posy>302</posy>
           <width>520</width>
           <height>182</height>
-          <texture>white.png</texture>
-          <colordiffuse>$INFO[Window.Property(next_ep_card_color)]</colordiffuse>
-        </control>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_ready),true) + !String.IsEqual(Window.Property(next_ep_mock_native),true)</visible>
+          <animation type="Visible">
+            <effect type="fade" start="0" end="100" time="300" />
+          </animation>
 
-        <control type="image" id="7002">
-          <left>10</left>
-          <top>10</top>
-          <width>120</width>
-          <height>68</height>
-          <texture>$INFO[Window.Property(next_ep_thumb)]</texture>
-          <aspectratio>scale</aspectratio>
-          <visible>String.IsEqual(Window.Property(next_ep_has_thumb),true)</visible>
-        </control>
+          <control type="image" id="7001">
+            <left>0</left>
+            <top>0</top>
+            <width>520</width>
+            <height>182</height>
+            <texture>white.png</texture>
+            <colordiffuse>$INFO[Window.Property(next_ep_card_color)]</colordiffuse>
+          </control>
 
-        <control type="label" id="7003">
-          <left>140</left>
-          <top>10</top>
-          <width>370</width>
-          <height>24</height>
-          <label>$INFO[Window.Property(next_ep_heading)]</label>
-          <font>font10</font>
-          <textcolor>$INFO[Window.Property(next_ep_heading_color)]</textcolor>
-          <shadowcolor>FF000000</shadowcolor>
-          <shadowoffsetx>1</shadowoffsetx>
-          <shadowoffsety>1</shadowoffsety>
-          <align>left</align>
-        </control>
+          <control type="image" id="7002">
+            <left>10</left>
+            <top>10</top>
+            <width>120</width>
+            <height>68</height>
+            <texture>$INFO[Window.Property(next_ep_thumb)]</texture>
+            <aspectratio>scale</aspectratio>
+            <visible>String.IsEqual(Window.Property(next_ep_has_thumb),true)</visible>
+          </control>
 
-        <control type="label" id="7004">
-          <left>140</left>
-          <top>38</top>
-          <width>370</width>
-          <height>52</height>
-          <label>$INFO[Window.Property(next_ep_label)]</label>
-          <font>font12</font>
-          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-          <shadowcolor>FF000000</shadowcolor>
-          <shadowoffsetx>1</shadowoffsetx>
-          <shadowoffsety>1</shadowoffsety>
-          <wrapmultiline>true</wrapmultiline>
-          <align>left</align>
-        </control>
+          <control type="label" id="7003">
+            <left>140</left>
+            <top>10</top>
+            <width>370</width>
+            <height>24</height>
+            <label>$INFO[Window.Property(next_ep_heading)]</label>
+            <font>font10</font>
+            <textcolor>$INFO[Window.Property(next_ep_heading_color)]</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <align>left</align>
+          </control>
 
-        <control type="label" id="7005">
-          <left>10</left>
-          <top>94</top>
-          <width>500</width>
-          <height>20</height>
-          <label>$INFO[Window.Property(next_ep_countdown)]</label>
-          <font>font10</font>
-          <textcolor>FFFFFFFF</textcolor>
-          <shadowcolor>FF000000</shadowcolor>
-          <shadowoffsetx>1</shadowoffsetx>
-          <shadowoffsety>1</shadowoffsety>
-          <align>left</align>
-        </control>
+          <control type="label" id="7004">
+            <left>140</left>
+            <top>38</top>
+            <width>370</width>
+            <height>52</height>
+            <label>$INFO[Window.Property(next_ep_label)]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <wrapmultiline>true</wrapmultiline>
+            <align>left</align>
+          </control>
 
-        <control type="image" id="7006">
-          <left>10</left>
-          <top>118</top>
-          <width>500</width>
-          <height>10</height>
-          <texture>progress_background.png</texture>
-          <aspectratio>stretch</aspectratio>
-        </control>
+          <control type="label" id="7005">
+            <left>10</left>
+            <top>94</top>
+            <width>500</width>
+            <height>20</height>
+            <label>$INFO[Window.Property(next_ep_countdown)]</label>
+            <font>font10</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <align>left</align>
+          </control>
 
-        <control type="image" id="7007">
-          <left>10</left>
-          <top>118</top>
-          <width>500</width>
-          <height>10</height>
-          <texture>$INFO[Window.Property(next_ep_bar_tiled_texture)]</texture>
-          <aspectratio align="left" aligny="center">scale</aspectratio>
-          <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
-        </control>
+          <control type="image" id="7006">
+            <left>10</left>
+            <top>118</top>
+            <width>500</width>
+            <height>10</height>
+            <texture>progress_background.png</texture>
+            <aspectratio>stretch</aspectratio>
+          </control>
 
-        <control type="image" id="7012">
-          <left>10</left>
-          <top>118</top>
-          <width>500</width>
-          <height>10</height>
-          <texture>$INFO[Window.Property(next_ep_bar_texture)]</texture>
-          <aspectratio>stretch</aspectratio>
-          <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + !String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
-        </control>
+          <control type="image" id="7007">
+            <left>10</left>
+            <top>118</top>
+            <width>500</width>
+            <height>10</height>
+            <texture>$INFO[Window.Property(next_ep_bar_tiled_texture)]</texture>
+            <aspectratio align="left" aligny="center">scale</aspectratio>
+            <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
+          </control>
 
-        <control type="image" id="7010">
-          <left>10</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture>white.png</texture>
-          <colordiffuse>22FFFFFF</colordiffuse>
-        </control>
+          <control type="image" id="7012">
+            <left>10</left>
+            <top>118</top>
+            <width>500</width>
+            <height>10</height>
+            <texture>$INFO[Window.Property(next_ep_bar_texture)]</texture>
+            <aspectratio>stretch</aspectratio>
+            <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + !String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
+          </control>
 
-        <control type="image" id="7011">
-          <left>265</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture>white.png</texture>
-          <colordiffuse>22FFFFFF</colordiffuse>
-        </control>
+          <control type="image" id="7010">
+            <left>10</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture>white.png</texture>
+            <colordiffuse>22FFFFFF</colordiffuse>
+          </control>
 
-        <control type="image" id="7013">
-          <left>10</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
-        </control>
+          <control type="image" id="7011">
+            <left>265</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture>white.png</texture>
+            <colordiffuse>22FFFFFF</colordiffuse>
+          </control>
 
-        <control type="image" id="7014">
-          <left>10</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
-        </control>
+          <control type="image" id="7013">
+            <left>10</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
+          </control>
 
-        <control type="image" id="7015">
-          <left>10</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <aspectratio>stretch</aspectratio>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
-        </control>
+          <control type="image" id="7014">
+            <left>10</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
+          </control>
 
-        <control type="image" id="7016">
-          <left>265</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
-        </control>
+          <control type="image" id="7015">
+            <left>10</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <aspectratio>stretch</aspectratio>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
+          </control>
 
-        <control type="image" id="7017">
-          <left>265</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
-        </control>
+          <control type="image" id="7016">
+            <left>265</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
+          </control>
 
-        <control type="image" id="7018">
-          <left>265</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
-          <aspectratio>stretch</aspectratio>
-          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
-        </control>
+          <control type="image" id="7017">
+            <left>265</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
+          </control>
 
-        <control type="button" id="7008">
-          <left>10</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <label>Play now</label>
-          <font>font16</font>
-          <texturefocus>-</texturefocus>
-          <texturenofocus>-</texturenofocus>
-          <enable>false</enable>
-          <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
-          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-          <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
-          <shadowcolor>FF000000</shadowcolor>
-          <shadowoffsetx>2</shadowoffsetx>
-          <shadowoffsety>2</shadowoffsety>
-          <aligny>center</aligny>
-          <textoffsety>-3</textoffsety>
-          <align>center</align>
-        </control>
+          <control type="image" id="7018">
+            <left>265</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
+            <aspectratio>stretch</aspectratio>
+            <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
+          </control>
 
-        <control type="button" id="7009">
-          <left>265</left>
-          <top>138</top>
-          <width>245</width>
-          <height>34</height>
-          <label>Close</label>
-          <font>font16</font>
-          <texturefocus>-</texturefocus>
-          <texturenofocus>-</texturenofocus>
-          <enable>false</enable>
-          <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
-          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-          <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
-          <shadowcolor>FF000000</shadowcolor>
-          <shadowoffsetx>2</shadowoffsetx>
-          <shadowoffsety>2</shadowoffsety>
-          <aligny>center</aligny>
-          <textoffsety>-3</textoffsety>
-          <align>center</align>
+          <control type="button" id="7008">
+            <left>10</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <label>Play now</label>
+            <font>font16</font>
+            <texturefocus>-</texturefocus>
+            <texturenofocus>-</texturenofocus>
+            <enable>false</enable>
+            <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
+            <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+            <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <aligny>center</aligny>
+            <textoffsety>-3</textoffsety>
+            <align>center</align>
+          </control>
+
+          <control type="button" id="7009">
+            <left>265</left>
+            <top>138</top>
+            <width>245</width>
+            <height>34</height>
+            <label>Close</label>
+            <font>font16</font>
+            <texturefocus>-</texturefocus>
+            <texturenofocus>-</texturenofocus>
+            <enable>false</enable>
+            <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
+            <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+            <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <aligny>center</aligny>
+            <textoffsety>-3</textoffsety>
+            <align>center</align>
+          </control>
         </control>
       </control>
 

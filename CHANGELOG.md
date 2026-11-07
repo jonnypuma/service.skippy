@@ -1,5 +1,66 @@
 # Changelog
 
+## [7.11.0] - 2026-11-07
+
+### Added
+
+- **Popup size: Normal or Large.** The new setting **Popup size** (Standard level, shown while **Popup style** is **Custom**, right after **Popup position**) makes the next episode popup a quarter bigger, text included, for a TV you watch from far away. **Large** applies to the prompt, to the **Still watching?** question and to **Preview**. The popup grows from the corner it sits in, so its distance to the edges of the screen does not change and it still fits in all four corners. **Customize next episode popup…** has the same choice as a row after **Popup position**, and its mockup shows the size as you change it.
+  - What the popup shows and where it sits are the same in both sizes; only the drawing is bigger. It is done by the skin (a zoom of the whole popup), so the text is the same font made bigger, a little softer than a real larger font would be.
+  - The Customize screen now has 14 rows (one more), so the rows sit a little closer together.
+  - The new setting, its help and the two values are translated in all 11 language packs. The 1080i skin is generated from the 720p one as before (the generator now also scales the centre of a zoom effect).
+
+## [7.10.0] - 2026-11-07
+
+### Added
+
+- **The next movie of a collection.** When a movie that belongs to a Kodi collection (a movie set, for example a trilogy) is about to end, Skippy now offers the next movie of that collection, as it already did for the next episode of a show. Until now the feature only worked for TV episodes. The new setting **Offer the next movie in a collection** (Standard level, default **on**, next to **Mark the episode as watched when moving on**, shown while **Enable play next episode** is on) turns it off again.
+  - The movies of the collection are taken in the order Kodi lists them: by year, then by sort title; movies without a year come last. A movie that is not in a collection, the last movie of its collection and a movie that is not in your video library get no prompt. The playlist still comes first: if the current playlist has an item after the movie, that is what is offered.
+  - The popup and the toast ask **Play next movie?** and show the title with its year; the countdown reads **Movie ends in 00:42** or **Next movie starts in 00:20** (**Closing in 00:20** as before). The picture is the movie's landscape or fanart image, never its poster, because the picture box is wide.
+  - The movie is started with **Resume a partly watched next episode** respected, the one you leave is marked as watched when Kodi did not (**Mark the episode as watched when moving on**), and **Skip episodes already watched** offers the next unwatched movie. **Seconds before the end**, **Start at the credits**, **Show the prompt for (seconds)**, **When the countdown ends**, **Play the next episode automatically**, **Ask if you are still watching**, **Hide skip dialogs during the prompt** and the popup style and look all apply to movies too. The choices per show do not apply to movies.
+  - The new setting, its help, the two countdown lines and the heading are translated in all 11 language packs; the help of **Skip episodes already watched** now mentions movies.
+
+## [7.9.0] - 2026-11-07
+
+### Added
+
+- **Never offer, per show.** **Manage autoplay by show** (shown while **Remember autoplay per show** is on) now has a third choice next to **Play automatically** and **Ask first**: **Never offer**. A show set to it gets no next episode prompt and no automatic start, even while **Play the next episode automatically** is on, and the skip dialogs keep working as they do without the feature (they are not held back for a prompt that never comes). Pick it when you choose a show in the list or when you add one with **Add a show...**; change or forget the choice there to get the prompt back, also while an episode is playing. The choice is saved with the other per-show choices and is part of **Back up profile data**. The new word and the extended help texts are translated in all 11 language packs.
+
+## [7.8.1] - 2026-11-07
+
+### Changed
+
+- **Show the prompt for (seconds) can no longer be longer than Seconds before the end.** The prompt appears that many seconds before the end of the episode, so it cannot stay up longer. When you set the prompt time higher, or lower **Seconds before the end** below it, Skippy lowers the prompt time to the lead time and tells you in a short message. While **Start at the credits** is on nothing is limited, because the credits can start long before the usual time; a prompt time that is longer than what is left when the prompt appears simply runs to the end of the episode (this was always safe and still is). The help text of the setting says so too. The new message and the extended help are translated in all 11 language packs.
+
+## [7.8.0] - 2026-11-07
+
+### Added
+
+- **A Looks… button in Customize next episode popup.** Between **Preview** and **Save** the screen now has a **Looks…** button that opens a menu:
+  - **Reset to defaults** puts everything on the screen (style, look and the six parts changed on top of it, corner, picture, time left, progress bar, first-focused button) back to its default. Nothing is stored until you press **Save**, so **Cancel** still keeps what you had.
+  - **Save this look…** stores the look on screen under a name you type. A saved look is the **Popup look** plus the six parts changed on top of it (text colour, heading colour, all caps, button highlight, progress bar style, card opacity); the corner, the rows shown and the first-focused button are not part of it. A look that is just one of the built-in looks, or that is already saved under another name, is not saved again (you are told which); the name of a built-in look is refused; saving over one of your own names asks first. Up to 50 looks can be saved.
+  - Every look you saved is listed in the menu (the one on screen is ticked): pick one to load it onto the screen. Loading changes only the look and its six parts, so your corner, rows and first-focused button stay as they are. Like any change on the screen, nothing is stored until **Save**.
+  - **Delete a saved look…** removes one after asking.
+- Saved looks are kept in `next_episode_looks.json` in the add-on's profile folder and are included in **Back up profile data**; restoring adds the looks you do not have yet.
+- The footer of the screen now has four buttons of the same size in a row. The new strings are translated in all 11 language packs.
+
+## [7.7.0] - 2026-11-07
+
+### Added
+
+- **Video add-ons can tell Skippy what comes next (the Up Next signal).** Add-ons that support the Up Next add-on (Netflix, Jellyfin, Emby and others) announce the next episode with the `upnext_data` signal. Skippy now listens to it, so those add-ons work with the next episode prompt too, including videos that are not in your library. The announcement carries the next episode's title, numbering and picture and how to start it: a `play_url` Skippy opens, or `play_info` Skippy sends back to the add-on the way Up Next does.
+- **The prompt now also works for playback Skippy otherwise ignores.** Add-on and stream URLs (`plugin://`, `http://`, `https://`) have no segments or library entry, so the skip dialogs still leave them alone. When the add-on announced a next episode for what is playing, the next episode prompt (or autoplay, the **Still watching?** guard, **Show the prompt for (seconds)** and **When the countdown ends**) runs for it as usual. Without an announcement nothing changes.
+- **Start at the credits** also follows the add-on: when an announcement asks for a time (`notification_offset` or `notification_time`) and the episode has no Credits segment of Skippy's own, that time starts the prompt.
+- **Use next episode info from other add-ons** (Advanced level, default **on**, shown with **Enable play next episode**) switches all of this off. The announcement wins over Skippy's own playlist and library lookup while it is on. It does nothing while the Up Next add-on is turned on, as before. An episode started this way is not marked as watched by Skippy: the add-on does that.
+
+## [7.6.0] - 2026-11-07
+
+### Added
+
+- **Show the prompt for a fixed time.** A new **Show the prompt for (seconds)** setting (Standard level, 0 to 120 in steps of 5, default **0**) keeps the next episode prompt on screen only that long once it appears. The countdown and the progress bar then run over that time instead of down to the end of the episode. **0** keeps the old behaviour: the prompt stays up until the episode ends. A prompt that appears late, because you seeked into the window, still gets its full time. The **Still watching?** question is not affected: it always stays up until the episode ends, so a timeout can never stand in for an answer to it.
+- **Choose what happens when the countdown ends.** A new **When the countdown ends** setting (Standard level) says what happens if nobody has answered by then: **Close the prompt** (default, as before; the end of the episode is left to Kodi, which only moves on by itself if its own **Play next video automatically** setting is on), or **Play the next episode**. It works with a fixed time and with the countdown to the end of the episode, and an episode started this way counts as unattended for the **Still watching?** guard. After the prompt closes by itself it stays away for the rest of the episode.
+- The countdown line says which it is: **Episode ends in 00:42** as before, **Next episode starts in 00:20** when the next episode will start, **Closing in 00:20** when the prompt will only close. Both the custom popup, **Preview** and the mockup in **Customize next episode popup…** follow the two settings; the native toast stays up for the shortened time too.
+- The new strings are translated in all 11 language packs.
+
 ## [7.5.1] - 2026-11-07
 
 ### Added

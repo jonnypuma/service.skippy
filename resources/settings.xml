@@ -775,6 +775,34 @@
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                     </dependencies>
                 </setting>
+                <setting id="next_episode_popup_duration" type="integer" label="47118" help="47119">
+                    <level>1</level>
+                    <default>0</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <maximum>120</maximum>
+                        <step>5</step>
+                    </constraints>
+                    <control type="spinner" format="integer"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_end_action" type="string" label="47120" help="47121">
+                    <level>1</level>
+                    <default>Close</default>
+                    <constraints>
+                        <options>
+                            <option label="47122">Close</option>
+                            <option label="47123">Play</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="next_episode_popup_style" type="string" label="47030" help="47031">
                     <level>0</level>
                     <default>Custom</default>
@@ -815,6 +843,14 @@
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                     </dependencies>
                 </setting>
+                <setting id="next_episode_movies" type="boolean" label="47149" help="47150">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="next_episode_skip_watched" type="boolean" label="47011" help="47012">
                     <level>2</level>
                     <default>false</default>
@@ -824,6 +860,14 @@
                     </dependencies>
                 </setting>
                 <setting id="next_episode_resume" type="boolean" label="47013" help="47014">
+                    <level>2</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_use_provider_data" type="boolean" label="47126" help="47127">
                     <level>2</level>
                     <default>true</default>
                     <control type="toggle"></control>
@@ -1113,6 +1157,22 @@
                             <option label="Top Right">TopRight</option>
                             <option label="Top Left">TopLeft</option>
                             <option label="Bottom Left">BottomLeft</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_size" type="string" label="47151" help="47152">
+                    <level>1</level>
+                    <default>Normal</default>
+                    <constraints>
+                        <options>
+                            <option label="47153">Normal</option>
+                            <option label="47154">Large</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>

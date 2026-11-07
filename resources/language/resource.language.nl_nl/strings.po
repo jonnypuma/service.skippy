@@ -2109,8 +2109,8 @@ msgid "Skip episodes already watched"
 msgstr "Al geziene afleveringen overslaan"
 
 msgctxt "#47012"
-msgid "Offer the next unwatched episode instead of the episode that follows directly."
-msgstr "Bied de volgende ongeziene aflevering aan in plaats van de aflevering die direct volgt."
+msgid "Offer the next unwatched episode instead of the episode that follows directly. This also applies to the next movie of a collection."
+msgstr "Bied de volgende ongeziene aflevering aan in plaats van de aflevering die direct volgt. Geldt ook voor de volgende film uit een collectie."
 
 msgctxt "#47013"
 msgid "Resume a partly watched next episode"
@@ -2265,16 +2265,16 @@ msgid "Remember autoplay per show"
 msgstr "Automatisch afspelen per serie onthouden"
 
 msgctxt "#47083"
-msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
-msgstr "Na Nu afspelen in de melding over de volgende aflevering wordt gevraagd of die serie voortaan automatisch de volgende aflevering moet afspelen. Een serie met een opgeslagen antwoord behoudt haar keuze, en een serie op Eerst vragen toont de melding altijd, ook als automatisch afspelen aanstaat."
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on. A show set to Never offer never shows the prompt and never plays automatically."
+msgstr "Na Nu afspelen in de melding over de volgende aflevering wordt gevraagd of die serie voortaan automatisch de volgende aflevering moet afspelen. Een serie met een opgeslagen antwoord behoudt haar keuze, en een serie op Eerst vragen toont de melding altijd, ook als automatisch afspelen aanstaat. Een serie op Nooit aanbieden toont de melding nooit en speelt nooit automatisch af."
 
 msgctxt "#47084"
 msgid "Manage autoplay by show"
 msgstr "Automatisch afspelen per serie beheren"
 
 msgctxt "#47085"
-msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
-msgstr "De series bekijken die automatisch afspelen of eerst vragen, een keuze wijzigen of vergeten, of een serie uit de bibliotheek toevoegen."
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library. Choose Never offer to turn the prompt off for a show."
+msgstr "De series bekijken die automatisch afspelen of eerst vragen, een keuze wijzigen of vergeten, of een serie uit de bibliotheek toevoegen. Met Nooit aanbieden gaat de melding voor een serie uit."
 
 msgctxt "#47086"
 msgid "Clear saved autoplay choices"
@@ -2405,3 +2405,151 @@ msgstr "Het uiterlijk van de voortgangsbalk. Balken die uit vierkantjes bestaan 
 msgctxt "#47117"
 msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
 msgstr "Hoe dekkend de kaart achter de pop-up is, van 0 % (geen kaart) tot 100 %. Zoals het uiterlijk gebruikt die van het gekozen uiterlijk."
+
+msgctxt "#47118"
+msgid "Show the prompt for (seconds)"
+msgstr "Vraag tonen gedurende (seconden)"
+
+msgctxt "#47119"
+msgid "How long the prompt stays up once it appears. 0 keeps it up until the episode ends. The countdown and the progress bar run over this time. The Still watching? question always stays up until the episode ends. It cannot be longer than Seconds before the end, unless Start at the credits is on; a time that is longer than what is left simply ends with the episode."
+msgstr "Hoe lang de vraag zichtbaar blijft nadat hij verschenen is. 0 houdt hem zichtbaar tot de aflevering afgelopen is. De aftelling en de voortgangsbalk lopen over deze tijd. De vraag Kijk je nog? blijft altijd staan tot de aflevering afgelopen is. Dit mag niet langer zijn dan Seconden voor het einde, tenzij Starten bij de aftiteling aan staat; is de tijd langer dan wat er nog over is, dan eindigt de vraag gewoon met de aflevering."
+
+msgctxt "#47120"
+msgid "When the countdown ends"
+msgstr "Als de aftelling afloopt"
+
+msgctxt "#47121"
+msgid "What happens if nobody answers before the countdown reaches zero: close the prompt, or play the next episode. Closing leaves the end of the episode to Kodi, which only moves on by itself if its own Play next video automatically setting is on."
+msgstr "Wat er gebeurt als niemand antwoordt voordat de aftelling nul bereikt: de vraag sluiten of de volgende aflevering afspelen. Bij sluiten laat Skippy het einde van de aflevering aan Kodi over, dat alleen uit zichzelf doorgaat als de eigen instelling Volgende video automatisch afspelen aan staat."
+
+msgctxt "#47122"
+msgid "Close the prompt"
+msgstr "De vraag sluiten"
+
+msgctxt "#47123"
+msgid "Play the next episode"
+msgstr "De volgende aflevering afspelen"
+
+msgctxt "#47124"
+msgid "Next episode starts in %s"
+msgstr "Volgende aflevering start over %s"
+
+msgctxt "#47125"
+msgid "Closing in %s"
+msgstr "Sluit over %s"
+
+msgctxt "#47126"
+msgid "Use next episode info from other add-ons"
+msgstr "Info over de volgende aflevering van andere add-ons gebruiken"
+
+msgctxt "#47127"
+msgid "Video add-ons that support Up Next (Netflix, Jellyfin, Emby and others) tell the player which episode comes next and how to start it. With this on, Skippy uses that information, which also covers add-on videos that are not in your library. Ignored while the Up Next add-on is turned on."
+msgstr "Video-add-ons die Up Next ondersteunen (Netflix, Jellyfin, Emby en andere) vertellen de speler welke aflevering daarna komt en hoe die gestart wordt. Als dit aan staat, gebruikt Skippy die informatie, ook voor add-onvideo's die niet in je bibliotheek staan. Wordt genegeerd zolang de add-on Up Next aan staat."
+
+msgctxt "#47128"
+msgid "Looks…"
+msgstr "Uiterlijken…"
+
+msgctxt "#47129"
+msgid "Popup looks"
+msgstr "Uiterlijken van de pop-up"
+
+msgctxt "#47130"
+msgid "Reset to defaults"
+msgstr "Terug naar standaard"
+
+msgctxt "#47131"
+msgid "Save this look…"
+msgstr "Dit uiterlijk opslaan…"
+
+msgctxt "#47132"
+msgid "Delete a saved look…"
+msgstr "Een opgeslagen uiterlijk verwijderen…"
+
+msgctxt "#47133"
+msgid "Look name"
+msgstr "Naam van uiterlijk"
+
+msgctxt "#47134"
+msgid "A saved look named %s already exists. Overwrite it?"
+msgstr "Er bestaat al een opgeslagen uiterlijk met de naam %s. Overschrijven?"
+
+msgctxt "#47135"
+msgid "Look saved: %s"
+msgstr "Uiterlijk opgeslagen: %s"
+
+msgctxt "#47136"
+msgid "Could not save the look."
+msgstr "Het uiterlijk kon niet worden opgeslagen."
+
+msgctxt "#47137"
+msgid "This look is already saved as %s."
+msgstr "Dit uiterlijk is al opgeslagen als %s."
+
+msgctxt "#47138"
+msgid "This is the built-in look %s."
+msgstr "Dit is het ingebouwde uiterlijk %s."
+
+msgctxt "#47139"
+msgid "There are no saved looks to delete."
+msgstr "Er zijn geen opgeslagen uiterlijken om te verwijderen."
+
+msgctxt "#47140"
+msgid "Delete look %s?"
+msgstr "Uiterlijk %s verwijderen?"
+
+msgctxt "#47141"
+msgid "Look deleted: %s"
+msgstr "Uiterlijk verwijderd: %s"
+
+msgctxt "#47142"
+msgid "That name is used by a built-in look."
+msgstr "Die naam wordt door een ingebouwd uiterlijk gebruikt."
+
+msgctxt "#47143"
+msgid "You can save up to %s looks. Delete one first."
+msgstr "Je kunt maximaal %s uiterlijken opslaan. Verwijder er eerst één."
+
+msgctxt "#47144"
+msgid "Show the prompt for was lowered to %s seconds: it cannot be longer than Seconds before the end."
+msgstr "Vraag tonen gedurende is verlaagd naar %s seconden: dit mag niet langer zijn dan Seconden voor het einde."
+
+msgctxt "#47145"
+msgid "Never offer"
+msgstr "Nooit aanbieden"
+
+msgctxt "#47146"
+msgid "Play next movie?"
+msgstr "Volgende film afspelen?"
+
+msgctxt "#47147"
+msgid "Movie ends in %s"
+msgstr "Film eindigt over %s"
+
+msgctxt "#47148"
+msgid "Next movie starts in %s"
+msgstr "Volgende film start over %s"
+
+msgctxt "#47149"
+msgid "Offer the next movie in a collection"
+msgstr "Volgende film uit een collectie aanbieden"
+
+msgctxt "#47150"
+msgid "When a movie that is part of a Kodi collection (movie set) ends, offer the next movie of the collection, ordered by year. It uses the prompt, countdown, autoplay and Still watching? settings of the episodes; the choices per show do not apply to movies."
+msgstr "Als een film die bij een Kodi-collectie (filmreeks) hoort afgelopen is, wordt de volgende film van de collectie aangeboden, op jaar gesorteerd. Dezelfde instellingen voor de melding, de aftelling, automatisch afspelen en Kijk je nog? als bij afleveringen gelden; de keuzes per serie gelden niet voor films."
+
+msgctxt "#47151"
+msgid "Popup size"
+msgstr "Grootte van de pop-up"
+
+msgctxt "#47152"
+msgid "Normal is the usual size. Large makes the whole popup, text included, a quarter bigger, for a TV you watch from far away. It grows from the corner it sits in."
+msgstr "Normaal is de gebruikelijke grootte. Groot maakt de hele pop-up, ook de tekst, een kwart groter, voor een tv waar je van veraf naar kijkt. Hij groeit vanuit de hoek waarin hij staat."
+
+msgctxt "#47153"
+msgid "Normal"
+msgstr "Normaal"
+
+msgctxt "#47154"
+msgid "Large"
+msgstr "Groot"

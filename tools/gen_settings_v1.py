@@ -833,6 +833,29 @@ def main():
         vis=_ne_on,
     )
     bool_setting(g, "next_episode_start_at_credits", 0, "47064", "47065", False, vis=_ne_on)
+    int_setting(
+        g,
+        "next_episode_popup_duration",
+        1,
+        "47118",
+        "47119",
+        0,
+        minimum=0,
+        maximum=120,
+        step=5,
+        slider=True,
+        vis=_ne_on,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_end_action",
+        1,
+        "47120",
+        "47121",
+        "Close",
+        [("47122", "Close"), ("47123", "Play")],
+        vis=_ne_on,
+    )
     labelenum_setting(
         g,
         "next_episode_popup_style",
@@ -854,8 +877,10 @@ def main():
     )
     bool_setting(g, "next_episode_hide_skip_dialogs", 1, "47007", "47008", True, vis=_ne_on)
     bool_setting(g, "next_episode_mark_watched", 1, "47009", "47010", True, vis=_ne_on)
+    bool_setting(g, "next_episode_movies", 1, "47149", "47150", True, vis=_ne_on)
     bool_setting(g, "next_episode_skip_watched", 2, "47011", "47012", False, vis=_ne_on)
     bool_setting(g, "next_episode_resume", 2, "47013", "47014", True, vis=_ne_on)
+    bool_setting(g, "next_episode_use_provider_data", 2, "47126", "47127", True, vis=_ne_on)
     _ne_custom = _ne_on + [("next_episode_popup_style", "Custom")]
     labelenum_setting(
         g,
@@ -939,6 +964,16 @@ def main():
             "Bottom Right|Top Right|Top Left|Bottom Left",
             "BottomRight|TopRight|TopLeft|BottomLeft",
         ),
+        vis=_ne_custom,
+    )
+    labelenum_setting(
+        g,
+        "next_episode_popup_size",
+        1,
+        "47151",
+        "47152",
+        "Normal",
+        [("47153", "Normal"), ("47154", "Large")],
         vis=_ne_custom,
     )
     bool_setting(g, "next_episode_popup_thumbnail", 1, "47036", "47037", True, vis=_ne_custom)

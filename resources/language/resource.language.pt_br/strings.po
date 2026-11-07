@@ -2103,8 +2103,8 @@ msgid "Skip episodes already watched"
 msgstr "Pular episódios já assistidos"
 
 msgctxt "#47012"
-msgid "Offer the next unwatched episode instead of the episode that follows directly."
-msgstr "Oferecer o próximo episódio não assistido em vez do que vem logo em seguida."
+msgid "Offer the next unwatched episode instead of the episode that follows directly. This also applies to the next movie of a collection."
+msgstr "Oferecer o próximo episódio não assistido em vez do que vem logo em seguida. Também vale para o próximo filme de uma coleção."
 
 msgctxt "#47013"
 msgid "Resume a partly watched next episode"
@@ -2259,16 +2259,16 @@ msgid "Remember autoplay per show"
 msgstr "Lembrar a reprodução automática por série"
 
 msgctxt "#47083"
-msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on."
-msgstr "Depois de Reproduzir agora no aviso do próximo episódio, o Skippy pergunta se essa série deve reproduzir o próximo episódio automaticamente daqui em diante. Uma série com resposta salva mantém a escolha, e uma série em Perguntar primeiro sempre mostra o aviso, mesmo com a reprodução automática ligada."
+msgid "After you press Play now on the next episode prompt, ask whether that show should play its next episode automatically from now on. A show you answer for keeps its choice, and a show set to Ask first always shows the prompt, even when automatic play is on. A show set to Never offer never shows the prompt and never plays automatically."
+msgstr "Depois de Reproduzir agora no aviso do próximo episódio, o Skippy pergunta se essa série deve reproduzir o próximo episódio automaticamente daqui em diante. Uma série com resposta salva mantém a escolha, e uma série em Perguntar primeiro sempre mostra o aviso, mesmo com a reprodução automática ligada. Uma série em Nunca oferecer nunca mostra o aviso e nunca é reproduzida automaticamente."
 
 msgctxt "#47084"
 msgid "Manage autoplay by show"
 msgstr "Gerenciar a reprodução automática por série"
 
 msgctxt "#47085"
-msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library."
-msgstr "Ver as séries que reproduzem automaticamente ou perguntam primeiro, alterar ou esquecer uma escolha, ou adicionar uma série da biblioteca."
+msgid "Review the shows set to play automatically or to ask first, change or forget a choice, or add a show from your library. Choose Never offer to turn the prompt off for a show."
+msgstr "Ver as séries que reproduzem automaticamente ou perguntam primeiro, alterar ou esquecer uma escolha, ou adicionar uma série da biblioteca. Escolher Nunca oferecer desativa o aviso para uma série."
 
 msgctxt "#47086"
 msgid "Clear saved autoplay choices"
@@ -2399,3 +2399,151 @@ msgstr "A aparência da barra de progresso. Barras desenhadas com quadrados perd
 msgctxt "#47117"
 msgid "How solid the card behind the popup is, from 0 % (no card) to 100 %. Same as look uses the one of the chosen look."
 msgstr "Quão opaco é o cartão atrás da janela, de 0 % (sem cartão) a 100 %. Igual à aparência usa a da aparência escolhida."
+
+msgctxt "#47118"
+msgid "Show the prompt for (seconds)"
+msgstr "Mostrar o aviso por (segundos)"
+
+msgctxt "#47119"
+msgid "How long the prompt stays up once it appears. 0 keeps it up until the episode ends. The countdown and the progress bar run over this time. The Still watching? question always stays up until the episode ends. It cannot be longer than Seconds before the end, unless Start at the credits is on; a time that is longer than what is left simply ends with the episode."
+msgstr "Por quanto tempo o aviso permanece depois de aparecer. 0 o mantém até o episódio terminar. A contagem regressiva e a barra de progresso correm durante esse tempo. A pergunta Ainda está assistindo? sempre permanece até o episódio terminar. Não pode ser maior que Segundos antes do fim, a menos que Começar nos créditos esteja ativado; se o tempo for maior que o restante, o aviso simplesmente termina com o episódio."
+
+msgctxt "#47120"
+msgid "When the countdown ends"
+msgstr "Quando a contagem regressiva terminar"
+
+msgctxt "#47121"
+msgid "What happens if nobody answers before the countdown reaches zero: close the prompt, or play the next episode. Closing leaves the end of the episode to Kodi, which only moves on by itself if its own Play next video automatically setting is on."
+msgstr "O que acontece se ninguém responder antes de a contagem regressiva chegar a zero: fechar o aviso ou reproduzir o próximo episódio. Ao fechar, o fim do episódio fica por conta do Kodi, que só segue sozinho se a sua própria configuração de reproduzir o próximo vídeo automaticamente estiver ativada."
+
+msgctxt "#47122"
+msgid "Close the prompt"
+msgstr "Fechar o aviso"
+
+msgctxt "#47123"
+msgid "Play the next episode"
+msgstr "Reproduzir o próximo episódio"
+
+msgctxt "#47124"
+msgid "Next episode starts in %s"
+msgstr "O próximo episódio começa em %s"
+
+msgctxt "#47125"
+msgid "Closing in %s"
+msgstr "Fechando em %s"
+
+msgctxt "#47126"
+msgid "Use next episode info from other add-ons"
+msgstr "Usar informações do próximo episódio de outros complementos"
+
+msgctxt "#47127"
+msgid "Video add-ons that support Up Next (Netflix, Jellyfin, Emby and others) tell the player which episode comes next and how to start it. With this on, Skippy uses that information, which also covers add-on videos that are not in your library. Ignored while the Up Next add-on is turned on."
+msgstr "Os complementos de vídeo compatíveis com o Up Next (Netflix, Jellyfin, Emby e outros) dizem ao reprodutor qual episódio vem em seguida e como iniciá-lo. Com isso ativado, o Skippy usa essas informações, inclusive para vídeos de complementos que não estão na sua biblioteca. Ignorado enquanto o complemento Up Next estiver ativado."
+
+msgctxt "#47128"
+msgid "Looks…"
+msgstr "Aparências…"
+
+msgctxt "#47129"
+msgid "Popup looks"
+msgstr "Aparências da janela"
+
+msgctxt "#47130"
+msgid "Reset to defaults"
+msgstr "Restaurar padrões"
+
+msgctxt "#47131"
+msgid "Save this look…"
+msgstr "Salvar esta aparência…"
+
+msgctxt "#47132"
+msgid "Delete a saved look…"
+msgstr "Excluir uma aparência salva…"
+
+msgctxt "#47133"
+msgid "Look name"
+msgstr "Nome da aparência"
+
+msgctxt "#47134"
+msgid "A saved look named %s already exists. Overwrite it?"
+msgstr "Já existe uma aparência salva chamada %s. Sobrescrevê-la?"
+
+msgctxt "#47135"
+msgid "Look saved: %s"
+msgstr "Aparência salva: %s"
+
+msgctxt "#47136"
+msgid "Could not save the look."
+msgstr "Não foi possível salvar a aparência."
+
+msgctxt "#47137"
+msgid "This look is already saved as %s."
+msgstr "Esta aparência já está salva como %s."
+
+msgctxt "#47138"
+msgid "This is the built-in look %s."
+msgstr "Esta é a aparência integrada %s."
+
+msgctxt "#47139"
+msgid "There are no saved looks to delete."
+msgstr "Não há aparências salvas para excluir."
+
+msgctxt "#47140"
+msgid "Delete look %s?"
+msgstr "Excluir a aparência %s?"
+
+msgctxt "#47141"
+msgid "Look deleted: %s"
+msgstr "Aparência excluída: %s"
+
+msgctxt "#47142"
+msgid "That name is used by a built-in look."
+msgstr "Esse nome é usado por uma aparência integrada."
+
+msgctxt "#47143"
+msgid "You can save up to %s looks. Delete one first."
+msgstr "Você pode salvar até %s aparências. Exclua uma primeiro."
+
+msgctxt "#47144"
+msgid "Show the prompt for was lowered to %s seconds: it cannot be longer than Seconds before the end."
+msgstr "Mostrar o aviso por foi reduzido para %s segundos: não pode ser maior que Segundos antes do fim."
+
+msgctxt "#47145"
+msgid "Never offer"
+msgstr "Nunca oferecer"
+
+msgctxt "#47146"
+msgid "Play next movie?"
+msgstr "Reproduzir o próximo filme?"
+
+msgctxt "#47147"
+msgid "Movie ends in %s"
+msgstr "O filme termina em %s"
+
+msgctxt "#47148"
+msgid "Next movie starts in %s"
+msgstr "O próximo filme começa em %s"
+
+msgctxt "#47149"
+msgid "Offer the next movie in a collection"
+msgstr "Oferecer o próximo filme de uma coleção"
+
+msgctxt "#47150"
+msgid "When a movie that is part of a Kodi collection (movie set) ends, offer the next movie of the collection, ordered by year. It uses the prompt, countdown, autoplay and Still watching? settings of the episodes; the choices per show do not apply to movies."
+msgstr "Quando termina um filme que faz parte de uma coleção do Kodi (conjunto de filmes), o próximo filme da coleção é oferecido, ordenado por ano. Valem as mesmas configurações de aviso, contagem regressiva, reprodução automática e Ainda está assistindo? dos episódios; as escolhas por série não se aplicam a filmes."
+
+msgctxt "#47151"
+msgid "Popup size"
+msgstr "Tamanho da janela"
+
+msgctxt "#47152"
+msgid "Normal is the usual size. Large makes the whole popup, text included, a quarter bigger, for a TV you watch from far away. It grows from the corner it sits in."
+msgstr "Normal é o tamanho habitual. Grande deixa a janela inteira, inclusive o texto, um quarto maior, para uma TV que você assiste de longe. Ela cresce a partir do canto em que está."
+
+msgctxt "#47153"
+msgid "Normal"
+msgstr "Normal"
+
+msgctxt "#47154"
+msgid "Large"
+msgstr "Grande"

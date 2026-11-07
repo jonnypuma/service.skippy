@@ -145,7 +145,7 @@ class DraftTests(unittest.TestCase):
         custom = app.customize_rows(app.DEFAULT_DRAFT)
         self.assertEqual(custom[0], app.KEY_STYLE)
         self.assertEqual(custom[1], app.KEY_LOOK)
-        self.assertEqual(len(custom), 13)
+        self.assertEqual(len(custom), 14)
 
     def test_every_default_is_a_known_option(self):
         for key, options in app.CHOICE_KEYS.items():
@@ -392,7 +392,7 @@ class PopupSettingsTests(unittest.TestCase):
     def test_the_popup_look_only_shows_for_the_custom_style(self):
         found = self.settings()
         look = (
-            app.KEY_LOOK, app.KEY_POSITION, app.KEY_THUMBNAIL, app.KEY_COUNTDOWN,
+            app.KEY_LOOK, app.KEY_POSITION, app.KEY_SIZE, app.KEY_THUMBNAIL, app.KEY_COUNTDOWN,
             app.KEY_PROGRESS, app.KEY_FOCUS,
         )
         for key in look:
@@ -480,7 +480,15 @@ class PromptDispatchTests(unittest.TestCase):
         self.assertEqual(answer, "dialog")
         toast.assert_not_called()
         dialog.assert_called_once_with(
-            "addon", "player", {"t": 1}, 10.0, 60.0, draft={"d": 1}, still_watching=False
+            "addon",
+            "player",
+            {"t": 1},
+            10.0,
+            60.0,
+            draft={"d": 1},
+            still_watching=False,
+            timed=False,
+            end_action="Close",
         )
         self.assertEqual(calls, [])
 
@@ -489,7 +497,14 @@ class PromptDispatchTests(unittest.TestCase):
         self.assertEqual(answer, "toast")
         dialog.assert_not_called()
         toast.assert_called_once_with(
-            "addon", "player", {"t": 1}, 10.0, 60.0, still_watching=False
+            "addon",
+            "player",
+            {"t": 1},
+            10.0,
+            60.0,
+            still_watching=False,
+            timed=False,
+            end_action="Close",
         )
 
     def test_an_unset_style_means_custom(self):

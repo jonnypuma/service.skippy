@@ -5,9 +5,10 @@ The choices live in one small JSON file in the add-on profile, keyed on the show
 (IMDb id as fallback), the same key the per-title auto-skip rules use, so a choice follows
 the show across re-encodes, renames and other copies of its episodes.
 
-A show has one of two modes. ``auto`` starts its next episode by itself; ``ask`` always
-shows the prompt, even when "Play the next episode automatically" is on. A show without an
-entry follows that global setting.
+A show has one of three modes. ``auto`` starts its next episode by itself; ``ask`` always
+shows the prompt, even when "Play the next episode automatically" is on; ``never`` turns the
+prompt (and the automatic start) off for that show. A show without an entry follows the global
+settings.
 """
 
 from __future__ import annotations
@@ -24,7 +25,8 @@ KEY_PER_SHOW = "next_episode_per_show"
 
 MODE_AUTO = "auto"
 MODE_ASK = "ask"
-MODES = (MODE_AUTO, MODE_ASK)
+MODE_NEVER = "never"
+MODES = (MODE_AUTO, MODE_ASK, MODE_NEVER)
 
 # (file stamp, {key: {"mode", "title"}}). The service reads this every tick inside the
 # prompt window, while the Manage window and a backup restore change the file from other
@@ -49,9 +51,14 @@ def resolve_autoplay(global_autoplay, per_show_on, mode) -> bool:
     """Whether to start the next episode by itself: the show's choice wins when per-show is on."""
     if per_show_on and mode == MODE_AUTO:
         return True
-    if per_show_on and mode == MODE_ASK:
+    if per_show_on and mode in (MODE_ASK, MODE_NEVER):
         return False
     return bool(global_autoplay)
+
+
+def never_offer(per_show_on, mode) -> bool:
+    """Whether this show is set to never get the prompt (only while per-show choices are on)."""
+    return bool(per_show_on) and mode == MODE_NEVER
 
 
 def _path() -> str | None:

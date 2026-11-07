@@ -94,6 +94,13 @@ class PlayerMonitor(xbmc.Monitor):
             if method in ignored_methods:
                 return
 
+            if method.endswith("upnext_data"):
+                # Up Next's signal from video add-ons: what comes after the episode that plays.
+                from service_loop_next_episode import note_upnext_data
+
+                note_upnext_data(self, sender, method, data)
+                return
+
             try:
                 if isinstance(data, str):
                     data_lower = data.lower()
@@ -137,6 +144,13 @@ class PlayerMonitor(xbmc.Monitor):
             warm_skip_dialog_skin_textures(get_addon())
         except Exception as exc:
             log(f"⚠️ Failed to refresh skip dialog skin textures after settings change: {exc}")
+
+        try:
+            from next_episode_limits import enforce_popup_duration_limit
+
+            enforce_popup_duration_limit()
+        except Exception as exc:
+            log(f"⚠️ Failed to check the next episode prompt time after settings change: {exc}")
 
 monitor = PlayerMonitor()
 player = xbmc.Player()
