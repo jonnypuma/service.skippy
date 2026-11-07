@@ -174,5 +174,136 @@ class ToastTests(unittest.TestCase):
         self.assertIs(dlg2.result, False)
 
 
+class _Label:
+    """A fade label of the toast window that records being reset."""
+
+    def __init__(self, resets, control_id):
+        self._resets = resets
+        self._id = control_id
+
+    def reset(self):
+        self._resets.append(self._id)
+
+
+class ToastWindowRecoveryTests(unittest.TestCase):
+    """Kodi shows no toast after one was closed while its text still scrolled, unless the labels are reset."""
+
+    def _window(self, controls):
+        asked = []
+
+        class _Win:
+            def __init__(self, window_id):
+                asked.append(window_id)
+
+            def getControl(self, control_id):
+                if control_id not in controls:
+                    raise RuntimeError("no such control")
+                return controls[control_id]
+
+        return _Win, asked
+
+    def test_both_fade_labels_of_the_toast_window_are_reset(self):
+        import skip_dialog_native as n
+
+        resets = []
+        win, asked = self._window({401: _Label(resets, 401), 402: _Label(resets, 402)})
+        with patch.object(n.xbmcgui, "Window", win):
+            self.assertTrue(n.unstick_toast())
+        self.assertEqual(asked, [10107])
+        self.assertEqual(resets, [401, 402])
+
+    def test_a_window_that_cannot_be_reached_is_not_an_error(self):
+        import skip_dialog_native as n
+
+        def boom(_window_id):
+            raise RuntimeError("no such window")
+
+        with patch.object(n.xbmcgui, "Window", boom):
+            self.assertFalse(n.unstick_toast())
+
+    def test_a_skin_without_fade_labels_is_left_alone(self):
+        import skip_dialog_native as n
+
+        resets = []
+        win, _asked = self._window({401: object(), 402: _Label(resets, 402)})
+        with patch.object(n.xbmcgui, "Window", win):
+            self.assertTrue(n.unstick_toast())
+        self.assertEqual(resets, [402])
+        win, _asked = self._window({})
+        with patch.object(n.xbmcgui, "Window", win):
+            self.assertFalse(n.unstick_toast())
+
+    def test_dismissing_a_toast_closes_it_and_then_clears_the_window(self):
+        import skip_dialog_native as n
+
+        order = []
+        with patch.object(
+            n.xbmc, "executebuiltin", lambda cmd: order.append(cmd), create=True
+        ), patch.object(n, "unstick_toast", lambda: order.append("unstick")):
+            n._dismiss_toast()
+        self.assertEqual(
+            order,
+            ["Dialog.Close(notification,true)", "Dialog.Close(10107,true)", "unstick"],
+        )
+
+    def test_a_toast_on_screen_is_not_touched_before_posting(self):
+        import skip_dialog_native as n
+
+        called = []
+        with patch.object(n, "_toast_visible", lambda: True), patch.object(
+            n, "unstick_toast", lambda: called.append(1) or True
+        ):
+            self.assertFalse(n.ready_toast_window())
+        self.assertEqual(called, [])
+
+    def test_the_window_is_cleared_before_posting_when_no_toast_shows(self):
+        import skip_dialog_native as n
+
+        called = []
+        with patch.object(n, "_toast_visible", lambda: False), patch.object(
+            n, "unstick_toast", lambda: called.append(1) or True
+        ):
+            self.assertTrue(n.ready_toast_window())
+        self.assertEqual(called, [1])
+
+    def test_the_skip_toast_clears_the_window_before_it_is_posted(self):
+        import skip_dialog_native as n
+
+        order = []
+        dialog = MagicMock()
+        dialog.notification = lambda *a: order.append("post")
+
+        class _Keys:
+            def __init__(self, *args):
+                self.result = None
+
+            def doModal(self):
+                pass
+
+            def close(self):
+                pass
+
+        addon = MagicMock()
+        addon.getAddonInfo.return_value = "icon.png"
+        values = {"skip_dialog_type": "Native", "native_use_toast": True}
+        with patch.object(n, "addon_get_setting_text", _settings(values)), patch.object(
+            n, "addon_get_bool", lambda _a, k, d=False: values.get(k, d)
+        ), patch.object(n, "get_localized", _loc), patch.dict(
+            n.build_skip_button_label.__globals__, {"get_localized": _loc}
+        ), patch.object(n, "SkipToastKeys", _Keys), patch.object(
+            n, "_toast_keepalive", lambda *a, **k: None
+        ), patch.object(n, "_dismiss_toast"), patch.object(
+            n, "ready_toast_window", lambda: order.append("ready")
+        ), patch.object(n.xbmcgui, "Dialog", lambda: dialog):
+            n.show_toast_skip_dialog(addon, _segment(), self._player(25.0))
+        self.assertEqual(order, ["ready", "post"])
+
+    def _player(self, head):
+        p = MagicMock()
+        p.getTime.return_value = head
+        p.isPlaying.return_value = True
+        return p
+
+
 if __name__ == "__main__":
     unittest.main()

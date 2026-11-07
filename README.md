@@ -280,7 +280,7 @@ Duplicate Ask prompts are blocked primarily by **state**, not by sleeping before
 
 ## Skip dialog type (Custom or Native)
 
-**Toggle mode** (top of **Playback & Dialog**, a selector: **Custom** or **Native**, default Custom) chooses who draws the Ask prompt:
+**Skip dialog style** (top of **Playback & Dialog**, a selector: **Custom** or **Native**, default Custom) chooses who draws the Ask prompt:
 
 - **Custom** — Skippy's own dialog described under **Skip dialog modes** (Full / Compact Full / Minimal, progress bar, corner placement, colours). All of those options show only in this mode.
 - **Native** — the skin's own look: a notification toast with OK-to-skip (default), or Kodi's built-in Yes/No dialog. No add-on styling is involved, so it matches every skin.
@@ -309,7 +309,7 @@ Same SkipDialog XML and Full-mode styles (button focus, skip label format, corne
 
 ### Presets, card background and new textures (Custom mode)
 
-**Skip dialog presets…** (Playback & Dialog, and the **Preset** row at the top of **Customize Skip Dialog**) applies a ready-made look. From the settings action, the chosen preset opens in **Customize Skip Dialog** as a live preview; nothing is stored until you press **Save** (Cancel keeps your old look):
+**Skip dialog look** (Playback & Dialog, and the **Preset** row at the top of **Customize Skip Dialog**) applies a ready-made look. From the settings action, the chosen preset opens in **Customize Skip Dialog** as a live preview; nothing is stored until you press **Save** (Cancel keeps your old look):
 
 | Style | Presets |
 | ----- | ------- |
@@ -424,13 +424,13 @@ Near the end of a TV episode Skippy can offer to play the next one, or start it 
 
 ## Statistics
 
-The **Statistics** category opens a modal with:
+The **Statistics** category opens a modal (the same navy panel with tinted rows as the Customize screens, the name of each figure at the left and its value at the right) with:
 
 - **Time saved** — sum of the playback time each skip actually jumped over (playhead after seek vs before, when Kodi reports a landing time).
 - **Segments skipped** — total, plus a breakdown per segment type (Intro, Recap, Credits, …).
 - **Online segments downloaded / uploaded** — segments received from TheIntroDB / IntroDB.app lookups and accepted by an upload.
 
-Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown at the bottom of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
+Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown under the rows of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
 
 **Backup & Restore** (Advanced) has two JSON backups. **Back up / Restore settings** writes every persisted add-on option (API keys included) and the segment-types catalog (`skippy-settings-backup-*.json`). Restore overwrites matching options and merges the catalog. A settings file from before 7.0 still restores: its old skip lists, keywords, and EDL map are applied to the catalog. **Back up / Restore profile data** writes upload fingerprints, per-title auto-skip rules, per-show autoplay choices, saved next episode popup looks, statistics, and the segment-types catalog (`skippy-profile-data-backup-*.json`). Restore merges (fingerprints union; title rules and autoplay choices merge per key; saved looks are added when the name and the look are not there yet; statistics keep the larger counter; segment types merge by id, and a built-in missing from the file keeps the local row). Legacy upload-history-only backups still restore. Settings actions call `RunScript(service.skippy,backup_settings|restore_settings)` and `backup_profile_data` / `restore_profile_data`; the old `backup_upload_history` / `restore_upload_history` names still work.
 

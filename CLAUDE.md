@@ -6,6 +6,7 @@ Kodi add-on (Python 3, `xbmc.python 3.0.0`) for timed video segments: intros, re
 
 - **Bump the version whenever anything is changed, added or fixed.** The version lives only in `addon.xml` (`<addon ... version="X.Y.Z">`) and `CHANGELOG.md` (newest section on top, `## [X.Y.Z] - YYYY-MM-DD`). Every bump needs a changelog entry. Each number goes 0–9 (7.1.9 → 7.2.0). **Never mention version numbers in `README.md`.**
 - Toast text is never truncated and never gets a second overlay: Kodi's toast scrolls long text itself.
+- A native toast must never be force-closed without `unstick_toast()` (`_dismiss_toast` does it) and every post goes through `ready_toast_window()`: Kodi shows the next queued toast only once the message fade label has scrolled through, and a closed window does not scroll, so a toast closed early blocks all later toasts until Kodi restarts (the invisible OK catcher still answers).
 - Non-English strings are written by hand (no translation service); keep placeholders (`%s`, `%d`, `\n`, `\"`) identical to English.
 - Do not reproduce or paste secrets (Kodi web password, API keys) into files or chat.
 
@@ -64,7 +65,7 @@ Python and skin XML are cached by Kodi: after changing Python or a skip-dialog X
 Skip-dialog notes learned the hard way:
 
 - Skip/Close buttons are repositioned from Python (`skip_dialog_appearance.py`) when the dialog opens, so skin `<left>/<top>` values are only defaults.
-- The Customize skip dialog and Customize next episode popup screens share one look: navy panel, tinted rows with a rounded teal highlight, the name of a row at the left and its value at the right (`setLabel(label=…, label2=…)`), the same footer buttons. A change to the look of one goes into the other; `tests/test_skip_customize_style.py` compares their skin files.
+- The Customize skip dialog and Customize next episode popup screens share one look: navy panel, tinted rows with a rounded teal highlight, the name of a row at the left and its value at the right (`setLabel(label=…, label2=…)`), the same footer buttons. A change to the look of one goes into the other; `tests/test_skip_customize_style.py` compares their skin files. The small list / message windows (Statistics, Manage saved auto-skips, Manage autoplay by show and the choices and confirmations inside them) use the same look through `SkippyPanel.xml` + `skippy_panel_ui.py`; `tests/test_skippy_panel.py` compares it with the next episode screen. Those fall back to the grey editor dialogs (`skippy_editor_modal_skin.py`) and then Kodi's own if the panel cannot open. Do not run `gen_skin_1080i.py --overwrite` to add a file: it rewrites the hand-tuned 1080i skip dialog files (use `--write`).
 - Kodi ignores `<textoffsety>` on buttons with `<aligny>center</aligny>`; the Customize preview uses label controls and is nudged in Python (`preview_label_nudge`).
 - Python writes to add-on settings do not refresh an open settings page.
 - The seek bar (`Player.HasPerformedSeek`) cannot be suppressed from an add-on; the optional `Skippy.Skipping` Home property needs a per-skin edit (see README).

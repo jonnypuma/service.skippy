@@ -379,6 +379,7 @@ SEGMENT_TYPES_LIST_PROBE_ID = 5210
 # Next episode popup backdrop and Customize modal panel (widths 520/560 vs 780/840).
 NEXT_EPISODE_PROBE_ID = 5001
 NEXT_EPISODE_CUSTOMIZE_PROBE_ID = 6001
+SKIPPY_PANEL_PROBE_ID = 7001
 
 
 def probe_control_ids_for_xml(xml_filename) -> tuple:
@@ -396,6 +397,8 @@ def probe_control_ids_for_xml(xml_filename) -> tuple:
         return (NEXT_EPISODE_PROBE_ID,)
     if name.startswith("nextepisodecustomize"):
         return (NEXT_EPISODE_CUSTOMIZE_PROBE_ID,)
+    if name.startswith("skippypanel"):
+        return (SKIPPY_PANEL_PROBE_ID,)
     return ()
 
 
@@ -406,6 +409,7 @@ def infer_skin_resolution_from_widths(widths) -> str | None:
     Full skip backdrop 3081: 430 vs 645. Minimal plate 3021: 120 vs 180.
     Segment editor list 5000: ~1140 vs ~1710.
     Next episode popup 5001: 520 vs 780. Its Customize panel 6001: 560 vs 840.
+    Skippy panel 7001: 560 vs 840.
     """
     for raw in widths or ():
         if raw is None:

@@ -1,5 +1,36 @@
 # Changelog
 
+## [7.11.5] - 2026-11-07
+
+### Fixed
+
+- **The native toast of the next episode prompt no longer stops every later toast.** After the **Play next episode?** toast had been used once, it did not appear on the next video any more, and neither did the native skip toasts for the recap or intro at the start of that video. Pressing OK still worked (the invisible key catcher was still there), so it moved on to the next episode with nothing on screen. The prompt was not hiding the skip dialogs: Kodi's own toast window was stuck.
+  - The cause is in Kodi. It shows the next queued toast only when the message of the previous one has scrolled all the way through, and a window that is closed does not scroll. The prompt toast has a long message (**S01E02 · title · Press OK to play**) that scrolls, so closing it a few seconds after it appeared (OK, Back, or the end of the stretch) left the old message "not finished", and Kodi showed no toast at all until it was restarted.
+  - Skippy now resets the message of the toast window every time it closes a toast, and again before it posts one while no toast is on screen. That also frees a toast window that was stuck before. The native skip toast uses the same code and is covered too.
+  - The skip dialogs are held back only while the prompt of the episode that is playing is due (from the start of its window until that episode ends, as before), never at the start of the next one. Tests now cover Play now, a dismissed prompt and automatic play followed by the first minutes of the next episode: none of them is held.
+
+## [7.11.4] - 2026-11-07
+
+### Changed
+
+- **Statistics, Manage saved auto-skips and Manage autoplay by show look like the Customize screens.** They were small grey dialogs with a column of plain buttons. They are now the same navy panel as **Customize skip dialog** and **Customize next episode popup**: tinted rows with a rounded teal highlight, white text with a shadow and the same footer buttons.
+  - **Statistics** shows each figure as a row with its name at the left and its value at the right (**Time saved**, **Segments skipped**, each segment type under **Skips by segment type**, **Online segments downloaded** and **uploaded**), and **Counting since …** in small text under the rows. The rows scroll when there are many segment types. **Reset statistics** asks its question in the same panel.
+  - **Manage saved auto-skips** lists each title with the types saved for it at the right (**Friends** · **Intro, Recap**). Choosing a title asks **Delete** or **Cancel** in the same panel; with nothing saved, it says so in the panel.
+  - **Manage autoplay by show** (the same kind of list, so it is changed with them) shows each show with its choice at the right, and the choices inside it (**Play automatically**, **Ask first**, **Never offer**, **Forget this show**) and **Choose a show** (before the stock Kodi list) are in the same panel. Only the question that appears while a show plays (**Always play the next episode?**) is unchanged.
+  - The panel is as high as what it shows, centred on the screen, with a scrollbar when the list is longer than the screen. Up and down move through the rows and on to the buttons; the headings between groups of rows are skipped. Both skin resolutions are done (the 1080i file is generated from the 720p one).
+  - If the panel cannot open for any reason, the old grey dialogs open instead, so these screens never stay empty.
+- **The two settings that choose the skip dialog are named like the ones for the next episode popup.** **Toggle mode** (Custom or Native) is now **Skip dialog style**, like **Popup style**, and **Skip dialog presets…** is now **Skip dialog look**, like **Popup look**. Only the names changed (translated in all 11 language packs); inside **Customize skip dialog** the row is still called **Preset**.
+
+## [7.11.3] - 2026-11-07
+
+### Fixed
+
+- **The skip dialog preview now follows the segment type again.** In **Customize skip dialog**, changing **Preview type** (Intro, Commercial, Prologue…) changed the label but not the length of the button and card: they were all the same width. The lines under the button (**Commercial ending in: 01:07** and **Skip to Recap at 00:30**) had a fixed minimum width (190 and 280 px), and with **Skip + Type** that minimum was wider than any label, so it decided the width every time.
+  - The minimum now comes from the text of those lines. A short type such as Intro gets a narrower card than Commercial, and a long one gets a wider card.
+  - The same fixed minimum was too narrow for long types: **Commercial ending in: 0…** was cut off in the preview, and in the real dialog with **Skip** or **Skip + Type** as the button format. The ending line is now always shown in full (also in ALL CAPS and with long type names).
+  - The same sizing applies to the real skip dialog, not only to the preview.
+  - When the **Skip to … at …** line is shown (**Ignore overlapping segments** set to **No**), that line itself needs about 240 px, so the card is that wide for any short type; it only gets wider for a longer label.
+
 ## [7.11.2] - 2026-11-07
 
 ### Changed

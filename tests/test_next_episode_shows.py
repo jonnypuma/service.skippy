@@ -693,13 +693,17 @@ class _FakeModal:
         self.pick_calls.append((heading, list(options), preselect))
         return self.picks.pop(0) if self.picks else -1
 
+    show_panel_list_pick = show_editor_list_pick
+
 
 class _UiTests(_ProfileTempDir):
     def install(self, modal):
         fake = types.ModuleType("skippy_editor_modal_skin")
         fake.sidecar_overwrite_yesno_show = modal.sidecar_overwrite_yesno_show
         fake.show_editor_list_pick = modal.show_editor_list_pick
-        patcher = patch.dict(sys.modules, {"skippy_editor_modal_skin": fake})
+        panel = types.ModuleType("skippy_panel_ui")
+        panel.show_panel_list_pick = modal.show_panel_list_pick
+        patcher = patch.dict(sys.modules, {"skippy_editor_modal_skin": fake, "skippy_panel_ui": panel})
         patcher.start()
         self.addCleanup(patcher.stop)
         self.toasts = []
@@ -800,7 +804,14 @@ class ManageTests(_UiTests):
         self.install(modal)
         ui.show_manage_next_episode_shows_modal()
         _heading, options, _pre = modal.pick_calls[0]
-        self.assertEqual(options, ["Add a show...", "Friends — Play automatically"])
+        self.assertEqual(options, ["Add a show...", ("Friends", "Play automatically")])
+
+    def test_a_row_is_the_show_at_the_left_and_its_choice_at_the_right(self):
+        self.assertEqual(
+            ui.entry_row(None, {"title": "Friends", "mode": "auto"}), ("Friends", "Play automatically")
+        )
+        self.assertEqual(ui.entry_row(None, {"title": "Arrow", "mode": "never"}), ("Arrow", "Never offer"))
+        self.assertEqual(ui.entry_row(None, {"key": "tv_tmdb_1", "mode": "ask"}), ("tv_tmdb_1", "Ask first"))
 
     def test_changing_a_choice(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
@@ -837,12 +848,12 @@ class ManageTests(_UiTests):
 
     def test_a_new_show_can_be_set_to_never_offer(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
-        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 2, -1])
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 0, 2, -1])
         self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "never")
 
     def test_a_pick_beyond_the_modes_for_a_new_show_saves_nothing(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
-        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 3, -1])
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 0, 3, -1])
         self.assertEqual(shows.load_shows(), {})
 
     def test_a_pick_beyond_the_modes_changes_nothing(self):
@@ -875,46 +886,50 @@ class ManageTests(_UiTests):
         ui.show_manage_next_episode_shows_modal()
         self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "auto")
 
-    def add_show(self, shows_in_library, identity, picks, selected=0):
+    def add_show(self, shows_in_library, identity, picks):
+        """Drive the Manage window: ``picks`` are the answers of every list, in order."""
         modal = _FakeModal(picks=picks)
         self.install(modal)
-        patches = [
+        for p in (
             patch.object(ui, "_library_shows", return_value=shows_in_library),
             patch.object(ui, "_identify_show", return_value=identity),
-            patch.object(ui.xbmcgui, "Dialog"),
-        ]
-        dialog = patches[2].start()
-        patches[0].start()
-        patches[1].start()
-        for p in patches:
+        ):
+            p.start()
             self.addCleanup(p.stop)
-        dialog.return_value.select.return_value = selected
         ui.show_manage_next_episode_shows_modal()
-        return modal, dialog
+        return modal
 
     def test_adding_a_show_from_the_library(self):
         library = [{"tvshowid": 4, "title": "Arrow"}, {"tvshowid": 5, "title": "Friends"}]
-        modal, dialog = self.add_show(library, ("tv_tmdb_1668", "Friends"), [0, 0, -1], selected=1)
+        # add a show, pick Friends, Play automatically, close
+        modal = self.add_show(library, ("tv_tmdb_1668", "Friends"), [0, 1, 0, -1])
         self.assertEqual(shows.lookup_mode("tv_tmdb_1668"), "auto")
         self.assertEqual(shows.list_entries()[0]["title"], "Friends")
-        self.assertEqual(dialog.return_value.select.call_args.args[1], ["Arrow", "Friends"])
-        self.assertEqual(modal.pick_calls[1][1], ["Play automatically", "Ask first", "Never offer"])
+        self.assertEqual(modal.pick_calls[1][1], ["Arrow", "Friends"])
+        self.assertEqual(modal.pick_calls[2][1], ["Play automatically", "Ask first", "Never offer"])
+
+    def test_the_library_list_is_the_panel_not_the_stock_select(self):
+        library = [{"tvshowid": 4, "title": "Arrow"}]
+        with patch.object(ui.xbmcgui, "Dialog") as dialog:
+            self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, -1, -1])
+        dialog.assert_not_called()
 
     def test_a_new_show_can_be_set_to_ask_first(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
-        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 1, -1])
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 0, 1, -1])
         self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "ask")
 
     def test_cancelling_the_choice_of_a_new_show_saves_nothing(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
-        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, -1, -1])
+        self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, 0, -1, -1])
         self.assertEqual(shows.load_shows(), {})
 
     def test_cancelling_the_library_list_saves_nothing(self):
         library = [{"tvshowid": 4, "title": "Arrow"}]
-        modal, _dialog = self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, -1], selected=-1)
+        modal = self.add_show(library, ("tv_tmdb_1", "Arrow"), [0, -1, -1])
         self.assertEqual(shows.load_shows(), {})
-        self.assertEqual(len(modal.pick_calls), 2)
+        # Manage list, library list, Manage list again (closed)
+        self.assertEqual(len(modal.pick_calls), 3)
 
     def test_an_empty_library_says_so(self):
         self.add_show([], ("x", "y"), [0, -1])
@@ -922,22 +937,20 @@ class ManageTests(_UiTests):
 
     def test_a_show_without_an_id_cannot_be_saved(self):
         library = [{"tvshowid": 4, "title": "Home Video"}]
-        self.add_show(library, (None, "Home Video"), [0, -1])
+        self.add_show(library, (None, "Home Video"), [0, 0, -1])
         self.assertEqual(self.toasts, ["Could not tell which show that is."])
         self.assertEqual(shows.load_shows(), {})
 
-    def test_a_broken_list_window_falls_back_to_the_stock_select(self):
+    def test_a_list_that_fails_to_open_closes_the_window_quietly(self):
         modal = _FakeModal()
 
         def boom(*args, **kwargs):
             raise RuntimeError("skin")
 
-        modal.show_editor_list_pick = boom
+        modal.show_panel_list_pick = boom
         self.install(modal)
-        with patch.object(ui.xbmcgui, "Dialog") as dialog:
-            dialog.return_value.select.return_value = -1
-            ui.show_manage_next_episode_shows_modal()
-        dialog.return_value.select.assert_called_once()
+        ui.show_manage_next_episode_shows_modal()
+        self.assertEqual(modal.pick_calls, [])
 
 
 class LibraryShowTests(unittest.TestCase):

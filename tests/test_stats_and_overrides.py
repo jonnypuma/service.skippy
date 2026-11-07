@@ -117,30 +117,66 @@ class StatisticsTextTests(_ProfileTempDir):
 
     def test_modal_is_read_only(self):
         skippy_stats.record_skip("Intro", 30.0)
-        skin = MagicMock()
-        with patch.dict(
-            "sys.modules", {"skippy_editor_modal_skin": skin}, clear=False
-        ):
+        with patch("skippy_panel_ui.show_panel_rows") as show:
             skippy_statistics_ui.show_statistics_modal()
-        heading, body = skin.show_editor_ok.call_args[0][:2]
+        heading, rows = show.call_args[0][:2]
         self.assertIn("Statistics", heading)
-        self.assertIn("Segments skipped: 1", body)
+        self.assertIn(("Segments skipped", "1"), [(r.label, r.label2) for r in rows])
+        self.assertIn("Counting since", show.call_args.kwargs["footnote"])
         self.assertEqual(skippy_stats.load_statistics()["skips"]["total"], 1)
+
+    def test_rows_have_the_name_at_the_left_and_the_value_at_the_right(self):
+        skippy_stats.record_skip("Intro", 90.0)
+        skippy_stats.record_skip("Intro", 30.0)
+        skippy_stats.record_skip("Recap", 20.0)
+        skippy_stats.record_online_segments_downloaded(7)
+        skippy_stats.record_online_segment_uploaded(2)
+        rows, footnote = skippy_statistics_ui.build_statistics_rows(None)
+        pairs = [(r.label, r.label2) for r in rows if not r.header]
+        self.assertEqual(
+            pairs,
+            [
+                ("Time saved", "2m 20s"),
+                ("Segments skipped", "3"),
+                ("Intro", "2"),
+                ("Recap", "1"),
+                ("Online segments downloaded", "7"),
+                ("Online segments uploaded", "2"),
+            ],
+        )
+        headers = [r.label for r in rows if r.header]
+        self.assertEqual(headers[0], "Skips by segment type")
+        self.assertEqual(headers[1], "")  # a gap before the online rows
+        self.assertTrue(footnote.startswith("Counting since "))
+
+    def test_without_skips_the_placeholder_is_a_plain_row(self):
+        rows, _footnote = skippy_statistics_ui.build_statistics_rows(None)
+        plain = [r for r in rows if not r.header]
+        self.assertIn(("No skips recorded yet", ""), [(r.label, r.label2) for r in plain])
+
+    def test_a_translated_line_that_does_not_end_with_its_value_stays_whole(self):
+        row = skippy_statistics_ui._name_value_row("42 segments skipped so far", 42)
+        self.assertEqual((row.label, row.label2), ("42 segments skipped so far", ""))
+        row = skippy_statistics_ui._name_value_row("Temps \u00e9conomis\u00e9 : 2h 14m", "2h 14m")
+        self.assertEqual((row.label, row.label2), ("Temps \u00e9conomis\u00e9", "2h 14m"))
+        row = skippy_statistics_ui._name_value_row("Zeit gespart:2m", "2m")
+        self.assertEqual((row.label, row.label2), ("Zeit gespart", "2m"))
+        row = skippy_statistics_ui._name_value_row("3", 3)
+        self.assertEqual((row.label, row.label2), ("3", ""))
+
+    def test_the_text_form_is_still_available(self):
+        text = skippy_statistics_ui.build_statistics_text(None)
+        self.assertIn("Segments skipped: 0", text)
 
     def test_reset_needs_confirmation(self):
         skippy_stats.record_skip("Intro", 30.0)
-        skin = MagicMock()
-        skin.sidecar_overwrite_yesno_show.return_value = False
-        with patch.dict(
-            "sys.modules", {"skippy_editor_modal_skin": skin}, clear=False
-        ):
+        with patch("skippy_panel_ui.show_panel_yesno", return_value=False) as ask:
             skippy_statistics_ui.confirm_and_reset_statistics()
         self.assertEqual(skippy_stats.load_statistics()["skips"]["total"], 1)
+        heading, message, yes, no = ask.call_args[0]
+        self.assertEqual((yes, no), ("Reset", "Cancel"))
 
-        skin.sidecar_overwrite_yesno_show.return_value = True
-        with patch.dict(
-            "sys.modules", {"skippy_editor_modal_skin": skin}, clear=False
-        ):
+        with patch("skippy_panel_ui.show_panel_yesno", return_value=True):
             skippy_statistics_ui.confirm_and_reset_statistics()
         self.assertEqual(skippy_stats.load_statistics()["skips"]["total"], 0)
 
@@ -317,13 +353,11 @@ class ManageTitleAutoskipUiTests(_ProfileTempDir):
             "movie_tmdb_11", "Intro", per_show_overrides.MODE_AUTO, title="Star Wars"
         )
 
-        skin = MagicMock()
         # First open: pick Friends (index 0), confirm delete.
         # Second open: only Star Wars left — cancel/close.
-        skin.show_editor_list_pick.side_effect = [0, -1]
-        skin.sidecar_overwrite_yesno_show.return_value = True
-
-        with patch.dict("sys.modules", {"skippy_editor_modal_skin": skin}, clear=False):
+        with patch("skippy_panel_ui.show_panel_list_pick", side_effect=[0, -1]) as pick, patch(
+            "skippy_panel_ui.show_panel_yesno", return_value=True
+        ):
             with patch.object(per_show_overrides_ui, "notify_skippy") as notify:
                 per_show_overrides_ui.show_manage_title_autoskip_modal()
 
@@ -332,17 +366,38 @@ class ManageTitleAutoskipUiTests(_ProfileTempDir):
             per_show_overrides.lookup_override("movie_tmdb_11", "Intro"),
             per_show_overrides.MODE_AUTO,
         )
-        self.assertEqual(skin.show_editor_list_pick.call_count, 2)
+        self.assertEqual(pick.call_count, 2)
         notify.assert_called()
+
+    def test_manage_modal_rows_have_the_title_at_the_left_and_its_types_at_the_right(self):
+        import per_show_overrides_ui
+
+        per_show_overrides.save_override(
+            "tv_tmdb_1396", "Intro", per_show_overrides.MODE_AUTO, title="Friends"
+        )
+        per_show_overrides.save_override(
+            "tv_tmdb_1396", "Recap", per_show_overrides.MODE_AUTO, title="Friends"
+        )
+        with patch("skippy_panel_ui.show_panel_list_pick", return_value=-1) as pick:
+            per_show_overrides_ui.show_manage_title_autoskip_modal()
+        heading, options = pick.call_args[0][:2]
+        self.assertEqual(options, [("Friends", "Intro, Recap")])
+        self.assertEqual(pick.call_args.kwargs["cancel_label"], "Close")
+        self.assertTrue(pick.call_args.kwargs["subtitle"])
+        self.assertEqual(
+            per_show_overrides_ui.title_entry_row({"key": "k", "auto_labels": []}), ("k", "")
+        )
 
     def test_manage_modal_empty_shows_ok(self):
         import per_show_overrides_ui
 
-        skin = MagicMock()
-        with patch.dict("sys.modules", {"skippy_editor_modal_skin": skin}, clear=False):
+        with patch("skippy_panel_ui.show_panel_message") as message, patch(
+            "skippy_panel_ui.show_panel_list_pick"
+        ) as pick:
             per_show_overrides_ui.show_manage_title_autoskip_modal()
-        skin.show_editor_ok.assert_called_once()
-        skin.show_editor_list_pick.assert_not_called()
+        message.assert_called_once()
+        self.assertIn("No titles", message.call_args[0][1])
+        pick.assert_not_called()
 
     def test_manage_modal_cancel_delete_keeps_entry(self):
         import per_show_overrides_ui
@@ -350,11 +405,11 @@ class ManageTitleAutoskipUiTests(_ProfileTempDir):
         per_show_overrides.save_override(
             "tv_tmdb_1396", "Intro", per_show_overrides.MODE_AUTO, title="Friends"
         )
-        skin = MagicMock()
-        skin.show_editor_list_pick.side_effect = [0, -1]
-        skin.sidecar_overwrite_yesno_show.return_value = False
-        with patch.dict("sys.modules", {"skippy_editor_modal_skin": skin}, clear=False):
+        with patch("skippy_panel_ui.show_panel_list_pick", side_effect=[0, -1]), patch(
+            "skippy_panel_ui.show_panel_yesno", return_value=False
+        ) as ask:
             per_show_overrides_ui.show_manage_title_autoskip_modal()
+        self.assertEqual(ask.call_args[0][2:], ("Delete", "Cancel"))
         self.assertEqual(
             per_show_overrides.lookup_override("tv_tmdb_1396", "Intro"),
             per_show_overrides.MODE_AUTO,

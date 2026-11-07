@@ -16,6 +16,7 @@ from skip_dialog_native import (
     _dismiss_toast,
     _playhead,
     _toast_keepalive,
+    ready_toast_window,
 )
 from settings_utils import get_localized, log
 
@@ -60,6 +61,7 @@ def show_next_episode_toast(
 
     def post(ms):
         try:
+            ready_toast_window()
             xbmcgui.Dialog().notification(heading, body, icon, int(ms), False)
         except Exception as exc:
             log("\u26a0\ufe0f Next episode toast failed: %s" % exc)

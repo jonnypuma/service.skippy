@@ -6,6 +6,7 @@ Neither path patches production SkipDialog XML.
 """
 from __future__ import annotations
 
+import math
 import os
 import re
 from typing import Any, Callable, Optional
@@ -52,7 +53,13 @@ SKIP_WIDTH_STEPS_720 = {
     "Skip + Type": (130, 165, 210, 260, 315),
     "Skip + Type + Duration": (200, 235, 280, 330, 365),
 }
-SKIP_ROWS_MIN_CONTENT_W_720 = {"jump": 280, "ending": 190}
+# The rows under the button (ending text, next-jump line) are plain labels in smaller
+# fonts than the button's. Their width is estimated with the same glyph table, scaled to
+# their font (measured on screen: font10 ending text ~0.85, font11 jump line ~1.13 of the
+# estimate; a little extra is kept as slack), so the panel is as wide as the text needs
+# and no wider, instead of a fixed minimum that hid the label-based sizing.
+SKIP_ROW_GLYPH_SCALE_720 = {"ending": 0.88, "jump": 1.18}
+SKIP_ROW_TEXT_PAD_720 = 10
 SKIP_DIALOG_CANVAS_W_720 = 1280
 SKIP_DIALOG_SCREEN_MARGIN_720 = 10
 SKIP_DIALOG_MODE_FULL = "Full"
@@ -621,6 +628,23 @@ def skip_label_width_720(label: str, format_setting) -> int:
     return min(need, SKIP_BTN_MAX_TEXT_W_720)
 
 
+def skip_rows_min_content_w_720(jump_label="", ending_line="") -> int:
+    """Narrowest content width (720p) that shows the rows under the button unclipped.
+
+    ``jump_label`` / ``ending_line`` are the texts as displayed (ALL CAPS applied, the
+    ending line with its widest countdown); an empty text means that row is not shown.
+    """
+    need = 0.0
+    for kind, text in (("jump", jump_label), ("ending", ending_line)):
+        if text:
+            need = max(
+                need,
+                estimate_skip_label_width_720(text) * SKIP_ROW_GLYPH_SCALE_720[kind]
+                + SKIP_ROW_TEXT_PAD_720,
+            )
+    return int(math.ceil(min(need, SKIP_BTN_MAX_TEXT_W_720)))
+
+
 def widest_skip_label(
     segment,
     settings,
@@ -774,6 +798,14 @@ def _safe_control(window, control_id):
         return window.getControl(control_id)
     except Exception:
         return None
+
+
+def _text_property(window, name) -> str:
+    try:
+        value = window.getProperty(name)
+    except Exception:
+        return ""
+    return value if isinstance(value, str) else ""
 
 
 PREVIEW_LABEL_NUDGE_720 = 1
@@ -1079,11 +1111,22 @@ def apply_full_skip_layout(
     hide_skip_icon = True if compact else settings.get_bool("hide_skip_icon", False)
     show_jump_row = window.getProperty("show_next_jump") == "true"
     ending_row = (not compact) and window.getProperty("hide_ending_text") != "true"
-    min_content_w = 0
-    if show_jump_row:
-        min_content_w = SKIP_ROWS_MIN_CONTENT_W_720["jump"]
-    elif ending_row:
-        min_content_w = SKIP_ROWS_MIN_CONTENT_W_720["ending"]
+    jump_text = _text_property(window, "next_jump_label") if show_jump_row else ""
+    ending_line = ""
+    if ending_row:
+        ending_text = _text_property(window, "ending_text") or apply_skip_dialog_caps(
+            ending_text_for_segment(addon, segment),
+            settings.get_bool("skip_dialog_all_caps", False),
+        )
+        longest_countdown = countdown_mmss(
+            max(
+                0,
+                float(getattr(segment, "end_seconds", 0) or 0)
+                - float(getattr(segment, "start_seconds", 0) or 0),
+            )
+        )
+        ending_line = "%s %s" % (ending_text, longest_countdown)
+    min_content_w = skip_rows_min_content_w_720(jump_text, ending_line)
     label_for_width = widest_skip_label(segment, settings, addon)
     text_w = skip_label_width_720(
         label_for_width, settings.get_text("skip_button_format", "Skip + Type + Duration")

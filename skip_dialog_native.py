@@ -193,6 +193,44 @@ class SkipToastKeys(xbmcgui.WindowXMLDialog):
 def _dismiss_toast():
     xbmc.executebuiltin("Dialog.Close(notification,true)")
     xbmc.executebuiltin("Dialog.Close(10107,true)")
+    # A toast closed while its text was still scrolling must not block the ones after it.
+    unstick_toast()
+
+
+# Kodi's toast window and the ids of the two fade labels of its skin file (heading, message).
+_TOAST_WINDOW_ID = 10107
+_TOAST_LABEL_IDS = (401, 402)
+
+
+def unstick_toast():
+    """Let Kodi show toasts again after one was closed while its text was still scrolling.
+
+    Kodi shows the next queued toast only when the message of the last one has scrolled all the
+    way through, and a window that is closed does not scroll. A toast closed early (OK pressed a
+    few seconds after a long "S01E02 - title - Press OK" line appeared) therefore blocked every
+    toast after it, ours and other add-ons', until Kodi restarted, while the invisible key
+    catcher kept answering OK. Resetting the fade labels marks the old text as shown.
+    True when at least one label was reset; never raises.
+    """
+    try:
+        window = xbmcgui.Window(_TOAST_WINDOW_ID)
+    except Exception:
+        return False
+    done = False
+    for control_id in _TOAST_LABEL_IDS:
+        try:
+            window.getControl(control_id).reset()
+            done = True
+        except Exception:
+            continue
+    return done
+
+
+def ready_toast_window():
+    """Call before posting a toast: clear a stuck toast window unless a toast is on screen."""
+    if _toast_visible():
+        return False
+    return unstick_toast()
 
 
 def _toast_visible():
@@ -261,6 +299,7 @@ def show_toast_skip_dialog(addon, segment, player):
 
     def post(ms):
         try:
+            ready_toast_window()
             xbmcgui.Dialog().notification(skip_label, body, icon, int(ms), False)
         except Exception as exc:
             log("⚠️ Skip toast failed: %s" % exc)

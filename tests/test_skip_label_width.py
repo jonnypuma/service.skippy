@@ -5,10 +5,13 @@ from tests.kodi_stubs import install_kodi_stubs
 install_kodi_stubs()
 
 from skip_dialog_appearance import (  # noqa: E402
+    FULL_SKIP_PANEL_BACKDROP_ID,
+    FULL_SKIP_PANEL_GROUP_ID,
     SKIP_BTN_MAX_TEXT_W_720,
     SKIP_WIDTH_STEPS_720,
     full_skip_panel_metrics,
     skip_label_width_720,
+    skip_rows_min_content_w_720,
 )
 
 FMT_SKIP = "Skip"
@@ -66,6 +69,162 @@ class SkipLabelWidthTests(unittest.TestCase):
         self.assertEqual(m["wide_x"], 5 + 30)
         no_icon = full_skip_panel_metrics(ident, False, True, True, 96, min_content_w=280)
         self.assertEqual(no_icon["wide_w"], 280)
+
+
+class _Ctrl:
+    def __init__(self):
+        self.w = None
+
+    def setWidth(self, w):
+        self.w = w
+
+    def __getattr__(self, name):
+        return lambda *a, **k: None
+
+
+def _preview_panel_w(preview_type, **draft):
+    """Width (720p px) of the Customize preview panel for a preview segment type."""
+    import skip_dialog_customize_ui as ui
+
+    win = ui.SkipDialogCustomize.__new__(ui.SkipDialogCustomize)
+    ctrls = {}
+    props = {}
+    win._ctrl = lambda cid: ctrls.setdefault(cid, _Ctrl())
+    win.getControl = win._ctrl
+    win._skin_resolution = None
+    win._sc = lambda v: v
+    win.addon = None
+    win._preview_type = preview_type
+    win._draft = dict(
+        {
+            "skip_dialog_mode": "Full",
+            "skip_button_format": FMT_TYPE,
+            "hide_close_button": True,
+            "hide_skip_icon": True,
+            "skip_overlapping_segments": True,
+        },
+        **draft,
+    )
+    win.setProperty = lambda k, v: props.__setitem__(k, v)
+    win.getProperty = lambda k: props.get(k, "")
+    win._layout_left_pane = lambda: None
+    win._refresh_row_labels = lambda: None
+    win.refresh_mockup()
+    return win._skip_panel_w, ctrls
+
+
+class SkipRowsWidthTests(unittest.TestCase):
+    """The rows under the button are sized by their text, so the panel follows the type."""
+
+    # Widths measured on screen (720p px) in Kodi with the default skin fonts.
+    MEASURED_ENDING = {
+        "Commercial ending in: 01:07": 202,
+        "Prologue ending in: 01:07": 182,
+        "Recap ending in: 01:07": 159,
+    }
+    MEASURED_JUMP = {"Skip to Recap at 00:30": 219}
+
+    def test_no_rows_means_no_minimum(self):
+        self.assertEqual(skip_rows_min_content_w_720("", ""), 0)
+
+    def test_a_longer_ending_line_needs_more_room(self):
+        short = skip_rows_min_content_w_720("", "Intro ending in: 01:07")
+        long_ = skip_rows_min_content_w_720("", "Commercial ending in: 01:07")
+        self.assertLess(short, long_)
+
+    def test_the_widest_row_decides(self):
+        both = skip_rows_min_content_w_720("Skip to Recap at 00:30", "Intro ending in: 01:07")
+        self.assertEqual(both, skip_rows_min_content_w_720("Skip to Recap at 00:30", ""))
+
+    def test_rows_are_never_clipped_but_not_much_wider_than_their_text(self):
+        for text, measured in self.MEASURED_ENDING.items():
+            need = skip_rows_min_content_w_720("", text)
+            self.assertGreaterEqual(need, measured + 8, text)
+            self.assertLessEqual(need, measured + 40, text)
+        for text, measured in self.MEASURED_JUMP.items():
+            need = skip_rows_min_content_w_720(text, "")
+            self.assertGreaterEqual(need, measured + 8, text)
+            self.assertLessEqual(need, measured + 40, text)
+
+    def test_all_caps_rows_need_more_room(self):
+        self.assertGreater(
+            skip_rows_min_content_w_720("", "COMMERCIAL ENDING IN: 01:07"),
+            skip_rows_min_content_w_720("", "Commercial ending in: 01:07"),
+        )
+
+    def test_rows_never_exceed_the_cap(self):
+        self.assertEqual(skip_rows_min_content_w_720("x" * 300, "y" * 300), SKIP_BTN_MAX_TEXT_W_720)
+
+    def test_preview_width_follows_the_type_with_the_ending_line(self):
+        widths = {t: _preview_panel_w(t)[0] for t in ("intro", "commercial", "behind_the_scenes")}
+        self.assertLess(widths["intro"], widths["commercial"])
+        self.assertLess(widths["commercial"], widths["behind_the_scenes"])
+
+    def test_preview_width_follows_the_type_without_rows(self):
+        widths = {t: _preview_panel_w(t, hide_ending_text=True)[0] for t in ("intro", "commercial")}
+        self.assertLessEqual(widths["intro"], widths["commercial"])
+
+    def test_preview_shows_the_whole_ending_line(self):
+        for ptype, text in (
+            ("commercial", "Commercial ending in: 01:07"),
+            ("prologue", "Prologue ending in: 01:07"),
+            ("intro", "Intro ending in: 01:07"),
+        ):
+            panel_w, _ctrls = _preview_panel_w(ptype)
+            self.assertGreaterEqual(panel_w - 10, skip_rows_min_content_w_720("", text) - 1, ptype)
+
+    def test_the_next_jump_line_is_not_clipped_in_the_preview(self):
+        panel_w, _ctrls = _preview_panel_w("intro", skip_overlapping_segments=False)
+        self.assertGreaterEqual(panel_w - 10, skip_rows_min_content_w_720("Skip to Recap at 00:30", ""))
+        self.assertGreaterEqual(panel_w - 10, 219 + 5)
+
+    def test_the_card_and_the_button_use_the_panel_width(self):
+        panel_w, ctrls = _preview_panel_w("commercial")
+        self.assertEqual(ctrls[FULL_SKIP_PANEL_BACKDROP_ID].w, panel_w)
+        self.assertEqual(ctrls[FULL_SKIP_PANEL_GROUP_ID].w, panel_w)
+        self.assertEqual(ctrls[3015].w, panel_w - 10)
+
+    def test_the_live_dialog_sizes_the_same_way(self):
+        from skip_dialog_appearance import (
+            DictSettingsReader,
+            apply_full_skip_layout,
+            apply_jump_properties,
+            build_customize_mock_segment,
+            ending_text_for_segment,
+        )
+
+        class Win:
+            def __init__(self):
+                self.props = {}
+                self.ctrls = {}
+
+            def setProperty(self, k, v):
+                self.props[k] = v
+
+            def getProperty(self, k):
+                return self.props.get(k, "")
+
+            def getControl(self, cid):
+                return self.ctrls.setdefault(cid, _Ctrl())
+
+        widths = []
+        for kind in ("intro", "commercial"):
+            seg = build_customize_mock_segment(True, kind)
+            win = Win()
+            win.props["hide_ending_text"] = "false"
+            win.props["ending_text"] = ending_text_for_segment(None, seg)
+            apply_jump_properties(win, None, seg)
+            settings = DictSettingsReader(
+                {
+                    "skip_dialog_mode": "Full",
+                    "skip_button_format": FMT_TYPE,
+                    "hide_close_button": True,
+                    "hide_skip_icon": True,
+                }
+            )
+            apply_full_skip_layout(win, settings, 0, seg, lambda v: v, addon=None)
+            widths.append(win._skip_panel_w)
+        self.assertLess(widths[0], widths[1])
 
 
 if __name__ == "__main__":

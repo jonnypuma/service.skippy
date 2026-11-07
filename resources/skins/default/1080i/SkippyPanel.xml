@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Skippy panel: the small windows of the same look as the Customize screens (navy panel, tinted rows with a
+     rounded teal highlight, name at the left and value at the right, footer buttons). skippy_panel_ui.py fills it
+     and sizes it to what it shows: a list of rows (Statistics, Manage saved auto-skips, Manage autoplay by show,
+     the choices in them) or a message, an optional line of small text under the rows, and one to three buttons.
+     The numbers below are the full layout (a list with a subtitle); Python moves the panel, the list and the buttons.
+     Focus moves natively inside the list; Python sets the links between the list and the buttons. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+
+  <zorder>2</zorder>
+  <defaultcontrol>7050</defaultcontrol>
+
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture>white.png</texture>
+      <colordiffuse>99000000</colordiffuse>
+    </control>
+
+    <control type="group" id="7000">
+      <posx>540</posx>
+      <posy>62</posy>
+      <width>840</width>
+      <height>951</height>
+
+      <control type="image" id="7001">
+        <left>0</left>
+        <top>0</top>
+        <width>840</width>
+        <height>951</height>
+        <texture>white.png</texture>
+        <colordiffuse>F2101418</colordiffuse>
+      </control>
+
+      <control type="label" id="7002">
+        <left>30</left>
+        <top>21</top>
+        <width>780</width>
+        <height>51</height>
+        <label></label>
+        <font>font12</font>
+        <textcolor>FFB0D4E8</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+
+      <control type="label" id="7003">
+        <left>30</left>
+        <top>69</top>
+        <width>780</width>
+        <height>36</height>
+        <label></label>
+        <font>font10</font>
+        <textcolor>99FFFFFF</textcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+
+      <control type="textbox" id="7004">
+        <left>30</left>
+        <top>90</top>
+        <width>780</width>
+        <height>144</height>
+        <label></label>
+        <font>font12</font>
+        <textcolor>FFFFFFFF</textcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>left</align>
+        <autoscroll>false</autoscroll>
+      </control>
+
+      <control type="list" id="7050">
+        <left>30</left>
+        <top>114</top>
+        <width>780</width>
+        <height>726</height>
+        <orientation>vertical</orientation>
+        <pagecontrol>7060</pagecontrol>
+        <scrolltime>150</scrolltime>
+        <onup>7050</onup>
+        <ondown>7090</ondown>
+        <onleft>7050</onleft>
+        <onright>7050</onright>
+        <itemlayout width="780" height="66">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>780</width>
+            <height>60</height>
+            <texture border="0" colordiffuse="22FFFFFF">white.png</texture>
+            <visible>!String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="label">
+            <left>21</left>
+            <top>0</top>
+            <width>510</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="label">
+            <left>21</left>
+            <top>0</top>
+            <width>738</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="label">
+            <left>546</left>
+            <top>0</top>
+            <width>213</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>3</left>
+            <top>9</top>
+            <width>756</width>
+            <height>48</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFB0D4E8</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+        </itemlayout>
+        <focusedlayout width="780" height="66">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>780</width>
+            <height>60</height>
+            <texture border="0" colordiffuse="22FFFFFF">white.png</texture>
+            <visible>!String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>780</width>
+            <height>60</height>
+            <texture border="12,12,12,12">button_focus_flat_teal.png</texture>
+            <visible>!String.IsEqual(ListItem.Property(header),true) + Control.HasFocus(7050)</visible>
+          </control>
+          <control type="label">
+            <left>21</left>
+            <top>0</top>
+            <width>510</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <scroll>true</scroll>
+            <visible>!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="label">
+            <left>21</left>
+            <top>0</top>
+            <width>738</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <scroll>true</scroll>
+            <visible>String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+          <control type="label">
+            <left>546</left>
+            <top>0</top>
+            <width>213</width>
+            <height>60</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font12</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>right</align>
+            <aligny>center</aligny>
+          </control>
+          <control type="label">
+            <left>3</left>
+            <top>9</top>
+            <width>756</width>
+            <height>48</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>FFB0D4E8</textcolor>
+            <shadowcolor>FF000000</shadowcolor>
+            <shadowoffsetx>2</shadowoffsetx>
+            <shadowoffsety>2</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <visible>String.IsEqual(ListItem.Property(header),true)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <control type="scrollbar" id="7060">
+        <left>819</left>
+        <top>114</top>
+        <width>9</width>
+        <height>726</height>
+        <texturesliderbackground colordiffuse="22FFFFFF">white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="66FFFFFF">white.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="CCFFFFFF">white.png</texturesliderbarfocus>
+        <textureslidernib>-</textureslidernib>
+        <textureslidernibfocus>-</textureslidernibfocus>
+        <orientation>vertical</orientation>
+        <showonepage>false</showonepage>
+      </control>
+
+      <control type="label" id="7005">
+        <left>30</left>
+        <top>846</top>
+        <width>780</width>
+        <height>39</height>
+        <label></label>
+        <font>font10</font>
+        <textcolor>99FFFFFF</textcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+
+      <control type="button" id="7090">
+        <left>30</left>
+        <top>861</top>
+        <width>780</width>
+        <height>60</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>7050</onup>
+        <ondown>7090</ondown>
+        <onleft>7090</onleft>
+        <onright>7091</onright>
+      </control>
+      <control type="button" id="7091">
+        <left>30</left>
+        <top>861</top>
+        <width>780</width>
+        <height>60</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>7050</onup>
+        <ondown>7091</ondown>
+        <onleft>7090</onleft>
+        <onright>7092</onright>
+      </control>
+      <control type="button" id="7092">
+        <left>30</left>
+        <top>861</top>
+        <width>780</width>
+        <height>60</height>
+        <label></label>
+        <font>font12</font>
+        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
+        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
+        <textcolor>FFFFFFFF</textcolor>
+        <focusedcolor>FFFFFFFF</focusedcolor>
+        <shadowcolor>FF000000</shadowcolor>
+        <shadowoffsetx>2</shadowoffsetx>
+        <shadowoffsety>2</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>7050</onup>
+        <ondown>7092</ondown>
+        <onleft>7091</onleft>
+        <onright>7092</onright>
+      </control>
+    </control>
+  </controls>
+</window>

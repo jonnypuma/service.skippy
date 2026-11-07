@@ -136,11 +136,17 @@ def _identify_show(show: dict):
     return show_key_for_identity(identity), title
 
 
+def entry_row(addon, entry: dict):
+    """``(title, choice)`` for the panel row: the show at the left, its autoplay choice at the right."""
+    title = (entry.get("title") or entry.get("key") or "?").strip() or "?"
+    return title, mode_word(addon, entry.get("mode"))
+
+
 def _pick_mode(addon, heading, preselect=0) -> str | None:
-    from skippy_editor_modal_skin import show_editor_list_pick
+    from skippy_panel_ui import show_panel_list_pick
 
     options = [mode_word(addon, mode) for mode in MODES]
-    index = show_editor_list_pick(
+    index = show_panel_list_pick(
         heading,
         options,
         preselect=preselect,
@@ -156,8 +162,12 @@ def _add_show(addon) -> None:
     if not shows:
         _toast(addon, get_localized(addon, 47094, "No TV shows in your library yet."))
         return
-    index = xbmcgui.Dialog().select(
-        get_localized(addon, 47104, "Choose a show"), [show["title"] for show in shows]
+    from skippy_panel_ui import show_panel_list_pick
+
+    index = show_panel_list_pick(
+        get_localized(addon, 47104, "Choose a show"),
+        [show["title"] for show in shows],
+        cancel_label=get_localized(addon, 35019, "Cancel"),
     )
     if index < 0 or index >= len(shows):
         return
@@ -171,11 +181,11 @@ def _add_show(addon) -> None:
 
 
 def _edit_show(addon, entry: dict) -> None:
-    from skippy_editor_modal_skin import show_editor_list_pick
+    from skippy_panel_ui import show_panel_list_pick
 
     forget_label = get_localized(addon, 47093, "Forget this show")
     options = [mode_word(addon, mode) for mode in MODES] + [forget_label]
-    index = show_editor_list_pick(
+    index = show_panel_list_pick(
         entry["title"],
         options,
         preselect=MODES.index(entry["mode"]) if entry["mode"] in MODES else 0,
@@ -197,7 +207,7 @@ def show_manage_next_episode_shows_modal() -> None:
     List the shows with a saved autoplay choice; select one to change or forget it, or add
     a show from the library. Loops until the user closes it.
     """
-    from skippy_editor_modal_skin import show_editor_list_pick
+    from skippy_panel_ui import show_panel_list_pick
 
     addon = get_addon()
     heading = get_localized(addon, 47088, "Autoplay by show")
@@ -207,17 +217,14 @@ def show_manage_next_episode_shows_modal() -> None:
 
     while True:
         entries = list_entries()
-        options = [add_label] + [format_entry_label(addon, entry) for entry in entries]
+        options = [add_label] + [entry_row(addon, entry) for entry in entries]
         try:
-            index = show_editor_list_pick(
+            index = show_panel_list_pick(
                 heading, options, subtitle=subtitle, cancel_label=close_label
             )
         except Exception as exc:
-            log("⚠ Autoplay by show list failed (%s) — falling back to stock select" % exc)
-            try:
-                index = xbmcgui.Dialog().select(heading, options)
-            except Exception:
-                return
+            log("⚠ Autoplay by show list failed (%s)" % exc)
+            return
         if index < 0 or index >= len(options):
             return
         if index == 0:

@@ -501,6 +501,32 @@ class ToastTests(unittest.TestCase):
             )
         return answer, posted, dismiss
 
+    def test_the_toast_window_is_cleared_before_the_toast_is_posted(self):
+        order = []
+
+        class _Keys:
+            def __init__(self, *args):
+                self.result = True
+
+            def doModal(self):
+                pass
+
+            def close(self):
+                pass
+
+        player = types.SimpleNamespace(getTime=lambda: 1455.0)
+        dialog = MagicMock()
+        dialog.notification = lambda *a: order.append("post")
+        with patch.object(toast, "SkipToastKeys", _Keys), patch.object(
+            toast, "_toast_keepalive", lambda *a, **k: None
+        ), patch.object(toast, "_dismiss_toast"), patch.object(
+            toast, "ready_toast_window", lambda: order.append("ready")
+        ), patch.object(toast.xbmcgui, "Dialog", lambda: dialog):
+            toast.show_next_episode_toast(
+                self.addon(), player, {"title": "T", "season": 1, "episode": 2}, 1455.0, 1500.0
+            )
+        self.assertEqual(order, ["ready", "post"])
+
     def test_answers_are_passed_through(self):
         for result in (True, False, None):
             answer, _posted, dismiss = self.run_toast(result)
@@ -741,6 +767,51 @@ class HandlerTests(unittest.TestCase):
         self.found_state()
         self.assertEqual(self.tick(1370.0), step.IDLE_TICK)
         self.assertTrue(self.tick(1380.0).switched)
+
+    # --- the prompt belongs to the end of its own episode ----------------------
+
+    def _start_of_the_next_episode(self):
+        """The first tick on a new video; its state starts fresh and its lookup is done."""
+        self.assertEqual(self.tick(1.0, video="e2.mkv"), step.IDLE_TICK)
+        state = self.monitor.next_episode_state
+        self.assertEqual(state.video, "e2.mkv")
+        self.assertFalse(state.started or state.dismissed or state.failed)
+        state.lookup = LOOKUP_FOUND
+        state.next_item = LIBRARY_NEXT
+        return state
+
+    def test_the_start_of_the_next_episode_is_never_held(self):
+        self.found_state(video="e1.mkv")
+        self.answers = [True]
+        self.assertTrue(self.tick(1460.0, video="e1.mkv").switched)
+        self._start_of_the_next_episode()
+        for head in (0.0, 1.0, 5.0, 29.0, 60.0, 600.0, 1400.0):
+            self.assertEqual(self.tick(head, video="e2.mkv"), step.IDLE_TICK, head)
+        self.assertEqual(len(self.toast_calls), 1)
+
+    def test_a_dismissed_prompt_does_not_hold_back_the_next_episode(self):
+        self.found_state(video="e1.mkv")
+        self.answers = [False]
+        self.assertTrue(self.tick(1460.0, video="e1.mkv").hide_skip_dialogs)
+        self._start_of_the_next_episode()
+        for head in (0.0, 5.0, 90.0):
+            self.assertFalse(self.tick(head, video="e2.mkv").hide_skip_dialogs, head)
+
+    def test_a_hand_off_nobody_asked_for_does_not_hold_back_the_next_episode(self):
+        self.settings["next_episode_autoplay"] = True
+        self.found_state(video="e1.mkv")
+        self.assertTrue(self.tick(1456.0, video="e1.mkv").switched)
+        self._start_of_the_next_episode()
+        for head in (0.0, 5.0, 90.0):
+            self.assertFalse(self.tick(head, video="e2.mkv").hide_skip_dialogs, head)
+
+    def test_credits_of_the_episode_before_do_not_open_the_window_at_the_start(self):
+        self.settings["next_episode_start_at_credits"] = True
+        self.monitor.current_segments = ["segments of the episode before"]
+        self.found_state(video="e2.mkv")
+        with patch.object(step, "credits_start_seconds", lambda segs, total: 1380.0):
+            for head in (0.0, 10.0, 90.0, 1000.0):
+                self.assertEqual(self.tick(head, video="e2.mkv"), step.IDLE_TICK, head)
 
     def test_a_refused_hand_off_is_not_retried(self):
         self.settings["next_episode_autoplay"] = True

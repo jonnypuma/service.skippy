@@ -28,6 +28,59 @@ def format_saved_time(addon, seconds) -> str:
     return get_localized(addon, 44024, "%ds", secs)
 
 
+def _name_value_row(line, value):
+    """``PanelRow`` with the name at the left and the value at the right when the translated
+    line ends with its value (``Time saved: 2m 05s``); otherwise the whole line is the name."""
+    from skippy_panel_ui import PanelRow
+
+    value = str(value)
+    if value and line.endswith(value):
+        name = line[: -len(value)].rstrip().rstrip(":\uff1a").rstrip()
+        if name:
+            return PanelRow(name, value)
+    return PanelRow(line)
+
+
+def build_statistics_rows(addon, stats=None):
+    """``(rows, footnote)`` for the statistics panel: name at the left, value at the right."""
+    from skippy_panel_ui import PanelRow
+
+    data = stats if stats is not None else load_statistics()
+    skips = data.get("skips") or {}
+    online = data.get("online") or {}
+    by_type = skips.get("by_type") or {}
+
+    saved = format_saved_time(addon, skips.get("seconds_saved"))
+    total = int(skips.get("total") or 0)
+    downloaded = int(online.get("segments_downloaded") or 0)
+    uploaded = int(online.get("segments_uploaded") or 0)
+    heading = get_localized(addon, 44026, "Skips by segment type:")
+    rows = [
+        _name_value_row(get_localized(addon, 44021, "Time saved: %s", saved), saved),
+        _name_value_row(get_localized(addon, 44025, "Segments skipped: %d", total), total),
+        PanelRow(heading.rstrip().rstrip(":\uff1a").rstrip(), header=True),
+    ]
+    if by_type:
+        for label, count in sorted(by_type.items(), key=lambda kv: (-kv[1], kv[0])):
+            rows.append(PanelRow(format_segment_label_for_ui(label), str(int(count))))
+    else:
+        rows.append(PanelRow(get_localized(addon, 44027, "No skips recorded yet")))
+    rows.append(PanelRow("", header=True))
+    rows.append(
+        _name_value_row(
+            get_localized(addon, 44028, "Online segments downloaded: %d", downloaded),
+            downloaded,
+        )
+    )
+    rows.append(
+        _name_value_row(
+            get_localized(addon, 44029, "Online segments uploaded: %d", uploaded), uploaded
+        )
+    )
+    footnote = get_localized(addon, 44030, "Counting since %s", data.get("since_utc") or "?")
+    return rows, footnote
+
+
 def build_statistics_text(addon, stats=None) -> str:
     """Body text for the statistics modal."""
     data = stats if stats is not None else load_statistics()
@@ -76,26 +129,28 @@ def build_statistics_text(addon, stats=None) -> str:
 
 def show_statistics_modal() -> None:
     """Open the statistics modal (read-only; reset has its own settings button)."""
-    from skippy_editor_modal_skin import show_editor_ok
+    from skippy_panel_ui import show_panel_rows
 
     addon = get_addon()
     heading = get_localized(addon, 44020, "Statistics")
-    body = build_statistics_text(addon)
     try:
-        show_editor_ok(heading, body, get_localized(addon, 40001, "Close"))
+        rows, footnote = build_statistics_rows(addon)
+        show_panel_rows(
+            heading, rows, get_localized(addon, 40001, "Close"), footnote=footnote
+        )
     except Exception as exc:
         log("⚠ Statistics modal failed (%s) — falling back to stock dialog" % exc)
         import xbmcgui
 
         try:
-            xbmcgui.Dialog().ok(heading, body)
+            xbmcgui.Dialog().ok(heading, build_statistics_text(addon))
         except Exception:
             pass
 
 
 def confirm_and_reset_statistics() -> None:
     """Ask once, then zero every counter."""
-    from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
+    from skippy_panel_ui import show_panel_yesno
 
     addon = get_addon()
     heading = get_localized(addon, 44020, "Statistics")
@@ -103,9 +158,7 @@ def confirm_and_reset_statistics() -> None:
     reset_label = get_localized(addon, 44031, "Reset")
     cancel_label = get_localized(addon, 35019, "Cancel")
     try:
-        confirmed = sidecar_overwrite_yesno_show(
-            heading, message, reset_label, cancel_label
-        )
+        confirmed = show_panel_yesno(heading, message, reset_label, cancel_label)
     except Exception as exc:
         log("⚠ Statistics reset prompt failed (%s) — using stock yesno" % exc)
         import xbmcgui

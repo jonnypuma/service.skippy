@@ -25,16 +25,25 @@ def format_title_entry_label(entry: dict) -> str:
     return "%s — %s" % (title, ", ".join(labels))
 
 
+def title_entry_row(entry: dict):
+    """``(title, labels)`` for the panel row: the title at the left, its saved types at the right."""
+    title = (entry.get("title") or entry.get("key") or "?").strip() or "?"
+    labels = ", ".join(
+        format_segment_label_for_ui(label) for label in (entry.get("auto_labels") or [])
+    )
+    return title, labels
+
+
 def show_manage_title_autoskip_modal() -> None:
     """
     List titles with saved auto-skip rules; selecting one offers to delete that entry.
 
     Loops until the user cancels or the list is empty.
     """
-    from skippy_editor_modal_skin import (
-        show_editor_list_pick,
-        show_editor_ok,
-        sidecar_overwrite_yesno_show,
+    from skippy_panel_ui import (
+        show_panel_list_pick,
+        show_panel_message,
+        show_panel_yesno,
     )
 
     addon = get_addon()
@@ -52,27 +61,24 @@ def show_manage_title_autoskip_modal() -> None:
         entries = list_title_entries(auto_only=True)
         if not entries:
             try:
-                show_editor_ok(heading, empty_msg)
+                show_panel_message(
+                    heading, empty_msg, get_localized(addon, 40001, "Close")
+                )
             except Exception as exc:
                 log("⚠ Title autoskip empty dialog failed (%s)" % exc)
             return
 
-        options = [format_title_entry_label(entry) for entry in entries]
+        options = [title_entry_row(entry) for entry in entries]
         try:
-            index = show_editor_list_pick(
+            index = show_panel_list_pick(
                 heading,
                 options,
                 subtitle=subtitle,
                 cancel_label=get_localized(addon, 40001, "Close"),
             )
         except Exception as exc:
-            log("⚠ Title autoskip list failed (%s) — falling back to stock select" % exc)
-            import xbmcgui
-
-            try:
-                index = xbmcgui.Dialog().select(heading, options)
-            except Exception:
-                return
+            log("⚠ Title autoskip list failed (%s)" % exc)
+            return
 
         if index < 0 or index >= len(entries):
             return
@@ -88,22 +94,12 @@ def show_manage_title_autoskip_modal() -> None:
             ),
         )
         try:
-            confirmed = sidecar_overwrite_yesno_show(
+            confirmed = show_panel_yesno(
                 heading, confirm_msg, delete_label, cancel_label
             )
         except Exception as exc:
-            log("⚠ Title autoskip delete confirm failed (%s) — using stock yesno" % exc)
-            import xbmcgui
-
-            try:
-                confirmed = xbmcgui.Dialog().yesno(
-                    heading,
-                    confirm_msg,
-                    nolabel=cancel_label,
-                    yeslabel=delete_label,
-                )
-            except Exception:
-                return
+            log("⚠ Title autoskip delete confirm failed (%s)" % exc)
+            return
 
         if not confirmed:
             continue
