@@ -12,8 +12,7 @@ from addon_skin_resolution import (
     scale_skin_coord,
 )
 from next_episode_appearance import (
-    BASE_SCREEN_H,
-    BASE_SCREEN_W,
+    BAR_H,
     BOOL_KEYS,
     CHOICE_KEYS,
     FOCUS_LABELS,
@@ -31,7 +30,12 @@ from next_episode_appearance import (
     draft_setting_payload,
     is_native_style,
     load_popup_draft,
+    popup_layout,
+    popup_origin,
+    seconds_left,
+    window_fraction_left,
 )
+from next_episode_dialog import mock_episode
 from next_episode_look import (
     CAPS_ON,
     FOLLOW_LOOK,
@@ -45,7 +49,19 @@ from next_episode_look import (
     OVERRIDE_KEYS,
     override_label,
 )
-from settings_utils import get_addon, get_localized
+from next_episode_toast import build_toast_texts
+from next_episode_view import (
+    MOCK_ID_OFFSET,
+    countdown_text,
+    fill_width,
+    focus_is_close,
+    look_properties,
+    popup_ids,
+    popup_placements,
+    popup_texts,
+    skip_text_color,
+)
+from settings_utils import get_addon, get_localized, log
 
 XML_NAME = "NextEpisodeCustomize.xml"
 
@@ -89,7 +105,20 @@ ROW_LABEL_IDS = {
     KEY_CARD_OPACITY: (47110, "Card opacity"),
 }
 
+_PANEL_X = 16
+_PANEL_Y = 41
 _PANEL_W = 560
+# The mockup: a stage the popup is drawn on, at the right of the panel (720p units).
+ID_STAGE = 6100
+MOCK_IDS = popup_ids(MOCK_ID_OFFSET)
+_STAGE_X = 592
+_STAGE_Y = 41
+_STAGE_W = 672
+_STAGE_H = 504
+_MOCK_MARGIN = 20
+# The example the mockup shows: 31 seconds left of a 45 second window.
+MOCK_WINDOW_S = 45.0
+MOCK_HEAD_S = 14.0
 _ROW_TOP = 60
 _ROW_H = 40
 _ROW_STEP = 44
@@ -198,6 +227,20 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         except Exception:
             pass
 
+    def _show(self, cid, visible):
+        ctrl = self._ctrl(cid)
+        if ctrl is not None:
+            try:
+                ctrl.setVisible(bool(visible))
+            except Exception:
+                pass
+
+    def _set_prop(self, name, value):
+        try:
+            self.setProperty(name, value)
+        except Exception:
+            pass
+
     def onInit(self):
         asked = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
@@ -250,13 +293,89 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         for n, cid in enumerate(FOOTER_IDS):
             self._place(cid, 20 + 180 * n, footer_top, 160, _FOOTER_H)
         self._place(ID_BACKDROP, 0, 0, _PANEL_W, panel_h)
-        self._place(
-            ID_PANEL,
-            (BASE_SCREEN_W - _PANEL_W) // 2,
-            (BASE_SCREEN_H - panel_h) // 2,
-            _PANEL_W,
-            panel_h,
+        self._place(ID_PANEL, _PANEL_X, _PANEL_Y, _PANEL_W, panel_h)
+        self._refresh_mock()
+
+    def _refresh_mock(self):
+        """Redraw the mockup after every change; a failure leaves the rows working."""
+        try:
+            self._draw_mock()
+        except Exception as exc:
+            log("Next episode customize: drawing the mockup failed: %s" % exc)
+
+    def _draw_mock(self):
+        """The popup (or the toast) as the draft would show it, on the stage."""
+        addon, draft = self.addon, self._draft
+        episode = mock_episode(addon)
+        self._set_prop("next_ep_mock_backdrop", episode.get("thumb") or "")
+        native = is_native_style(draft)
+        self._set_prop("next_ep_mock_native", "true" if native else "false")
+        if native:
+            heading, body = build_toast_texts(addon, episode)
+            self._set_prop("next_ep_mock_toast_heading", heading)
+            self._set_prop("next_ep_mock_toast_body", body)
+            icon = (addon.getAddonInfo("icon") if addon else "") or ""
+            self._set_prop("next_ep_mock_icon", icon)
+            self._set_prop("next_ep_mock_ready", "true")
+            return
+        ids = MOCK_IDS
+        show_thumb = bool(draft.get(KEY_THUMBNAIL)) and bool(episode.get("thumb"))
+        layout = popup_layout(
+            thumbnail=show_thumb,
+            countdown=bool(draft.get(KEY_COUNTDOWN)),
+            progress=bool(draft.get(KEY_PROGRESS)),
         )
+        look, _tiled, props = look_properties(
+            draft, addon, self._sc(BAR_H), skip_text_color(addon)
+        )
+        for name, value in props.items():
+            self._set_prop(name, value)
+        self._set_prop("next_ep_mock_focus", "close" if focus_is_close(draft) else "play")
+        texts = popup_texts(addon, look.all_caps, episode)
+        self._set_prop("next_ep_heading", texts["heading"])
+        self._set_prop("next_ep_label", texts["label"])
+        self._set_prop("next_ep_thumb", episode.get("thumb") or "")
+        self._set_prop("next_ep_has_thumb", "true" if show_thumb else "false")
+        has_countdown = layout.countdown_y is not None
+        has_bar = layout.bar_y is not None
+        self._set_prop("next_ep_has_bar", "true" if has_bar else "false")
+        if has_countdown:
+            self._set_prop(
+                "next_ep_countdown",
+                countdown_text(addon, look.all_caps, seconds_left(MOCK_HEAD_S, MOCK_WINDOW_S)),
+            )
+        x, y = popup_origin(
+            draft.get(KEY_POSITION),
+            layout.panel_w,
+            layout.panel_h,
+            screen_w=_STAGE_W,
+            screen_h=_STAGE_H,
+            margin_x=_MOCK_MARGIN,
+            margin_y=_MOCK_MARGIN,
+        )
+        self._place(ids.panel, x, y, layout.panel_w, layout.panel_h)
+        for cid, px, py, pw, ph in popup_placements(layout, ids):
+            self._place(cid, px, py, pw, ph)
+        self._show(ids.countdown, has_countdown)
+        self._show(ids.bar_bg, has_bar)
+        for cid, text in ((ids.play, texts["play"]), (ids.close, texts["close"])):
+            ctrl = self._ctrl(cid)
+            if ctrl is not None:
+                try:
+                    ctrl.setLabel(text)
+                except Exception:
+                    pass
+        if has_bar:
+            fraction = window_fraction_left(MOCK_HEAD_S, 0.0, MOCK_WINDOW_S)
+            bar_w, bar_h = self._sc(layout.bar_w), self._sc(BAR_H)
+            for cid, tiled in ((ids.bar_fill, True), (ids.bar_fill_stretch, False)):
+                ctrl = self._ctrl(cid)
+                if ctrl is not None:
+                    try:
+                        ctrl.setWidth(fill_width(tiled, fraction, bar_w, bar_h))
+                    except Exception:
+                        pass
+        self._set_prop("next_ep_mock_ready", "true")
 
     def _focus_id(self):
         try:

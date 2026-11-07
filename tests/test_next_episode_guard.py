@@ -12,6 +12,7 @@ install_kodi_stubs()
 
 import next_episode_credits as credits
 import next_episode_dialog as dlg_mod
+import next_episode_view as view_mod
 import next_episode_guard as guard
 import next_episode_prompt as prompt
 import next_episode_toast as toast
@@ -327,6 +328,8 @@ class StillWatchingTextTests(unittest.TestCase):
 
         dialog._ctrl = ctrl
         with patch.object(dlg_mod, "get_localized", lambda a, i, d, *r: "%d" % i), patch.object(
+            view_mod, "get_localized", lambda a, i, d, *r: "%d" % i
+        ), patch.object(
             dlg_mod, "reconcile_window_xml_skin_resolution", lambda *a, **k: "720p"
         ), patch.object(dlg_mod, "_text_color", lambda a: "FFFFFFFF"), patch.object(
             dlg_mod.threading, "Thread"

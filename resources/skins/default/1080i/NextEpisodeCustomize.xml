@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Customize next episode popup. next_episode_customize_ui.py shows only the rows that apply,
      moves the buttons up and squeezes the rows together when there are more than fit; the numbers
-     below are the full layout (Custom style, all thirteen rows).
+     below are the full layout (Custom style, all thirteen rows). The panel is at the left, the mockup at the right.
      Focus moves only in Python (no onup/ondown/onleft/onright here): Kodi would move it a second time. -->
 <window>
   <coordinates>
@@ -26,7 +26,7 @@
     </control>
 
     <control type="group" id="6000">
-      <posx>540</posx>
+      <posx>24</posx>
       <posy>62</posy>
       <width>840</width>
       <height>956</height>
@@ -339,6 +339,302 @@
         <shadowoffsety>2</shadowoffsety>
         <align>center</align>
         <aligny>center</aligny>
+      </control>
+    </control>
+    <!-- The mockup: the popup itself (same controls and properties as NextEpisodeDialog.xml, ids
+         2000 higher), drawn on a stage and redrawn by next_episode_customize_ui.py after every change. -->
+    <control type="group" id="6100">
+      <posx>888</posx>
+      <posy>62</posy>
+      <width>1008</width>
+      <height>756</height>
+
+      <!-- white.png is partly see-through; this one is solid, so the page behind never shows. -->
+      <control type="image" id="6101">
+        <left>0</left>
+        <top>0</top>
+        <width>1008</width>
+        <height>756</height>
+        <texture>progress_background.png</texture>
+        <aspectratio>stretch</aspectratio>
+      </control>
+
+      <control type="image" id="6102">
+        <left>0</left>
+        <top>0</top>
+        <width>1008</width>
+        <height>756</height>
+        <texture>$INFO[Window.Property(next_ep_mock_backdrop)]</texture>
+        <aspectratio>scale</aspectratio>
+        <colordiffuse>66FFFFFF</colordiffuse>
+      </control>
+
+      <control type="group" id="7000">
+        <posx>198</posx>
+        <posy>453</posy>
+        <width>780</width>
+        <height>273</height>
+        <visible>String.IsEqual(Window.Property(next_ep_mock_ready),true) + !String.IsEqual(Window.Property(next_ep_mock_native),true)</visible>
+        <animation type="Visible">
+          <effect type="fade" start="0" end="100" time="300" />
+        </animation>
+
+        <control type="image" id="7001">
+          <left>0</left>
+          <top>0</top>
+          <width>780</width>
+          <height>273</height>
+          <texture>white.png</texture>
+          <colordiffuse>$INFO[Window.Property(next_ep_card_color)]</colordiffuse>
+        </control>
+
+        <control type="image" id="7002">
+          <left>15</left>
+          <top>15</top>
+          <width>180</width>
+          <height>102</height>
+          <texture>$INFO[Window.Property(next_ep_thumb)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>String.IsEqual(Window.Property(next_ep_has_thumb),true)</visible>
+        </control>
+
+        <control type="label" id="7003">
+          <left>210</left>
+          <top>15</top>
+          <width>555</width>
+          <height>36</height>
+          <label>$INFO[Window.Property(next_ep_heading)]</label>
+          <font>font10</font>
+          <textcolor>$INFO[Window.Property(next_ep_heading_color)]</textcolor>
+          <shadowcolor>FF000000</shadowcolor>
+          <shadowoffsetx>2</shadowoffsetx>
+          <shadowoffsety>2</shadowoffsety>
+          <align>left</align>
+        </control>
+
+        <control type="label" id="7004">
+          <left>210</left>
+          <top>57</top>
+          <width>555</width>
+          <height>78</height>
+          <label>$INFO[Window.Property(next_ep_label)]</label>
+          <font>font12</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <shadowcolor>FF000000</shadowcolor>
+          <shadowoffsetx>2</shadowoffsetx>
+          <shadowoffsety>2</shadowoffsety>
+          <wrapmultiline>true</wrapmultiline>
+          <align>left</align>
+        </control>
+
+        <control type="label" id="7005">
+          <left>15</left>
+          <top>141</top>
+          <width>750</width>
+          <height>30</height>
+          <label>$INFO[Window.Property(next_ep_countdown)]</label>
+          <font>font10</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <shadowcolor>FF000000</shadowcolor>
+          <shadowoffsetx>2</shadowoffsetx>
+          <shadowoffsety>2</shadowoffsety>
+          <align>left</align>
+        </control>
+
+        <control type="image" id="7006">
+          <left>15</left>
+          <top>177</top>
+          <width>750</width>
+          <height>15</height>
+          <texture>progress_background.png</texture>
+          <aspectratio>stretch</aspectratio>
+        </control>
+
+        <control type="image" id="7007">
+          <left>15</left>
+          <top>177</top>
+          <width>750</width>
+          <height>15</height>
+          <texture>$INFO[Window.Property(next_ep_bar_tiled_texture)]</texture>
+          <aspectratio align="left" aligny="center">scale</aspectratio>
+          <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
+        </control>
+
+        <control type="image" id="7012">
+          <left>15</left>
+          <top>177</top>
+          <width>750</width>
+          <height>15</height>
+          <texture>$INFO[Window.Property(next_ep_bar_texture)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(next_ep_has_bar),true) + !String.IsEqual(Window.Property(next_ep_bar_tiled),true)</visible>
+        </control>
+
+        <control type="image" id="7010">
+          <left>15</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture>white.png</texture>
+          <colordiffuse>22FFFFFF</colordiffuse>
+        </control>
+
+        <control type="image" id="7011">
+          <left>398</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture>white.png</texture>
+          <colordiffuse>22FFFFFF</colordiffuse>
+        </control>
+
+        <control type="image" id="7013">
+          <left>15</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
+        </control>
+
+        <control type="image" id="7014">
+          <left>15</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
+        </control>
+
+        <control type="image" id="7015">
+          <left>15</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),play) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
+        </control>
+
+        <control type="image" id="7016">
+          <left>398</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture border="12,12,12,12">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),all)</visible>
+        </control>
+
+        <control type="image" id="7017">
+          <left>398</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),sides)</visible>
+        </control>
+
+        <control type="image" id="7018">
+          <left>398</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <texture>$INFO[Window.Property(next_ep_focus_texture)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(next_ep_mock_focus),close) + String.IsEqual(Window.Property(next_ep_focus_border),none)</visible>
+        </control>
+
+        <control type="button" id="7008">
+          <left>15</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <label>Play now</label>
+          <font>font16</font>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <enable>false</enable>
+          <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+          <shadowcolor>FF000000</shadowcolor>
+          <shadowoffsetx>3</shadowoffsetx>
+          <shadowoffsety>3</shadowoffsety>
+          <aligny>center</aligny>
+          <textoffsety>-5</textoffsety>
+          <align>center</align>
+        </control>
+
+        <control type="button" id="7009">
+          <left>398</left>
+          <top>207</top>
+          <width>368</width>
+          <height>51</height>
+          <label>Close</label>
+          <font>font16</font>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <enable>false</enable>
+          <disabledcolor>$INFO[Window.Property(skip_dialog_text_color)]</disabledcolor>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+          <shadowcolor>FF000000</shadowcolor>
+          <shadowoffsetx>3</shadowoffsetx>
+          <shadowoffsety>3</shadowoffsety>
+          <aligny>center</aligny>
+          <textoffsety>-5</textoffsety>
+          <align>center</align>
+        </control>
+      </control>
+
+      <!-- What the Native toast style shows: a plain Kodi notification at the top right. -->
+      <control type="group" id="7100">
+        <posx>468</posx>
+        <posy>30</posy>
+        <width>510</width>
+        <height>120</height>
+        <visible>String.IsEqual(Window.Property(next_ep_mock_ready),true) + String.IsEqual(Window.Property(next_ep_mock_native),true)</visible>
+
+        <control type="image" id="7101">
+          <left>0</left>
+          <top>0</top>
+          <width>510</width>
+          <height>120</height>
+          <texture>white.png</texture>
+          <colordiffuse>F0202428</colordiffuse>
+        </control>
+
+        <control type="image" id="7102">
+          <left>15</left>
+          <top>15</top>
+          <width>72</width>
+          <height>72</height>
+          <texture>$INFO[Window.Property(next_ep_mock_icon)]</texture>
+          <aspectratio>keep</aspectratio>
+        </control>
+
+        <control type="label" id="7103">
+          <left>102</left>
+          <top>12</top>
+          <width>393</width>
+          <height>33</height>
+          <label>$INFO[Window.Property(next_ep_mock_toast_heading)]</label>
+          <font>font10</font>
+          <textcolor>FFB0D4E8</textcolor>
+          <align>left</align>
+        </control>
+
+        <control type="label" id="7104">
+          <left>102</left>
+          <top>48</top>
+          <width>393</width>
+          <height>60</height>
+          <label>$INFO[Window.Property(next_ep_mock_toast_body)]</label>
+          <font>font10</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <wrapmultiline>true</wrapmultiline>
+          <align>left</align>
+        </control>
       </control>
     </control>
   </controls>

@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.5.1] - 2026-11-07
+
+### Added
+
+- **A live mockup in Customize next episode popup.** The screen now shows the popup itself on a stage at the right of the rows, and redraws it as soon as you change a row, the way **Customize Skip Dialog** does: the look, text and heading colour, all caps, button highlight, progress bar style, card opacity, corner, picture, time left, progress bar and the button that starts highlighted all show at once, without opening **Preview**. With **Popup style** set to **Native toast** the stage shows a toast instead. The popup and the mockup are drawn from the same code, so what the stage shows is what you get. **Preview** is still there and opens the real popup with a countdown that runs.
+
+### Changed
+
+- The rows of **Customize next episode popup** moved to the left edge of the screen to make room for the stage.
+
 ## [7.5.0] - 2026-11-06
 
 ### Added

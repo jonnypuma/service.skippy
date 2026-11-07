@@ -18,53 +18,47 @@ from addon_skin_resolution import (
 )
 from next_episode_appearance import (
     BAR_H,
-    BUTTON_GAP,
-    BUTTON_H,
-    COUNTDOWN_H,
     DEFAULT_DRAFT,
-    EPISODE_H,
     FOCUS_CLOSE,
-    HEADING_H,
     KEY_COUNTDOWN,
     KEY_FOCUS,
     KEY_POSITION,
     KEY_PROGRESS,
     KEY_THUMBNAIL,
-    PAD,
-    THUMB_H,
-    THUMB_W,
-    bar_fill_width,
     popup_layout,
     popup_origin,
     seconds_left,
     window_fraction_left,
 )
-from next_episode_lookup import episode_label
-from next_episode_look import resolve_popup_look
 from next_episode_state import END_GUARD_S
-from settings_utils import addon_get_setting_text, get_localized, log
-from skip_dialog_appearance import (
-    apply_skip_dialog_caps,
-    countdown_mmss,
-    progress_tiled_variant,
-    resolve_font_color_argb,
+from next_episode_view import (
+    countdown_text,
+    fill_width,
+    look_properties,
+    popup_ids,
+    popup_placements,
+    popup_texts,
+    skip_text_color,
 )
+from settings_utils import get_localized, log
+from skip_dialog_appearance import apply_skip_dialog_caps
 
-ID_PANEL = 5000
-ID_BACKDROP = 5001
-ID_THUMB = 5002
-ID_HEADING = 5003
-ID_EPISODE = 5004
-ID_COUNTDOWN = 5005
-ID_BAR_BG = 5006
-ID_BAR_FILL = 5007
-ID_PLAY = 5008
-ID_CLOSE = 5009
-ID_PLATE_PLAY = 5010
-ID_PLATE_CLOSE = 5011
-ID_BAR_FILL_STRETCH = 5012  # the fill for bar textures that have no tiled version
+IDS = popup_ids()
+ID_PANEL = IDS.panel
+ID_BACKDROP = IDS.backdrop
+ID_THUMB = IDS.thumb
+ID_HEADING = IDS.heading
+ID_EPISODE = IDS.episode
+ID_COUNTDOWN = IDS.countdown
+ID_BAR_BG = IDS.bar_bg
+ID_BAR_FILL = IDS.bar_fill
+ID_PLAY = IDS.play
+ID_CLOSE = IDS.close
+ID_PLATE_PLAY = IDS.plate_play
+ID_PLATE_CLOSE = IDS.plate_close
+ID_BAR_FILL_STRETCH = IDS.bar_fill_stretch  # the fill for bar textures that have no tiled version
 # Three cuts of the focus texture per button; the skin shows the one that fits the texture.
-FOCUS_IMAGES = {ID_PLAY: (5013, 5014, 5015), ID_CLOSE: (5016, 5017, 5018)}
+FOCUS_IMAGES = {ID_PLAY: IDS.focus_play, ID_CLOSE: IDS.focus_close}
 
 XML_NAME = "NextEpisodeDialog.xml"
 _TICK_S = 0.25
@@ -73,8 +67,7 @@ _PREVIEW_LOOP_S = 45.0
 
 
 def _text_color(addon) -> str:
-    raw = addon_get_setting_text(addon, "skip_dialog_font_color", "FFFFFFFF") or "FFFFFFFF"
-    return resolve_font_color_argb(raw.strip(), fallback="FFFFFFFF")
+    return skip_text_color(addon)
 
 
 class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
@@ -157,36 +150,22 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         )
         self._layout = layout
         self._apply_look()
+        texts = popup_texts(
+            addon, self._caps_on(), self.next_episode, still_watching=self.still_watching
+        )
         try:
-            self.setProperty(
-                "next_ep_heading",
-                self._caps(
-                    get_localized(addon, 47070, "Still watching?")
-                    if self.still_watching
-                    else get_localized(addon, 47020, "Play next episode?")
-                ),
-            )
-            self.setProperty("next_ep_label", self._caps(episode_label(self.next_episode)))
+            self.setProperty("next_ep_heading", texts["heading"])
+            self.setProperty("next_ep_label", texts["label"])
             self.setProperty("next_ep_thumb", self.next_episode.get("thumb") or "")
             self.setProperty("next_ep_has_thumb", "true" if show_thumb else "false")
         except Exception as exc:
             log("Next episode popup: setting texts failed: %s" % exc)
         self._apply_layout(layout)
-        if self.still_watching:
-            labels = (
-                (ID_PLAY, get_localized(addon, 47071, "Continue")),
-                (ID_CLOSE, get_localized(addon, 47072, "Stop")),
-            )
-        else:
-            labels = (
-                (ID_PLAY, get_localized(addon, 47050, "Play now")),
-                (ID_CLOSE, get_localized(addon, 40001, "Close")),
-            )
-        for cid, text in labels:
+        for cid, text in ((ID_PLAY, texts["play"]), (ID_CLOSE, texts["close"])):
             ctrl = self._ctrl(cid)
             if ctrl is not None:
                 try:
-                    ctrl.setLabel(self._caps(text))
+                    ctrl.setLabel(text)
                 except Exception:
                     pass
         self._update_countdown(self._head())
@@ -203,32 +182,22 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             pass
         threading.Thread(target=self._watch, daemon=True).start()
 
-    def _caps(self, text):
+    def _caps_on(self) -> bool:
         look = getattr(self, "_look", None)
-        return apply_skip_dialog_caps(text, bool(look and look.all_caps))
+        return bool(look and look.all_caps)
+
+    def _caps(self, text):
+        return apply_skip_dialog_caps(text, self._caps_on())
 
     def _apply_look(self):
         """Colours, focus texture and bar texture of the chosen look, as skin properties."""
-        look = resolve_popup_look(self.draft, self.addon)
-        self._look = look
-        tiled = progress_tiled_variant(look.bar_texture, self._sc(BAR_H))
-        self._bar_tiled = bool(tiled)
-        text = (
-            resolve_font_color_argb(look.text_color, fallback="FFFFFFFF")
-            if look.text_color
-            else _text_color(self.addon)
+        look, tiled, props = look_properties(
+            self.draft, self.addon, self._sc(BAR_H), _text_color(self.addon)
         )
+        self._look = look
+        self._bar_tiled = tiled
         try:
-            for name, value in (
-                ("skip_dialog_text_color", text),
-                ("next_ep_card_color", look.card_color),
-                ("next_ep_heading_color", look.heading_color),
-                ("next_ep_focus_texture", look.focus_texture),
-                ("next_ep_focus_border", look.focus_border),
-                ("next_ep_bar_tiled", "true" if tiled else "false"),
-                ("next_ep_bar_tiled_texture", tiled or ""),
-                ("next_ep_bar_texture", look.bar_texture),
-            ):
+            for name, value in props.items():
                 self.setProperty(name, value)
         except Exception as exc:
             log("Next episode popup: applying the look failed: %s" % exc)
@@ -236,15 +205,9 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
     def _apply_layout(self, layout):
         x, y = popup_origin(self.draft.get(KEY_POSITION), layout.panel_w, layout.panel_h)
         self._place(ID_PANEL, x, y, layout.panel_w, layout.panel_h)
-        self._place(ID_BACKDROP, 0, 0, layout.panel_w, layout.panel_h)
-        if layout.thumbnail:
-            self._place(ID_THUMB, PAD, PAD, THUMB_W, THUMB_H)
-        self._place(ID_HEADING, layout.text_x, layout.heading_y, layout.text_w, HEADING_H)
-        self._place(ID_EPISODE, layout.text_x, layout.episode_y, layout.text_w, EPISODE_H)
-        has_countdown = layout.countdown_y is not None
-        self._show(ID_COUNTDOWN, has_countdown)
-        if has_countdown:
-            self._place(ID_COUNTDOWN, PAD, layout.countdown_y, layout.bar_w, COUNTDOWN_H)
+        for cid, px, py, pw, ph in popup_placements(layout, IDS):
+            self._place(cid, px, py, pw, ph)
+        self._show(ID_COUNTDOWN, layout.countdown_y is not None)
         has_bar = layout.bar_y is not None
         self._show(ID_BAR_BG, has_bar)
         try:
@@ -252,21 +215,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         except Exception:
             pass
         if has_bar:
-            self._place(ID_BAR_BG, PAD, layout.bar_y, layout.bar_w, BAR_H)
-            self._place(ID_BAR_FILL, PAD, layout.bar_y, layout.bar_w, BAR_H)
-            self._place(ID_BAR_FILL_STRETCH, PAD, layout.bar_y, layout.bar_w, BAR_H)
             self._last_fill_w = None
-        second_x = PAD + layout.button_w + BUTTON_GAP
-        for cid, x_pos in (
-            (ID_PLATE_PLAY, PAD),
-            (ID_PLAY, PAD),
-            (ID_PLATE_CLOSE, second_x),
-            (ID_CLOSE, second_x),
-        ):
-            self._place(cid, x_pos, layout.buttons_y, layout.button_w, BUTTON_H)
-        for cid, x_pos in ((ID_PLAY, PAD), (ID_CLOSE, second_x)):
-            for image_id in FOCUS_IMAGES[cid]:
-                self._place(image_id, x_pos, layout.buttons_y, layout.button_w, BUTTON_H)
 
     def _head(self) -> float:
         if self.preview:
@@ -284,26 +233,17 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             if layout.countdown_y is not None:
                 self.setProperty(
                     "next_ep_countdown",
-                    self._caps(
-                        get_localized(
-                            self.addon,
-                            47051,
-                            "Episode ends in %s",
-                            countdown_mmss(seconds_left(head, self.total)),
-                        )
-                    ),
+                    countdown_text(self.addon, self._caps_on(), seconds_left(head, self.total)),
                 )
             if layout.bar_y is not None:
                 tiled = getattr(self, "_bar_tiled", True)
                 fill = self._ctrl(ID_BAR_FILL if tiled else ID_BAR_FILL_STRETCH)
                 if fill is not None:
                     fraction = window_fraction_left(head, self.window_start, self.total)
-                    bar_w = self._sc(layout.bar_w)
-                    if tiled:
-                        # Crop a tiled image from the left: segments disappear, none is squeezed.
-                        width = bar_fill_width(fraction, bar_w, self._sc(BAR_H))
-                    else:
-                        width = int(round(fraction * bar_w))
+                    # A tiled image is cropped from the left: segments disappear, none is squeezed.
+                    width = fill_width(
+                        tiled, fraction, self._sc(layout.bar_w), self._sc(BAR_H)
+                    )
                     if width != getattr(self, "_last_fill_w", None):
                         self._last_fill_w = width
                         fill.setWidth(width)

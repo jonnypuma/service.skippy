@@ -522,7 +522,8 @@ class CustomizeHelperTests(unittest.TestCase):
             self.assertEqual(c[cid]["top"], footer)
         self.assertEqual(c[cust.ID_BACKDROP]["height"], height)
         self.assertEqual(c[cust.ID_BACKDROP]["width"], cust._PANEL_W)
-        self.assertEqual(c[cust.ID_PANEL]["posy"], (app.BASE_SCREEN_H - height) // 2)
+        self.assertEqual((c[cust.ID_PANEL]["posx"], c[cust.ID_PANEL]["posy"]), (cust._PANEL_X, cust._PANEL_Y))
+        self.assertLessEqual(cust._PANEL_Y + height, app.BASE_SCREEN_H)
 
     def test_focus_order_follows_the_visible_rows(self):
         ids = cust.nav_ids(app.DEFAULT_DRAFT)
