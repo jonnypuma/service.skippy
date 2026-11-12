@@ -58,7 +58,10 @@ service.skippy/
 ├── segment_relations.py            # Segment ids, nesting / overlap, jump-hint text
 ├── time_format.py / edl_format.py  # Shared time conversion and EDL line parsing
 ├── per_show_overrides.py / per_show_overrides_ui.py  # Per-title auto-skip store + manage modal
-├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters and the statistics modal
+├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters (also per show or film) and the statistics modal
+├── binge_mode.py / playback_identity.py  # Binge runs; which show or film is playing
+├── service_diagnostics.py / skippy_diagnostics_ui.py  # The Current video window
+├── skin_properties.py              # Home window properties for skins (Skippy.Segment.*, Skippy.NextEpisode.*)
 ├── skippy_profile_store.py         # JSON helpers for addon_data files
 ├── settings_utils.py / settings_backup.py / skippy_profile_backup.py  # Settings + profile-data backup (history, title autoskip, stats)
 ├── keymap_utils.py
@@ -158,12 +161,15 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - **Skip dialogue font colour**: Named presets stored as **ARGB hex**; applied in Python on dialog open (see **Skip dialog modes**). **May be overridden by the active Kodi skin or theme** — see **Supported Kodi versions and platforms** above.
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). The Full / Compact Full **next jump** line uses the same destination. Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
-- **Skin-cooperative seek OSD hide** (opt-in setting **Hide OSD display during skip**): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
+- **Skin-cooperative seek OSD hide** (setting **Hide OSD display during skip**, on by default): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
+- **Skin integration properties**: the segment playing, what Skippy will do with it, the time left, the next segment and the next episode as Home window properties, plus `RunScript(service.skippy,skip_current)` for a skin's own skip button or a key. See **Skin integration properties** below.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
 - **Per-title auto-skip** (opt-in, default off): After you confirm an Ask skip, Skippy can remember to auto-skip that segment type for that show or movie, keyed on its **TMDB id** so the choice follows the title across other versions of the same file. See **Per-title auto-skip** below.
-- **Statistics**: Time saved, segments skipped in total and per type, and online segments downloaded / uploaded. See **Statistics** below.
+- **Binge mode** (opt-in, default off): the intro plays on the first episode of a sitting and is skipped automatically from the second on; optionally the recap too. See **Binge mode** below.
+- **Statistics**: Time saved, segments skipped in total, per type and per show or film, and online segments downloaded / uploaded. See **Statistics** below.
+- **Current video** window: where the playing video's segments came from, what each one will do and why, the binge run and the last error. See **Current video** below.
 - **Next episode** (opt-in, default off): Near the end of a TV episode, a toast offers the next episode, or Skippy starts it for you at a time you choose. See **Next episode** below.
 
 ---
@@ -201,7 +207,7 @@ With **Local first** and online lookup enabled, TheIntroDB / IntroDB are always 
 
 ## Skin: hide seek OSD during Skippy skips
 
-Skippy cannot suppress Kodi’s seek bar by itself (seeking always sets `Player.HasPerformedSeek`). Instead, when **Hide OSD display during skip** is enabled (**Playback and Skip Dialog → Global options**, default **off**), Skippy sets Home window property **`Skippy.Skipping`** to `true` before each auto-skip or confirmed ask-skip **seek**, and clears it after seek + caching settle (at least **~5 seconds**, and while `Player.HasPerformedSeek(3)` / caching is active) or when playback stops / a new title starts. The property is **not** set while the ask dialog is on screen — only around the seek itself.
+Skippy cannot suppress Kodi’s seek bar by itself (seeking always sets `Player.HasPerformedSeek`). Instead, when **Hide OSD display during skip** is enabled (**Playback and Skip Dialog → Global options**, default **on**; stock skins ignore the property, so it changes nothing until the skin reads it), Skippy sets Home window property **`Skippy.Skipping`** to `true` before each auto-skip or confirmed ask-skip **seek**, and clears it after seek + caching settle (at least **~5 seconds**, and while `Player.HasPerformedSeek(3)` / caching is active) or when playback stops / a new title starts. The property is **not** set while the ask dialog is on screen — only around the seek itself.
 
 **This only hides the seek OSD if your skin (or a DialogSeekBar patching add-on) checks the property.** Stock skins ignore it — no behavior change until you add a per-skin edit. Turn the setting **off** if you use a patched skin but still want the normal seek OSD after Skippy skips.
 
@@ -212,6 +218,57 @@ Add this as an **extra** `<visible>` on the seek bar window/control in `DialogSe
 ```
 
 Manual seeks and non-Skippy seeks are unaffected (property is empty). Skin patches / add-ons that already rewrite `DialogSeekBar.xml` can insert the same line.
+
+---
+
+## Skin integration properties
+
+While a video plays, Skippy publishes what it knows on the **Home** window, so a skin can show it in its own style or draw its own skip button. Every property is empty when it does not apply (test it with `String.IsEmpty`), values are written only when they change (the remaining time once a second), and everything is cleared when playback stops. Skins that read none of them are unaffected.
+
+| Property | Example | Meaning |
+|---|---|---|
+| `Skippy.HasSegments` | `true` | The playing video has segments |
+| `Skippy.Segment.Type` | `Intro` | Segment the playhead is in (display name; the innermost when segments nest) |
+| `Skippy.Segment.TypeId` | `intro` | Its id in the segment-types catalog, for conditions |
+| `Skippy.Segment.Mode` | `ask` | What Skippy does with it: `auto`, `ask` or `never` (after per-title choices and binge mode) |
+| `Skippy.Segment.Start` / `.End` | `01:00` / `02:00` | Its times (`HH:MM:SS` past an hour) |
+| `Skippy.Segment.Remaining` | `0:42` | Time left in it |
+| `Skippy.Segment.RemainingSeconds` | `42` | The same in whole seconds |
+| `Skippy.Segment.Progress` | `31` | Percent of it played |
+| `Skippy.Segment.Next.Type` / `.Next.Start` | `Credits` / `41:40` | The next segment after the playhead |
+| `Skippy.NextEpisode.Label` | `S02E05 · The Return` | Next episode, once the next episode feature has found it |
+| `Skippy.NextEpisode.Thumb` | `image://…` | Its picture, when Kodi has one |
+| `Skippy.NextEpisode.Due` | `true` | The playhead is where the next episode is offered |
+
+"Intro, 0:42 left" in the video OSD:
+
+```xml
+<control type="label">
+  <visible>!String.IsEmpty(Window(Home).Property(Skippy.Segment.Type))</visible>
+  <label>$INFO[Window(Home).Property(Skippy.Segment.Type)], $INFO[Window(Home).Property(Skippy.Segment.Remaining)] left</label>
+</control>
+```
+
+"Up next" on an end screen:
+
+```xml
+<label>Up next: $INFO[Window(Home).Property(Skippy.NextEpisode.Label)]</label>
+<visible>String.IsEqual(Window(Home).Property(Skippy.NextEpisode.Due),true)</visible>
+```
+
+**The skin's own skip button.** `RunScript(service.skippy,skip_current)` skips the segment the playhead is in, the same way an auto-skip does (jump offset, statistics, toast). The service acts on it at its next check, within a second. It also works from a keymap without any skin changes. A skin that draws its own button sets `Skippy.SkinSkipButton` on the Home window (for example in `Home.xml`'s `<onload>`); Skippy then opens no dialog of its own for **Ask** segments, while **Always** segments are still skipped automatically:
+
+```xml
+<onload>SetProperty(Skippy.SkinSkipButton,true,home)</onload>
+
+<control type="button" id="9100">
+  <label>Skip $INFO[Window(Home).Property(Skippy.Segment.Type)]</label>
+  <onclick>RunScript(service.skippy,skip_current)</onclick>
+  <visible>String.IsEqual(Window(Home).Property(Skippy.Segment.Mode),ask)</visible>
+</control>
+```
+
+Clear the property (`ClearProperty(Skippy.SkinSkipButton,home)`) to bring Skippy's dialog back.
 
 ---
 
@@ -422,17 +479,45 @@ Near the end of a TV episode Skippy can offer to play the next one, or start it 
 
 ---
 
+## Binge mode
+
+**Segment Settings → Binge mode** (default **off**). Episodes of one show played one after the other make a *run*:
+
+- **First episode of a run** — the intro plays, with no skip dialog, whatever the **Intro** segment type is set to.
+- **Second episode on** — the intro is skipped automatically, without asking.
+- **Also skip the recap** (default **on**, shown when binge mode is on) — from the second episode, the recap is skipped automatically too: you just watched the episode before. The first episode keeps its recap.
+
+How the next episode starts does not matter: **Play now** on the next episode prompt, the autoplay countdown, a playlist, Kodi's own *play next video* or starting it by hand all continue the run. A run ends when another show or a film plays, or when nothing of the show has been on screen for longer than **End the run after a pause of** (Advanced, default **10 minutes**), so the next sitting starts with the intro again. Pausing inside an episode does not end the run.
+
+The show is recognised from Kodi's library (`tvshowid`), else from the show title Kodi reports, else from the folder that holds the episode (a `Season 01` / `Specials` folder is skipped over). Intro and recap are the segment types with those ids in the segment-types catalog, so their aliases (Opening, Previously on, …) count too. Binge mode only changes intros and recaps of TV episodes; per-title auto-skip rules still apply to everything else.
+
+---
+
 ## Statistics
 
 The **Statistics** category opens a modal (the same navy panel with tinted rows as the Customize screens, the name of each figure at the left and its value at the right) with:
 
 - **Time saved** — sum of the playback time each skip actually jumped over (playhead after seek vs before, when Kodi reports a landing time).
 - **Segments skipped** — total, plus a breakdown per segment type (Intro, Recap, Credits, …).
+- **Time saved by show or film** — the same time saved, added up per show (episodes) or film, most time saved first; the 25 biggest are listed and the rest are summed in one **And N more** line. Skips from before this list existed are in the totals only.
 - **Online segments downloaded / uploaded** — segments received from TheIntroDB / IntroDB.app lookups and accepted by an upload.
 
 Counters live in `addon_data/service.skippy/statistics.json` and start from the date shown under the rows of the modal. The modal itself is read-only; **Reset statistics** (same category, Standard level) zeroes every counter after a confirmation prompt.
 
 **Backup & Restore** (Advanced) has two JSON backups. **Back up / Restore settings** writes every persisted add-on option (API keys included) and the segment-types catalog (`skippy-settings-backup-*.json`). Restore overwrites matching options and merges the catalog. A settings file from before 7.0 still restores: its old skip lists, keywords, and EDL map are applied to the catalog. **Back up / Restore profile data** writes upload fingerprints, per-title auto-skip rules, per-show autoplay choices, saved next episode popup looks, statistics, and the segment-types catalog (`skippy-profile-data-backup-*.json`). Restore merges (fingerprints union; title rules and autoplay choices merge per key; saved looks are added when the name and the look are not there yet; statistics keep the larger counter; segment types merge by id, and a built-in missing from the file keeps the local row). Legacy upload-history-only backups still restore. Settings actions call `RunScript(service.skippy,backup_settings|restore_settings)` and `backup_profile_data` / `restore_profile_data`; the old `backup_upload_history` / `restore_upload_history` names still work.
+
+---
+
+## Current video
+
+**Debug Logging → Current video** (also `RunScript(service.skippy,show_diagnostics)` for a keymap) opens a read-only panel about the video playing now:
+
+- **File**, **Show** or **Film**, and the **Binge run** (which episode of the run this is, or Off).
+- **Segments from** — where the segments came from: a sidecar file, online, embedded chapters or none found, with the files or services behind them (`chapters.xml`, `.edl`, TheIntroDB.org, IntroDB.app).
+- Every segment with its times and what it will do: **Skip automatically**, **Ask** or **Never skip**, with the reason when it is not the segment type's own setting (**binge mode**, **saved for this title**, or **skipping is off for this kind of video**).
+- **Last error** — the last error the playback loop hit since Kodi started, with the time. An error there means Skippy stopped part of its work for that video; the full traceback is in `kodi.log`.
+
+The service mirrors what it knows to the Home window, so the panel works from the settings while the video plays. Opened with nothing playing, it says so and still shows the last error.
 
 ---
 
@@ -470,6 +555,9 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | ignore_internal_edl_actions | Ignore EDL action types not in the segment-types catalog (default: true) |
 | skip_overlapping_segments | Ignore overlapping segments to help avoid redundant or conflicting skips |
 | use_embedded_chapters_fallback | When no sidecar/online segments, use embedded Matroska chapters |
+| binge_mode_enabled | **Binge mode**: intro plays on the first episode of a run, skipped automatically from the second (default off) |
+| binge_mode_skip_recap | Binge mode: skip the recap too from the second episode (default on) |
+| binge_mode_gap_minutes | Advanced, binge mode: a run ends after this many minutes with nothing of the show playing (1–240, default 10) |
 | open_segment_editor_on_overlap | Open Segment Editor once per file when overlaps/nesting remain (requires editor enabled; **Ignore overlapping segments** off) |
 | tv_prefetch_next_episode | **Online first** only: prefetch online segments for the library next TV episode |
 | sync_local_to_online | Expert upload: **Ask** to upload local segment types missing online (requires upload keys) |
@@ -495,7 +583,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | settings_action_customize_skip_dialog | Button: live preview of skip-dialog look (Save commits, Cancel discards) |
 | skip_dialog_position | Corner placement for **Full** mode skip dialog |
 | minimal_skip_dialog_position | Corner placement for **Minimal** mode chip |
-| minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (patched into skin XML before open) |
+| minimal_button_style | **Minimal plate style** — background/focus texture for the Minimal chip (set on the dialog when it opens) |
 | skip_dialog_font_color | **Skip dialogue font colour** — named preset stored as ARGB hex; applied in Python on dialog open (**may be overridden by active skin/theme** — see README) |
 | skip_dialog_all_caps | Full and Minimal: render skip-dialog labels in ALL CAPS. Duration units stay lowercase (`1m30s`). |
 | button_focus_style | Choose visual style for focused buttons in skip dialog (Default, Aqua variants, Blue, Blue/Gold 3D, Green/Pink/Light Pink 3D, Cyan/Silver/Orange/Violet/Graphite/Ice 3D) |
@@ -558,11 +646,12 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 
 | Category: | Statistics |
 | ----------------------------- | ---------------------------------------------------------------- |
-| settings_action_show_statistics | Button: time saved, skips total and per segment type, online segments downloaded / uploaded |
+| settings_action_show_statistics | Button: time saved, skips total, per segment type and per show or film, online segments downloaded / uploaded |
 | settings_action_reset_statistics | Button: set every statistics counter back to zero (asks for confirmation) |
 
 | Category: | Debug Logging |
 | ----------------------------- | ---------------------------------------------------------------- |
+| settings_action_show_diagnostics | Button: **Current video** — segment source, what each segment will do and why, binge run, last error |
 | enable_verbose_logging | Enables extra log entries for debugging |
 | skippy_log_detail_level | When verbose is on: Errors only / Normal / All detail (default Normal) |
 

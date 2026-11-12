@@ -2,76 +2,53 @@
 """Write chapters.xml / EDL and detect unchanged sidecar content."""
 from __future__ import annotations
 
-import os
 import xml.etree.ElementTree as ET
-from collections import defaultdict
 
-import xbmc
-import xbmcgui
 import xbmcvfs
 
 from online_segment_upload import (
-    local_label_to_online_bucket,
     remote_payload_label_to_online_bucket,
 )
 from playback_segment_cache import publish_parse_cache
 from segment_editor_parser import (
     dedupe_overlapping_same_label_segments,
     safe_file_write,
-    save_edl,
     seconds_to_hms,
 )
-from segment_item import SegmentItem
 from service_online_policy import (
     _SAVE_CHAPTERS_MERGE,
     _SAVE_CHAPTERS_OVERWRITE_ASK,
     _SAVE_CHAPTERS_OVERWRITE_SILENT,
-    _SAVE_CHAPTERS_SKIP_IF_EXISTS,
     _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
     _SAVE_CHAPTERS_UPDATE_ASK,
     _SAVE_CHAPTERS_UPDATE_SILENT,
-    _SAVE_ONLINE_FORMAT_BOTH,
-    _SAVE_ONLINE_FORMAT_EDL,
-    _SAVE_ONLINE_FORMAT_XML,
-    _normalize_online_sidecar_policy,
-    _normalize_save_online_format,
-    policy_allows_neighbor_snap,
 )
 from service_segment_sources import (
-    _chapter_window_overlap,
     _parse_chapter_xml_string,
     parse_edl,
     safe_file_read,
 )
 from service_sidecar_paths import (
-    _default_new_sidecar_chapter_xml_path,
     _edl_paths_to_try,
     _find_existing_sidecar_chapter_xml_path,
-    playback_path_supports_sidecar_chapters_xml,
 )
 from settings_utils import (
     addon_get_bool,
-    addon_get_setting_text,
     edl_write_action,
     get_addon,
     get_edl_type_map,
     log,
-    log_service_detail,
     normalize_label,
 )
-from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
 from service_online_sidecar_merge import (
     _finalize_sidecar_after_update_policy,
+    _log_sidecar_detail,
     _merge_sidecar_segments,
 )
 
 # Sidecar / xbmcvfs file ops: catch expected failures without masking MemoryError etc.
 _VFS_IO_EXC = (OSError, IOError, RuntimeError, ValueError, TypeError, AttributeError)
-
-
-def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
 
 
 def _segments_signature_for_save_compare(segments, time_decimals=3):
@@ -142,7 +119,7 @@ def _edl_file_triples_match_segments(existing_path, segments):
     raw = safe_file_read(existing_path)
     _ig = get_addon()
     ignore_internal = (
-        addon_get_bool(_ig, "ignore_internal_edl_actions", False) if _ig else False
+        addon_get_bool(_ig, "ignore_internal_edl_actions", True) if _ig else True
     )
     disk = _edl_action_triples_from_raw(
         raw or "", ignore_internal, get_edl_type_map()

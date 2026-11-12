@@ -2,71 +2,42 @@
 """Merge / update / neighbor-snap policy for online sidecar saves."""
 from __future__ import annotations
 
-import os
-import xml.etree.ElementTree as ET
 from collections import defaultdict
 
-import xbmc
-import xbmcgui
-import xbmcvfs
 
 from online_segment_upload import (
     local_label_to_online_bucket,
     remote_payload_label_to_online_bucket,
 )
-from playback_segment_cache import publish_parse_cache
 from segment_editor_parser import (
     dedupe_overlapping_same_label_segments,
-    safe_file_write,
-    save_edl,
     seconds_to_hms,
 )
 from segment_item import SegmentItem
 from service_online_policy import (
-    _SAVE_CHAPTERS_MERGE,
-    _SAVE_CHAPTERS_OVERWRITE_ASK,
-    _SAVE_CHAPTERS_OVERWRITE_SILENT,
-    _SAVE_CHAPTERS_SKIP_IF_EXISTS,
     _SAVE_CHAPTERS_UPDATE_ALL_ASK,
     _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
-    _SAVE_CHAPTERS_UPDATE_ASK,
-    _SAVE_CHAPTERS_UPDATE_SILENT,
-    _SAVE_ONLINE_FORMAT_BOTH,
-    _SAVE_ONLINE_FORMAT_EDL,
-    _SAVE_ONLINE_FORMAT_XML,
-    _normalize_online_sidecar_policy,
-    _normalize_save_online_format,
     policy_allows_neighbor_snap,
 )
 from service_segment_sources import (
     _chapter_window_overlap,
-    _parse_chapter_xml_string,
-    parse_edl,
-    safe_file_read,
-)
-from service_sidecar_paths import (
-    _default_new_sidecar_chapter_xml_path,
-    _edl_paths_to_try,
-    _find_existing_sidecar_chapter_xml_path,
-    playback_path_supports_sidecar_chapters_xml,
 )
 from settings_utils import (
     addon_get_bool,
-    addon_get_setting_text,
     get_addon,
-    log,
+    get_localized,
     log_service_detail,
     normalize_label,
 )
 
 
+def _t(string_id, default, *args):
+    """Text for the online save prompts in the user's language (English when unavailable)."""
+    return get_localized(get_addon(), string_id, default, *args)
+
+
 def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
-
-
-from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
-
-def _log_sidecar_detail(msg):
+    """Sidecar details for the log (only with all-detail logging); shared by the sidecar modules."""
     log_service_detail(msg, tag="sidecar")
 
 
@@ -167,12 +138,12 @@ def _summarize_online_by_source(online_items, max_per_source=8):
         by_src[_source_display_name(getattr(o, "source", None))].append(o)
     lines = []
     if not online_items:
-        lines.append("No online segment windows in this response.")
+        lines.append(_t(35046, "No online segment windows in this response."))
         return lines
-    lines.append("[Online lookup]")
+    lines.append(_t(35047, "[Online lookup]"))
     for src in sorted(by_src.keys(), key=str.lower):
         segs = sorted(by_src[src], key=lambda s: float(s.start_seconds))
-        lines.append("  %s — %d window(s):" % (src, len(segs)))
+        lines.append("  " + _t(35048, "%s — %d window(s):", src, len(segs)))
         for s in segs[:max_per_source]:
             lines.append(
                 "    • %s  %s – %s"
@@ -183,9 +154,7 @@ def _summarize_online_by_source(online_items, max_per_source=8):
                 )
             )
         if len(segs) > max_per_source:
-            lines.append(
-                "    … +%d more" % (len(segs) - max_per_source),
-            )
+            lines.append("    " + _t(35033, "… +%d more", len(segs) - max_per_source))
     return lines
 
 
@@ -264,10 +233,6 @@ def _sidecar_update_plan(existing_items, online_items):
         used.add(best_i)
     result.sort(key=lambda s: float(s.start_seconds))
     return changes, result, unmatched
-
-
-def _update_sidecar_segments(existing_items, online_items):
-    return _sidecar_update_plan(existing_items, online_items)[1]
 
 
 _SNAP_TRIM_EPS = 1e-6

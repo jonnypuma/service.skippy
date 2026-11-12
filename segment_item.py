@@ -1,7 +1,7 @@
 import xbmc
 import unicodedata
 
-from settings_utils import get_addon, log_segment, log_segment_detail
+from settings_utils import get_addon, log_segment, normalize_label
 
 
 def log(msg):
@@ -16,11 +16,6 @@ def log_always(msg):
     addon = get_addon()
     aid = addon.getAddonInfo("id") if addon else "service.skippy"
     xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
-
-def normalize_label(text):
-    # Normalize and lowercase labels for consistent matching
-    return unicodedata.normalize("NFKC", text or "").strip().lower()
-
 
 # Polling / floating-point slack at boundaries so we do not miss a segment when
 # getTime() falls just outside [start, end]. Strict match is preferred; lenient
@@ -109,102 +104,3 @@ class SegmentItem:
         next_jump = f", next_jump={self.next_segment_start}" if self.next_segment_start else ""
         next_info = f", next_info={self.next_segment_info}" if self.next_segment_info else ""
         return f"{self.segment_type_label} [{self.start_seconds}-{self.end_seconds}] ({self.source}{action}{next_jump}{next_info})"
-
-# 🔍 Dialog trigger logic — stateless, no caching
-def should_show_skip_dialog(current_time, segments, last_shown_times, debounce_seconds=5):
-    for segment in segments:
-        if segment_is_active_lenient(segment, current_time):
-            segment_id = f"{segment.start_seconds}-{segment.end_seconds}"
-            last_shown = last_shown_times.get(segment_id, 0)
-            time_since_last = abs(current_time - last_shown)
-
-            if time_since_last > debounce_seconds:
-                last_shown_times[segment_id] = current_time
-                log_segment(f"📌 Triggering skip dialog for segment: {segment}")
-                return segment
-            else:
-                log_segment_detail(
-                    f"⏳ Debounce active for segment {segment_id} — last shown {time_since_last:.2f}s ago"
-                )
-    log_segment_detail("🔕 No eligible segment found for skip dialog at current time")
-    return None
-
-# Optional: Unit test block (can be moved to a separate test file)
-if __name__ == "__main__":
-    import unittest
-
-    log_always("🧪 Running SegmentItem unit tests")
-
-    class TestSegmentItem(unittest.TestCase):
-        def test_valid_segment(self):
-            seg = SegmentItem(10, 20, "intro", action_type="skip")
-            self.assertEqual(seg.get_duration(), 10)
-            self.assertTrue(seg.is_active(15))
-            self.assertFalse(seg.is_active(25))
-            self.assertEqual(seg.action_type, "skip")
-            self.assertEqual(seg.timeout, 5.0)  # default value
-            self.assertTrue(seg.allow_input)    # default value
-
-        def test_invalid_segment(self):
-            with self.assertRaises(ValueError):
-                SegmentItem(30, 10, "bad")
-
-        def test_to_dict(self):
-            seg = SegmentItem(5, 15, "credits", "xml", "mute")
-            expected = {
-                "start": 5,
-                "end": 15,
-                "label": "credits",
-                "source": "xml",
-                "action_type": "mute",
-                "next_segment_start": None,
-                "next_segment_info": None,
-            }
-            self.assertEqual(seg.to_dict(), expected)
-
-        def test_custom_timeout_and_input(self):
-            seg = SegmentItem(0, 10, "ad", action_type="skip", timeout=8.0, allow_input=False)
-            self.assertEqual(seg.timeout, 8.0)
-            self.assertFalse(seg.allow_input)
-            
-        def test_with_next_segment_start(self):
-            seg = SegmentItem(10, 30, "intro", next_segment_start=20, next_segment_info="nested segment 'recap'")
-            self.assertEqual(seg.next_segment_start, 20)
-            self.assertEqual(seg.next_segment_info, "nested segment 'recap'")
-            expected = {
-                "start": 10,
-                "end": 30,
-                "label": "intro",
-                "source": "edl",
-                "action_type": None,
-                "next_segment_start": 20,
-                "next_segment_info": "nested segment 'recap'"
-            }
-            self.assertEqual(seg.to_dict(), expected)
-
-        def test_segments_active_for_playback_strict(self):
-            a = SegmentItem(0, 10, "a")
-            b = SegmentItem(10, 20, "b")
-            segs = [a, b]
-            self.assertEqual(segments_active_for_playback(segs, 5), [a])
-            self.assertEqual(len(segments_active_for_playback(segs, 10)), 2)
-
-        def test_segments_active_for_playback_lenient_gap(self):
-            a = SegmentItem(0, 10, "a")
-            b = SegmentItem(15, 25, "b")
-            segs = [a, b]
-            # Gap (10, 15): strict none at 10.08; only 'a' overlaps via lenient tail
-            act = segments_active_for_playback(segs, 10.08, tol=0.25)
-            self.assertEqual(len(act), 1)
-            self.assertEqual(act[0].segment_type_label, "a")
-
-        def test_segments_active_for_playback_lenient_before_next(self):
-            a = SegmentItem(0, 10, "a")
-            b = SegmentItem(15, 25, "b")
-            segs = [a, b]
-            # Approaching 'b' before strict start
-            act = segments_active_for_playback(segs, 14.88, tol=0.25)
-            self.assertEqual(len(act), 1)
-            self.assertEqual(act[0].segment_type_label, "b")
-
-    unittest.main()

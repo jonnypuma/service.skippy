@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 
-import xbmc
 import xbmcgui
 import xbmcvfs
 
@@ -34,7 +33,6 @@ from skip_dialog_appearance import (
     FULL_SKIP_BUTTON_IDS,
     FULL_SKIP_PANEL_GROUP_ID,
     MINIMAL_MOCK_H_720,
-    MINIMAL_MOCK_W_720,
     MINIMAL_PANEL_GROUP_ID,
     MINIMAL_PLATE_IMAGE_ID,
     MINIMAL_SKIP_BUTTON_ID,

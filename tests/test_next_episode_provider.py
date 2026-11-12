@@ -682,6 +682,21 @@ class WiringTests(unittest.TestCase):
             monitor.onNotification("x", "Other.something_else", "{}")
         seen.assert_not_called()
 
+    def test_only_the_method_name_opens_the_segment_editor(self):
+        install_kodi_stubs()
+        with patch("service_main_loop.run_service_main_loop", lambda _ctx: None):
+            service = import_fresh("service")
+        monitor = service.PlayerMonitor.__new__(service.PlayerMonitor)
+        import segment_editor_session
+
+        with patch.object(segment_editor_session, "open_segment_editor") as opened, patch.object(
+            service, "log_always"
+        ):
+            monitor.onNotification("plugin.x", "Other.status", '{"text": "open_segment_editor"}')
+            opened.assert_not_called()
+            monitor.onNotification("service.skippy", "Other.open_segment_editor", "{}")
+            opened.assert_called_once_with()
+
     def test_the_main_loop_gives_ignored_playback_to_the_add_on_step(self):
         monitor = _Monitor([])
         monitor._aborts = [False, True]

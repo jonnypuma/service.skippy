@@ -30,7 +30,7 @@ import math
 import os
 import random
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 MEDIA = os.path.join(ROOT, "resources", "skins", "default", "media")
@@ -401,7 +401,6 @@ def make_plates():
 
 def make_plates2():
     w, h = PLATE_W, PLATE_H
-    mask = _pill_mask(w, h)
     for key, rgb in (("mint", (167, 243, 208)), ("peach", (254, 215, 170)), ("lavender", (221, 214, 254))):
         fill = _vgrad(w, h, _lerp(rgb, (255, 255, 255), 0.3) + (255,), rgb + (255,))
         _save_plate(

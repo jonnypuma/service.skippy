@@ -30,6 +30,203 @@ msgstr "Καταγραφή Αποσφαλμάτωσης"
 # Segment Settings
 
 
+# Settings: spinner option labels (positions, save policies, formats, modes)
+msgctxt "#30100"
+msgid "EDL only"
+msgstr "Μόνο EDL"
+
+msgctxt "#30101"
+msgid "Chapters XML only"
+msgstr "Μόνο XML κεφαλαίων"
+
+msgctxt "#30102"
+msgid "Skip if exists"
+msgstr "Παράλειψη αν υπάρχει"
+
+msgctxt "#30103"
+msgid "Overwrite (no prompt)"
+msgstr "Αντικατάσταση (χωρίς ερώτηση)"
+
+msgctxt "#30104"
+msgid "Overwrite (ask first)"
+msgstr "Αντικατάσταση (ερώτηση πρώτα)"
+
+msgctxt "#30105"
+msgid "Merge with existing"
+msgstr "Συγχώνευση με το υπάρχον"
+
+msgctxt "#30106"
+msgid "Update (no prompt)"
+msgstr "Ενημέρωση (χωρίς ερώτηση)"
+
+msgctxt "#30107"
+msgid "Update (ask first)"
+msgstr "Ενημέρωση (ερώτηση πρώτα)"
+
+msgctxt "#30108"
+msgid "Update All (no prompt)"
+msgstr "Ενημέρωση όλων (χωρίς ερώτηση)"
+
+msgctxt "#30109"
+msgid "Update All (ask first)"
+msgstr "Ενημέρωση όλων (ερώτηση πρώτα)"
+
+msgctxt "#30110"
+msgid "Native"
+msgstr "Εγγενές"
+
+msgctxt "#30111"
+msgid "Skip + Type"
+msgstr "Παράλειψη + τύπος"
+
+msgctxt "#30112"
+msgid "Skip + Type + Duration"
+msgstr "Παράλειψη + τύπος + διάρκεια"
+
+msgctxt "#30113"
+msgid "Short (1m30s)"
+msgstr "Σύντομη (1m30s)"
+
+msgctxt "#30114"
+msgid "Clock (01:30)"
+msgstr "Ρολόι (01:30)"
+
+msgctxt "#30115"
+msgid "Dismiss"
+msgstr "Απόρριψη"
+
+msgctxt "#30116"
+msgid "Full"
+msgstr "Πλήρης"
+
+msgctxt "#30117"
+msgid "Minimal"
+msgstr "Ελάχιστη"
+
+msgctxt "#30118"
+msgid "Bottom Right"
+msgstr "Κάτω δεξιά"
+
+msgctxt "#30119"
+msgid "Top Right"
+msgstr "Πάνω δεξιά"
+
+msgctxt "#30120"
+msgid "Top Left"
+msgstr "Πάνω αριστερά"
+
+msgctxt "#30121"
+msgid "Bottom Left"
+msgstr "Κάτω αριστερά"
+
+msgctxt "#30122"
+msgid "Total segment time"
+msgstr "Συνολικός χρόνος τμήματος"
+
+msgctxt "#30123"
+msgid "Elapsed (count up)"
+msgstr "Πέρασε (μετρά προς τα πάνω)"
+
+msgctxt "#30124"
+msgid "Remaining (count down)"
+msgstr "Υπόλοιπο (αντίστροφη μέτρηση)"
+
+msgctxt "#30125"
+msgid "Elapsed / Total"
+msgstr "Πέρασε / σύνολο"
+
+msgctxt "#30126"
+msgid "Native toast"
+msgstr "Εγγενής ειδοποίηση"
+
+msgctxt "#30127"
+msgid "Default"
+msgstr "Προεπιλογή"
+
+msgctxt "#30128"
+msgid "Same as skip dialog"
+msgstr "Όπως ο διάλογος παράλειψης"
+
+msgctxt "#30129"
+msgid "TheIntroDB first"
+msgstr "Πρώτα TheIntroDB"
+
+msgctxt "#30130"
+msgid "IntroDB.app first"
+msgstr "Πρώτα IntroDB.app"
+
+msgctxt "#30131"
+msgid "Local first"
+msgstr "Πρώτα τοπικά"
+
+msgctxt "#30132"
+msgid "Online first"
+msgstr "Πρώτα διαδικτυακά"
+
+msgctxt "#30133"
+msgid "Leave unchanged (no chmod)"
+msgstr "Χωρίς αλλαγή (χωρίς chmod)"
+
+msgctxt "#30134"
+msgid "World-readable (644)"
+msgstr "Αναγνώσιμο από όλους (644)"
+
+msgctxt "#30135"
+msgid "World-writable (666)"
+msgstr "Εγγράψιμο από όλους (666)"
+
+msgctxt "#30136"
+msgid "Merge non-overlapping"
+msgstr "Συγχώνευση μη επικαλυπτόμενων"
+
+msgctxt "#30137"
+msgid "Keep both (old starts after new)"
+msgstr "Διατήρηση και των δύο (το παλιό ξεκινά μετά το νέο)"
+
+msgctxt "#30138"
+msgid "Overwrite overlapping"
+msgstr "Αντικατάσταση επικαλυπτόμενων"
+
+msgctxt "#30139"
+msgid "Append always"
+msgstr "Πάντα προσθήκη"
+
+msgctxt "#30140"
+msgid "Replace file"
+msgstr "Αντικατάσταση αρχείου"
+
+msgctxt "#30141"
+msgid "Ask each time"
+msgstr "Ερώτηση κάθε φορά"
+
+msgctxt "#30142"
+msgid "Normal press"
+msgstr "Κανονικό πάτημα"
+
+msgctxt "#30143"
+msgid "Long press"
+msgstr "Παρατεταμένο πάτημα"
+
+msgctxt "#30144"
+msgid "Ask"
+msgstr "Ερώτηση"
+
+msgctxt "#30145"
+msgid "Errors only"
+msgstr "Μόνο σφάλματα"
+
+msgctxt "#30146"
+msgid "All detail"
+msgstr "Όλες οι λεπτομέρειες"
+
+msgctxt "#30147"
+msgid "Custom"
+msgstr "Προσαρμοσμένο"
+
+msgctxt "#30148"
+msgid "Normal"
+msgstr "Κανονικό"
+
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Προτιμήσεις Συμπεριφοράς Παράλειψης"
@@ -74,39 +271,39 @@ msgctxt "#31014"
 msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
 msgstr "Όταν η προτεραιότητα τμημάτων TV είναι Online first και η διαδικτυακή αναζήτηση TV είναι ενεργή, το Skippy επιλύει το επόμενο επεισόδιο βιβλιοθήκης (ίδια σειρά: επόμενο επεισόδιο στη σεζόν ή πρώτο επεισόδιο της επόμενης σεζόν) και κατεβάζει συγχωνευμένα διαδικτυακά τμήματα intro/recap στο παρασκήνιο. Τα τμήματα εφαρμόζονται μόνο όταν ξεκινάτε ακριβώς αυτό το αρχείο (διαδρομή + αναγνωριστικά πρέπει να ταιριάζουν). Η λεπτομερής καταγραφή (Όλες οι λεπτομέρειες) καταγράφει το πρόγραμμα προφόρτωσης, αποθήκευση και μετάδοση. Δεν χρησιμοποιείται για Local first. Δεν προφορτώνει ποτέ τοπικά sidecars."
 
+msgctxt "#31015"
+msgid "Skippy will ignore any EDL segment whose action type is not mapped in Segment types (including legacy read aliases). This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'."
+msgstr "Το Skippy αγνοεί κάθε τμήμα EDL του οποίου ο τύπος ενέργειας δεν αντιστοιχεί σε τύπο τμήματος (συμπεριλαμβανομένων παλαιών ψευδωνύμων ανάγνωσης). Αυτό περιλαμβάνει τους εσωτερικούς τύπους ενεργειών του Kodi και κάθε άγνωστο ή προσαρμοσμένο τύπο χωρίς ορισμένη ετικέτα. Όταν είναι απενεργοποιημένο, παίρνουν την ετικέτα 'Segment'."
+
+msgctxt "#31016"
+msgid "Configurable overlap detection to help avoid redundant or conflicting skips"
+msgstr "Εντοπισμός επικαλύψεων για αποφυγή διπλών ή αντικρουόμενων παραλείψεων"
+
+msgctxt "#31017"
+msgid "If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons."
+msgstr "Αν η αναπαραγωγή μετακινηθεί προς τα πίσω περισσότερο από αυτό το όριο, οι ερωτήσεις παράλειψης επαναφέρονται. Βοηθά στην αποφυγή ψευδών ενεργοποιήσεων από προσωρινή αποθήκευση ή πρόσθετα αυτόματης επαναφοράς."
+
+msgctxt "#31018"
+msgid "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode."
+msgstr "Εμφάνιση ειδοποίησης αν δεν βρεθεί αναγνώσιμο συνοδευτικό αρχείο (.edl ή chapters.xml) για το τρέχον επεισόδιο."
+
+msgctxt "#31019"
+msgid "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie."
+msgstr "Εμφάνιση ειδοποίησης αν δεν βρεθεί αναγνώσιμο συνοδευτικό αρχείο (.edl ή chapters.xml) για την τρέχουσα ταινία."
+
+msgctxt "#31020"
+msgid "Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments."
+msgstr "Εμφάνιση ειδοποίησης αν το συνοδευτικό αρχείο (.edl ή chapters.xml) έχει επικαλυπτόμενα τμήματα."
+
+msgctxt "#31021"
+msgid "Show a toast notification if a segment is skipped."
+msgstr "Εμφάνιση σύντομης ειδοποίησης όταν παραλείπεται ένα τμήμα."
+
 # Dialog Settings
 
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Στυλ Εστίασης Κουμπιού"
-
-msgctxt "#32001"
-msgid "Default"
-msgstr "Προεπιλογή"
-
-msgctxt "#32002"
-msgid "Aqua"
-msgstr "Aqua"
-
-msgctxt "#32003"
-msgid "Aqua Bevel"
-msgstr "Aqua Bevel"
-
-msgctxt "#32004"
-msgid "Aqua Dark"
-msgstr "Aqua Dark"
-
-msgctxt "#32005"
-msgid "Aqua Vignette"
-msgstr "Aqua Vignette"
-
-msgctxt "#32012"
-msgid "Aqua Rounded"
-msgstr "Aqua Rounded"
-
-msgctxt "#32006"
-msgid "Blue"
-msgstr "Blue"
 
 msgctxt "#32007"
 msgid "Show Progress Bar in Skip Dialog"
@@ -408,10 +605,6 @@ msgctxt "#35000"
 msgid "Replace local files with online segment data?"
 msgstr "Αντικατάσταση τοπικών αρχείων με διαδικτυακά δεδομένα τμημάτων;"
 
-msgctxt "#35001"
-msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
-msgstr "Υπάρχει ήδη αρχείο sidecar για αυτό το βίντεο. Να αντικατασταθεί με διαδικτυακά τμήματα μόνο; (Το υπάρχον περιεχόμενο θα χαθεί εκτός αν ενεργοποιήσατε αντίγραφο ασφαλείας ή επιλέξατε Merge στις ρυθμίσεις.)"
-
 msgctxt "#35002"
 msgid "Replace local chapter XML and EDL with online data?"
 msgstr "Αντικατάσταση τοπικού chapter XML και EDL με διαδικτυακά δεδομένα;"
@@ -523,6 +716,90 @@ msgstr "Ανενεργό"
 msgctxt "#35031"
 msgid "If you accept, this sidecar will contain:"
 msgstr "Αν αποδεχτείτε, αυτό το sidecar θα περιέχει:"
+
+msgctxt "#35032"
+msgid "(empty)"
+msgstr "(κενό)"
+
+msgctxt "#35033"
+msgid "… +%d more"
+msgstr "… +%d ακόμα"
+
+msgctxt "#35034"
+msgid "No overlapping segment types to update — local times already match."
+msgstr "Δεν υπάρχουν επικαλυπτόμενοι τύποι τμημάτων για ενημέρωση — οι τοπικοί χρόνοι ήδη ταιριάζουν."
+
+msgctxt "#35035"
+msgid "Planned time updates (local label kept):"
+msgstr "Προγραμματισμένες αλλαγές χρόνου (η τοπική ετικέτα διατηρείται):"
+
+msgctxt "#35036"
+msgid "(online %s from %s)"
+msgstr "(διαδικτυακά %s από %s)"
+
+msgctxt "#35037"
+msgid "… +%d more change(s)"
+msgstr "… +%d ακόμα αλλαγή(ές)"
+
+msgctxt "#35038"
+msgid "Overwrite replaces the file with online windows only. Comparison:"
+msgstr "Η αντικατάσταση γεμίζει το αρχείο μόνο με διαδικτυακά διαστήματα. Σύγκριση:"
+
+msgctxt "#35039"
+msgid "Online-only type %s"
+msgstr "Τύπος μόνο διαδικτυακά %s"
+
+msgctxt "#35040"
+msgid "no same-type local entry"
+msgstr "καμία τοπική εγγραφή ίδιου τύπου"
+
+msgctxt "#35041"
+msgid "%s  local %s – %s  →  online (%s) %s – %s"
+msgstr "%s  τοπικά %s – %s  →  διαδικτυακά (%s) %s – %s"
+
+msgctxt "#35042"
+msgid "Local-only rows (will be removed on overwrite): %d"
+msgstr "Γραμμές μόνο τοπικά (θα αφαιρεθούν με την αντικατάσταση): %d"
+
+msgctxt "#35043"
+msgid "(message truncated)"
+msgstr "(το μήνυμα περικόπηκε)"
+
+msgctxt "#35044"
+msgid "[Chapters XML] Currently %d chapter(s); online returns %d window(s)."
+msgstr "[Chapters XML] Τώρα %d κεφάλαια· διαδικτυακά επιστρέφονται %d διαστήματα."
+
+msgctxt "#35045"
+msgid "[EDL] Currently %d row(s); online returns %d window(s)."
+msgstr "[EDL] Τώρα %d γραμμές· διαδικτυακά επιστρέφονται %d διαστήματα."
+
+msgctxt "#35046"
+msgid "No online segment windows in this response."
+msgstr "Δεν υπάρχουν διαδικτυακά τμήματα σε αυτή την απάντηση."
+
+msgctxt "#35047"
+msgid "[Online lookup]"
+msgstr "[Διαδικτυακή αναζήτηση]"
+
+msgctxt "#35048"
+msgid "%s — %d window(s):"
+msgstr "%s — %d διαστήματα:"
+
+msgctxt "#35049"
+msgid "Segment marker keymap updated"
+msgstr "Η αντιστοίχιση πλήκτρων του δείκτη τμημάτων ενημερώθηκε"
+
+msgctxt "#35050"
+msgid "Could not update marker keymap"
+msgstr "Δεν ήταν δυνατή η ενημέρωση της αντιστοίχισης πλήκτρων του δείκτη"
+
+msgctxt "#35051"
+msgid "Segment editor keymap updated"
+msgstr "Η αντιστοίχιση πλήκτρων του επεξεργαστή τμημάτων ενημερώθηκε"
+
+msgctxt "#35052"
+msgid "Could not update editor keymap"
+msgstr "Δεν ήταν δυνατή η ενημέρωση της αντιστοίχισης πλήκτρων του επεξεργαστή"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
@@ -986,25 +1263,9 @@ msgctxt "#36011"
 msgid "Save segment?"
 msgstr "Αποθήκευση τμήματος;"
 
-msgctxt "#36012"
-msgid "Segment saved"
-msgstr "Το τμήμα αποθηκεύτηκε"
-
-msgctxt "#36013"
-msgid "Error saving segment"
-msgstr "Σφάλμα αποθήκευσης τμήματος"
-
 msgctxt "#36014"
 msgid "Cancelled"
 msgstr "Ακυρώθηκε"
-
-msgctxt "#36015"
-msgid "No video playing"
-msgstr "Δεν αναπαράγεται βίντεο"
-
-msgctxt "#36016"
-msgid "Segment Marker disabled"
-msgstr "Ο Segment Marker είναι απενεργοποιημένος"
 
 msgctxt "#36017"
 msgid "Save format"
@@ -1846,10 +2107,6 @@ msgctxt "#46001"
 msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
 msgstr "Το Custom χρησιμοποιεί τον δικό του διάλογο του Skippy με γραμμή προόδου, θέση σε γωνία και επιλογές στυλ. Το Native χρησιμοποιεί την εμφάνιση του skin σας: ένα toast (OK για παράλειψη) ή τον διάλογο Ναι/Όχι του Kodi. Το κείμενο είναι σταθερό κατά την εμφάνιση (χωρίς ζωντανή αντίστροφη μέτρηση ή γραμμή προόδου)."
 
-msgctxt "#46002"
-msgid "Native dialog"
-msgstr "Native διάλογος"
-
 msgctxt "#46003"
 msgid "Default focus"
 msgstr "Προεπιλεγμένη εστίαση"
@@ -1946,10 +2203,6 @@ msgctxt "#46026"
 msgid "Could not save the preset."
 msgstr "Αδυναμία αποθήκευσης της προεπιλογής."
 
-msgctxt "#46027"
-msgid "Preset applied: %s"
-msgstr "Η προεπιλογή εφαρμόστηκε: %s"
-
 msgctxt "#46028"
 msgid "That name is used by a built-in preset."
 msgstr "Το όνομα χρησιμοποιείται από ενσωματωμένη προεπιλογή."
@@ -1957,18 +2210,6 @@ msgstr "Το όνομα χρησιμοποιείται από ενσωματωμ
 msgctxt "#46029"
 msgid "There are no saved presets to delete."
 msgstr "Δεν υπάρχουν αποθηκευμένες προεπιλογές για διαγραφή."
-
-msgctxt "#46030"
-msgid "Current preset"
-msgstr "Τρέχουσα προεπιλογή"
-
-msgctxt "#46031"
-msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
-msgstr "Δείχνει ποια προεπιλογή ταιριάζει με τις τρέχουσες ρυθμίσεις σας, ή Προσαρμοσμένο (μη αποθηκευμένο)."
-
-msgctxt "#46032"
-msgid "Custom (unsaved)"
-msgstr "Προσαρμοσμένο (μη αποθηκευμένο)"
 
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
@@ -2553,3 +2794,139 @@ msgstr "Κανονικό"
 msgctxt "#47154"
 msgid "Large"
 msgstr "Μεγάλο"
+
+msgctxt "#48000"
+msgid "Time saved by show or film:"
+msgstr "Χρόνος που κερδήθηκε ανά σειρά ή ταινία:"
+
+msgctxt "#48001"
+msgid "And %d more"
+msgstr "Και %d ακόμη"
+
+msgctxt "#48010"
+msgid "Current video"
+msgstr "Τρέχον βίντεο"
+
+msgctxt "#48011"
+msgid "What Skippy knows about the video playing now: where its segments came from, what each one will do and why, the binge run and the last error. Open it while a video plays."
+msgstr "Τι γνωρίζει το Skippy για το βίντεο που παίζει τώρα: από πού ήρθαν τα τμήματα, τι θα κάνει το καθένα και γιατί, η σειρά binge και το τελευταίο σφάλμα. Ανοίξτε το ενώ παίζει ένα βίντεο."
+
+msgctxt "#48012"
+msgid "Nothing is playing."
+msgstr "Δεν παίζει τίποτα."
+
+msgctxt "#48013"
+msgid "File"
+msgstr "Αρχείο"
+
+msgctxt "#48014"
+msgid "Show"
+msgstr "Σειρά"
+
+msgctxt "#48015"
+msgid "Film"
+msgstr "Ταινία"
+
+msgctxt "#48016"
+msgid "Binge run"
+msgstr "Σειρά binge"
+
+msgctxt "#48017"
+msgid "Episode %d"
+msgstr "Επεισόδιο %d"
+
+msgctxt "#48018"
+msgid "Off"
+msgstr "Ανενεργό"
+
+msgctxt "#48019"
+msgid "Segments from"
+msgstr "Τμήματα από"
+
+msgctxt "#48020"
+msgid "Sidecar file"
+msgstr "Αρχείο sidecar"
+
+msgctxt "#48021"
+msgid "Online"
+msgstr "Διαδικτυακά"
+
+msgctxt "#48022"
+msgid "Embedded chapters"
+msgstr "Ενσωματωμένα κεφάλαια"
+
+msgctxt "#48023"
+msgid "None found"
+msgstr "Δεν βρέθηκαν"
+
+msgctxt "#48024"
+msgid "Segments"
+msgstr "Τμήματα"
+
+msgctxt "#48025"
+msgid "No segments for this video."
+msgstr "Κανένα τμήμα για αυτό το βίντεο."
+
+msgctxt "#48026"
+msgid "Skip automatically"
+msgstr "Αυτόματη παράλειψη"
+
+msgctxt "#48027"
+msgid "Ask"
+msgstr "Ερώτηση"
+
+msgctxt "#48028"
+msgid "Never skip"
+msgstr "Ποτέ παράλειψη"
+
+msgctxt "#48029"
+msgid "%s (binge mode)"
+msgstr "%s (λειτουργία binge)"
+
+msgctxt "#48030"
+msgid "%s (saved for this title)"
+msgstr "%s (αποθηκευμένο για αυτόν τον τίτλο)"
+
+msgctxt "#48031"
+msgid "Last error"
+msgstr "Τελευταίο σφάλμα"
+
+msgctxt "#48032"
+msgid "None since Kodi started"
+msgstr "Κανένα από την εκκίνηση του Kodi"
+
+msgctxt "#48033"
+msgid "Segments are still being read. Try again in a moment."
+msgstr "Τα τμήματα διαβάζονται ακόμη. Δοκιμάστε ξανά σε λίγο."
+
+msgctxt "#48034"
+msgid "%s (skipping is off for this kind of video)"
+msgstr "%s (η παράλειψη είναι ανενεργή για αυτό το είδος βίντεο)"
+
+msgctxt "#48040"
+msgid "Binge mode"
+msgstr "Λειτουργία binge"
+
+msgctxt "#48041"
+msgid "Show the intro on the first episode only"
+msgstr "Εμφάνιση της εισαγωγής μόνο στο πρώτο επεισόδιο"
+
+msgctxt "#48042"
+msgid "Episodes of one show played one after the other make a run. The first episode of a run plays its intro; from the second on, the intro is skipped without asking, whatever its segment type is set to. The run goes on however the next episode starts (Play now, autoplay, a playlist or by hand) and ends when another show or a film plays, or after the pause set below."
+msgstr "Επεισόδια μιας σειράς που παίζουν το ένα μετά το άλλο αποτελούν μια σειρά binge. Το πρώτο επεισόδιο παίζει την εισαγωγή του· από το δεύτερο και μετά, η εισαγωγή παραλείπεται χωρίς ερώτηση, ό,τι κι αν έχει οριστεί για τον τύπο τμήματος. Η σειρά συνεχίζεται όπως κι αν ξεκινήσει το επόμενο επεισόδιο (Αναπαραγωγή τώρα, αυτόματη αναπαραγωγή, λίστα αναπαραγωγής ή χειροκίνητα) και τελειώνει όταν παίξει άλλη σειρά ή ταινία ή μετά την παύση που ορίζεται παρακάτω."
+
+msgctxt "#48043"
+msgid "Also skip the recap"
+msgstr "Παράλειψη και της ανακεφαλαίωσης"
+
+msgctxt "#48044"
+msgid "From the second episode of a run, the recap is skipped without asking too: you just watched the episode before. The first episode of a run keeps its recap."
+msgstr "Από το δεύτερο επεισόδιο μιας σειράς binge, παραλείπεται χωρίς ερώτηση και η ανακεφαλαίωση: μόλις είδατε το προηγούμενο επεισόδιο. Το πρώτο επεισόδιο κρατά την ανακεφαλαίωσή του."
+
+msgctxt "#48045"
+msgid "End the run after a pause of (minutes)"
+msgstr "Τέλος της σειράς μετά από παύση (λεπτά)"
+
+msgctxt "#48046"
+msgid "A run ends when nothing of the show has played for this many minutes, so the next sitting starts with the intro again."
+msgstr "Η σειρά τελειώνει όταν δεν έχει παίξει τίποτα από τη σειρά για τόσα λεπτά, οπότε την επόμενη φορά ξεκινάτε ξανά με την εισαγωγή."

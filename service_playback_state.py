@@ -54,6 +54,7 @@ def init_playback_session(monitor: Any) -> None:
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
     monitor.next_episode_state = None
+    monitor.next_episode_previous = None
     monitor.next_episode_upnext_notified = False
     clear_prefetch_segment_cache()
     monitor.prefetch_tv_scheduled_path = None
@@ -65,6 +66,8 @@ def init_playback_session(monitor: Any) -> None:
 def reset_playback_session(monitor: Any, *, clear_deferred, log_prefix: str, log_fn) -> None:
     """Clear per-title caches (new video, replay, etc.)."""
     monitor.shown_missing_file_toast = False
+    # Segments belong to the video they were parsed for; the new one is parsed this same tick.
+    monitor.current_segments = []
     monitor.prompted.clear()
     monitor.recently_dismissed.clear()
     monitor.segment_parse_cache = None
@@ -84,6 +87,11 @@ def reset_playback_session(monitor: Any, *, clear_deferred, log_prefix: str, log
     monitor.overlap_editor_opened_for_path = None
     monitor.online_sidecar_save_prompt_suppressed_path = None
     monitor.local_to_online_sync_suppressed_path = None
+    # The next episode step still needs to see how the video before this one ended
+    # ("Still watching?" counts the episodes that started by themselves).
+    previous = getattr(monitor, "next_episode_state", None)
+    if previous is not None:
+        monitor.next_episode_previous = previous
     monitor.next_episode_state = None
     monitor.prefetch_tv_scheduled_path = None
     monitor.nested_parent_map = {}

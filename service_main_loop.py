@@ -8,13 +8,20 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import xbmc
-import xbmcgui
 
+from binge_mode import binge_settings, note_playback
+from playback_identity import title_identity
 from segment_editor_utils import get_home_window
+from service_diagnostics import note_loop_error, publish_diagnostics
+import skin_properties
 from service_loop_nested import handle_rewind_and_nested_segments
 from service_loop_next_episode import handle_next_episode, handle_remote_next_episode
 from service_loop_playback import handle_replay_detection, handle_video_change
-from service_loop_skip import process_segment_skips
+from service_loop_skip import (
+    handle_skip_current_request,
+    process_segment_skips,
+    skin_mode_for,
+)
 from service_loop_toast import (
     try_show_missing_segments_toast,
     try_show_online_segments_applied_toast,
@@ -25,7 +32,7 @@ from service_skip_seek_property import (
     skippy_seek_grace_active,
     tick_skippy_skipping_property,
 )
-from settings_utils import is_live_tv_playback, log, log_error, log_service_detail
+from settings_utils import get_addon, is_live_tv_playback, log, log_error, log_service_detail
 
 # All-detail only: playhead drift during parse is noise unless the parse was slow.
 PARSE_SLOW_LOG_MS = 200
@@ -239,6 +246,49 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
     return current_time
 
 
+def _note_title_and_binge(monitor, video, playback_type, player_item) -> None:
+    """Keep the binge run and the "Current video" diagnostics up to date (cheap; every tick)."""
+    try:
+        show_key, show_name = title_identity(player_item, video, playback_type)
+        _enabled, _recap, gap = binge_settings(get_addon())
+        position = note_playback(monitor, video, playback_type, show_key, show_name, gap)
+        publish_diagnostics(
+            monitor,
+            video=video or "",
+            playback_type=playback_type or "",
+            title=show_name,
+            title_key=show_key or "",
+            binge_position=position,
+        )
+    except Exception as exc:
+        log_service_detail("binge/diagnostics note failed: %s" % exc, tag="binge")
+
+
+def _publish_skin_properties(monitor, video, playback_type, current_time, next_due) -> None:
+    """Home window properties for skins (``skin_properties``); never breaks the tick."""
+    try:
+        win = get_home_window(monitor)
+        if win is None:
+            return
+        props = skin_properties.build_skin_properties(
+            monitor.current_segments,
+            current_time,
+            skin_mode_for(monitor, get_addon(), video, playback_type),
+            monitor=monitor,
+            next_due=next_due,
+        )
+        skin_properties.publish(win, monitor, props)
+    except Exception as exc:
+        log_service_detail("skin properties failed: %s" % exc, tag="skin")
+
+
+def _clear_skin_properties(monitor) -> None:
+    try:
+        skin_properties.clear(get_home_window(monitor), monitor)
+    except Exception:
+        pass
+
+
 def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
     """Monitor playback and orchestrate segment skip UI."""
 
@@ -278,6 +328,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                 )
 
             if not (ctx.player.isPlayingVideo() or xbmc.getCondVisibility("Player.HasVideo")):
+                _clear_skin_properties(ctx.monitor)
                 if ctx.monitor.waitForAbort(ctx.check_interval):
                     log("🛑 Abort requested — exiting monitor loop")
                 continue
@@ -285,6 +336,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             # Live TV / PVR has no segments. Idle here so the tick never resolves the
             # channel URL or stats it (that stat is an HTTP request against the IPTV proxy).
             if is_live_tv_playback():
+                _clear_skin_properties(ctx.monitor)
                 ctx.log_if_changed(
                     "live_tv",
                     "📺 Live TV / PVR — Skippy idle (no segments on a live channel)",
@@ -308,6 +360,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             playback_type = playback.playback_type
             show_dialogs = playback.show_dialogs
             consume_sidecar_probe_invalidation(ctx.monitor)
+            _note_title_and_binge(ctx.monitor, video, playback_type, playback.player_item)
 
             if playback.is_paused or not playback.is_playing:
                 # After Skippy seekTime, Kodi often reports Paused briefly; keep skip
@@ -357,6 +410,11 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
                     "⏭️ Next episode prompt is due — skip dialogs hidden until the episode ends",
                 )
                 show_dialogs = False
+
+            # A skin button or key asked to skip the segment the playhead is in.
+            landed = handle_skip_current_request(ctx, video, playback_type, current_time)
+            if landed is not None:
+                current_time = float(landed)
 
             # Prefer skip dialogs before deferred online probe/sync (can take seconds).
             early_pass_done = False
@@ -440,6 +498,10 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             except RuntimeError:
                 ctx.monitor.last_time = current_time
 
+            _publish_skin_properties(
+                ctx.monitor, video, playback_type, ctx.monitor.last_time, next_episode.due
+            )
+
             if ctx.monitor.waitForAbort(ctx.check_interval):
                 log("🛑 Abort requested — exiting monitor loop")
                 break
@@ -449,6 +511,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             signature = "%s: %s" % (type(exc).__name__, exc)
             if signature != getattr(ctx.monitor, "_loop_error_signature", None):
                 ctx.monitor._loop_error_signature = signature
+                note_loop_error(ctx.monitor, signature)
                 log_error(
                     "Monitor tick failed (%s)\n%s" % (signature, traceback.format_exc())
                 )

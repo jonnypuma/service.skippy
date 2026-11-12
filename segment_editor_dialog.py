@@ -17,7 +17,6 @@ Architectural notes:
   selection).
 """
 import copy
-import os
 import threading
 import time
 
@@ -392,15 +391,6 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             except Exception:
                 pass
 
-    def _apply_list_row_button_fonts(self):
-        """Re-apply fonts on list-row action buttons after label changes."""
-        for cid in _LIST_ROW_ACTION_IDS:
-            try:
-                btn = self.getControl(cid)
-                if btn:
-                    self._set_button_label_font(btn)
-            except Exception:
-                pass
 
     def _update_pause_button_label(self):
         try:
@@ -555,7 +545,6 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             nested_indices, overlapping_indices = self._compute_segment_overlap_sets()
 
             items = []
-            n = len(self.segments)
             for i, seg in enumerate(self.segments):
                 start_hms = seconds_to_hms(seg.start_seconds)
                 end_hms = seconds_to_hms(seg.end_seconds)

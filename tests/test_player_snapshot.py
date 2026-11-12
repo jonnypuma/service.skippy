@@ -2,7 +2,7 @@
 """Player snapshot reuse for JSON-RPC deduplication."""
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from tests.kodi_stubs import install_kodi_stubs
 

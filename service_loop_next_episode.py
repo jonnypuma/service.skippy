@@ -6,7 +6,7 @@ from __future__ import annotations
 import threading
 import time
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import xbmc
@@ -88,6 +88,9 @@ class NextEpisodeTick:
 
     hide_skip_dialogs: bool = False
     switched: bool = False
+    # The playhead is in the window where the next episode is offered (or was started).
+    # Only for the skin property Skippy.NextEpisode.Due; left out of comparisons.
+    due: bool = field(default=False, compare=False)
 
 
 IDLE_TICK = NextEpisodeTick()
@@ -166,7 +169,7 @@ def _handle(
         return IDLE_TICK
 
     hide = addon_get_bool(addon, "next_episode_hide_skip_dialogs", True)
-    held = NextEpisodeTick(hide_skip_dialogs=hide)
+    held = NextEpisodeTick(due=True, hide_skip_dialogs=hide)
     if state.started or state.dismissed or state.failed:
         return held
 
@@ -178,6 +181,7 @@ def _handle(
     ask_still_watching = _still_watching_due(monitor, state, addon)
     if autoplay and not ask_still_watching:
         return NextEpisodeTick(
+            due=True,
             hide_skip_dialogs=hide,
             switched=_start_next(monitor, state, addon, autoplayed=True),
         )
@@ -207,6 +211,7 @@ def _handle(
         if action == END_PLAY:
             log("Next episode: countdown ran out - playing it")
             return NextEpisodeTick(
+                due=True,
                 hide_skip_dialogs=hide,
                 switched=_start_next(monitor, state, addon, autoplayed=True),
             )
@@ -220,7 +225,7 @@ def _handle(
         switched = _start_next(monitor, state, addon)
         if switched and per_show and show_mode is None and not autoplay and not ask_still_watching:
             _queue_remember(monitor, state)
-        return NextEpisodeTick(hide_skip_dialogs=hide, switched=switched)
+        return NextEpisodeTick(due=True, hide_skip_dialogs=hide, switched=switched)
     if answer is False:
         state.answered = True
         state.dismissed = True
@@ -325,10 +330,15 @@ def handle_remote_next_episode(ctx: Any) -> NextEpisodeTick:
 def _state_for(monitor, video) -> NextEpisodeState:
     state = getattr(monitor, "next_episode_state", None)
     if state is None or state.video != video:
+        # A new video resets the playback session (and this state with it) before this step
+        # runs, so the state of the video before it is kept aside for this one look.
+        previous = state if state is not None else getattr(monitor, "next_episode_previous", None)
+        monitor.next_episode_previous = None
         carried = False
-        if state is not None:
-            carried = ended_on_its_own(state, time.monotonic())
-            reset_guard(state)
+        if previous is not None:
+            if previous.video != video:
+                carried = ended_on_its_own(previous, time.monotonic())
+            reset_guard(previous)
         state = NextEpisodeState(video=video)
         monitor.next_episode_state = state
         begin_episode(_chain_for(monitor), carried=carried)

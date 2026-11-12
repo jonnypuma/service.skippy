@@ -25,7 +25,7 @@ from service_segment_processing import (
     is_nested_segment,
     should_suppress_segment_dialog,
 )
-from skipdialog import format_next_jump_label
+from skip_dialog_appearance import format_next_jump_label
 
 
 class ParseAndProcessTests(unittest.TestCase):

@@ -2,64 +2,32 @@
 """Ask-dialog preview text for online sidecar save."""
 from __future__ import annotations
 
-import os
-import xml.etree.ElementTree as ET
-from collections import defaultdict
 
-import xbmc
-import xbmcgui
-import xbmcvfs
 
 from online_segment_upload import (
     local_label_to_online_bucket,
     remote_payload_label_to_online_bucket,
 )
-from playback_segment_cache import publish_parse_cache
 from segment_editor_parser import (
-    dedupe_overlapping_same_label_segments,
-    safe_file_write,
-    save_edl,
     seconds_to_hms,
 )
-from segment_item import SegmentItem
 from service_online_policy import (
-    _SAVE_CHAPTERS_MERGE,
     _SAVE_CHAPTERS_OVERWRITE_ASK,
-    _SAVE_CHAPTERS_OVERWRITE_SILENT,
-    _SAVE_CHAPTERS_SKIP_IF_EXISTS,
     _SAVE_CHAPTERS_UPDATE_ALL_ASK,
-    _SAVE_CHAPTERS_UPDATE_ALL_SILENT,
     _SAVE_CHAPTERS_UPDATE_ASK,
-    _SAVE_CHAPTERS_UPDATE_SILENT,
-    _SAVE_ONLINE_FORMAT_BOTH,
-    _SAVE_ONLINE_FORMAT_EDL,
-    _SAVE_ONLINE_FORMAT_XML,
-    _normalize_online_sidecar_policy,
-    _normalize_save_online_format,
-    policy_allows_neighbor_snap,
 )
 from service_segment_sources import (
-    _chapter_window_overlap,
     _parse_chapter_xml_string,
     parse_edl,
     safe_file_read,
 )
-from service_sidecar_paths import (
-    _default_new_sidecar_chapter_xml_path,
-    _edl_paths_to_try,
-    _find_existing_sidecar_chapter_xml_path,
-    playback_path_supports_sidecar_chapters_xml,
-)
 from settings_utils import (
-    addon_get_bool,
-    addon_get_setting_text,
     get_addon,
     log,
     log_service_detail,
-    normalize_label,
 )
-from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
 from service_online_sidecar_merge import (
+    _t,
     _finalize_sidecar_after_update_policy,
     _neighbor_snap_flags_for_policy,
     _pick_best_local_index_for_online,
@@ -76,7 +44,7 @@ def _log_sidecar_detail(msg):
 def _lines_for_sidecar_preview_items(final_items, max_rows=36):
     lines = []
     if not final_items:
-        lines.append("  (empty)")
+        lines.append("  " + _t(35032, "(empty)"))
         return lines
     for s in sorted(final_items, key=lambda x: float(x.start_seconds))[:max_rows]:
         lines.append(
@@ -88,31 +56,37 @@ def _lines_for_sidecar_preview_items(final_items, max_rows=36):
             )
         )
     if len(final_items) > max_rows:
-        lines.append("  … +%d more" % (len(final_items) - max_rows))
+        lines.append("  " + _t(35033, "… +%d more", len(final_items) - max_rows))
     return lines
 
 
 def _lines_for_update_changes(change_rows, max_rows=14):
     lines = []
     if not change_rows:
-        lines.append("No overlapping segment types to update — local times already match.")
+        lines.append(
+            _t(35034, "No overlapping segment types to update — local times already match.")
+        )
         return lines
-    lines.append("Planned time updates (local label kept):")
+    lines.append(_t(35035, "Planned time updates (local label kept):"))
     for r in change_rows[:max_rows]:
         lines.append(
-            "  • %s:  %s – %s  →  %s – %s  (online %s from %s)"
+            "  • %s:  %s – %s  →  %s – %s  "
             % (
                 r["local_label"],
                 seconds_to_hms(r["old_start"]),
                 seconds_to_hms(r["old_end"]),
                 seconds_to_hms(r["new_start"]),
                 seconds_to_hms(r["new_end"]),
+            )
+            + _t(
+                35036,
+                "(online %s from %s)",
                 r["online_label"],
                 _source_display_name(r["online_source"]),
             )
         )
     if len(change_rows) > max_rows:
-        lines.append("  … +%d more change(s)" % (len(change_rows) - max_rows))
+        lines.append("  " + _t(35037, "… +%d more change(s)", len(change_rows) - max_rows))
     return lines
 
 
@@ -123,7 +97,7 @@ def _lines_overwrite_compare(local_items, online_items, max_lines=18):
         return lines
     locs = list(local_items)
     used_local = set()
-    lines.append("Overwrite replaces the file with online windows only. Comparison:")
+    lines.append(_t(35038, "Overwrite replaces the file with online windows only. Comparison:"))
     n_on = sorted(online_items, key=lambda x: float(x.start_seconds))
     count = 0
     for o in n_on:
@@ -135,8 +109,9 @@ def _lines_overwrite_compare(local_items, online_items, max_lines=18):
         osh, oeh = float(o.start_seconds), float(o.end_seconds)
         if canon_o is None:
             lines.append(
-                "  + Online-only type %s  %s – %s  (%s)"
-                % (olab, seconds_to_hms(osh), seconds_to_hms(oeh), src)
+                "  + "
+                + _t(35039, "Online-only type %s", olab)
+                + "  %s – %s  (%s)" % (seconds_to_hms(osh), seconds_to_hms(oeh), src)
             )
             count += 1
             continue
@@ -148,8 +123,8 @@ def _lines_overwrite_compare(local_items, online_items, max_lines=18):
         ]
         if not candidates:
             lines.append(
-                "  + %s  %s – %s  (%s) — no same-type local entry"
-                % (olab, seconds_to_hms(osh), seconds_to_hms(oeh), src)
+                "  + %s  %s – %s  (%s) — " % (olab, seconds_to_hms(osh), seconds_to_hms(oeh), src)
+                + _t(35040, "no same-type local entry")
             )
             count += 1
             continue
@@ -159,8 +134,10 @@ def _lines_overwrite_compare(local_items, online_items, max_lines=18):
         e = locs[best_i]
         used_local.add(best_i)
         lines.append(
-            "  • %s  local %s – %s  →  online (%s) %s – %s"
-            % (
+            "  • "
+            + _t(
+                35041,
+                "%s  local %s – %s  →  online (%s) %s – %s",
                 e.segment_type_label or "?",
                 seconds_to_hms(float(e.start_seconds)),
                 seconds_to_hms(float(e.end_seconds)),
@@ -172,14 +149,14 @@ def _lines_overwrite_compare(local_items, online_items, max_lines=18):
         count += 1
     leftover = [i for i in range(len(locs)) if i not in used_local]
     if leftover:
-        lines.append("Local-only rows (will be removed on overwrite): %d" % len(leftover))
+        lines.append(_t(35042, "Local-only rows (will be removed on overwrite): %d", len(leftover)))
     return lines
 
 
 def _clamp_dialog_text(text: str, max_chars: int = 3800) -> str:
     if len(text) <= max_chars:
         return text
-    return text[: max_chars - 24] + "\n… (message truncated)"
+    return text[: max_chars - 24] + "\n… " + _t(35043, "(message truncated)")
 
 
 def _build_sidecar_ask_detail(
@@ -274,8 +251,12 @@ def _build_sidecar_ask_detail(
                 existing = _parse_chapter_xml_string(raw) if raw else []
                 lines.append("")
                 lines.append(
-                    "[Chapters XML] Currently %d chapter(s); online returns %d window(s)."
-                    % (len(existing), len(online_segments))
+                    _t(
+                        35044,
+                        "[Chapters XML] Currently %d chapter(s); online returns %d window(s).",
+                        len(existing),
+                        len(online_segments),
+                    )
                 )
                 lines.extend(
                     _lines_overwrite_compare(existing, online_segments)
@@ -284,8 +265,12 @@ def _build_sidecar_ask_detail(
                 existing_e = parse_edl(video_path, update_monitor=False) or []
                 lines.append("")
                 lines.append(
-                    "[EDL] Currently %d row(s); online returns %d window(s)."
-                    % (len(existing_e), len(online_segments))
+                    _t(
+                        35045,
+                        "[EDL] Currently %d row(s); online returns %d window(s).",
+                        len(existing_e),
+                        len(online_segments),
+                    )
                 )
                 lines.extend(
                     _lines_overwrite_compare(existing_e, online_segments)

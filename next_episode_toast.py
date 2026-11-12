@@ -101,6 +101,4 @@ def show_next_episode_toast(
     finally:
         stop.set()
         _dismiss_toast()
-    result = dlg.result
-    del dlg
-    return result
+    return dlg.result

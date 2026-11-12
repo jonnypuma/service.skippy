@@ -1,41 +1,26 @@
 # -*- coding: utf-8 -*-
 """TMDB API helpers for Skippy remote lookup."""
 
-import json
-import os
+
 import re
-import time
+import unicodedata
 
 import xbmcaddon
-from contextlib import closing
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
-import xbmc
-import xbmcvfs
 
 from settings_utils import (
     addon_get_bool,
     addon_get_setting_text,
     get_addon,
-    log_remote,
-    log_service_detail,
-    parse_kodi_jsonrpc_raw,
 )
 
 from remote_http import (
-    ADDON_ID,
     TMDB_API3_BASE,
     TMDB_HELPER_ADDON_ID,
-    REMOTE_LOOKUP_TIMEOUT,
     _rlog,
-    _safe_log_url,
     fetch_remote_json,
-    jsonrpc,
     normalize_imdb_id,
-    normalize_numeric_id,
-    parse_int,
 )
 def _tmdb_helper_addon_api_key():
     """API key from plugin.video.themoviedb.helper (TMDB v3)."""
@@ -95,22 +80,93 @@ def _tmdb_api3_json(subpath, api_key, extra_params=None):
     return fetch_remote_json(url, "TMDB")
 
 
-def _tmdb_search_tv_show_id(title, api_key):
+# "Doctor Who (2005)": the year in brackets at the end of a title, as libraries name remakes.
+_TITLE_YEAR = re.compile(r"^(.*\S)\s*\((\d{4})\)\s*$")
+
+
+def split_title_year(title):
+    """``("Doctor Who", 2005)`` for ``"Doctor Who (2005)"``; a title without a year gets None."""
+    text = (title or "").strip()
+    match = _TITLE_YEAR.match(text)
+    if match:
+        return match.group(1).strip(), int(match.group(2))
+    return text, None
+
+
+def _year_of(value):
+    """The year of a TMDB date (``"2005-03-26"``) or a Kodi year (2005, ``"2005"``), else None."""
+    match = re.match(r"\s*(\d{4})", str(value or ""))
+    return int(match.group(1)) if match else None
+
+
+def _title_key(text):
+    """Case, accents and punctuation do not count when titles are compared."""
+    folded = unicodedata.normalize("NFKD", str(text or "")).casefold()
+    return " ".join("".join(ch if ch.isalnum() else " " for ch in folded if not unicodedata.combining(ch)).split())
+
+
+def pick_search_result(results, title, year, name_keys, date_key):
+    """
+    The search row that best fits ``title`` and ``year``.
+
+    TMDB orders by popularity, so the first row of "The Office" may be the other country's
+    show. An exact title counts most, then the year (a year off by one counts half, as Kodi
+    and TMDB sometimes disagree about it); between equals, TMDB's order decides.
+    """
+    wanted = _title_key(title)
+    best, best_score = None, -1.0
+    for row in results or []:
+        if not isinstance(row, dict) or row.get("id") is None:
+            continue
+        exact = any(_title_key(row.get(key)) == wanted for key in name_keys if row.get(key))
+        score = 2.0 if exact else 0.0
+        found = _year_of(row.get(date_key))
+        if year and found:
+            if found == year:
+                score += 1.0
+            elif abs(found - year) == 1:
+                score += 0.5
+        if score > best_score:
+            best, best_score = row, score
+    return best
+
+
+def _tmdb_search_id(path, year_param, name_keys, date_key, title, api_key, year=None):
     if not title or not api_key:
         return None
-    data = _tmdb_api3_json("/search/tv", api_key, {"query": title})
-    if not isinstance(data, dict):
-        return None
-    results = data.get("results") or []
+    query, title_year = split_title_year(title)
+    year = _year_of(year) or title_year
+    results = []
+    if year:
+        data = _tmdb_api3_json(path, api_key, {"query": query, year_param: year})
+        results = (data.get("results") or []) if isinstance(data, dict) else []
     if not results:
+        data = _tmdb_api3_json(path, api_key, {"query": query})
+        results = (data.get("results") or []) if isinstance(data, dict) else []
+    row = pick_search_result(results, query, year, name_keys, date_key)
+    if row is None:
         return None
     try:
-        return int(results[0]["id"])
-    except (KeyError, TypeError, ValueError, IndexError):
+        return int(row["id"])
+    except (KeyError, TypeError, ValueError):
         return None
 
 
-def _tmdb_enrich_missing_ids(item, season, episode, tmdb_id, imdb_id, show_imdb_id, api_key):
+def _tmdb_search_tv_show_id(title, api_key, year=None):
+    """TMDB id of the show called ``title`` (first aired in ``year`` when known)."""
+    return _tmdb_search_id(
+        "/search/tv", "first_air_date_year", ("name", "original_name"), "first_air_date", title, api_key, year
+    )
+
+
+def _tmdb_search_movie_id(title, api_key, year=None):
+    """TMDB id of the movie called ``title`` (released in ``year`` when known)."""
+    return _tmdb_search_id(
+        "/search/movie", "year", ("title", "original_title"), "release_date", title, api_key, year
+    )
+
+
+def _tmdb_enrich_missing_ids(item, season, episode, tmdb_id, imdb_id, show_imdb_id, api_key, year=None):
     """
     Fill missing TMDB show id / episode IMDb / show IMDb via TMDB v3 (IntroDB / TheIntroDB requirements).
     """
@@ -122,7 +178,7 @@ def _tmdb_enrich_missing_ids(item, season, episode, tmdb_id, imdb_id, show_imdb_
         except (TypeError, ValueError):
             tv_id = None
     if tv_id is None and title:
-        tv_id = _tmdb_search_tv_show_id(title, api_key)
+        tv_id = _tmdb_search_tv_show_id(title, api_key, year)
         if tv_id:
             _rlog("TMDB API: matched show id=%s for query %r" % (tv_id, title[:50]))
     if tv_id is None:
@@ -153,7 +209,7 @@ def _tmdb_enrich_missing_ids(item, season, episode, tmdb_id, imdb_id, show_imdb_
     return new_tmdb, new_imdb, new_show_imdb
 
 
-def _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, api_key):
+def _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, api_key, year=None):
     """Fill missing TMDB movie id / IMDb via TMDB v3 find, search, and external_ids."""
     title = (item.get("title") or "").strip()
     mid = tmdb_id
@@ -180,16 +236,9 @@ def _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, api_key):
                     _rlog("TMDB API: movie tmdb_id=%s from find by IMDb" % mid)
                     break
     if mid is None and title:
-        data = _tmdb_api3_json("/search/movie", api_key, {"query": title})
-        if isinstance(data, dict):
-            results = data.get("results") or []
-            if results:
-                try:
-                    mid = int(results[0]["id"])
-                except (KeyError, TypeError, ValueError, IndexError):
-                    mid = None
-                if mid:
-                    _rlog("TMDB API: matched movie id=%s for query %r" % (mid, title[:50]))
+        mid = _tmdb_search_movie_id(title, api_key, year if year is not None else item.get("year"))
+        if mid:
+            _rlog("TMDB API: matched movie id=%s for query %r" % (mid, title[:50]))
     if mid is None:
         return tmdb_id, imdb_id
 

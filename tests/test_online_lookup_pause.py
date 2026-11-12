@@ -16,7 +16,6 @@ class OnlineLookupPauseTests(unittest.TestCase):
         from service_online_lookup_pause import (
             pause_playback_for_online_lookup,
             resume_playback_after_online_lookup,
-            run_blocking_online_lookup,
         )
 
         mock_xbmc.getCondVisibility.side_effect = [False, True, True]

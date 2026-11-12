@@ -2,25 +2,19 @@
 """HTTP helpers for remote segment lookup (JSON-RPC, fetch, cooldowns)."""
 
 import json
-import os
 import re
 import time
 
-import xbmcaddon
 from contextlib import closing
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import xbmc
-import xbmcvfs
 
 from settings_utils import (
-    addon_get_bool,
     addon_get_setting_text,
     get_addon,
     log_remote,
-    log_service_detail,
     parse_kodi_jsonrpc_raw,
 )
 ADDON_ID = "service.skippy"
@@ -71,7 +65,9 @@ _REMOTE_FETCH_COOL_UNTIL = {}
 # Consecutive qualifying failures per bucket (reset on success). Drives exponential backoff.
 _REMOTE_FETCH_FAILURE_STREAK = {}
 
-_SXXEXX = re.compile(r"[Ss](\d{1,2})[Ee](\d{1,2})")
+# S01E05, also three- and four-digit numbers (S01E105, S2024E01); the episode must not run on
+# into more digits, or S01E105 would read as episode 10.
+_SXXEXX = re.compile(r"[Ss](\d{1,4})[Ee](\d{1,4})(?!\d)")
 
 _REMOTE_BACKOFF_CAP_SECONDS = 3600
 _REMOTE_BACKOFF_EXPONENT_CAP = 12

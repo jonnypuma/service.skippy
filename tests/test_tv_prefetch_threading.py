@@ -2,9 +2,8 @@
 """TV prefetch runs in a background thread (non-blocking main loop)."""
 
 import threading
-import time
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from tests.kodi_stubs import install_kodi_stubs
 
@@ -25,7 +24,7 @@ class TvPrefetchThreadingTests(unittest.TestCase):
     @patch("service_segment_prefetch.threading.Thread")
     @patch("service_segment_prefetch._prefetch_worker")
     def test_schedule_starts_thread_and_returns_immediately(
-        self, mock_worker, mock_thread, *_mocks
+        self, _mock_worker, mock_thread, *_mocks
     ):
         import service_segment_prefetch as mod
 

@@ -432,7 +432,6 @@ def _submit_theintrodb(
             % ctx.get("type")
         )
         return False, _translate(39044)
-    tmdb_int = id_value if id_field == "tmdb_id" else None
 
     api_type = "movie" if ctx.get("type") == "movie" else "tv"
     duration_sec = ctx.get("playback_duration_seconds")

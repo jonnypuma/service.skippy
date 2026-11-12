@@ -1,40 +1,26 @@
 # -*- coding: utf-8 -*-
 """TheIntroDB / IntroDB.app fetch, merge, and playback cache."""
 
-import json
 import os
-import re
-import time
 
-import xbmcaddon
-from contextlib import closing
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
-import xbmc
-import xbmcvfs
 
 from settings_utils import (
-    addon_get_bool,
     addon_get_setting_text,
     get_addon,
-    log_remote,
     log_service_detail,
-    parse_kodi_jsonrpc_raw,
 )
 
 from segment_item import SegmentItem
 from skippy_stats import record_online_segments_downloaded
 from remote_http import (
-    ADDON_ID,
     INTRODB_SEGMENTS_URL,
     ONLINE_MERGE_INTRODB_FIRST,
     ONLINE_MERGE_THEINTRODB_FIRST,
     REMOTE_SEGMENT_PAYLOAD_KEYS,
     THEINTRODB_BASE_URL,
     _rlog,
-    _safe_log_url,
     fetch_remote_json,
     local_label_for_remote_payload_key,
 )
@@ -42,7 +28,6 @@ from remote_library import (
     build_movie_context,
     build_tv_episode_context,
     get_enriched_playing_item,
-    playback_duration_seconds_for_upload,
     _get_playing_file_path,
 )
 def build_tv_cache_key(context):

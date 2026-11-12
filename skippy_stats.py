@@ -36,7 +36,7 @@ def _empty_stats() -> dict:
     return {
         "schema": SCHEMA,
         "since_utc": _utc_now(),
-        "skips": {"total": 0, "seconds_saved": 0.0, "by_type": {}},
+        "skips": {"total": 0, "seconds_saved": 0.0, "by_type": {}, "by_title": {}},
         "online": {"segments_downloaded": 0, "segments_uploaded": 0},
     }
 
@@ -81,6 +81,26 @@ def _fold_by_type(raw) -> dict:
     return folded
 
 
+def _normalized_titles(raw) -> dict:
+    """``{key: {"name", "skips", "seconds_saved"}}`` with bad rows dropped."""
+    titles = {}
+    if not isinstance(raw, dict):
+        return titles
+    for key, row in raw.items():
+        if not isinstance(key, str) or not key.strip() or not isinstance(row, dict):
+            continue
+        titles[key] = {
+            "name": str(row.get("name") or "").strip(),
+            "skips": _as_int(row.get("skips")),
+            "seconds_saved": _as_float(row.get("seconds_saved")),
+        }
+    return titles
+
+
+def _copy_titles(titles) -> dict:
+    return {key: dict(row) for key, row in (titles or {}).items()}
+
+
 def _normalized(data) -> dict:
     stats = _empty_stats()
     if not isinstance(data, dict):
@@ -94,6 +114,7 @@ def _normalized(data) -> dict:
         by_type = skips.get("by_type")
         if isinstance(by_type, dict):
             stats["skips"]["by_type"] = _fold_by_type(by_type)
+        stats["skips"]["by_title"] = _normalized_titles(skips.get("by_title"))
     online = data.get("online")
     if isinstance(online, dict):
         stats["online"]["segments_downloaded"] = _as_int(
@@ -132,6 +153,7 @@ def load_statistics() -> dict:
                 "total": _cache["skips"]["total"],
                 "seconds_saved": _cache["skips"]["seconds_saved"],
                 "by_type": dict(_cache["skips"]["by_type"]),
+                "by_title": _copy_titles(_cache["skips"]["by_title"]),
             },
             "online": dict(_cache["online"]),
         }
@@ -147,8 +169,12 @@ def _flush() -> None:
     _cache_stamp = file_stamp(_stats_path())
 
 
-def record_skip(segment_label, seconds_saved=0.0) -> None:
-    """Count one skip and the playback time it saved."""
+def record_skip(segment_label, seconds_saved=0.0, title=None) -> None:
+    """Count one skip and the playback time it saved.
+
+    ``title`` is ``(key, name)`` of the show or film (``playback_identity``); its skips and
+    time saved are added up too, for the per-title list in the statistics window.
+    """
     try:
         from segment_types import canonical_type_id
 
@@ -163,6 +189,15 @@ def record_skip(segment_label, seconds_saved=0.0) -> None:
         )
         by_type = _cache["skips"]["by_type"]
         by_type[label] = by_type.get(label, 0) + 1
+        if isinstance(title, (tuple, list)) and len(title) == 2 and title[0]:
+            key, name = str(title[0]), str(title[1] or "").strip()
+            row = _cache["skips"]["by_title"].setdefault(
+                key, {"name": name, "skips": 0, "seconds_saved": 0.0}
+            )
+            if name:
+                row["name"] = name
+            row["skips"] += 1
+            row["seconds_saved"] = round(row["seconds_saved"] + _as_float(seconds_saved), 3)
         _flush()
 
 
@@ -221,6 +256,20 @@ def merge_statistics_from_backup(incoming) -> bool:
         if best_total != local_skips["total"]:
             local_skips["total"] = best_total
             changed = True
+        titles = local_skips["by_title"]
+        for key, row in (incoming_skips.get("by_title") or {}).items():
+            mine = titles.get(key)
+            if mine is None:
+                titles[key] = dict(row)
+                changed = True
+                continue
+            for field in ("skips", "seconds_saved"):
+                if row[field] > mine[field]:
+                    mine[field] = row[field]
+                    changed = True
+            if row["name"] and not mine["name"]:
+                mine["name"] = row["name"]
+                changed = True
         if incoming_skips["seconds_saved"] > local_skips["seconds_saved"]:
             local_skips["seconds_saved"] = incoming_skips["seconds_saved"]
             changed = True

@@ -38,7 +38,6 @@ from skip_dialog_appearance import (
     elapsed_progress_percent as _elapsed_progress_percent,
     elapsed_progress_percent_float as _elapsed_progress_percent_float,
     ending_text_for_segment,
-    format_next_jump_label,
     full_skip_focus_id as _full_skip_focus_id,
     apply_skip_dialog_caps,
     JUMP_LABEL_ARGB,
@@ -59,7 +58,6 @@ from skip_dialog_appearance import (
     resolve_font_color_argb,
     set_skip_button_label as _set_skip_button_label,
     set_skip_info_label as _set_skip_info_label,
-    shadow_for_text as _shadow_for_text,
 )
 from skip_dialog_window_ui import _argb_to_kodi
 
@@ -167,7 +165,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
     def onInit(self):
         try:
-            log_always(f"🔍 onInit called — segment={getattr(self, 'segment', None)}")
+            log(f"🔍 onInit called — segment={getattr(self, 'segment', None)}")
 
             if not hasattr(self, "segment") or not self.segment:
                 log("❌ Segment not set — aborting dialog init")
@@ -177,7 +175,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log_always(f"❌ Error in onInit before segment check (possible Kodi/device limitation): {e}")
             try:
                 self.close()
-            except:
+            except Exception:
                 pass
             return
 
@@ -215,12 +213,12 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         ).strip()
         self._skip_text_color_argb = _skip_dialog_font_color_argb(addon)
         self.setProperty("skip_dialog_text_color", self._skip_text_color_argb)
-        self._skip_all_caps = addon_get_bool(addon, "skip_dialog_all_caps", False) if addon else False
-        log_always(
+        self._skip_all_caps = addon_get_bool(addon, "skip_dialog_all_caps", True) if addon else True
+        log(
             f"Skip dialog font colour: raw={raw_font_color!r} "
             f"resolved={self._skip_text_color_argb} kodi={_argb_to_kodi(self._skip_text_color_argb)}"
         )
-        dialog_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full").strip()
+        dialog_mode = (addon_get_setting_text(addon, "skip_dialog_mode", "CompactFull") or "CompactFull").strip()
         self._minimal_mode = is_minimal_skip_mode(dialog_mode)
         self._compact_mode = is_compact_full_mode(dialog_mode)
         self._combined_mode = bool(addon) and is_compact_combined(AddonSettingsReader(addon))
@@ -228,8 +226,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             (addon_get_setting_text(addon, "minimal_skip_button_format", "Skip + Type") or "Skip + Type")
             if self._minimal_mode
             else (
-                addon_get_setting_text(addon, "skip_button_format", "Skip + Type + Duration")
-                or "Skip + Type + Duration"
+                addon_get_setting_text(addon, "skip_button_format", "Skip + Type")
+                or "Skip + Type"
             )
         )
         dur_content = (
@@ -254,7 +252,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         self.setProperty("skippy_compact_full", "true" if self._compact_mode else "false")
 
         if not self._minimal_mode:
-            hide_close = addon_get_bool(addon, "hide_close_button", False) if addon else False
+            hide_close = addon_get_bool(addon, "hide_close_button", True) if addon else True
             if self._combined_mode:
                 hide_close = True
             self.setProperty("hide_close_button", "true" if hide_close else "false")
@@ -353,7 +351,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             log_always(f"❌ Dialog initialization failed for segment: {getattr(self.segment, 'segment_type_label', 'unknown')}")
             try:
                 self.close()
-            except:
+            except Exception:
                 pass
 
     def _apply_full_skip_layout(self, addon):
@@ -471,7 +469,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                         self._update_combined_fill(current)
                     else:
                         raw_setting = addon_get_setting_text(addon, "show_progress_bar", "")
-                        show_progress = addon_get_bool(addon, "show_progress_bar", False)
+                        show_progress = addon_get_bool(addon, "show_progress_bar", True)
                         countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
                         progress = self.getControl(3014)
                         fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
@@ -687,7 +685,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             except Exception:
                 pass
             _ad = get_addon()
-            show_progress = addon_get_bool(_ad, "show_progress_bar", False) if _ad else False
+            show_progress = addon_get_bool(_ad, "show_progress_bar", True) if _ad else True
             if show_progress:
                 self.getControl(3014).setPercent(0)
                 try:

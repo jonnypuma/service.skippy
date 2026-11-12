@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Optional
+from typing import Optional
 
 from segment_relations import RELATION_NESTED, iter_forward_overlaps
 from settings_utils import addon_get_bool, get_addon

@@ -10,7 +10,6 @@ class TestChapterXmlDefaultPath(unittest.TestCase):
 
     def test_default_write_suffix(self):
         from segment_editor_parser import (
-            CHAPTER_XML_SIDECAR_SUFFIXES,
             DEFAULT_NEW_CHAPTER_XML_SUFFIX,
         )
         from service_sidecar_paths import _default_new_sidecar_chapter_xml_path

@@ -18,7 +18,7 @@ import next_episode_shows_ui as ui
 import service_loop_next_episode as step
 import skippy_profile_backup as backup
 import skippy_profile_store
-from next_episode_state import LOOKUP_FOUND, LOOKUP_IDLE, NextEpisodeState
+from next_episode_state import LOOKUP_FOUND, NextEpisodeState
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -790,13 +790,7 @@ class QuestionTests(_UiTests):
 
 class ManageTests(_UiTests):
     def test_the_rows_name_the_show_and_its_choice(self):
-        self.assertEqual(
-            ui.format_entry_label(None, {"title": "Friends", "mode": "auto"}),
-            "Friends — Play automatically",
-        )
-        self.assertEqual(
-            ui.format_entry_label(None, {"title": "Arrow", "mode": "ask"}), "Arrow — Ask first"
-        )
+        self.assertEqual(ui.entry_row(None, {"title": "Arrow", "mode": "ask"}), ("Arrow", "Ask first"))
 
     def test_the_first_row_adds_a_show_and_the_rest_are_the_saved_shows(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_AUTO, "Friends")
@@ -833,11 +827,6 @@ class ManageTests(_UiTests):
         ui.show_manage_next_episode_shows_modal()
         self.assertEqual(shows.lookup_mode("tv_tmdb_1"), "never")
         self.assertEqual(shows.list_entries()[0]["title"], "Friends")
-
-    def test_the_row_of_a_show_set_to_never_offer_says_so(self):
-        self.assertEqual(
-            ui.format_entry_label(None, {"title": "Arrow", "mode": "never"}), "Arrow — Never offer"
-        )
 
     def test_never_offer_is_preselected_for_such_a_show(self):
         shows.save_mode("tv_tmdb_1", shows.MODE_NEVER, "Friends")

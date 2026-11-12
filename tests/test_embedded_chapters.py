@@ -138,7 +138,7 @@ class LargeSegmentTests(unittest.TestCase):
                 self.pos += len(chunk)
                 return bytearray(chunk)
 
-            def seek(self, offset, whence=0):
+            def seek(self, offset, _whence=0):
                 self.pos = offset
 
             def close(self):
@@ -224,7 +224,6 @@ _CHAPTERS_ID = b"\x10\x43\xa7\x70"
 
 class SeekHeadTests(unittest.TestCase):
     def test_second_seekhead_without_chapters_does_not_hide_first(self):
-        chapters = _chapters_element()
         first = _elem(_SEEKHEAD_ID, _seek_entry(_CHAPTERS_ID, 0))
         second = _elem(_SEEKHEAD_ID, _seek_entry(b"\x16\x54\xae\x6b", 999))
         # first SeekHead says Chapters at rel (after both heads + chapters placed later)
@@ -261,7 +260,7 @@ class SeekHeadTests(unittest.TestCase):
                 self.pos += len(chunk)
                 return bytearray(chunk)
 
-            def seek(self, offset, whence=0):
+            def seek(self, offset, _whence=0):
                 self.pos = offset
 
             def close(self):

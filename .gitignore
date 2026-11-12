@@ -9,3 +9,11 @@ venv/
 *.egg-info/
 .DS_Store
 Thumbs.db
+
+# Personal variants and scratch files (see CLAUDE.md): keep them on disk, out of commits
+*-Jon.*
+_*.png
+tools/_*.py
+
+# Empty template left at the root; the real file lives in the profile folder
+/online_upload_submissions.json

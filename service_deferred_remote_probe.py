@@ -182,8 +182,6 @@ def _playback_allows_deferred_apply(segment_monitor) -> bool:
     if getattr(segment_monitor, "skip_dialog_modal_active", False):
         return False
     try:
-        import xbmcgui
-
         win = get_home_window(segment_monitor)
         if win is None:
             return False

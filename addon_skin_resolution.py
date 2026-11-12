@@ -306,12 +306,6 @@ def get_modal_metrics(layout: ModalDialogLayout | None = None) -> ModalMetrics:
     return _MODAL_METRICS_720P
 
 
-def modal_base_size(resolution: str | None = None) -> tuple[int, int]:
-    """Full-screen canvas for ``WindowDialog`` helpers."""
-    lay = get_modal_dialog_layout()
-    return lay.canvas_w, lay.canvas_h
-
-
 # Exact HD thresholds (historical).
 # Near-HD: windowed / DPI GUIs just under 1920×1080 still get 1080i XML from Kodi
 # (e.g. Windows windowed 1902×973). ~90% of 1920 / soft floor for height.
@@ -338,12 +332,6 @@ def get_addon_skin_resolution() -> str:
     except Exception:
         pass
     return SKIN_RES_720P
-
-
-def get_addon_skin_res_dir(addon_path: str, resolution: str | None = None) -> str:
-    """Path to ``resources/skins/default/<720p|1080i>``."""
-    res = resolution or get_addon_skin_resolution()
-    return os.path.join(addon_path, "resources", "skins", "default", res)
 
 
 def skin_layout_scale(resolution: str | None = None) -> float:

@@ -95,7 +95,6 @@ def _invoke_local_to_online_sync(
     playback_type,
     local_list,
     local_file_found,
-    online_lookup_enabled,
     remote_list,
     segment_monitor,
     segment_player,
@@ -403,7 +402,7 @@ def parse_edl(video_path, update_monitor=True, segment_monitor=None):
     mapping = get_edl_type_map()
     _ig = get_addon()
     ignore_internal = (
-        addon_get_bool(_ig, "ignore_internal_edl_actions", False) if _ig else False
+        addon_get_bool(_ig, "ignore_internal_edl_actions", True) if _ig else True
     )
     log(f"🔧 ignore_internal_edl_actions setting: {ignore_internal}")
 
@@ -584,7 +583,6 @@ def _parse_source_segments_uncached(
                 playback_type,
                 local_list,
                 local_file_found,
-                tv_online,
                 remote_list,
                 segment_monitor,
                 segment_player,
@@ -725,7 +723,6 @@ def _parse_source_segments_uncached(
                 playback_type,
                 local_list,
                 local_file_found,
-                movie_online,
                 remote_list,
                 segment_monitor,
                 segment_player,

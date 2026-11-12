@@ -3,7 +3,6 @@
 
 import os
 
-import xbmc
 import xbmcgui
 import xbmcvfs
 

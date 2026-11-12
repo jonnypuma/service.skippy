@@ -13,18 +13,6 @@ from settings_utils import (
 )
 
 
-def format_title_entry_label(entry: dict) -> str:
-    """One list row: ``Friends — Intro, Recap``."""
-    title = (entry.get("title") or entry.get("key") or "?").strip() or "?"
-    labels = [
-        format_segment_label_for_ui(label)
-        for label in (entry.get("auto_labels") or [])
-    ]
-    if not labels:
-        return title
-    return "%s — %s" % (title, ", ".join(labels))
-
-
 def title_entry_row(entry: dict):
     """``(title, labels)`` for the panel row: the title at the left, its saved types at the right."""
     title = (entry.get("title") or entry.get("key") or "?").strip() or "?"

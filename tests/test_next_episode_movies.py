@@ -12,7 +12,6 @@ from tests.kodi_stubs import install_kodi_stubs
 install_kodi_stubs()
 
 import next_episode_appearance as app
-import next_episode_dialog as dlg_mod
 import next_episode_lookup as lookup
 import next_episode_play as play
 import next_episode_toast as toast

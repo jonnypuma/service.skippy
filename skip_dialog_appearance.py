@@ -202,12 +202,6 @@ def skip_dialog_panel_left_720(align_right: bool) -> int:
     return SKIP_DIALOG_SCREEN_MARGIN_720
 
 
-def skip_progress_bar_width_720(settings) -> int:
-    if is_compact_full_mode(settings.get_text("skip_dialog_mode", SKIP_DIALOG_MODE_FULL)):
-        return COMPACT_SKIP_CONTENT_W_720
-    return FULL_SKIP_PROGRESS_BAR_WIDTH
-
-
 MOCK_STAGE_W_720 = 720
 MOCK_STAGE_H_720 = 540
 FULL_MOCK_W_720 = 430

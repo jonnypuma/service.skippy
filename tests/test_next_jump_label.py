@@ -7,7 +7,7 @@ from tests.kodi_stubs import install_kodi_stubs
 
 install_kodi_stubs()
 
-from skipdialog import format_next_jump_label
+from skip_dialog_appearance import format_next_jump_label
 
 
 class _Addon:

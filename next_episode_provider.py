@@ -27,7 +27,6 @@ from next_episode_lookup import SOURCE_PROVIDER, pick_thumb
 from remote_http import parse_int
 
 SIGNAL_SUFFIX = ".SIGNAL"
-UPNEXT_MESSAGE = "upnext_data"
 # Where the add-on is told to start the next episode when it gave ``play_info`` and no ``play_url``.
 REPLY_SENDER = "upnextprovider"
 REPLY_SUFFIX = "_play_action"

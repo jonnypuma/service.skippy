@@ -27,7 +27,6 @@ from service_online_sidecar_save import (
     _finalize_sidecar_after_update_policy,
     _merge_sidecar_segments,
     _sidecar_update_plan,
-    _update_sidecar_segments,
 )
 
 
@@ -128,7 +127,7 @@ class OnlineSidecarMergeUpdateTests(unittest.TestCase):
             SegmentItem(0.0, 50.0, "intro", source="theintrodb"),
             SegmentItem(80.0, 100.0, "recap", source="theintrodb"),
         ]
-        updated = _update_sidecar_segments(local, online)
+        updated = _sidecar_update_plan(local, online)[1]
         labels = [s.segment_type_label for s in updated]
         self.assertEqual(labels, ["intro"])
         self.assertEqual(updated[0].end_seconds, 50.0)

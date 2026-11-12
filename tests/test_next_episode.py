@@ -17,6 +17,7 @@ import next_episode_lookup as lookup
 import next_episode_play as play
 import next_episode_toast as toast
 import service_loop_next_episode as step
+from service_playback_state import init_playback_session, reset_playback_session
 from next_episode_guard import HANDOFF_GAP_S, WatchChain
 from next_episode_state import (
     LOOKUP_FOUND,
@@ -566,7 +567,9 @@ SETTINGS = {
 
 class HandlerTests(unittest.TestCase):
     def setUp(self):
-        self.monitor = types.SimpleNamespace(next_episode_state=None)
+        # The service monitor as the loop builds it, so a new video can reset it the real way.
+        self.monitor = types.SimpleNamespace()
+        init_playback_session(self.monitor)
         self.ctx = types.SimpleNamespace(monitor=self.monitor, player=_Player())
         self.settings = dict(SETTINGS)
         self.answers = []
@@ -830,6 +833,15 @@ class HandlerTests(unittest.TestCase):
         self.assertEqual(self.tick(1460.0), step.IDLE_TICK)
         self.assertEqual(self.tick(1465.0), step.IDLE_TICK)
 
+    def test_the_tick_says_when_the_prompt_is_due(self):
+        """For the skin property Skippy.NextEpisode.Due, whatever the hide setting."""
+        self.settings["next_episode_hide_skip_dialogs"] = False
+        self.found_state()
+        self.answers = [False]
+        self.assertFalse(self.tick(1000.0).due)
+        self.assertTrue(self.tick(1460.0).due)
+        self.assertTrue(self.tick(1465.0).due)
+
     def test_marking_watched_and_resume_follow_their_settings(self):
         self.settings["next_episode_autoplay"] = True
         self.settings["next_episode_mark_watched"] = False
@@ -889,8 +901,16 @@ class HandlerTests(unittest.TestCase):
         self.tick(1497.0, video=video)
 
     def hand_off(self, video, after=4.0):
-        """Kodi (play next video, a playlist) starts the next video by itself; the old state stays."""
+        """Kodi (play next video, a playlist) starts the next video by itself.
+
+        As in the loop, the new video first resets the playback session, then the next
+        episode step runs.
+        """
         self.now += after
+        reset_playback_session(
+            self.monitor, clear_deferred=lambda _m: None, log_prefix="test", log_fn=lambda *_a: None
+        )
+        self.assertIsNone(self.monitor.next_episode_state)
         self.tick(10.0, video=video)
         state = self.monitor.next_episode_state
         state.lookup = LOOKUP_FOUND
@@ -1038,6 +1058,21 @@ class HandlerTests(unittest.TestCase):
         self.finish_unattended(state, "e2.mkv")
         self.assertEqual(self.still_calls, [False, True])
         self.assertEqual(self.chain().unattended, 2)
+
+    def test_the_old_episodes_watchdog_stands_down_when_the_next_one_starts(self):
+        state = self.new_episode("e1.mkv")
+        event = threading.Event()
+        state.guard_cancel = event
+        self.hand_off("e2.mkv")
+        self.assertTrue(event.is_set())
+
+    def test_starting_the_same_video_over_is_not_a_hand_off(self):
+        state = self.new_episode("e1.mkv")
+        self.finish_unattended(state, "e1.mkv")
+        self.play_out("e1.mkv")
+        self.assertEqual(self.chain().unattended, 1)
+        self.hand_off("e1.mkv")
+        self.assertEqual(self.chain().unattended, 0)
 
     def test_a_video_started_after_a_long_gap_starts_the_count_over(self):
         state = self.new_episode("e1.mkv")

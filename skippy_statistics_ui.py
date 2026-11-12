@@ -41,6 +41,44 @@ def _name_value_row(line, value):
     return PanelRow(line)
 
 
+# The per-title list stops here; the rest is summed in one "and N more" line.
+MAX_TITLE_ROWS = 25
+
+
+def titles_by_time_saved(by_title):
+    """``[(name, seconds_saved, skips)]`` most time saved first; nameless rows dropped."""
+    rows = []
+    for key, row in (by_title or {}).items():
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get("name") or "").strip() or str(key).split(":", 1)[-1]
+        if not name:
+            continue
+        try:
+            seconds = float(row.get("seconds_saved") or 0.0)
+            skips = int(row.get("skips") or 0)
+        except (TypeError, ValueError):
+            continue
+        rows.append((name, seconds, skips))
+    rows.sort(key=lambda r: (-r[1], -r[2], r[0].lower()))
+    return rows
+
+
+def _title_lines(addon, by_title):
+    """``(name, value)`` pairs for the per-title section, capped at :data:`MAX_TITLE_ROWS`."""
+    titles = titles_by_time_saved(by_title)
+    out = [(name, format_saved_time(addon, seconds)) for name, seconds, _ in titles[:MAX_TITLE_ROWS]]
+    rest = titles[MAX_TITLE_ROWS:]
+    if rest:
+        out.append(
+            (
+                get_localized(addon, 48001, "And %d more", len(rest)),
+                format_saved_time(addon, sum(seconds for _, seconds, _ in rest)),
+            )
+        )
+    return out
+
+
 def build_statistics_rows(addon, stats=None):
     """``(rows, footnote)`` for the statistics panel: name at the left, value at the right."""
     from skippy_panel_ui import PanelRow
@@ -65,6 +103,12 @@ def build_statistics_rows(addon, stats=None):
             rows.append(PanelRow(format_segment_label_for_ui(label), str(int(count))))
     else:
         rows.append(PanelRow(get_localized(addon, 44027, "No skips recorded yet")))
+    titles = _title_lines(addon, skips.get("by_title"))
+    if titles:
+        title_heading = get_localized(addon, 48000, "Time saved by show or film:")
+        rows.append(PanelRow(title_heading.rstrip().rstrip(":\uff1a").rstrip(), header=True))
+        for name, value in titles:
+            rows.append(PanelRow(name, value))
     rows.append(PanelRow("", header=True))
     rows.append(
         _name_value_row(
@@ -104,6 +148,10 @@ def build_statistics_text(addon, stats=None) -> str:
             lines.append("  • %s: %d" % (format_segment_label_for_ui(label), count))
     else:
         lines.append("  • %s" % get_localized(addon, 44027, "No skips recorded yet"))
+    titles = _title_lines(addon, skips.get("by_title"))
+    if titles:
+        lines.extend(["", get_localized(addon, 48000, "Time saved by show or film:")])
+        lines.extend("  • %s: %s" % (name, value) for name, value in titles)
 
     lines.extend(
         [

@@ -27,7 +27,7 @@ Run generators from the add-on root:
 
 Layout changes: edit `720p`, then run `gen_skin_1080i.py` (add `--overwrite` only when you mean it). The user runs 1080i.
 
-Strings: add the new id to `resources/language/resource.language.en_gb/strings.po`, then to every other folder under `resources/language/` (10 languages). Folder names must be Kodi's language add-on ids (`resource.language.de_de`, `resource.language.pt_br`, ...), never English names such as `German`: Kodi 23 nightlies no longer find those, and then every settings label is blank (`tests/test_language_pack_sync.py` guards this). Ids used so far reach 47154 (47000-47154 is the Next episode block). `addon.xml` also carries translated `<summary>` / `<description>` per language.
+Strings: add the new id to `resources/language/resource.language.en_gb/strings.po`, then to every other folder under `resources/language/` (10 languages). Folder names must be Kodi's language add-on ids (`resource.language.de_de`, `resource.language.pt_br`, ...), never English names such as `German`: Kodi 23 nightlies no longer find those, and then every settings label is blank (`tests/test_language_pack_sync.py` guards this). Ids used so far reach 48046 (47000-47154 is the Next episode block; 48000-48046 statistics per title, Current video and binge mode). `addon.xml` also carries translated `<summary>` / `<description>` per language.
 
 Do not add files named `_*.png`, `tools/_*.py` or `*-Jon.*` to commits — they are scratch/personal files.
 
@@ -43,7 +43,7 @@ Migration rules when changing any of that:
 
 - Settings keys: never rename or reuse an id without reading the old value on first run. `segment_types.migrate_from_legacy_settings` shows the pattern (first 7.0 run converts old settings into the catalog).
 - Profile JSON: keep reads tolerant (missing keys → defaults); never drop unknown keys on write.
-- Backups: `settings_backup.py`, `skippy_profile_backup.py` and `upload_history_backup.py` import older backups. Keep older formats importable and cover changes with tests.
+- Backups: `settings_backup.py` and `skippy_profile_backup.py` import older backups (the profile backup also reads the old upload-history-only files). Keep older formats importable and cover changes with tests.
 - Saved presets are matched **by values** (`detect_preset`), so two built-in presets with identical values break apply → detect.
 
 ## Tests
@@ -51,16 +51,30 @@ Migration rules when changing any of that:
 Offline unit tests with Kodi stubbed (`tests/kodi_stubs.py`); no Kodi needed. From the add-on root:
 
 ```
-python3 -m unittest discover -s tests
+python3 -m unittest discover -s tests -t .
 ```
 
-Run one module: `python3 -m unittest tests.test_skin_resolution_sync`. Always run the full suite before finishing (about 420 tests, a few seconds).
+Run one module: `python3 -m unittest tests.test_skin_resolution_sync`. Always run the full suite before finishing (about 1,700 tests, under half a minute).
+
+`tests/test_lint_undefined_names.py` fails on any name a module uses but never defines or imports (a standard-library check that always runs, plus pyflakes when it is installed). Tests that touch sidecar or keymap files use `tests/fake_vfs.py`, a stand-in for `xbmcvfs` that reads and writes a temp folder (it can also fail writes and skip truncation, like a network share). `tests/test_setting_defaults_match.py` fails when a default written in the code (`addon_get_bool(addon, key, default)` and friends) differs from `resources/settings.xml`; change both together.
+
+`tests/test_strings_used_exist.py` fails when the code asks for a string id (`get_localized`, `getLocalizedString`, `_T`, `_t`) that is missing from a language, or whose placeholders differ from English. Dialogs built in Python (`skippy_editor_modal_skin.py`, `segment_editor_dialog.py`) are tested through `tests/fake_gui.py`, a stand-in for `xbmcgui` that keeps labels, focus, scrolling and positions; `fake_gui.load(module, test)` imports a fresh copy of a module against it.
 
 Notable guards: `test_language_pack_sync.py` (every language has the same ids and English `msgid`s), `test_skin_resolution_sync.py` (1080i matches 720p, label offsets), `test_skip_dialog_presets.py` (apply → detect round trip), `test_progress_tiled_bar.py`.
 
+### Lint and coverage
+
+Run these before finishing a change that touches Python (install once with `pip install --user pyflakes vulture coverage`):
+
+| Command | Expect |
+|---|---|
+| `python3 tools/lint.py` | Exit 0, nothing printed. It runs pyflakes over every `.py` file except `-Jon` and `tools/_*` scratch files, and skips re-exports marked `# noqa: F401` (the `remote_segments.py` facade and friends). An undefined name is a crash waiting for its code path (`tests/test_lint_undefined_names.py` also catches those); unused imports and variables get removed. |
+| `python3 -m vulture . --exclude '*-Jon*' --min-confidence 80` | Nothing. Below 80 it lists Kodi callbacks (`onInit`, `onClick`, `onAction`, `onNotification`), which Kodi calls by name. |
+| `python3 -m coverage run --source=. --omit='tests/*,tools/*' -m unittest discover -s tests -t .` then `python3 -m coverage report` | Total does not drop (64% after 7.11.6). New code that writes files or talks to a server gets a test that runs it. |
+
 ## Verifying in Kodi
 
-Python and skin XML are cached by Kodi: after changing Python or a skip-dialog XML, restart Kodi, or disable then enable the add-on from its info page. The Customize modal reloads its own XML each time it opens. A running service does not pick up `.py` edits.
+Python and skin XML are cached by Kodi: after changing Python or a skip-dialog XML, restart Kodi, or disable then enable the add-on from its info page. The Full skip dialog must open from the add-on path: the textures it gets from window properties and from Python (`setImage`) are bare file names that Kodi looks up in the `media` folder next to the XML it loaded. Opening it from a copy elsewhere loses them (tried in 7.11.6, reverted). The Customize modal reloads its own XML each time it opens. A running service does not pick up `.py` edits.
 
 Skip-dialog notes learned the hard way:
 

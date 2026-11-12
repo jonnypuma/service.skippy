@@ -9,7 +9,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from settings_utils import skippy_notification_icon
+from settings_utils import get_localized, skippy_notification_icon
 
 
 ADDON_ID = "service.skippy"
@@ -306,8 +306,8 @@ def install_editor_keymap(addon=None, notify=False):
         if notify:
             icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
-                "Skippy",
-                "Segment editor keymap updated",
+                get_localized(addon or get_addon(), 43000, "Skippy"),
+                get_localized(addon or get_addon(), 35051, "Segment editor keymap updated"),
                 icon=icon,
                 time=2500,
                 sound=False,
@@ -318,8 +318,8 @@ def install_editor_keymap(addon=None, notify=False):
         if notify:
             icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
-                "Skippy",
-                "Could not update editor keymap",
+                get_localized(addon or get_addon(), 43000, "Skippy"),
+                get_localized(addon or get_addon(), 35052, "Could not update editor keymap"),
                 icon=icon,
                 time=3500,
                 sound=False,
@@ -357,8 +357,8 @@ def install_marker_keymap(addon=None, notify=False):
         if notify:
             icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
-                "Skippy",
-                "Segment marker keymap updated",
+                get_localized(addon or get_addon(), 43000, "Skippy"),
+                get_localized(addon or get_addon(), 35049, "Segment marker keymap updated"),
                 icon=icon,
                 time=2500,
                 sound=False,
@@ -369,8 +369,8 @@ def install_marker_keymap(addon=None, notify=False):
         if notify:
             icon = skippy_notification_icon(addon or get_addon())
             xbmcgui.Dialog().notification(
-                "Skippy",
-                "Could not update marker keymap",
+                get_localized(addon or get_addon(), 43000, "Skippy"),
+                get_localized(addon or get_addon(), 35050, "Could not update marker keymap"),
                 icon=icon,
                 time=3500,
                 sound=False,

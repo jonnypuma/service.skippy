@@ -17,7 +17,6 @@ from next_episode_look import (
     KEY_TEXT_COLOR,
     LOOK_CHOICES,
     LOOK_DEFAULT,
-    LOOK_LABELS,
     OVERRIDE_KEYS,
     override_options,
 )

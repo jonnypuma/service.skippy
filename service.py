@@ -1,13 +1,9 @@
-import os
 import time
-import json
 import re
 import traceback
 from collections import namedtuple
 import xbmc
-import xbmcgui
 import xbmcvfs
-import xbmcaddon
 
 from settings_utils import (
     addon_get_bool,
@@ -16,7 +12,6 @@ from settings_utils import (
     log,
     log_always,
     log_service_detail,
-    parse_kodi_jsonrpc_raw,
     skippy_ignores_playback,
     skippy_notification_icon,
 )
@@ -101,22 +96,16 @@ class PlayerMonitor(xbmc.Monitor):
                 note_upnext_data(self, sender, method, data)
                 return
 
-            try:
-                if isinstance(data, str):
-                    data_lower = data.lower()
-                elif data is not None:
-                    data_lower = str(data).lower()
-                else:
-                    data_lower = ""
-            except Exception:
-                data_lower = ""
+            # Only the method name counts. The data of any other add-on's notification may
+            # happen to contain the words; that must not open the editor.
+            if method.endswith("skip_current"):
+                # A skin's own skip button (RunScript(service.skippy,skip_current)).
+                from service_loop_skip import request_skip_current
 
-            if (
-                method == "open_segment_editor"
-                or method == "Other.open_segment_editor"
-                or method.endswith("open_segment_editor")
-                or "open_segment_editor" in data_lower
-            ):
+                request_skip_current(self)
+                return
+
+            if method.endswith("open_segment_editor"):
                 log_always("Open segment editor (IPC / NotifyAll)")
                 from segment_editor_session import open_segment_editor
 
@@ -169,8 +158,13 @@ def get_video_file():
 
     Live TV, PVR, and remote stream URLs return None before any VFS stat. There is no
     segment file beside those URLs, and ``xbmcvfs.exists`` on http(s) opens a connection.
+
+    The path is checked once per playback, not every tick: on NFS or SMB each
+    ``xbmcvfs.exists`` is a network round trip. A new path, or no video at all, starts over.
     """
+    global _confirmed_video_path, _missing_video_path
     if skippy_ignores_playback():
+        _confirmed_video_path = None
         return None
     path = None
     try:
@@ -179,13 +173,28 @@ def get_video_file():
     except RuntimeError:
         path = None
     if not path or skippy_ignores_playback(path):
+        _confirmed_video_path = None
+        _missing_video_path = None
         return None
-
-    if xbmcvfs.exists(path):
+    if path == _confirmed_video_path:
         return path
 
-    log(f"❓ Unrecognized or inaccessible path: {path}")
+    if xbmcvfs.exists(path):
+        _confirmed_video_path = path
+        _missing_video_path = None
+        return path
+
+    _confirmed_video_path = None
+    if path != _missing_video_path:
+        _missing_video_path = path
+        log(f"❓ Unrecognized or inaccessible path: {path}")
     return None
+
+
+# The path ``get_video_file`` last found on disk (stat skipped while it keeps playing),
+# and the last one it could not find (logged once).
+_confirmed_video_path = None
+_missing_video_path = None
 
 
 SkipUiSuppression = namedtuple(

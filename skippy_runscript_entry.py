@@ -62,6 +62,18 @@ def main():
             return
 
         # --- Statistics / per-title overrides ---
+        if command == "skip_current":
+            # The service does the skip (it knows the segments and counts it); a
+            # notification reaches it within a second.
+            import xbmc
+
+            xbmc.executebuiltin("NotifyAll(service.skippy,skip_current)")
+            return
+        if command == "show_diagnostics":
+            from skippy_diagnostics_ui import show_diagnostics_modal
+
+            show_diagnostics_modal()
+            return
         if command == "show_statistics":
             from skippy_statistics_ui import show_statistics_modal
 
@@ -202,9 +214,28 @@ def main():
                 )
             return
 
+        if command:
+            # A command this version does not know (a typo, an old or future button, another
+            # add-on or skin calling Skippy): do nothing. Only the hotkey, which passes no
+            # command, may mark a segment.
+            _log_unknown_command(command)
+            return
+
     import segment_marker
 
     segment_marker.main()
+
+
+def _log_unknown_command(command):
+    try:
+        import xbmc
+
+        xbmc.log(
+            "[service.skippy] RunScript: unknown command %r ignored (no segment marked)" % command,
+            xbmc.LOGWARNING,
+        )
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

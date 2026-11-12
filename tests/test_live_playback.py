@@ -112,6 +112,37 @@ class ServiceVideoFileTests(unittest.TestCase):
                 self.assertEqual(self.service.get_video_file(), "smb://nas/movie.mkv")
         exists.assert_called_once_with("smb://nas/movie.mkv")
 
+    def _play(self, path):
+        self.service.player = MagicMock()
+        self.service.player.isPlayingVideo.return_value = bool(path)
+        self.service.player.getPlayingFile.return_value = path
+
+    def test_path_is_statted_once_per_playback(self):
+        self._play("nfs://nas/tv/show.mkv")
+        with patch.object(self.service.xbmc, "getCondVisibility", return_value=False), \
+                patch.object(self.service.xbmcvfs, "exists", return_value=True) as exists:
+            for _ in range(5):
+                self.assertEqual(self.service.get_video_file(), "nfs://nas/tv/show.mkv")
+            self.assertEqual(exists.call_count, 1)
+            self._play("nfs://nas/tv/next.mkv")
+            self.service.get_video_file()
+            self.assertEqual(exists.call_count, 2)
+            self._play("")  # stopped
+            self.assertIsNone(self.service.get_video_file())
+            self._play("nfs://nas/tv/next.mkv")  # same file again: checked again
+            self.service.get_video_file()
+            self.assertEqual(exists.call_count, 3)
+
+    def test_missing_path_is_retried_and_logged_once(self):
+        self._play("nfs://nas/tv/gone.mkv")
+        with patch.object(self.service.xbmc, "getCondVisibility", return_value=False), \
+                patch.object(self.service.xbmcvfs, "exists", return_value=False) as exists, \
+                patch.object(self.service, "log") as log:
+            for _ in range(3):
+                self.assertIsNone(self.service.get_video_file())
+        self.assertEqual(exists.call_count, 3)
+        self.assertEqual(log.call_count, 1)
+
 
 class EditorVideoFileTests(unittest.TestCase):
     def setUp(self):

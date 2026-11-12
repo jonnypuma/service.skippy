@@ -6,7 +6,6 @@ import xml.etree.ElementTree as ET
 from settings_utils import addon_get_bool, addon_get_setting_text, get_addon, log
 from skip_dialog_appearance import (
     button_focus_nine_slice_border,
-    is_minimal_plate_filename,
     is_minimal_skip_mode,
 )
 
@@ -18,19 +17,10 @@ _SKIP_DIALOG_FULL_FILES = (
 )
 _FULL_MODE_PROGRESS_ID = "3014"
 _FULL_MODE_SMOOTH_FILL_ID = "3031"
-_FULL_MODE_TILED_FILL_ID = "3032"
-_SKIP_DIALOG_MINIMAL_FILES = (
-    "Minimal_Skip_Dialog_BottomRight.xml",
-    "Minimal_Skip_Dialog_BottomLeft.xml",
-    "Minimal_Skip_Dialog_TopLeft.xml",
-    "Minimal_Skip_Dialog_TopRight.xml",
-)
 _FULL_MODE_BUTTON_IDS = frozenset({"3012", "3013", "3015", "3016"})
-_MINIMAL_PLATE_IMAGE_ID = "3021"
 _DEFAULT_SKIP_DIALOG_CORNER = "Bottom Right"
 
 _last_full_skip_textures = (None, None, None)
-_last_minimal_plate_texture = None
 
 
 def _skip_dialog_layout_suffix(addon, setting_id):
@@ -105,20 +95,17 @@ def warm_skip_dialog_skin_textures(addon=None):
     ad = addon or get_addon()
     if not ad:
         return
-    mode = (addon_get_setting_text(ad, "skip_dialog_mode", "Full") or "Full").strip()
+    mode = (addon_get_setting_text(ad, "skip_dialog_mode", "CompactFull") or "CompactFull").strip()
     if is_minimal_skip_mode(mode):
-        plate = (addon_get_setting_text(ad, "minimal_button_style", "") or "").strip()
-        if not is_minimal_plate_filename(plate):
-            plate = "minimal_rounded_gray_640.png"
-        _update_minimal_skip_dialog_textures(plate)
+        # The Minimal plate is set per dialog by apply_minimal_skip_layout; no skin file to write.
         return
     focus_texture_file = addon_get_setting_text(ad, "button_focus_style", "") or ""
     mid_texture_file = addon_get_setting_text(ad, "progress_bar_style", "") or ""
     if not focus_texture_file:
-        focus_texture_file = "button_focus.png"
-    if not is_minimal_skip_mode(mode) and addon_get_bool(ad, "compact_full_combined", False):
+        focus_texture_file = "button_focus_flat_teal.png"
+    if not is_minimal_skip_mode(mode) and addon_get_bool(ad, "compact_full_combined", True):
         focus_texture_file = "-"
-    elif addon_get_bool(ad, "hide_close_button", False) and not addon_get_bool(
+    elif addon_get_bool(ad, "hide_close_button", True) and not addon_get_bool(
         ad, "show_skip_button_focus_texture", True
     ):
         focus_texture_file = "-"
@@ -182,9 +169,3 @@ def _update_full_skip_dialog_textures(focus_texture_path, mid_texture_path=None,
             )
     except Exception as e:
         log(f"⚠️ Failed to update Full skip dialog XML: {e}")
-
-
-def _update_minimal_skip_dialog_textures(texture_filename):
-    """No-op: the Minimal plate is set per dialog by ``apply_minimal_skip_layout`` as a
-    pre-rendered variant for the plate's width, so the skin XML is no longer rewritten."""
-    return None

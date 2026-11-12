@@ -9,10 +9,8 @@ Flow:
 
 State is stored in Window(10000) properties to persist across invocations.
 """
-import json
 import os
 import stat
-import sys
 import time
 import unicodedata
 import xml.etree.ElementTree as ET
@@ -25,8 +23,8 @@ import xbmcvfs
 from edl_format import EDL_DEFAULT_ACTION, parse_edl_line
 from keymap_utils import install_marker_keymap
 from segment_editor_parser import (
-    CHAPTER_XML_SIDECAR_SUFFIXES,
     DEFAULT_NEW_CHAPTER_XML_SUFFIX,
+    normalize_matroska_chapter_xml_text,
     safe_file_write,
 )
 from segment_editor_utils import (
@@ -693,16 +691,6 @@ def marker_chapters_xml_path(video_path):
     return f"{base}{DEFAULT_NEW_CHAPTER_XML_SUFFIX}"
 
 
-def backup_marker_files_for_save_format(video_path, save_format, enabled):
-    """Back up existing sidecars selected by the marker Save format setting."""
-    if not enabled:
-        return
-    if save_format in ("Both", "EDL"):
-        backup_existing_file(marker_edl_path(video_path), True)
-    if save_format in ("Both", "XML"):
-        backup_existing_file(marker_chapters_xml_path(video_path), True)
-
-
 def normalize_marker_policy(policy):
     value = (policy or _MARKER_POLICY_MERGE).strip()
     aliases = {
@@ -752,7 +740,7 @@ def existing_xml_overlaps(video_path, start, end):
     if not xbmcvfs.exists(xml_path):
         return False
     try:
-        root = ET.fromstring(read_vfs_text(xml_path))
+        root = ET.fromstring(normalize_matroska_chapter_xml_text(read_vfs_text(xml_path)))
         for atom in root.findall(".//ChapterAtom"):
             parsed_range = chapter_atom_range(atom)
             if parsed_range and ranges_overlap(start, end, parsed_range[0], parsed_range[1]):
@@ -975,7 +963,9 @@ def save_to_chapters_xml(
             xml_path = candidate_xml_path
         
         if xml_path and policy != _MARKER_POLICY_REPLACE:
-            content = read_vfs_text(xml_path)
+            # The same clean-up as the reader (BOM, doubled declaration), so a file Skippy can
+            # read is also a file the marker can add to.
+            content = normalize_matroska_chapter_xml_text(read_vfs_text(xml_path))
             existing_root = ET.fromstring(content)
         elif xml_path and policy == _MARKER_POLICY_REPLACE:
             log("Replacing existing chapters.xml contents with newly marked segment")

@@ -28,6 +28,203 @@ msgstr "Registro de depuração"
 
 # Segment Settings
 
+# Settings: spinner option labels (positions, save policies, formats, modes)
+msgctxt "#30100"
+msgid "EDL only"
+msgstr "Somente EDL"
+
+msgctxt "#30101"
+msgid "Chapters XML only"
+msgstr "Somente XML de capítulos"
+
+msgctxt "#30102"
+msgid "Skip if exists"
+msgstr "Pular se existir"
+
+msgctxt "#30103"
+msgid "Overwrite (no prompt)"
+msgstr "Substituir (sem perguntar)"
+
+msgctxt "#30104"
+msgid "Overwrite (ask first)"
+msgstr "Substituir (perguntar antes)"
+
+msgctxt "#30105"
+msgid "Merge with existing"
+msgstr "Mesclar com o existente"
+
+msgctxt "#30106"
+msgid "Update (no prompt)"
+msgstr "Atualizar (sem perguntar)"
+
+msgctxt "#30107"
+msgid "Update (ask first)"
+msgstr "Atualizar (perguntar antes)"
+
+msgctxt "#30108"
+msgid "Update All (no prompt)"
+msgstr "Atualizar tudo (sem perguntar)"
+
+msgctxt "#30109"
+msgid "Update All (ask first)"
+msgstr "Atualizar tudo (perguntar antes)"
+
+msgctxt "#30110"
+msgid "Native"
+msgstr "Nativo"
+
+msgctxt "#30111"
+msgid "Skip + Type"
+msgstr "Pular + tipo"
+
+msgctxt "#30112"
+msgid "Skip + Type + Duration"
+msgstr "Pular + tipo + duração"
+
+msgctxt "#30113"
+msgid "Short (1m30s)"
+msgstr "Curta (1m30s)"
+
+msgctxt "#30114"
+msgid "Clock (01:30)"
+msgstr "Relógio (01:30)"
+
+msgctxt "#30115"
+msgid "Dismiss"
+msgstr "Dispensar"
+
+msgctxt "#30116"
+msgid "Full"
+msgstr "Completo"
+
+msgctxt "#30117"
+msgid "Minimal"
+msgstr "Mínimo"
+
+msgctxt "#30118"
+msgid "Bottom Right"
+msgstr "Inferior direito"
+
+msgctxt "#30119"
+msgid "Top Right"
+msgstr "Superior direito"
+
+msgctxt "#30120"
+msgid "Top Left"
+msgstr "Superior esquerdo"
+
+msgctxt "#30121"
+msgid "Bottom Left"
+msgstr "Inferior esquerdo"
+
+msgctxt "#30122"
+msgid "Total segment time"
+msgstr "Tempo total do segmento"
+
+msgctxt "#30123"
+msgid "Elapsed (count up)"
+msgstr "Decorrido (contagem crescente)"
+
+msgctxt "#30124"
+msgid "Remaining (count down)"
+msgstr "Restante (contagem regressiva)"
+
+msgctxt "#30125"
+msgid "Elapsed / Total"
+msgstr "Decorrido / total"
+
+msgctxt "#30126"
+msgid "Native toast"
+msgstr "Notificação nativa"
+
+msgctxt "#30127"
+msgid "Default"
+msgstr "Padrão"
+
+msgctxt "#30128"
+msgid "Same as skip dialog"
+msgstr "Igual ao diálogo de pulo"
+
+msgctxt "#30129"
+msgid "TheIntroDB first"
+msgstr "TheIntroDB primeiro"
+
+msgctxt "#30130"
+msgid "IntroDB.app first"
+msgstr "IntroDB.app primeiro"
+
+msgctxt "#30131"
+msgid "Local first"
+msgstr "Local primeiro"
+
+msgctxt "#30132"
+msgid "Online first"
+msgstr "Online primeiro"
+
+msgctxt "#30133"
+msgid "Leave unchanged (no chmod)"
+msgstr "Deixar inalterado (sem chmod)"
+
+msgctxt "#30134"
+msgid "World-readable (644)"
+msgstr "Legível por todos (644)"
+
+msgctxt "#30135"
+msgid "World-writable (666)"
+msgstr "Gravável por todos (666)"
+
+msgctxt "#30136"
+msgid "Merge non-overlapping"
+msgstr "Mesclar os não sobrepostos"
+
+msgctxt "#30137"
+msgid "Keep both (old starts after new)"
+msgstr "Manter ambos (o antigo começa após o novo)"
+
+msgctxt "#30138"
+msgid "Overwrite overlapping"
+msgstr "Substituir os sobrepostos"
+
+msgctxt "#30139"
+msgid "Append always"
+msgstr "Sempre acrescentar"
+
+msgctxt "#30140"
+msgid "Replace file"
+msgstr "Substituir arquivo"
+
+msgctxt "#30141"
+msgid "Ask each time"
+msgstr "Perguntar sempre"
+
+msgctxt "#30142"
+msgid "Normal press"
+msgstr "Toque normal"
+
+msgctxt "#30143"
+msgid "Long press"
+msgstr "Toque longo"
+
+msgctxt "#30144"
+msgid "Ask"
+msgstr "Perguntar"
+
+msgctxt "#30145"
+msgid "Errors only"
+msgstr "Somente erros"
+
+msgctxt "#30146"
+msgid "All detail"
+msgstr "Todos os detalhes"
+
+msgctxt "#30147"
+msgid "Custom"
+msgstr "Personalizado"
+
+msgctxt "#30148"
+msgid "Normal"
+msgstr "Normal"
+
 msgctxt "#31001"
 msgid "Skip Behavior Preferences"
 msgstr "Preferências de comportamento de pulo"
@@ -72,38 +269,38 @@ msgctxt "#31014"
 msgid "When TV segment priority is Online first and TV online lookup is on, Skippy resolves the next library episode (same show: next episode in season, or first episode of the next season) and downloads merged online intro/recap segments in the background. Segments apply only when you start that exact file (path + ids must match). Verbose logging (All detail) logs prefetch schedule, store, and handoff. Not used for Local first. Never prefetches local sidecars."
 msgstr "Quando a prioridade de segmentos de séries é “Online primeiro” e a busca online de séries está ativada, o Skippy identifica o próximo episódio da biblioteca (mesma série: próximo episódio da temporada, ou primeiro da temporada seguinte) e baixa em segundo plano os segmentos online combinados de abertura/recapitulação. Os segmentos só são aplicados quando você inicia exatamente esse arquivo (caminho + IDs devem coincidir). O registro detalhado (Todos os detalhes) registra agendamento, armazenamento e repasse do pré-carregamento. Não é usado em “Local primeiro”. Nunca pré-carrega sidecars locais."
 
+msgctxt "#31015"
+msgid "Skippy will ignore any EDL segment whose action type is not mapped in Segment types (including legacy read aliases). This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'."
+msgstr "O Skippy ignora qualquer segmento EDL cujo tipo de ação não esteja mapeado em Tipos de segmento (incluindo apelidos de leitura antigos). Isso inclui os tipos de ação internos do Kodi e quaisquer tipos desconhecidos ou personalizados sem um rótulo definido. Se desativado, eles recebem o rótulo 'Segment'."
+
+msgctxt "#31016"
+msgid "Configurable overlap detection to help avoid redundant or conflicting skips"
+msgstr "Detecção de sobreposição para evitar pulos repetidos ou conflitantes"
+
+msgctxt "#31017"
+msgid "If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons."
+msgstr "Se a reprodução voltar mais do que este limite, os avisos de pulo são redefinidos. Ajuda a evitar acionamentos falsos causados por buffer ou complementos que retrocedem automaticamente."
+
+msgctxt "#31018"
+msgid "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode."
+msgstr "Mostrar uma notificação se nenhum arquivo sidecar legível (.edl ou chapters.xml) for encontrado para o episódio atual."
+
+msgctxt "#31019"
+msgid "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie."
+msgstr "Mostrar uma notificação se nenhum arquivo sidecar legível (.edl ou chapters.xml) for encontrado para o filme atual."
+
+msgctxt "#31020"
+msgid "Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments."
+msgstr "Mostrar uma notificação se o arquivo sidecar (.edl ou chapters.xml) tiver segmentos sobrepostos."
+
+msgctxt "#31021"
+msgid "Show a toast notification if a segment is skipped."
+msgstr "Mostrar uma notificação breve quando um segmento for pulado."
+
 # Dialog Settings
 msgctxt "#32000"
 msgid "Button Focus Style"
 msgstr "Estilo de foco do botão"
-
-msgctxt "#32001"
-msgid "Default"
-msgstr "Padrão"
-
-msgctxt "#32002"
-msgid "Aqua"
-msgstr "Água"
-
-msgctxt "#32003"
-msgid "Aqua Bevel"
-msgstr "Água com relevo"
-
-msgctxt "#32004"
-msgid "Aqua Dark"
-msgstr "Água escuro"
-
-msgctxt "#32005"
-msgid "Aqua Vignette"
-msgstr "Água com vinheta"
-
-msgctxt "#32012"
-msgid "Aqua Rounded"
-msgstr "Água arredondado"
-
-msgctxt "#32006"
-msgid "Blue"
-msgstr "Azul"
 
 msgctxt "#32007"
 msgid "Show Progress Bar in Skip Dialog"
@@ -406,10 +603,6 @@ msgctxt "#35000"
 msgid "Replace local files with online segment data?"
 msgstr "Substituir os arquivos locais pelos dados de segmentos online?"
 
-msgctxt "#35001"
-msgid "A sidecar file already exists for this video. Replace it with online segments only? (Existing content will be lost unless you enabled backup or chose Merge in settings.)"
-msgstr "Já existe um arquivo sidecar para este vídeo. Substituí-lo apenas pelos segmentos online? (O conteúdo existente será perdido, a menos que você tenha ativado o backup ou escolhido Mesclar nas configurações.)"
-
 msgctxt "#35002"
 msgid "Replace local chapter XML and EDL with online data?"
 msgstr "Substituir o XML de capítulos e o EDL locais pelos dados online?"
@@ -521,6 +714,90 @@ msgstr "Desativado"
 msgctxt "#35031"
 msgid "If you accept, this sidecar will contain:"
 msgstr "Se você aceitar, este sidecar conterá:"
+
+msgctxt "#35032"
+msgid "(empty)"
+msgstr "(vazio)"
+
+msgctxt "#35033"
+msgid "… +%d more"
+msgstr "… +%d mais"
+
+msgctxt "#35034"
+msgid "No overlapping segment types to update — local times already match."
+msgstr "Nenhum tipo de segmento sobreposto para atualizar — os tempos locais já coincidem."
+
+msgctxt "#35035"
+msgid "Planned time updates (local label kept):"
+msgstr "Mudanças de tempo previstas (rótulo local mantido):"
+
+msgctxt "#35036"
+msgid "(online %s from %s)"
+msgstr "(online %s de %s)"
+
+msgctxt "#35037"
+msgid "… +%d more change(s)"
+msgstr "… +%d mudança(s) a mais"
+
+msgctxt "#35038"
+msgid "Overwrite replaces the file with online windows only. Comparison:"
+msgstr "Substituir troca o arquivo apenas pelos intervalos online. Comparação:"
+
+msgctxt "#35039"
+msgid "Online-only type %s"
+msgstr "Tipo só online %s"
+
+msgctxt "#35040"
+msgid "no same-type local entry"
+msgstr "nenhuma entrada local do mesmo tipo"
+
+msgctxt "#35041"
+msgid "%s  local %s – %s  →  online (%s) %s – %s"
+msgstr "%s  local %s – %s  →  online (%s) %s – %s"
+
+msgctxt "#35042"
+msgid "Local-only rows (will be removed on overwrite): %d"
+msgstr "Linhas só locais (serão removidas ao substituir): %d"
+
+msgctxt "#35043"
+msgid "(message truncated)"
+msgstr "(mensagem cortada)"
+
+msgctxt "#35044"
+msgid "[Chapters XML] Currently %d chapter(s); online returns %d window(s)."
+msgstr "[Chapters XML] Agora %d capítulo(s); online retorna %d intervalo(s)."
+
+msgctxt "#35045"
+msgid "[EDL] Currently %d row(s); online returns %d window(s)."
+msgstr "[EDL] Agora %d linha(s); online retorna %d intervalo(s)."
+
+msgctxt "#35046"
+msgid "No online segment windows in this response."
+msgstr "Nenhum segmento online nesta resposta."
+
+msgctxt "#35047"
+msgid "[Online lookup]"
+msgstr "[Busca online]"
+
+msgctxt "#35048"
+msgid "%s — %d window(s):"
+msgstr "%s — %d intervalo(s):"
+
+msgctxt "#35049"
+msgid "Segment marker keymap updated"
+msgstr "Mapa de teclas do marcador de segmentos atualizado"
+
+msgctxt "#35050"
+msgid "Could not update marker keymap"
+msgstr "Não foi possível atualizar o mapa de teclas do marcador"
+
+msgctxt "#35051"
+msgid "Segment editor keymap updated"
+msgstr "Mapa de teclas do editor de segmentos atualizado"
+
+msgctxt "#35052"
+msgid "Could not update editor keymap"
+msgstr "Não foi possível atualizar o mapa de teclas do editor"
 
 msgctxt "#32052"
 msgid "When enabled, movies load skip segments from sidecar chapters.xml or .edl next to the video."
@@ -983,25 +1260,9 @@ msgctxt "#36011"
 msgid "Save segment?"
 msgstr "Salvar segmento?"
 
-msgctxt "#36012"
-msgid "Segment saved"
-msgstr "Segmento salvo"
-
-msgctxt "#36013"
-msgid "Error saving segment"
-msgstr "Erro ao salvar o segmento"
-
 msgctxt "#36014"
 msgid "Cancelled"
 msgstr "Cancelado"
-
-msgctxt "#36015"
-msgid "No video playing"
-msgstr "Nenhum vídeo em reprodução"
-
-msgctxt "#36016"
-msgid "Segment Marker disabled"
-msgstr "Marcador de segmentos desativado"
 
 msgctxt "#36017"
 msgid "Save format"
@@ -1840,10 +2101,6 @@ msgctxt "#46001"
 msgid "Custom uses Skippy's own dialog with progress bar, corner placement and style options. Native uses your skin's look: a toast (OK to skip) or Kodi's built-in Yes/No dialog. Native text is fixed when it appears (no live countdown or progress bar)."
 msgstr "Personalizado usa o diálogo próprio do Skippy, com barra de progresso, posicionamento nos cantos e opções de estilo. Nativo usa a aparência da sua skin: uma notificação (OK para pular) ou o diálogo Sim/Não integrado do Kodi. O texto nativo é fixado quando aparece (sem contagem regressiva nem barra de progresso ao vivo)."
 
-msgctxt "#46002"
-msgid "Native dialog"
-msgstr "Diálogo nativo"
-
 msgctxt "#46003"
 msgid "Default focus"
 msgstr "Foco padrão"
@@ -1940,10 +2197,6 @@ msgctxt "#46026"
 msgid "Could not save the preset."
 msgstr "Não foi possível salvar a predefinição."
 
-msgctxt "#46027"
-msgid "Preset applied: %s"
-msgstr "Predefinição aplicada: %s"
-
 msgctxt "#46028"
 msgid "That name is used by a built-in preset."
 msgstr "Esse nome é usado por uma predefinição integrada."
@@ -1951,18 +2204,6 @@ msgstr "Esse nome é usado por uma predefinição integrada."
 msgctxt "#46029"
 msgid "There are no saved presets to delete."
 msgstr "Não há predefinições salvas para excluir."
-
-msgctxt "#46030"
-msgid "Current preset"
-msgstr "Predefinição atual"
-
-msgctxt "#46031"
-msgid "Shows which preset matches your current skip dialog settings, or Custom (unsaved) if none does."
-msgstr "Mostra qual predefinição corresponde às configurações atuais do diálogo Pular, ou Personalizado (não salvo) se nenhuma corresponder."
-
-msgctxt "#46032"
-msgid "Custom (unsaved)"
-msgstr "Personalizado (não salvo)"
 
 msgctxt "#46033"
 msgid "When a segment is nested in or overlaps another one, add a line telling you where Skip will jump next (for example the start of the next segment)."
@@ -2547,3 +2788,139 @@ msgstr "Normal"
 msgctxt "#47154"
 msgid "Large"
 msgstr "Grande"
+
+msgctxt "#48000"
+msgid "Time saved by show or film:"
+msgstr "Tempo economizado por série ou filme:"
+
+msgctxt "#48001"
+msgid "And %d more"
+msgstr "E mais %d"
+
+msgctxt "#48010"
+msgid "Current video"
+msgstr "Vídeo atual"
+
+msgctxt "#48011"
+msgid "What Skippy knows about the video playing now: where its segments came from, what each one will do and why, the binge run and the last error. Open it while a video plays."
+msgstr "O que o Skippy sabe sobre o vídeo em reprodução: de onde vieram os segmentos, o que cada um fará e por quê, a maratona em andamento e o último erro. Abra enquanto um vídeo está tocando."
+
+msgctxt "#48012"
+msgid "Nothing is playing."
+msgstr "Nada está sendo reproduzido."
+
+msgctxt "#48013"
+msgid "File"
+msgstr "Arquivo"
+
+msgctxt "#48014"
+msgid "Show"
+msgstr "Série"
+
+msgctxt "#48015"
+msgid "Film"
+msgstr "Filme"
+
+msgctxt "#48016"
+msgid "Binge run"
+msgstr "Maratona"
+
+msgctxt "#48017"
+msgid "Episode %d"
+msgstr "Episódio %d"
+
+msgctxt "#48018"
+msgid "Off"
+msgstr "Desligado"
+
+msgctxt "#48019"
+msgid "Segments from"
+msgstr "Segmentos de"
+
+msgctxt "#48020"
+msgid "Sidecar file"
+msgstr "Arquivo sidecar"
+
+msgctxt "#48021"
+msgid "Online"
+msgstr "Online"
+
+msgctxt "#48022"
+msgid "Embedded chapters"
+msgstr "Capítulos incorporados"
+
+msgctxt "#48023"
+msgid "None found"
+msgstr "Nenhum encontrado"
+
+msgctxt "#48024"
+msgid "Segments"
+msgstr "Segmentos"
+
+msgctxt "#48025"
+msgid "No segments for this video."
+msgstr "Nenhum segmento para este vídeo."
+
+msgctxt "#48026"
+msgid "Skip automatically"
+msgstr "Pular automaticamente"
+
+msgctxt "#48027"
+msgid "Ask"
+msgstr "Perguntar"
+
+msgctxt "#48028"
+msgid "Never skip"
+msgstr "Nunca pular"
+
+msgctxt "#48029"
+msgid "%s (binge mode)"
+msgstr "%s (modo maratona)"
+
+msgctxt "#48030"
+msgid "%s (saved for this title)"
+msgstr "%s (salvo para este título)"
+
+msgctxt "#48031"
+msgid "Last error"
+msgstr "Último erro"
+
+msgctxt "#48032"
+msgid "None since Kodi started"
+msgstr "Nenhum desde que o Kodi iniciou"
+
+msgctxt "#48033"
+msgid "Segments are still being read. Try again in a moment."
+msgstr "Os segmentos ainda estão sendo lidos. Tente novamente em instantes."
+
+msgctxt "#48034"
+msgid "%s (skipping is off for this kind of video)"
+msgstr "%s (pular está desligado para este tipo de vídeo)"
+
+msgctxt "#48040"
+msgid "Binge mode"
+msgstr "Modo maratona"
+
+msgctxt "#48041"
+msgid "Show the intro on the first episode only"
+msgstr "Mostrar a abertura só no primeiro episódio"
+
+msgctxt "#48042"
+msgid "Episodes of one show played one after the other make a run. The first episode of a run plays its intro; from the second on, the intro is skipped without asking, whatever its segment type is set to. The run goes on however the next episode starts (Play now, autoplay, a playlist or by hand) and ends when another show or a film plays, or after the pause set below."
+msgstr "Episódios de uma série reproduzidos um após o outro formam uma maratona. O primeiro episódio da maratona reproduz a abertura; a partir do segundo, a abertura é pulada sem perguntar, seja qual for a configuração do tipo de segmento. A maratona continua seja como for que o próximo episódio comece (Reproduzir agora, reprodução automática, uma playlist ou manualmente) e termina quando outra série ou um filme é reproduzido, ou após a pausa definida abaixo."
+
+msgctxt "#48043"
+msgid "Also skip the recap"
+msgstr "Pular também o resumo"
+
+msgctxt "#48044"
+msgid "From the second episode of a run, the recap is skipped without asking too: you just watched the episode before. The first episode of a run keeps its recap."
+msgstr "A partir do segundo episódio de uma maratona, o resumo também é pulado sem perguntar: você acabou de ver o episódio anterior. O primeiro episódio da maratona mantém o resumo."
+
+msgctxt "#48045"
+msgid "End the run after a pause of (minutes)"
+msgstr "Encerrar a maratona após uma pausa de (minutos)"
+
+msgctxt "#48046"
+msgid "A run ends when nothing of the show has played for this many minutes, so the next sitting starts with the intro again."
+msgstr "A maratona termina quando nada da série foi reproduzido por esses minutos, então a próxima sessão começa de novo com a abertura."

@@ -2,7 +2,7 @@
 """Editor must not File() missing sidecar candidates."""
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from tests.kodi_stubs import install_kodi_stubs
 

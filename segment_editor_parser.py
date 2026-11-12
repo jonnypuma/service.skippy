@@ -99,36 +99,24 @@ def _apply_skippy_file_permissions(path):
 
 
 def remap_nfs_path_for_write(path):
-    """Return a list of NFS path variations to try when writing.
+    """Return the NFS path variations to try when writing.
 
-    Kodi's NFS client sometimes strips subdirectories from mount paths on
-    write; trying a few variants gives us a chance to recover automatically.
+    Kodi's NFS client sometimes mounts the export one level up, so the same folder can
+    also be reached without the export name in the path (``nfs://server/export/tv/x.edl``
+    as ``nfs://server/tv/x.edl``). That is the only variation: a sidecar is never written
+    to another folder, such as the root of the share, when the real one fails.
     """
     if not path.startswith('nfs://'):
         return [path]
 
     variations = [path]
-    try:
-        parts = path.split('/', 4)
-        if len(parts) >= 5:
-            remapped = f"{parts[0]}//{parts[2]}/{parts[4]}"
-            variations.append(remapped)
-            log(f"NFS path remap variation: {remapped}")
-    except Exception:
-        pass
-
-    try:
-        parts = path.split('/')
-        if len(parts) >= 4:
-            filename = parts[-1]
-            server_part = '/'.join(parts[:3])
-            root_path = f"{server_part}/{filename}"
-            if root_path not in variations:
-                variations.append(root_path)
-                log(f"NFS path remap variation (root): {root_path}")
-    except Exception:
-        pass
-
+    parts = path.split('/', 4)
+    # Only when the file sits below the export folder: otherwise dropping the export name
+    # would put the file in the share's root.
+    if len(parts) >= 5 and "/" in parts[4]:
+        remapped = f"{parts[0]}//{parts[2]}/{parts[4]}"
+        variations.append(remapped)
+        log(f"NFS path remap variation: {remapped}")
     return variations
 
 
@@ -458,21 +446,25 @@ def parse_edl(video_path):
 
     segments = []
     try:
-        for line in edl_data.splitlines():
-            parsed = parse_edl_line(line, default_action=EDL_DEFAULT_ACTION)
-            if parsed is None:
-                if line.strip() and not line.strip().startswith("#"):
-                    log(f"Skipped invalid EDL line: {line.strip()}")
-                continue
-            s, e, action = parsed
-            try:
-                label = get_edl_type_map().get(action) or "segment"
-            except Exception:
-                label = "segment"
+        type_map = get_edl_type_map()
+    except Exception:
+        type_map = {}
+    for line in edl_data.splitlines():
+        parsed = parse_edl_line(line, default_action=EDL_DEFAULT_ACTION)
+        if parsed is None:
+            if line.strip() and not line.strip().startswith("#"):
+                log(f"Skipped invalid EDL line: {line.strip()}")
+            continue
+        s, e, action = parsed
+        label = type_map.get(action) or "segment"
+        try:
             segments.append(SegmentItem(s, e, label, source="edl", action_type=action))
-            log(f"Parsed EDL line: {s} -> {e} | action={action} | label='{label}'")
-    except Exception as e:
-        log(f"EDL parse failed: {e}")
+        except ValueError as err:
+            # One unusable row (end before start, ...) must not drop the rows after it:
+            # the editor would then save the file without them.
+            log(f"Skipped unusable EDL line {line.strip()!r}: {err}")
+            continue
+        log(f"Parsed EDL line: {s} -> {e} | action={action} | label='{label}'")
 
     log(f"Total segments parsed from EDL: {len(segments)}")
     return segments

@@ -7,7 +7,6 @@ import os
 import threading
 import time
 
-import xbmc
 import xbmcgui
 
 from addon_skin_resolution import (

@@ -6,6 +6,7 @@ _*.png export-ignore
 __pycache__/ export-ignore
 *.code-workspace export-ignore
 CLAUDE.md export-ignore
-openapi_theintrodb_v3.yaml export-ignore
+openapi_theintrodb_v*.yaml export-ignore
 .gitignore export-ignore
 .gitattributes export-ignore
+*-Jon.* export-ignore

@@ -332,16 +332,11 @@ class OverrideStoreTests(_ProfileTempDir):
 
 
 class ManageTitleAutoskipUiTests(_ProfileTempDir):
-    def test_format_title_entry_label(self):
-        from per_show_overrides_ui import format_title_entry_label
+    def test_title_entry_row(self):
+        from per_show_overrides_ui import title_entry_row
 
-        label = format_title_entry_label(
-            {
-                "title": "Friends",
-                "auto_labels": ["intro", "recap"],
-            }
-        )
-        self.assertEqual(label, "Friends — Intro, Recap")
+        row = title_entry_row({"title": "Friends", "auto_labels": ["intro", "recap"]})
+        self.assertEqual(row, ("Friends", "Intro, Recap"))
 
     def test_manage_modal_deletes_selected_title_and_loops(self):
         import per_show_overrides_ui

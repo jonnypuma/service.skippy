@@ -488,15 +488,6 @@ def log_segment(msg):
     xbmc.log(f"[{aid} - SegmentItem] {_ascii_log_text(msg)}", xbmc.LOGINFO)
 
 
-def _playback_snap_trim(s, max_len=120):
-    if s is None:
-        return ""
-    s = str(s).replace("\r", " ").replace("\n", " ").strip()
-    if len(s) <= max_len:
-        return s
-    return s[: max_len - 3] + "..."
-
-
 def log_playback_settings_snapshot(addon=None):
     """
     Log a compact settings bundle once per new playback (verbose Normal or All only).
@@ -672,14 +663,14 @@ def is_skip_enabled(playback_type):
     if not addon:
         return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
-        enabled = addon_get_bool(addon, "enable_skip_movies")
+        enabled = addon_get_bool(addon, "enable_skip_movies", True)
         prev = _skip_enabled_last_logged.get("movie")
         if prev != enabled:
             _skip_enabled_last_logged["movie"] = enabled
             log(f"🎬 Skip enabled for movies: {enabled}")
         return enabled
     if playback_type == "episode":
-        enabled = addon_get_bool(addon, "enable_skip_episodes")
+        enabled = addon_get_bool(addon, "enable_skip_episodes", True)
         prev = _skip_enabled_last_logged.get("episode")
         if prev != enabled:
             _skip_enabled_last_logged["episode"] = enabled
@@ -700,14 +691,14 @@ def is_skip_dialog_enabled(playback_type):
     if not addon:
         return False  # During update/uninstall, default to disabled
     if playback_type == "movie":
-        enabled = addon_get_bool(addon, "show_skip_dialog_movies")
+        enabled = addon_get_bool(addon, "show_skip_dialog_movies", True)
         prev = _dialog_enabled_last_logged.get("movie")
         if prev != enabled:
             _dialog_enabled_last_logged["movie"] = enabled
             log(f"🎬 Skip dialog enabled for movies: {enabled}")
         return enabled
     if playback_type == "episode":
-        enabled = addon_get_bool(addon, "show_skip_dialog_episodes")
+        enabled = addon_get_bool(addon, "show_skip_dialog_episodes", True)
         prev = _dialog_enabled_last_logged.get("episode")
         if prev != enabled:
             _dialog_enabled_last_logged["episode"] = enabled

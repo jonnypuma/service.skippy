@@ -2,6 +2,7 @@
 """Next episode popup looks: the default, the skip dialog's own look and its presets."""
 
 import os
+import re
 import threading
 import unittest
 import xml.etree.ElementTree as ET
@@ -63,10 +64,18 @@ class LookChoiceTests(unittest.TestCase):
     def test_the_settings_page_lists_exactly_these_choices(self):
         tree = ET.parse(os.path.join(ROOT, "resources", "settings.xml"))
         setting = [s for s in tree.getroot().iter("setting") if s.get("id") == look_mod.KEY_LOOK][0]
-        options = [(o.get("label"), o.text) for o in setting.iter("option")]
+        # "Default" and "Same as skip dialog" are translated strings; the look names are not.
+        po_path = os.path.join(ROOT, "resources", "language", "resource.language.en_gb", "strings.po")
+        with open(po_path, encoding="utf-8") as handle:
+            english = dict(re.findall(r'msgctxt "#(\d+)"\s*\nmsgid "([^"]*)"', handle.read()))
+        options = [
+            (english[o.get("label")] if o.get("label").isdigit() else o.get("label"), o.text)
+            for o in setting.iter("option")
+        ]
         self.assertEqual(
             options, [(look_mod.LOOK_LABELS[c], c) for c in look_mod.LOOK_CHOICES]
         )
+        self.assertTrue(setting.find("constraints/options/option").get("label").isdigit())
         self.assertEqual(setting.findtext("default"), look_mod.LOOK_DEFAULT)
 
 

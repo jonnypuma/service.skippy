@@ -1,26 +1,14 @@
 """Merge or update online segments into local sidecars; write chapters.xml / EDL."""
 from __future__ import annotations
 
-import os
-import xml.etree.ElementTree as ET
-from collections import defaultdict
 
 import xbmc
 import xbmcgui
 import xbmcvfs
 
-from online_segment_upload import (
-    local_label_to_online_bucket,
-    remote_payload_label_to_online_bucket,
-)
-from playback_segment_cache import publish_parse_cache
 from segment_editor_parser import (
-    dedupe_overlapping_same_label_segments,
-    safe_file_write,
     save_edl,
-    seconds_to_hms,
 )
-from segment_item import SegmentItem
 from service_online_policy import (
     _SAVE_CHAPTERS_MERGE,
     _SAVE_CHAPTERS_OVERWRITE_ASK,
@@ -35,10 +23,8 @@ from service_online_policy import (
     _SAVE_ONLINE_FORMAT_XML,
     _normalize_online_sidecar_policy,
     _normalize_save_online_format,
-    policy_allows_neighbor_snap,
 )
 from service_segment_sources import (
-    _chapter_window_overlap,
     _parse_chapter_xml_string,
     parse_edl,
     safe_file_read,
@@ -54,15 +40,7 @@ from settings_utils import (
     addon_get_setting_text,
     get_addon,
     log,
-    log_service_detail,
-    normalize_label,
 )
-
-
-def _log_sidecar_detail(msg):
-    log_service_detail(msg, tag="sidecar")
-
-
 from skippy_editor_modal_skin import sidecar_overwrite_yesno_show
 
 
@@ -149,6 +127,7 @@ from service_online_sidecar_merge import (  # noqa: F401
     _fill_missing_online_types,
     _finalize_sidecar_after_update_policy,
     _insert_unmatched_with_neighbor_snaps,
+    _log_sidecar_detail,
     _merge_sidecar_segments,
     _neighbor_snap_flags_for_policy,
     _pick_best_local_index_for_online,
@@ -158,7 +137,6 @@ from service_online_sidecar_merge import (  # noqa: F401
     _snap_after_retimed_segments,
     _source_display_name,
     _summarize_online_by_source,
-    _update_sidecar_segments,
 )
 from service_online_sidecar_preview import (  # noqa: F401
     _build_sidecar_ask_detail,
@@ -173,6 +151,7 @@ from service_online_sidecar_write import (  # noqa: F401
     _chapter_xml_save_content_unchanged,
     _edl_file_triples_match_segments,
     _edl_save_content_unchanged,
+    _segments_signature_for_save_compare,
     _sidecar_list_matches_online,
     _write_chapters_xml_to_path,
     invalidate_segment_parse_cache_if_path,

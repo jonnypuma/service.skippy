@@ -125,7 +125,6 @@ class ToastTests(unittest.TestCase):
                 stop.set()
 
             # stop after the visibility script is exhausted
-            orig = n._toast_visible
             def vis():
                 v = next(seq, None)
                 if v is None:

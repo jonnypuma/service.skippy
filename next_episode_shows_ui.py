@@ -31,12 +31,6 @@ def mode_word(addon, mode) -> str:
     return get_localized(addon, 47092, "Ask first")
 
 
-def format_entry_label(addon, entry: dict) -> str:
-    """One list row: ``Friends — Play automatically``."""
-    title = (entry.get("title") or entry.get("key") or "?").strip() or "?"
-    return "%s — %s" % (title, mode_word(addon, entry.get("mode")))
-
-
 def _toast(addon, message) -> None:
     notify_skippy(addon, message, title=get_localized(addon, 43000, "Skippy"))
 

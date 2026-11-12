@@ -34,7 +34,7 @@ def mark_skippy_skipping(monitor, addon=None) -> None:
     """Record post-seek grace; optionally set Skippy.Skipping for cooperative skins."""
     # Always stamp grace so rewind/pause logic works even if skin signaling is off.
     monitor.skippy_skipping_since = time.monotonic()
-    if not addon_get_bool(addon, "signal_skipping_for_skins", False):
+    if not addon_get_bool(addon, "signal_skipping_for_skins", True):
         return
     home = get_home_window(monitor)
     if home is None:

@@ -20,7 +20,6 @@ CATALOG_FILENAME = "segment_types.json"
 SKIP_AUTO = "auto"
 SKIP_ASK = "ask"
 SKIP_NEVER = "never"
-SKIP_MODES = (SKIP_AUTO, SKIP_ASK, SKIP_NEVER)
 SKIP_MODE_LABELS = {
     SKIP_AUTO: "Always",
     SKIP_ASK: "Ask",
@@ -437,12 +436,6 @@ def unused_edl_actions(types, count=24):
     return out
 
 
-def cycle_skip_mode(mode):
-    current = _coerce_skip_mode(mode, SKIP_NEVER)
-    idx = SKIP_CYCLE.index(current)
-    return SKIP_CYCLE[(idx + 1) % len(SKIP_CYCLE)]
-
-
 def skip_mode_label(mode):
     return SKIP_MODE_LABELS.get(_coerce_skip_mode(mode, SKIP_NEVER), "Never")
 
@@ -845,7 +838,6 @@ def _set_cache(types, path=None, mtime=None):
 
 def ensure_catalog(addon=None):
     """Load or create the catalog. First 7.0 run migrates old settings."""
-    global _cache, _cache_mtime, _cache_path
     if _forced_types is not None:
         return clone_types(_forced_types)
 

@@ -10,9 +10,9 @@ install_kodi_stubs()
 
 from skipdialog import (
     _set_skip_button_label,
-    _shadow_for_text,
     _skip_dialog_font_color_argb,
 )
+from skip_dialog_appearance import shadow_for_text as _shadow_for_text
 from skip_dialog_window_ui import _argb_to_kodi
 
 

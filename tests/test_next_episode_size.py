@@ -13,7 +13,6 @@ install_kodi_stubs()
 
 import next_episode_appearance as app
 import next_episode_customize_ui as cust
-import next_episode_dialog as dlg_mod
 import next_episode_view as view
 from tests.test_next_episode_look import _dialog
 from tests.test_next_episode_mock import SKINS, _Addon, _elements, _modal, _num

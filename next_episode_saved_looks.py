@@ -13,7 +13,7 @@ dialog's saved presets do, and travel with the profile data backup.
 from __future__ import annotations
 
 from next_episode_appearance import CHOICE_KEYS
-from next_episode_look import FOLLOW_LOOK, KEY_LOOK, LOOK_CHOICES, LOOK_LABELS, OVERRIDE_KEYS
+from next_episode_look import FOLLOW_LOOK, KEY_LOOK, LOOK_LABELS, OVERRIDE_KEYS
 from skippy_profile_store import profile_path, read_json, write_json
 
 USER_LOOKS_FILE = "next_episode_looks.json"

@@ -10,6 +10,8 @@ from typing import Any
 import xbmc
 import xbmcgui
 
+from binge_mode import apply_binge_mode, binge_position
+from playback_identity import monitor_title_identity
 from segment_item import segments_active_for_playback
 from segment_editor_utils import get_home_window
 from segment_relations import segment_id
@@ -32,6 +34,7 @@ from settings_utils import (
     log_service_detail,
 )
 from service_skip_seek_property import mark_skippy_skipping
+from skin_properties import active_segment, skin_draws_skip_button
 from skip_dialog_native import is_native_skip_dialog, show_native_skip_dialog
 from skipdialog import SkipDialog
 
@@ -63,13 +66,20 @@ def _player_time_or(ctx, fallback):
         return float(fallback)
 
 
-def _record_skip_stats(segment, position_before, jump_to) -> None:
-    """Count the skip and the playback time it actually saved."""
+def _record_skip_stats(segment, position_before, jump_to, monitor=None, video="", playback_type="") -> None:
+    """Count the skip and the playback time it actually saved, also per show or film."""
     try:
         saved = max(0.0, float(jump_to) - float(position_before))
     except (TypeError, ValueError):
         saved = 0.0
-    record_skip(getattr(segment, "segment_type_label", ""), saved)
+    title = None
+    try:
+        key, name = monitor_title_identity(monitor, video, playback_type)
+        if key:
+            title = (key, name)
+    except Exception:
+        title = None
+    record_skip(getattr(segment, "segment_type_label", ""), saved, title=title)
 
 
 def _resolved_seek_land(jump_to, actual_time) -> float:
@@ -266,6 +276,9 @@ def process_segment_skips(
             segment.segment_type_label,
             get_user_skip_mode(segment.segment_type_label),
         )
+        behavior = apply_binge_mode(
+            monitor, addon, playback_type, segment.segment_type_label, behavior
+        )
         ctx.log_if_changed(
             "behavior_%s" % (seg_id,),
             "🧪 Segment behavior: %s" % behavior,
@@ -299,7 +312,9 @@ def process_segment_skips(
         jump_to = compute_skip_seek_destination_seconds(segment, addon)
 
         if behavior == "auto":
-            landed = _handle_auto_skip(ctx, segment, seg_id, jump_to, addon)
+            landed = _handle_auto_skip(
+                ctx, segment, seg_id, jump_to, addon, video=video, playback_type=playback_type
+            )
             if landed is not None:
                 land_time = landed
                 break
@@ -310,6 +325,14 @@ def process_segment_skips(
             )
             monitor.prompted.add(seg_id)
             continue
+        elif behavior == "ask" and skin_draws_skip_button(get_home_window(monitor)):
+            # The skin shows its own skip button (Skippy.SkinSkipButton); it calls
+            # RunScript(service.skippy,skip_current) when pressed.
+            ctx.log_if_changed(
+                "skin_button_%s" % (seg_id,),
+                "🎨 Skin draws its own skip button — no Skippy dialog for segment %s" % (seg_id,),
+            )
+            continue
         elif behavior == "ask":
             landed = _handle_ask_skip(
                 ctx,
@@ -319,6 +342,7 @@ def process_segment_skips(
                 addon,
                 video=video,
                 skip_debounce=_skip_ask_debounce,
+                playback_type=playback_type,
             )
             if landed is not None:
                 land_time = landed
@@ -385,7 +409,77 @@ def _track_skip_to_nested(ctx: Any, segment, seg_id) -> None:
             monitor.cleared_parent_dismissals.add(clearance_key)
 
 
-def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None:
+# A skip_current request older than this (the video was paused, or nothing was in a
+# segment) is dropped rather than acted on later.
+SKIP_REQUEST_MAX_AGE_S = 5.0
+# How long the skin's segment modes are reused before settings are read again.
+SKIN_MODE_CACHE_S = 30.0
+
+
+def request_skip_current(monitor) -> None:
+    """Called from ``onNotification``: the next tick skips the segment the playhead is in."""
+    if monitor is not None:
+        monitor.skip_current_requested = time.monotonic()
+
+
+def handle_skip_current_request(ctx: Any, video, playback_type, current_time):
+    """Skip the segment the playhead is in, once, when a skin button or key asked for it.
+
+    Returns the landing time, or None when there was no fresh request or no segment.
+    Counts and toasts like any other skip.
+    """
+    monitor = ctx.monitor
+    asked = getattr(monitor, "skip_current_requested", None)
+    if asked is None:
+        return None
+    monitor.skip_current_requested = None
+    if time.monotonic() - float(asked) > SKIP_REQUEST_MAX_AGE_S:
+        log("⏭ Skip current: request too old — ignored")
+        return None
+    segment = active_segment(getattr(monitor, "current_segments", None), current_time)
+    if segment is None:
+        log("⏭ Skip current: the playhead is not in a segment")
+        return None
+    addon = get_addon()
+    jump_to = compute_skip_seek_destination_seconds(segment, addon)
+    log("⏭ Skip current: %s (asked by a skin button or key)" % segment.segment_type_label)
+    return _handle_auto_skip(
+        ctx, segment, segment_id(segment), jump_to, addon, video=video, playback_type=playback_type
+    )
+
+
+def skin_mode_for(monitor, addon, video, playback_type):
+    """``mode_for(segment)`` the way the skip loop decides, cached per video and binge position."""
+    from segment_types import get_user_skip_mode as catalog_mode
+
+    key = (video, playback_type, binge_position(monitor))
+    cache = getattr(monitor, "_skin_mode_cache", None)
+    now = time.monotonic()
+    if (
+        not isinstance(cache, dict)
+        or cache.get("_key") != key
+        or now - cache.get("_at", 0.0) > SKIN_MODE_CACHE_S
+    ):
+        cache = {"_key": key, "_at": now}
+        monitor._skin_mode_cache = cache
+
+    def mode_for(segment):
+        sid = segment_id(segment)
+        if sid not in cache:
+            label = segment.segment_type_label
+            mode = apply_per_show_override(monitor, addon, video, label, catalog_mode(label))
+            mode = apply_binge_mode(monitor, addon, playback_type, label, mode)
+            if mode != "never" and not is_skip_enabled(playback_type):
+                mode = "never"
+            cache[sid] = mode
+        return cache[sid]
+
+    return mode_for
+
+
+def _handle_auto_skip(
+    ctx: Any, segment, seg_id, jump_to, addon, *, video: str = "", playback_type: str = ""
+) -> float | None:
     monitor = ctx.monitor
     log(
         "⚙ Auto-skip behavior triggered for segment ID %s (%s)"
@@ -410,7 +504,12 @@ def _handle_auto_skip(ctx: Any, segment, seg_id, jump_to, addon) -> float | None
     if seg_id not in monitor.prompted:
         monitor.prompted.add(seg_id)
     _record_skip_stats(
-        segment, position_before, _resolved_seek_land(jump_to, actual_time)
+        segment,
+        position_before,
+        _resolved_seek_land(jump_to, actual_time),
+        monitor,
+        video,
+        playback_type,
     )
     _maybe_show_skip_toast(ctx, addon, segment, "auto")
     log("⚡ Auto-skipped to %s" % jump_to)
@@ -426,6 +525,7 @@ def _handle_ask_skip(
     *,
     video: str = "",
     skip_debounce: bool = False,
+    playback_type: str = "",
 ) -> float | None:
     monitor = ctx.monitor
     log(
@@ -497,7 +597,7 @@ def _handle_ask_skip(
             response = show_native_skip_dialog(addon, segment, ctx.player)
         else:
             dialog_mode = (
-                addon_get_setting_text(addon, "skip_dialog_mode", "Full") or "Full"
+                addon_get_setting_text(addon, "skip_dialog_mode", "CompactFull") or "CompactFull"
             ).strip()
             if dialog_mode == "Minimal":
                 layout_value = ctx.skip_dialog_layout_suffix(addon, "minimal_skip_dialog_position")
@@ -566,7 +666,12 @@ def _handle_ask_skip(
             monitor.last_time = land
             mark_last_skipped_segment(monitor, segment, seg_id)
             _record_skip_stats(
-                segment, position_before, _resolved_seek_land(jump_to, actual_time)
+                segment,
+                position_before,
+                _resolved_seek_land(jump_to, actual_time),
+                monitor,
+                video,
+                playback_type,
             )
             _maybe_show_skip_toast(ctx, addon, segment, "confirmed")
             log("🚀 Jumped to %s" % jump_to)
@@ -596,7 +701,7 @@ def _handle_ask_skip(
 
 
 def _maybe_show_skip_toast(ctx: Any, addon, segment, reason: str) -> None:
-    if not addon_get_bool(addon, "show_toast_for_skipped_segment", False):
+    if not addon_get_bool(addon, "show_toast_for_skipped_segment", True):
         log("🔕 Skipped segment toast disabled by user setting")
         return
     log("🔔 Showing toast notification for %s skip" % reason)

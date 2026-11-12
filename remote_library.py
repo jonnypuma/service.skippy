@@ -1,37 +1,23 @@
 # -*- coding: utf-8 -*-
 """Kodi library JSON-RPC identity and playback item enrichment."""
 
-import json
 import os
-import re
-import time
 
-import xbmcaddon
-from contextlib import closing
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
 import xbmc
 import xbmcvfs
 
 from settings_utils import (
     addon_get_bool,
-    addon_get_setting_text,
     get_addon,
-    log_remote,
-    log_service_detail,
-    parse_kodi_jsonrpc_raw,
 )
 
 from remote_http import (
-    ADDON_ID,
     _EPISODE_JSONRPC_FIELDS,
     _EPISODE_JSONRPC_FIELDS_MINIMAL,
     _GET_EPISODES_PROPERTIES,
     _PLAYER_GETITEM_FIELDS,
     _SXXEXX,
-    _addon_version,
     _rlog,
     jsonrpc,
     normalize_imdb_id,
@@ -43,7 +29,6 @@ from remote_tmdb import (
     _tmdb_api3_json,
     _tmdb_enrich_missing_ids,
     _tmdb_enrich_missing_movie_ids,
-    _tmdb_search_tv_show_id,
 )
 def get_active_video_player_id():
     result = jsonrpc("Player.GetActivePlayers", log_errors=False)
@@ -150,7 +135,7 @@ def _fetch_episode_details(ep_id, path_hint=None):
     return None, last_err
 
 
-_MOVIE_JSONRPC_FIELDS = ["uniqueid", "imdbnumber", "title", "file"]
+_MOVIE_JSONRPC_FIELDS = ["uniqueid", "imdbnumber", "title", "file", "year"]
 
 
 def _fetch_movie_details(movie_id):
@@ -658,7 +643,9 @@ def build_movie_context(item, force_tmdb_enrichment=False):
         or addon_get_bool(addon, "tv_tmdb_resolve_missing_ids", True)
     )
     if allow_enrich and (tmdb_id is None or not imdb_id):
-        tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(item, tmdb_id, imdb_id, key)
+        tmdb_id, imdb_id = _tmdb_enrich_missing_movie_ids(
+            item, tmdb_id, imdb_id, key, year=_movie_year(item)
+        )
         _rlog(
             "After TMDB API enrichment (movie): tmdb=%s imdb=%s" % (tmdb_id, imdb_id)
         )
@@ -741,6 +728,38 @@ def _resolve_tvshow_id(item):
     raw = xbmc.getInfoLabel("VideoPlayer.TvShowDBID")
     ts = parse_int(raw)
     return ts if ts and ts > 0 else None
+
+
+def _movie_year(item):
+    """Release year of a movie item, from the item or its library row (None when unknown)."""
+    year = parse_int(item.get("year"))
+    if year:
+        return year
+    mid = _parse_library_movie_id(item) if (item.get("type") or "").lower() == "movie" else None
+    if mid:
+        return parse_int(_fetch_movie_details(mid).get("year")) or None
+    return None
+
+
+def _show_year(item):
+    """First-aired year of an episode's show, from the library (None when unknown).
+
+    It tells same-named shows apart in a TMDB title search ("The Office" 2001 and 2005).
+    """
+    tvshow_id = _resolve_tvshow_id(item)
+    if not tvshow_id:
+        return None
+    det = jsonrpc(
+        "VideoLibrary.GetTVShowDetails",
+        {"tvshowid": int(tvshow_id), "properties": ["year", "premiered"]},
+        log_errors=False,
+    )
+    td = (det.get("result") or {}).get("tvshowdetails") or {}
+    year = parse_int(td.get("year"))
+    if year:
+        return year
+    premiered = str(td.get("premiered") or "")
+    return parse_int(premiered[:4]) if premiered[:4].isdigit() else None
 
 
 def _tmdb_from_tvshow_row(tvshow_id):
@@ -1020,7 +1039,7 @@ def build_tv_episode_context(item, force_tmdb_enrichment=False):
     )
     if allow_enrich and (tmdb_id is None or not imdb_id or show_imdb_id is None):
         tmdb_id, imdb_id, show_imdb_id = _tmdb_enrich_missing_ids(
-            item, season, episode, tmdb_id, imdb_id, show_imdb_id, key
+            item, season, episode, tmdb_id, imdb_id, show_imdb_id, key, year=_show_year(item)
         )
         _rlog(
             "After TMDB API enrichment: tmdb=%s episode_imdb=%s show_imdb=%s"

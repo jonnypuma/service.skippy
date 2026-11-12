@@ -21,11 +21,6 @@ def get_addon():
     return _addon
 
 
-def refresh_addon():
-    global _addon
-    _addon = None
-
-
 def _read_verbose_setting():
     try:
         return get_addon().getSettingBool("enable_verbose_logging")
@@ -68,19 +63,6 @@ def log_error(msg):
         .decode("ascii")
     )
     xbmc.log(f"{LOG_PREFIX} {safe}", xbmc.LOGERROR)
-
-
-def notify_open_editor():
-    from segment_editor_session import open_segment_editor as _open
-
-    try:
-        return _open()
-    except Exception as err:
-        log_error(f"Failed to open editor: {err}")
-        import traceback
-
-        log_error(traceback.format_exc())
-        return False
 
 
 def get_video_file():

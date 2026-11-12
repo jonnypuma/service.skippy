@@ -138,6 +138,78 @@ def _follow_pairs(key):
     return [("47111", FOLLOW_LOOK)] + list(override_pairs(key))[1:]
 
 
+# Option labels shown as translated strings (strings.po). Style, colour and texture names are
+# left in English on purpose: they are names, not words to translate.
+OPTION_LABEL_IDS = {
+    'EDL only': '30100',
+    'Chapters XML only': '30101',
+    'Skip if exists': '30102',
+    'Overwrite (no prompt)': '30103',
+    'Overwrite (ask first)': '30104',
+    'Merge with existing': '30105',
+    'Update (no prompt)': '30106',
+    'Update (ask first)': '30107',
+    'Update All (no prompt)': '30108',
+    'Update All (ask first)': '30109',
+    'Native': '30110',
+    'Skip + Type': '30111',
+    'Skip + Type + Duration': '30112',
+    'Short (1m30s)': '30113',
+    'Clock (01:30)': '30114',
+    'Dismiss': '30115',
+    'Full': '30116',
+    'Minimal': '30117',
+    'Bottom Right': '30118',
+    'Top Right': '30119',
+    'Top Left': '30120',
+    'Bottom Left': '30121',
+    'Total segment time': '30122',
+    'Elapsed (count up)': '30123',
+    'Remaining (count down)': '30124',
+    'Elapsed / Total': '30125',
+    'Native toast': '30126',
+    'Default': '30127',
+    'Same as skip dialog': '30128',
+    'TheIntroDB first': '30129',
+    'IntroDB.app first': '30130',
+    'Local first': '30131',
+    'Online first': '30132',
+    'Leave unchanged (no chmod)': '30133',
+    'World-readable (644)': '30134',
+    'World-writable (666)': '30135',
+    'Merge non-overlapping': '30136',
+    'Keep both (old starts after new)': '30137',
+    'Overwrite overlapping': '30138',
+    'Append always': '30139',
+    'Replace file': '30140',
+    'Ask each time': '30141',
+    'Normal press': '30142',
+    'Long press': '30143',
+    'Ask': '30144',
+    'Errors only': '30145',
+    'All detail': '30146',
+    'Custom': '30147',
+    'Normal': '30148',
+    'Compact Full': '32100',
+    'On': '35029',
+    'Off': '35030',
+    'Both': '39010',
+    'Skip': '40000',
+    'Close': '40001',
+    'Play now': '47050',
+}
+UNTRANSLATED_OPTION_SETTINGS = {
+    "button_focus_style",
+    "progress_bar_style",
+    "minimal_button_style",
+    "skip_dialog_font_color",
+    "next_episode_popup_focus_style",
+    "next_episode_popup_bar_style",
+    "next_episode_popup_text_color",
+    "next_episode_popup_heading_color",
+}
+
+
 def labelenum_setting(g, sid, level, label, help_s, default_val, pairs, vis=None, en=None):
     """pairs: list of (display_label, stored_value)."""
     s = ET.SubElement(g, "setting", id=sid, type="string", label=str(label), help=help_s)
@@ -145,7 +217,10 @@ def labelenum_setting(g, sid, level, label, help_s, default_val, pairs, vis=None
     sub(s, "default", default_val)
     co = sub(s, "constraints")
     opts = sub(co, "options")
+    translate = sid not in UNTRANSLATED_OPTION_SETTINGS
     for disp, val in pairs:
+        if translate:
+            disp = OPTION_LABEL_IDS.get(disp, disp)
         o = ET.SubElement(opts, "option", {"label": disp})
         o.text = val
     sub(co, "allowempty", "true")
@@ -289,7 +364,7 @@ def main():
         "ignore_internal_edl_actions",
         1,
         "31005",
-        "Skippy will ignore any EDL segment whose action type is not mapped in Segment types (including legacy read aliases). This includes Kodi's internal action types and any unknown or custom types without a defined label. If set to false it will fall back to label 'Segment'.",
+        "31015",
         True,
     )
     bool_setting(
@@ -297,7 +372,7 @@ def main():
         "skip_overlapping_segments",
         2,
         "31007",
-        "Configurable overlap detection to help avoid redundant or conflicting skips",
+        "31016",
         True,
     )
     bool_setting(
@@ -310,6 +385,29 @@ def main():
         vis=[("skip_overlapping_segments", "false")],
     )
     bool_setting(g, "use_embedded_chapters_fallback", 1, "31008", "31009", True)
+
+    g = ET.SubElement(cat, "group", id="g_binge", label="48040")
+    bool_setting(g, "binge_mode_enabled", 0, "48041", "48042", False)
+    bool_setting(
+        g,
+        "binge_mode_skip_recap",
+        0,
+        "48043",
+        "48044",
+        True,
+        vis=[("binge_mode_enabled", "true")],
+    )
+    int_setting(
+        g,
+        "binge_mode_gap_minutes",
+        2,
+        "48045",
+        "48046",
+        10,
+        minimum=1,
+        maximum=240,
+        vis=[("binge_mode_enabled", "true")],
+    )
 
     g = ET.SubElement(cat, "group", id="g_online", label="32045")
     labelenum_setting(
@@ -463,7 +561,7 @@ def main():
         "rewind_threshold_seconds",
         3,
         "32008",
-        "If playback jumps backward more than this threshold, skip prompts will reset. Helps avoid false triggers from buffering or auto-rewind addons.",
+        "31017",
         8,
         minimum=2,
         maximum=30,
@@ -495,10 +593,10 @@ def main():
     bool_setting(
         g,
         "signal_skipping_for_skins",
-        2,
+        1,
         "38017",
         "38018",
-        False,
+        True,
     )
     bool_setting(g, "enable_skip_movies", 0, "32010", "32087", True)
     bool_setting(
@@ -1056,7 +1154,7 @@ def main():
         "show_not_found_toast_for_tv_episodes",
         0,
         "33000",
-        "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current episode.",
+        "31018",
         True,
     )
     bool_setting(
@@ -1064,7 +1162,7 @@ def main():
         "show_not_found_toast_for_movies",
         0,
         "33001",
-        "Show a notification if no readable sidecar (.edl or chapters.xml) is found for the current movie.",
+        "31019",
         False,
     )
     bool_setting(
@@ -1072,7 +1170,7 @@ def main():
         "show_toast_for_overlapping_nested_segments",
         2,
         "33002",
-        "Show a notification if the sidecar (.edl or chapters.xml) has overlapping segments.",
+        "31020",
         False,
     )
     bool_setting(
@@ -1080,7 +1178,7 @@ def main():
         "show_toast_for_skipped_segment",
         0,
         "33003",
-        "Show a toast notification if a segment is skipped.",
+        "31021",
         True,
     )
     bool_setting(
@@ -1445,6 +1543,15 @@ def main():
 
     # ---- 30003 debug ----
     cat = ET.SubElement(section, "category", id="debug", label="30003")
+    g = ET.SubElement(cat, "group", id="g_diag", label="")
+    action_setting(
+        g,
+        "settings_action_show_diagnostics",
+        0,
+        "48010",
+        "48011",
+        "RunScript(service.skippy,show_diagnostics)",
+    )
     g = ET.SubElement(cat, "group", id="g_dbg", label="")
     bool_setting(g, "enable_verbose_logging", 3, "34000", "34001", False)
     labelenum_setting(

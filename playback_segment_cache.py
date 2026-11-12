@@ -102,7 +102,6 @@ def get_parse_cache_snapshot():
     In the service process, returns the in-memory snapshot. In a ``RunScript``
     invoker (same machine, different interpreter), reads the window mirror.
     """
-    global _snapshot
     if _snapshot is not None:
         return _snapshot
     return _read_window_mirror()

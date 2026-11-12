@@ -81,7 +81,7 @@ def _fetch_player_item_via_jsonrpc(
         addon_get_bool(addon, "show_not_found_toast_for_movies", False) if addon else False
     )
     show_not_found_toast_for_tv_episodes = (
-        addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", False)
+        addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", True)
         if addon
         else False
     )
@@ -266,7 +266,7 @@ def evaluate_toast_allowed(
         addon_get_bool(addon, "show_not_found_toast_for_movies", False) if addon else False
     )
     show_episodes = (
-        addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", False)
+        addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", True)
         if addon
         else False
     )
@@ -398,7 +398,7 @@ def refresh_playback_context(
     addon = get_addon()
     show_dialogs = is_skip_dialog_enabled(playback_type)
     toast_movies = addon_get_bool(addon, "show_not_found_toast_for_movies", False)
-    toast_episodes = addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", False)
+    toast_episodes = addon_get_bool(addon, "show_not_found_toast_for_tv_episodes", True)
     log_if_changed(
         "settings",
         "🧪 Settings → show_dialogs: %s, toast_movies: %s, toast_episodes: %s"
@@ -428,9 +428,3 @@ def refresh_playback_context(
     monitor._playback_context_video = video
     monitor._playback_was_paused = is_paused
     return result
-
-
-def invalidate_playback_context_cache(monitor) -> None:
-    monitor._playback_context_cache = None
-    monitor._playback_context_video = None
-    set_player_snapshot(monitor, None)
