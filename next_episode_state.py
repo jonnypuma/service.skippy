@@ -68,6 +68,8 @@ class NextEpisodeState:
     # is playback Skippy otherwise ignores (an add-on or stream URL), which has no library entry.
     provider: Optional[object] = None
     remote: bool = False
+    # The prompt while the skin draws it (``next_episode_skin.SkinPrompt``), else None.
+    skin_prompt: Optional[object] = None
 
 
 def reset_guard(state) -> None:

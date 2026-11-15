@@ -443,6 +443,10 @@ def handle_skip_current_request(ctx: Any, video, playback_type, current_time):
     addon = get_addon()
     jump_to = compute_skip_seek_destination_seconds(segment, addon)
     log("⏭ Skip current: %s (asked by a skin button or key)" % segment.segment_type_label)
+    # The skin's dialog closes with the skip: stop driving its bar first.
+    from skin_progress import SKIP, stop_bar
+
+    stop_bar(monitor, SKIP)
     return _handle_auto_skip(
         ctx, segment, segment_id(segment), jump_to, addon, video=video, playback_type=playback_type
     )

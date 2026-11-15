@@ -472,24 +472,10 @@
                 </setting>
                 <setting id="smooth_progress_bar" type="boolean" label="32083" help="32084">
                     <level>2</level>
-                    <default>false</default>
+                    <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="enable" setting="show_progress_bar">true</dependency>
-                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
-                </setting>
-                <setting id="progress_bar_updates_per_second" type="integer" label="32085" help="32086">
-                    <level>2</level>
-                    <default>4</default>
-                    <constraints>
-                        <minimum>2</minimum>
-                        <maximum>120</maximum>
-                        <step>1</step>
-                    </constraints>
-                    <control type="spinner" format="integer"></control>
-                    <dependencies>
-                        <dependency type="enable" setting="show_progress_bar">true</dependency>
-                        <dependency type="enable" setting="smooth_progress_bar">true</dependency>
                     <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies>
                 </setting>
                 <setting id="skip_dialog_position" type="string" label="32009" help="32009">

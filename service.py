@@ -98,6 +98,15 @@ class PlayerMonitor(xbmc.Monitor):
 
             # Only the method name counts. The data of any other add-on's notification may
             # happen to contain the words; that must not open the editor.
+            if method.endswith("next_episode_play") or method.endswith("next_episode_close"):
+                # A skin's own next episode popup (RunScript(service.skippy,next_episode_play|close)).
+                from next_episode_skin import REQUEST_CLOSE, REQUEST_PLAY, request_next_episode
+
+                request_next_episode(
+                    self, REQUEST_PLAY if method.endswith("next_episode_play") else REQUEST_CLOSE
+                )
+                return
+
             if method.endswith("skip_current"):
                 # A skin's own skip button (RunScript(service.skippy,skip_current)).
                 from service_loop_skip import request_skip_current

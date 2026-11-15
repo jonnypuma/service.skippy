@@ -44,6 +44,7 @@ from next_episode_view import (
     skip_text_color,
 )
 from settings_utils import get_localized, log
+from smooth_progress import ProgressDriver
 from skip_dialog_appearance import apply_skip_dialog_caps
 
 IDS = popup_ids()
@@ -196,7 +197,60 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             self.setFocusId(focus)
         except Exception:
             pass
+        self._start_progress_driver()
         threading.Thread(target=self._watch, daemon=True).start()
+
+    # --- smooth bar -------------------------------------------------------------
+
+    def _bar_percent(self, head):
+        """Percent of the countdown left (the bar shrinks), or None once it has run out."""
+        limit = self.total if (self.timed or self.preview) else self.total - END_GUARD_S
+        if not self.preview and head >= limit:
+            return None
+        return 100.0 * window_fraction_left(head, self.window_start, self.total)
+
+    def _set_bar_percent(self, pct):
+        layout = self._layout
+        tiled = getattr(self, "_bar_tiled", True)
+        fill = self.getControl(ID_BAR_FILL if tiled else ID_BAR_FILL_STRETCH)
+        width = fill_width(tiled, pct / 100.0, self._sc(layout.bar_w), self._sc(BAR_H))
+        if width != getattr(self, "_last_fill_w", None):
+            self._last_fill_w = width
+            fill.setWidth(width)
+
+    def _start_progress_driver(self):
+        """Move the bar every video frame instead of four times a second.
+
+        The fill is an image (the bar texture comes from the look, which a progress control
+        cannot take), so it moves in whole skin units; a tiled fill snaps to whole segments.
+        """
+        layout = self._layout
+        if layout is None or layout.bar_y is None or getattr(self, "_closing", False):
+            return
+        self._progress_driver = ProgressDriver(
+            "skippy-next-episode-progress",
+            self._bar_percent,
+            self._set_bar_percent,
+            position=self._head,
+            still_wanted=lambda: not getattr(self, "_closing", False),
+        ).start()
+
+    def _tick_countdown(self, head):
+        """The countdown line every quarter second; the bar too unless the driver moves it."""
+        if self._progress_driver_running():
+            self._update_countdown(head, bar=False)
+        else:
+            self._update_countdown(head)
+
+    def _progress_driver_running(self) -> bool:
+        driver = getattr(self, "_progress_driver", None)
+        return driver is not None and driver.running
+
+    def _stop_progress_driver(self):
+        driver = getattr(self, "_progress_driver", None)
+        self._progress_driver = None
+        if driver is not None:
+            driver.stop()
 
     def _caps_on(self) -> bool:
         look = getattr(self, "_look", None)
@@ -244,7 +298,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         except Exception:
             return self.window_start
 
-    def _update_countdown(self, head):
+    def _update_countdown(self, head, bar=True):
         layout = self._layout
         if layout is None:
             return
@@ -261,7 +315,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
                         movie=is_movie_item(self.next_episode),
                     ),
                 )
-            if layout.bar_y is not None:
+            if bar and layout.bar_y is not None:
                 tiled = getattr(self, "_bar_tiled", True)
                 fill = self._ctrl(ID_BAR_FILL if tiled else ID_BAR_FILL_STRETCH)
                 if fill is not None:
@@ -280,7 +334,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         """Keep the countdown moving; close by itself when the prompt no longer applies."""
         while not self._stop.wait(_TICK_S):
             if self.preview:
-                self._update_countdown(self._head())
+                self._tick_countdown(self._head())
                 continue
             try:
                 playing = bool(self.player.isPlaying())
@@ -296,7 +350,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             if head >= limit:
                 self._finish(TIMED_OUT if self.timed or self.end_action == END_PLAY else None)
                 return
-            self._update_countdown(head)
+            self._tick_countdown(head)
 
     def _finish(self, result):
         """Record the answer before close() so the caller can read it after doModal()."""
@@ -305,6 +359,8 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         self._closing = True
         self.result = result
         self._stop.set()
+        # No setWidth may run once the popup is closing.
+        self._stop_progress_driver()
         try:
             self.close()
         except Exception:
@@ -331,6 +387,7 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
 
     def onClose(self):
         self._stop.set()
+        self._stop_progress_driver()
 
 
 def mock_episode(addon) -> dict:
@@ -390,6 +447,7 @@ def show_next_episode_dialog(
         dialog.doModal()
     finally:
         dialog._stop.set()
+        dialog._stop_progress_driver()
     result = dialog.result
     del dialog
     return result

@@ -1154,7 +1154,7 @@ def apply_full_skip_layout(
         progress_h = sc(COMPACT_PROGRESS_H_720)
     else:
         progress_h = sc(settings.get_int("progress_bar_height", 16, minimum=5, maximum=32))
-    smooth_ui = settings.get_bool("smooth_progress_bar", False)
+    smooth_ui = settings.get_bool("smooth_progress_bar", True)
     total_duration = getattr(segment, "end_seconds", 0) - getattr(segment, "start_seconds", 0)
 
     def _log(msg):
@@ -1337,7 +1337,10 @@ def apply_full_skip_layout(
                             fctrl.setPosition(LEFT_MARGIN, py)
                             fctrl.setHeight(progress_h)
                             fctrl.setWidth(init_w)
-                    if smooth_ui:
+                    if smooth_ui and use_tiled:
+                        # The segmented bar is an image cropped to whole segments; any other
+                        # bar stays the progress control, which the dialog drives with
+                        # setPercent(float) every video frame.
                         progress.setVisible(False)
                         window.setProperty(SMOOTH_BAR_WINDOW_PROP, "true")
                     else:

@@ -13,7 +13,9 @@ from binge_mode import binge_settings, note_playback
 from playback_identity import title_identity
 from segment_editor_utils import get_home_window
 from service_diagnostics import note_loop_error, publish_diagnostics
+import skin_progress
 import skin_properties
+from next_episode_skin import skin_draws_next_episode
 from settings_pending import drop_if_settings_closed
 from service_loop_nested import handle_rewind_and_nested_segments
 from service_loop_next_episode import handle_next_episode, handle_remote_next_episode
@@ -33,7 +35,13 @@ from service_skip_seek_property import (
     skippy_seek_grace_active,
     tick_skippy_skipping_property,
 )
-from settings_utils import get_addon, is_live_tv_playback, log, log_error, log_service_detail
+from settings_utils import (
+    get_addon,
+    is_live_tv_playback,
+    log,
+    log_error,
+    log_service_detail,
+)
 
 # All-detail only: playhead drift during parse is noise unless the parse was slow.
 PARSE_SLOW_LOG_MS = 200
@@ -271,19 +279,42 @@ def _publish_skin_properties(monitor, video, playback_type, current_time, next_d
         win = get_home_window(monitor)
         if win is None:
             return
+        addon = get_addon()
+        mode_for = skin_mode_for(monitor, addon, video, playback_type)
         props = skin_properties.build_skin_properties(
             monitor.current_segments,
             current_time,
-            skin_mode_for(monitor, get_addon(), video, playback_type),
+            mode_for,
             monitor=monitor,
             next_due=next_due,
         )
         skin_properties.publish(win, monitor, props)
+        # A skin that declared a progress control in its own dialog gets it driven every frame.
+        segment = skin_properties.active_segment(monitor.current_segments, current_time)
+        skin_progress.sync_skip_bar(
+            monitor,
+            win,
+            segment,
+            mode_for(segment) if segment is not None else "",
+            skin_button=skin_properties.skin_draws_skip_button(win),
+        )
+        state = getattr(monitor, "next_episode_state", None)
+        skin_progress.sync_next_bar(
+            monitor,
+            win,
+            getattr(state, "skin_prompt", None),
+            skin_popup=skin_draws_next_episode(win),
+        )
     except Exception as exc:
         log_service_detail("skin properties failed: %s" % exc, tag="skin")
 
 
 def _clear_skin_properties(monitor) -> None:
+    for kind in (skin_progress.SKIP, skin_progress.NEXT):
+        try:
+            skin_progress.stop_bar(monitor, kind)
+        except Exception:
+            pass
     try:
         skin_properties.clear(get_home_window(monitor), monitor)
     except Exception:

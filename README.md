@@ -61,7 +61,10 @@ service.skippy/
 ├── skippy_stats.py / skippy_statistics_ui.py  # Usage counters (also per show or film) and the statistics modal
 ├── binge_mode.py / playback_identity.py  # Binge runs; which show or film is playing
 ├── service_diagnostics.py / skippy_diagnostics_ui.py  # The Current video window
+├── smooth_progress.py              # Progress bars that move with every video frame
+├── skin_progress.py                # Driving a progress control in the skin's own dialogs
 ├── skin_properties.py              # Home window properties for skins (Skippy.Segment.*, Skippy.NextEpisode.*)
+├── next_episode_skin.py            # The skin's own next episode popup (Skippy.SkinNextEpisode)
 ├── skippy_profile_store.py         # JSON helpers for addon_data files
 ├── settings_utils.py / settings_backup.py / skippy_profile_backup.py  # Settings + profile-data backup (history, title autoskip, stats)
 ├── keymap_utils.py
@@ -162,7 +165,7 @@ Use when you rarely keep local sidecars and want remote intro/recap data before 
 - Rewind detection logic: Resets skip prompts only on significant rewinds — with a user-defined threshold.
 - **Jump offset** (Advanced, **Global options**): **−5…+5 seconds** (default 0) applied whenever Skippy seeks past a segment (**Auto** skips and **Ask** after you confirm). The Full / Compact Full **next jump** line uses the same destination. Negative values seek earlier than the default target (e.g. catch the last few seconds before the marked end); positive values seek later. The target is clamped to **≥ 0**.
 - **Skin-cooperative seek OSD hide** (setting **Hide OSD display during skip**, on by default): Before Skippy skip **seeks**, Home property **`Skippy.Skipping`** is set (cleared after seek settles). Not active during the ask dialog. **Requires a per-skin `DialogSeekBar.xml` edit** (or patching add-on); stock skins unchanged. See **Skin: hide seek OSD during Skippy skips** below.
-- **Skin integration properties**: the segment playing, what Skippy will do with it, the time left, the next segment and the next episode as Home window properties, plus `RunScript(service.skippy,skip_current)` for a skin's own skip button or a key. See **Skin integration properties** below.
+- **Skin integration properties**: the segment playing, what Skippy will do with it, the time left, the next segment and the next episode as Home window properties, plus `RunScript(service.skippy,skip_current)` for a skin's own skip button or a key, and `next_episode_play` / `next_episode_close` for a skin's own next episode popup. See **Skin integration properties** below.
 - Toast segment file not-found notification filtering: Notifies when no segments were found for the current video. Toggle on/off for movies or TV episodes. Supports per-playback cooldown (default: 6 seconds)
 - Debug logging: Verbose logs for each segment processed and decision made. Toggle on/off.
 - **Online segment lookup** (optional): TV episodes can pull intro/recap windows from **TheIntroDB** and **IntroDB.app**; movies use **TheIntroDB** only. See the **Online segment lookup** section below for TMDB/API requirements.
@@ -237,8 +240,23 @@ While a video plays, Skippy publishes what it knows on the **Home** window, so a
 | `Skippy.Segment.Progress` | `31` | Percent of it played |
 | `Skippy.Segment.Next.Type` / `.Next.Start` | `Credits` / `41:40` | The next segment after the playhead |
 | `Skippy.NextEpisode.Label` | `S02E05 · The Return` | Next episode, once the next episode feature has found it |
+| `Skippy.NextEpisode.Title` / `.ShowTitle` | `The Return` / `Arrow` | Its title and show (show empty for a movie) |
+| `Skippy.NextEpisode.Season` / `.Episode` | `2` / `5` | Its numbers (empty for a movie) |
+| `Skippy.NextEpisode.Plot` | `Oliver comes home.` | Its plot, when Kodi's library has one |
 | `Skippy.NextEpisode.Thumb` | `image://…` | Its picture, when Kodi has one |
 | `Skippy.NextEpisode.Due` | `true` | The playhead is where the next episode is offered |
+
+While the skin draws the next episode popup itself (see below), these are set too:
+
+| Property | Example | Meaning |
+|---|---|---|
+| `Skippy.NextEpisode.Visible` | `true` | The prompt is up: draw the popup |
+| `Skippy.NextEpisode.StillWatching` | `true` | It asks **Still watching?** instead of offering the next episode |
+| `Skippy.NextEpisode.Heading` | `Play next episode?` | Translated heading (`Play next movie?`, `Still watching?`) |
+| `Skippy.NextEpisode.PlayLabel` / `.CloseLabel` | `Play now` / `Close` | Translated button labels (`Continue` / `Stop` for the question) |
+| `Skippy.NextEpisode.Countdown` | `Episode ends in 00:42` | Translated countdown line (`Next episode starts in …`, `Closing in …`) |
+| `Skippy.NextEpisode.SecondsLeft` | `42` | Seconds the countdown has left |
+| `Skippy.NextEpisode.Progress` | `30` | Percent of the countdown gone, for a bar |
 
 "Intro, 0:42 left" in the video OSD:
 
@@ -269,6 +287,63 @@ While a video plays, Skippy publishes what it knows on the **Home** window, so a
 ```
 
 Clear the property (`ClearProperty(Skippy.SkinSkipButton,home)`) to bring Skippy's dialog back.
+
+**The skin's own next episode popup.** The same handshake exists for the next episode prompt. A skin that sets `Skippy.SkinNextEpisode` on the Home window gets no popup or toast from Skippy; instead `Skippy.NextEpisode.Visible` turns `true` when the prompt is due, the texts and countdown above are filled in every second, and the skin's buttons answer with `RunScript(service.skippy,next_episode_play)` (Play now, or Continue for **Still watching?**) and `RunScript(service.skippy,next_episode_close)` (Close, or Stop). Everything else keeps working as set in Skippy: when the prompt appears (lead time, start at the credits), how long it stays and what happens when the countdown runs out, **Still watching?** (an unanswered question still stops playback before the end), autoplay, marking as watched and the per-show choices. A button press reaches the service within a second; `Visible` goes empty as soon as the prompt is answered, runs out or the playhead leaves the window.
+
+```xml
+<onload>SetProperty(Skippy.SkinNextEpisode,true,home)</onload>
+
+<control type="group" id="9200">
+  <visible>String.IsEqual(Window(Home).Property(Skippy.NextEpisode.Visible),true)</visible>
+  <control type="image"><texture>$INFO[Window(Home).Property(Skippy.NextEpisode.Thumb)]</texture></control>
+  <control type="label"><label>$INFO[Window(Home).Property(Skippy.NextEpisode.Heading)]</label></control>
+  <control type="label"><label>$INFO[Window(Home).Property(Skippy.NextEpisode.Label)]</label></control>
+  <control type="label"><label>$INFO[Window(Home).Property(Skippy.NextEpisode.Countdown)]</label></control>
+  <control type="button" id="9201">
+    <label>$INFO[Window(Home).Property(Skippy.NextEpisode.PlayLabel)]</label>
+    <onclick>RunScript(service.skippy,next_episode_play)</onclick>
+  </control>
+  <control type="button" id="9202">
+    <label>$INFO[Window(Home).Property(Skippy.NextEpisode.CloseLabel)]</label>
+    <onclick>RunScript(service.skippy,next_episode_close)</onclick>
+  </control>
+</control>
+```
+
+Clear the property (`ClearProperty(Skippy.SkinNextEpisode,home)`) to bring Skippy's popup back. The buttons only work while `Visible` is `true`; a press while nothing is offered is ignored.
+
+**Smooth bars in the skin's own dialogs.** `Skippy.Segment.Progress` and `Skippy.NextEpisode.Progress` move once a second, and a progress control's `<info>` only takes whole percents. For a bar or ring that moves with every video frame, the skin declares on the Home window which control Skippy should drive:
+
+| Property (set by the skin) | Example | Meaning |
+|---|---|---|
+| `Skippy.SkinSkipProgress.Window` | `1167` | Id of the skin's skip dialog window |
+| `Skippy.SkinSkipProgress.Control` | `4801` | A progress control in it **without** `<info>` |
+| `Skippy.SkinSkipProgress.Frames` | `60` | Optional: number of pictures of a ring / image sequence |
+| `Skippy.SkinNextEpisodeProgress.Window` / `.Control` / `.Frames` | | The same for the skin's next episode popup |
+
+While an **Ask** segment is active (or the skin's next episode prompt is up) and `Window.IsVisible(<Window>)` holds, Skippy calls `setPercent` with a fraction on that control at the video's frame rate, looking the control up for every update. It stops when the segment ends or the prompt is answered, when the window closes, when playback stops, and before Skippy skips or starts the next episode. Skippy then sets:
+
+| Property (set by Skippy) | Meaning |
+|---|---|
+| `Skippy.Segment.SmoothProgress` | `true` after the first update, cleared when Skippy stops driving: show the driven control only then and the `<info>` one otherwise, so an older Skippy never leaves an empty bar |
+| `Skippy.Segment.Frame` | With `.Frames` = N: `round(percent / 100 × (N − 1))`, written only when it changes |
+| `Skippy.NextEpisode.SmoothProgress` / `.Frame` | The same for the next episode popup |
+
+The driven control shows the same thing as the `<info>` property it stands in for, so swapping one for the other never jumps: the percent of the segment played (`Skippy.Segment.Progress`) and the percent of the next episode countdown gone (`Skippy.NextEpisode.Progress`).
+
+```xml
+<onload>SetProperty(Skippy.SkinSkipProgress.Window,1167,home)</onload>
+<onload>SetProperty(Skippy.SkinSkipProgress.Control,4801,home)</onload>
+
+<control type="progress" id="4801">
+  <reveal>true</reveal>
+  <visible>String.IsEqual(Window(Home).Property(Skippy.Segment.SmoothProgress),true)</visible>
+</control>
+<control type="progress" id="4800">
+  <info>Window(Home).Property(Skippy.Segment.Progress)</info>
+  <visible>!String.IsEqual(Window(Home).Property(Skippy.Segment.SmoothProgress),true)</visible>
+</control>
+```
 
 ---
 
@@ -574,8 +649,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | progress_bar_countdown | Full mode: bar starts full and shrinks (remaining time) instead of filling with elapsed time (default: false) |
 | progress_bar_style | Full mode: `progress_mid*.png` fill texture (filename storage; same pattern as button focus). |
 | progress_bar_height | Full mode: progress bar height (**5–32** px, default **16**). |
-| smooth_progress_bar | Full mode (Advanced): smoother bar motion via higher refresh + easing; default off — disable if stutter on slow devices |
-| progress_bar_updates_per_second | Full mode (Advanced): when smooth progress is on, updates per second (**2–120**, default **4**, same as legacy 0.25 s interval) |
+| smooth_progress_bar | Full mode (Advanced): the bar moves with every video frame instead of in whole-percent steps (default **on**); turn off if playback stutters on a slow device |
 | skip_dialog_mode | **Full**, **Compact Full**, or **Minimal** |
 | compact_full_combined | Full and Compact Full: Skip-only; focus texture is the progress fill (no Close) |
 | skip_duration_format | Duration on the Skip label: **1m30s** or numeric **01:30** |
@@ -717,7 +791,7 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 
 **Features:**
 - **Visual Progress**: Fills up as the segment progresses toward its end (default), or use **Progress bar shows remaining (countdown)** so the bar starts full and shrinks toward empty
-- **Real-time Updates**: Updates every 0.25 seconds during segment playback
+- **Smooth**: with **Smooth progress bar updates** (on by default) the bar moves with every frame of the video, read from the player's own time, so it glides instead of jumping a percent at a time. Off, it moves in whole percents four times a second. The next episode popup's bar moves the same way.
 - **Toggle Control**: Can be enabled/disabled in addon settings
 - **Dynamic Setting**: Changes to the setting take effect immediately without restart
 
@@ -728,6 +802,7 @@ Skippy includes a visual progress bar that shows the elapsed time of the current
 4. Changes apply immediately for new skip dialogs
 
 **Technical Details:**
+- Smooth motion (`smooth_progress.py`): a small thread per open dialog reads `Player.getTime()` for every update and paces itself by a steady clock at the video's frame rate (`Player.Process(videofps)`, else `System.FPS`, else 25; four a second while paused). It never steps back by less than half a second, so the bar does not flicker while paused, and it is stopped and joined before the dialog closes. The plain bar is the progress control (`setPercent` with a fraction); the segmented bar and the combined skip-and-progress fill are images that move in whole skin units (the segmented one snaps to whole segments by design).
 - Progress bar dimensions: width follows the panel (5 px inset from each side; the panel is sized to the skip label, up to 430 wide); height **5–32** via settings (default **16**), applied at dialog layout
 - Skin uses Kodi **`reveal` true**: **`midtexture`** should match **`texturebg`** dimensions (full-width fill image clips to the current percent instead of stretching horizontally)
 - Located at the bottom of the skip dialog

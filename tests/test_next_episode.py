@@ -243,6 +243,7 @@ class FindLibrarySuccessorTests(unittest.TestCase):
                 "episode": 3,
                 "file": "/tv/s01e03.mkv",
                 "thumb": "",
+                "plot": "",
             },
         )
         self.assertEqual(rpc.params_for("VideoLibrary.GetEpisodes")[0]["tvshowid"], 4)
@@ -841,6 +842,99 @@ class HandlerTests(unittest.TestCase):
         self.assertFalse(self.tick(1000.0).due)
         self.assertTrue(self.tick(1460.0).due)
         self.assertTrue(self.tick(1465.0).due)
+
+    # --- the skin draws the prompt (Skippy.SkinNextEpisode) ---------------------------------
+
+    def skin_on(self):
+        import next_episode_skin
+
+        for p in (
+            patch.object(step, "skin_draws_next_episode", lambda _win: True),
+            patch.object(step, "get_home_window", lambda _m=None: None),
+            patch.object(next_episode_skin.time, "monotonic", lambda: self.now),
+        ):
+            p.start()
+            self.addCleanup(p.stop)
+        return next_episode_skin
+
+    def test_skin_prompt_replaces_the_popup_and_play_starts_the_next(self):
+        skin = self.skin_on()
+        state = self.found_state()
+        tick = self.tick(1460.0)
+        self.assertEqual(self.toast_calls, [])
+        self.assertTrue(tick.due and tick.hide_skip_dialogs and not tick.switched)
+        prompt = state.skin_prompt
+        self.assertEqual((prompt.begin, prompt.end, prompt.timed), (1455.0, 1500.0, False))
+        self.assertFalse(prompt.still_watching)
+        self.assertEqual(prompt.seconds_left, 40)
+        self.tick(1461.0)
+        self.assertEqual(self.plays, [])
+        skin.request_next_episode(self.monitor, skin.REQUEST_PLAY)
+        self.assertTrue(self.tick(1462.0).switched)
+        self.assertEqual(len(self.plays), 1)
+        self.assertTrue(state.answered)
+
+    def test_skin_close_dismisses_for_good(self):
+        skin = self.skin_on()
+        state = self.found_state()
+        self.tick(1460.0)
+        skin.request_next_episode(self.monitor, skin.REQUEST_CLOSE)
+        self.tick(1461.0)
+        self.assertTrue(state.dismissed and state.answered)
+        self.assertTrue(state.skin_prompt.finished)
+        skin.request_next_episode(self.monitor, skin.REQUEST_PLAY)
+        self.tick(1462.0)
+        self.assertEqual(self.plays, [])
+
+    def test_skin_countdown_that_plays_when_it_runs_out(self):
+        self.skin_on()
+        self.settings["next_episode_popup_duration"] = 10
+        self.settings["next_episode_popup_end_action"] = "Play"
+        state = self.found_state()
+        self.tick(1460.0)
+        self.assertEqual((state.skin_prompt.end, state.skin_prompt.timed), (1470.0, True))
+        self.assertFalse(self.tick(1469.0).switched)
+        self.assertTrue(self.tick(1470.0).switched)
+
+    def test_skin_prompt_that_runs_to_the_end_unanswered(self):
+        self.skin_on()
+        state = self.found_state()
+        self.tick(1460.0)
+        self.tick(1499.5)  # the last second belongs to Kodi's own end of file
+        self.assertIsNone(state.skin_prompt)
+        self.assertFalse(state.dismissed)
+        self.assertEqual(self.plays, [])
+
+    def test_skin_countdown_to_the_end_that_plays(self):
+        """Duration 0 with Play: the popup plays the next one a moment before the end."""
+        self.skin_on()
+        self.settings["next_episode_popup_end_action"] = "Play"
+        self.found_state()
+        self.tick(1460.0)
+        self.assertFalse(self.tick(1498.5).switched)
+        self.assertTrue(self.tick(1499.4).switched)
+
+    def test_old_button_presses_are_dropped_and_seeking_back_starts_over(self):
+        skin = self.skin_on()
+        state = self.found_state()
+        skin.request_next_episode(self.monitor, skin.REQUEST_PLAY)
+        self.now += 10  # pressed before the prompt was up
+        self.tick(1460.0)
+        self.assertEqual(self.plays, [])
+        first = state.skin_prompt
+        self.tick(1300.0)  # seeked back before the prompt
+        self.tick(1460.0)
+        self.assertIsNot(state.skin_prompt, first)
+
+    def test_skin_still_watching(self):
+        skin = self.skin_on()
+        state = self.found_state(guard_checked=True, guard_ask=True)
+        with patch.object(step, "start_stop_watchdog", lambda *_a: threading.Event()):
+            self.tick(1460.0)
+            self.assertTrue(state.skin_prompt.still_watching)
+            self.assertEqual(state.skin_prompt.end_action, "")
+            skin.request_next_episode(self.monitor, skin.REQUEST_PLAY)
+            self.assertTrue(self.tick(1461.0).switched)
 
     def test_marking_watched_and_resume_follow_their_settings(self):
         self.settings["next_episode_autoplay"] = True

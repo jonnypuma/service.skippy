@@ -434,16 +434,8 @@ msgid "Smooth progress bar updates"
 msgstr "Jevne oppdateringer av fremdriftslinje"
 
 msgctxt "#32084"
-msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
-msgstr "Fullstendig modus: oppdater fremdriftslinjen oftere og glatteut mellom verdier. Slå av hvis avspillingen hakker på tregere enheter (standard av)."
-
-msgctxt "#32085"
-msgid "Progress bar updates per second"
-msgstr "Oppdateringer av fremdriftslinje per sekund"
-
-msgctxt "#32086"
-msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
-msgstr "Kun jevn modus: hvor mange ganger per sekund linjen skal oppdateres (2–120). Standard 4 er bra for de fleste skjermer; øk bare hvis linjen ser hakkete ut på et panel med høy oppdateringsfrekvens (60–120 Hz) – og reduser igjen hvis avspillingen hakker."
+msgid "Full mode: the bar moves with every video frame instead of in whole-percent steps. Turn off if playback stutters on a slow device (default on)."
+msgstr "Full modus: linjen beveger seg for hvert videobilde i stedet for i hele prosenttrinn. Slå av hvis avspillingen hakker på en treg enhet (standard: på)."
 
 msgctxt "#32087"
 msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."

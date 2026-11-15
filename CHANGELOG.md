@@ -1,5 +1,27 @@
 # Changelog
 
+## [7.15.0] - 2026-11-15
+
+### Changed
+
+- **Progress bars move with every video frame.** The skip dialog's bar used to move four times a second in whole percents (with **Smooth progress bar updates**, at a set number of updates a second, stretched to whole pixels), so it visibly stepped. Each open dialog now has a small thread that reads the player's own time for every update and paces itself by a steady clock at the video's frame rate (else the screen's, else 25; four a second while paused), the way Aeon Fuse's helper drives its music Now playing bar. The plain bar is the progress control, set with a fraction of a percent; the segmented bar and the combined skip-and-progress fill are images, which move in whole skin units (the segmented one keeps snapping to whole segments). The bar never steps back by less than half a second, so it does not flicker while paused, and the thread is stopped and waited for before the dialog closes, whichever way it closes.
+- **The next episode popup's bar moves the same way.** It stays an image fill (its texture comes from the chosen look, which a progress control cannot take), so it moves in whole skin units at the video's frame rate instead of four times a second.
+- **Smooth progress bar updates is on by default**, and **Progress bar updates per second** is gone: the rate follows the video. The help text says what the setting does now, in all 11 languages.
+
+### Added
+
+- **Smooth bars in the skin's own skip dialog and next episode popup.** A skin declares a progress control on the Home window (`Skippy.SkinSkipProgress.Window` / `.Control`, optional `.Frames`, and the same as `Skippy.SkinNextEpisodeProgress.*`); while an Ask segment is active (or its next episode prompt is up) and that window is visible, Skippy drives the control with `setPercent` at the video's frame rate, looking it up for every update and stopping on any error, when the segment ends or the prompt is answered, when the window closes or playback stops, and before Skippy itself skips or starts the next episode. The driven control shows the same as the `<info>` property it stands in for (percent of the segment played, percent of the next episode countdown gone), so swapping them never jumps. `Skippy.Segment.SmoothProgress` / `Skippy.NextEpisode.SmoothProgress` say when it drives, and with `.Frames` = N, `Skippy.Segment.Frame` / `Skippy.NextEpisode.Frame` give the picture of a ring. Every existing property stays as it was.
+- 28 tests: the frame-rate pacing on a steady clock (including slow updates and a busy moment), pause, the half-second hold-back, the frame-rate fallbacks, stopping (bar done, control gone, error, playback gone) and joining the thread, which control each kind of skip dialog bar moves, stopping before the dialogs close, the next episode bar, the skin contract (targets, frames, start, restart, stop and clearing), and the service wiring.
+
+## [7.14.0] - 2026-11-15
+
+### Added
+
+- **A skin can draw its own next episode popup**, the way it can already draw its own skip button. When the skin sets `Skippy.SkinNextEpisode` to `true` on the Home window, Skippy shows no popup or toast of its own. When the prompt is due, `Skippy.NextEpisode.Visible` turns `true`, and the skin gets the translated heading, button labels and countdown line (`.Heading`, `.PlayLabel`, `.CloseLabel`, `.Countdown`), the seconds left and the percent of the countdown gone (`.SecondsLeft`, `.Progress`), and whether it asks **Still watching?** (`.StillWatching`). Its buttons answer with `RunScript(service.skippy,next_episode_play)` and `RunScript(service.skippy,next_episode_close)`. Skippy's own rules still apply: when the prompt appears, how long it stays, what happens when the countdown runs out (including playing the next one at the end of the file), **Still watching?** stopping playback when unanswered, autoplay, marking as watched and the per-show choices. Clearing the property brings Skippy's popup back.
+- **More about the next episode for every skin:** `Skippy.NextEpisode.Title`, `.ShowTitle`, `.Season`, `.Episode` and `.Plot`, next to `.Label`, `.Thumb` and `.Due`. The plot is now read from Kodi's library for the next episode or movie. `Skippy.NextEpisode.Thumb` now carries the picture the popup uses (it was often empty).
+- The README's skin section has the new properties and an example popup in skin XML.
+- 19 tests: the answers (Play, Close, a countdown running out, the end of the file), button presses taken once and dropped when old, the texts for episodes, movies and **Still watching?**, the properties, the two commands, and the next episode step with a skin popup (Play, Close, countdowns that play, seeking back, **Still watching?**).
+
 ## [7.13.1] - 2026-11-15
 
 ### Fixed

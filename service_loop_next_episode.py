@@ -26,6 +26,7 @@ from next_episode_lookup import (
     describe_current_movie,
     episode_label,
     find_next_episode,
+    is_movie_item,
     is_movie_playback,
 )
 from next_episode_play import play_next, schedule_mark_watched
@@ -52,6 +53,15 @@ from next_episode_state import (
     window_start,
 )
 from next_episode_prompt import show_next_episode_prompt
+from skin_progress import NEXT as NEXT_BAR, stop_bar
+from next_episode_skin import (
+    ENDED,
+    build_prompt,
+    prompt_answer,
+    skin_draws_next_episode,
+    take_request,
+    update_countdown,
+)
 from next_episode_view import countdown_settings
 from next_episode_shows import (
     lookup_mode,
@@ -60,6 +70,7 @@ from next_episode_shows import (
     resolve_autoplay,
     show_key_for_identity,
 )
+from segment_editor_utils import get_home_window
 from settings_utils import (
     addon_get_bool,
     addon_get_int,
@@ -160,6 +171,21 @@ def _handle(
     if rearm_if_before_window(state, current_time, total, lead, credits):
         log("Next episode: playhead is before the window again - prompt re-armed")
     if not in_prompt_window(current_time, total, lead, credits):
+        # Out of the window (seeked back, or the last second of the file): a prompt the skin
+        # draws goes away, as the popup does, which plays the next episode at the very end
+        # when its countdown says so, or when Play came in on the last tick.
+        late = state.skin_prompt
+        state.skin_prompt = None
+        stop_bar(monitor, NEXT_BAR)
+        if late is not None and not late.finished and not (state.started or state.dismissed or state.failed):
+            answer = prompt_answer(late, current_time, take_request(monitor))
+            if answer is True or (answer == TIMED_OUT and late.end_action == END_PLAY):
+                log("Next episode: the skin's prompt reached the end - playing it")
+                return NextEpisodeTick(
+                    due=True,
+                    hide_skip_dialogs=addon_get_bool(addon, "next_episode_hide_skip_dialogs", True),
+                    switched=_start_next(monitor, state, addon, autoplayed=answer is not True),
+                )
         return IDLE_TICK
 
     show_mode = lookup_mode(state.show_key) if per_show and state.show_key else None
@@ -186,27 +212,36 @@ def _handle(
             switched=_start_next(monitor, state, addon, autoplayed=True),
         )
 
-    now = time.monotonic()
-    if now - state.last_prompt_mono < MIN_REPROMPT_S:
-        return held
-    state.last_prompt_mono = now
-    start = window_start(total, lead, credits)
-    if ask_still_watching:
-        _arm_stop_watchdog(ctx, state, start, total)
-    # The "still watching?" question always runs to the end of the file: a timeout must never
-    # stand in for an answer to it.
-    duration, action = (0, END_CLOSE) if ask_still_watching else countdown_settings(addon)
-    begin, end, timed = popup_span(start, current_time, total, duration)
-    answer = show_next_episode_prompt(
-        addon,
-        ctx.player,
-        state.next_item,
-        begin,
-        end,
-        still_watching=ask_still_watching,
-        timed=timed,
-        end_action=action,
-    )
+    if skin_draws_next_episode(get_home_window(monitor)):
+        # The skin draws the prompt (Skippy.SkinNextEpisode): no popup of ours, one step a tick.
+        answer, action = _skin_prompt_step(
+            ctx, monitor, state, addon, current_time, total, lead, credits, ask_still_watching
+        )
+        if answer is None:
+            return held
+    else:
+        state.skin_prompt = None
+        now = time.monotonic()
+        if now - state.last_prompt_mono < MIN_REPROMPT_S:
+            return held
+        state.last_prompt_mono = now
+        start = window_start(total, lead, credits)
+        if ask_still_watching:
+            _arm_stop_watchdog(ctx, state, start, total)
+        # The "still watching?" question always runs to the end of the file: a timeout must never
+        # stand in for an answer to it.
+        duration, action = (0, END_CLOSE) if ask_still_watching else countdown_settings(addon)
+        begin, end, timed = popup_span(start, current_time, total, duration)
+        answer = show_next_episode_prompt(
+            addon,
+            ctx.player,
+            state.next_item,
+            begin,
+            end,
+            still_watching=ask_still_watching,
+            timed=timed,
+            end_action=action,
+        )
     if answer == TIMED_OUT:
         if action == END_PLAY:
             log("Next episode: countdown ran out - playing it")
@@ -408,6 +443,44 @@ def _still_watching_due(monitor, state, addon) -> bool:
             % (chain.unattended, limit, " - asking if you are still watching" if state.guard_ask else "")
         )
     return state.guard_ask
+
+
+def _skin_prompt_step(ctx, monitor, state, addon, current_time, total, lead, credits, still_watching):
+    """One tick of a prompt the skin draws: ``(answer, end action)``; answer None while it is up.
+
+    The answer is what the popup would have returned: True (Play now / Continue), False (Close /
+    Stop) or ``TIMED_OUT``. A prompt that plays out to the end of the file answers None for good.
+    """
+    prompt = state.skin_prompt
+    if prompt is not None and float(current_time) < prompt.begin - 1.0:
+        prompt = state.skin_prompt = None  # seeked back before the prompt: start it over
+    if prompt is None:
+        start = window_start(total, lead, credits)
+        if still_watching:
+            _arm_stop_watchdog(ctx, state, start, total)
+        duration, action = (0, END_CLOSE) if still_watching else countdown_settings(addon)
+        begin, end, timed = popup_span(start, current_time, total, duration)
+        prompt = state.skin_prompt = build_prompt(
+            addon, state.next_item, begin, end, timed, action, still_watching
+        )
+        monitor.next_episode_request = None
+        log(
+            "Next episode: prompt handed to the skin (%s, %s)"
+            % ("still watching?" if still_watching else "play next?", episode_label(state.next_item))
+        )
+    if prompt.finished:
+        return None, prompt.end_action
+    answer = prompt_answer(prompt, current_time, take_request(monitor))
+    update_countdown(prompt, addon, current_time, movie=is_movie_item(state.next_item))
+    if answer is None:
+        return None, prompt.end_action
+    # Answered or run out: the skin's popup goes away, so stop driving its bar first.
+    stop_bar(monitor, NEXT_BAR)
+    prompt.finished = True
+    if answer == ENDED:
+        log("Next episode: the skin's prompt ran to the end of the file unanswered")
+        return None, prompt.end_action
+    return answer, prompt.end_action
 
 
 def _arm_stop_watchdog(ctx, state, start, total) -> None:

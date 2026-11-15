@@ -38,11 +38,12 @@ _DETAIL_PROPERTIES = [
     "playcount",
     "tvshowid",
     "art",
+    "plot",
 ]
 _CURRENT_PROPERTIES = ["tvshowid", "season", "episode", "file", "playcount"]
 _PLAYLIST_PROPERTIES = ["title", "showtitle", "season", "episode", "file", "art"]
 _MOVIE_CURRENT_PROPERTIES = ["setid", "year", "file", "playcount"]
-_MOVIE_SET_PROPERTIES = ["title", "sorttitle", "year", "file", "playcount", "art", "setid"]
+_MOVIE_SET_PROPERTIES = ["title", "sorttitle", "year", "file", "playcount", "art", "setid", "plot"]
 # Wide pictures only: the popup's picture box is 16:9, a poster would be cropped.
 _THUMB_KEYS = ("thumb", "landscape", "fanart", "tvshow.landscape", "tvshow.fanart")
 # A movie's "thumb" is its poster, so only the wide pictures count.
@@ -226,6 +227,7 @@ def find_movie_successor(item, *, skip_watched=False, current=None) -> Optional[
         "year": parse_int(row.get("year")),
         "file": row.get("file") or "",
         "thumb": pick_thumb(row.get("art"), _MOVIE_THUMB_KEYS),
+        "plot": row.get("plot") or "",
     }
 
 
@@ -295,6 +297,7 @@ def find_library_successor(item, *, skip_watched=False, current=None) -> Optiona
         "episode": parse_int(details.get("episode", row.get("episode"))),
         "file": details.get("file") or row.get("file") or "",
         "thumb": pick_thumb(details.get("art")),
+        "plot": details.get("plot") or "",
     }
 
 

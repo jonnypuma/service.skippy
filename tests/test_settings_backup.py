@@ -416,7 +416,6 @@ class SettingsBackupRoundtripTests(unittest.TestCase):
             "skip_jump_offset_seconds",
             "ask_dialog_debounce_ms",
             "progress_bar_height",
-            "progress_bar_updates_per_second",
         )
         found = {sid: None for sid in ids}
         for setting in tree.getroot().iter("setting"):

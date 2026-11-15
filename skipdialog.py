@@ -15,13 +15,13 @@ from addon_skin_resolution import (
 from settings_utils import (
     SKIPPY_LOG_ERROR_ONLY,
     addon_get_bool,
-    addon_get_int,
     addon_get_setting_text,
     compute_skip_seek_destination_seconds,
     get_addon,
     get_localized,
     skippy_log_effective_detail_level,
 )
+from smooth_progress import ProgressDriver, segment_percent
 from skip_dialog_appearance import (
     FULL_SKIP_BUTTON_IDS,
     FULL_SKIP_PROGRESS_BAR_WIDTH,
@@ -342,6 +342,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             threading.Thread(target=self._monitor_segment_end, daemon=True).start()
             # Reveal panel only after labels, layout, and progress seed are done.
             self.setProperty(_DIALOG_READY_PROP, "true")
+            self._start_progress_driver(addon)
             # Let the GUI apply the visible condition before focusing (else "can't" focus).
             xbmc.sleep(50)
             self._apply_skip_dialog_focus(hide_close, hide_skip_icon)
@@ -452,10 +453,10 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             last_tick = now_wall
 
             addon = get_addon()
-            smooth = addon_get_bool(addon, "smooth_progress_bar", False) if addon else False
-            ups = addon_get_int(addon, "progress_bar_updates_per_second", 4) if addon else 4
-            ups = min(120, max(2, ups))
-            delay = (1.0 / ups) if (smooth or getattr(self, "_combined_mode", False)) else 0.25
+            # The bar itself is drawn by the progress driver when it runs (every video frame);
+            # this loop keeps the labels, the end of the segment and the timeout.
+            delay = _PAUSE_POLL_S
+            driven = self._progress_driver_running()
 
             remaining = int(self.segment.end_seconds - current)
             m, s = divmod(max(remaining, 0), 60)
@@ -463,7 +464,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             self._refresh_countdown_label()
             self._refresh_skip_duration_label(current)
 
-            if not self._minimal_mode:
+            if not self._minimal_mode and not driven:
                 try:
                     if getattr(self, "_combined_mode", False):
                         self._update_combined_fill(current)
@@ -472,63 +473,23 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
                         show_progress = addon_get_bool(addon, "show_progress_bar", True)
                         countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
                         progress = self.getControl(3014)
-                        fill = self.getControl(_SMOOTH_PROGRESS_FILL_ID)
 
                         if show_progress:
-                            if smooth:
-                                progress.setVisible(False)
-                                self._set_smooth_bar_window_visible(True)
-                                elapsed_f = _elapsed_progress_percent_float(
-                                    current, self.segment.start_seconds, self._total_duration
+                            # Smooth bar off: whole percents, four times a second.
+                            self._last_smooth_fill_w = None
+                            self._set_smooth_bar_window_visible(False)
+                            progress.setVisible(True)
+                            elapsed_pct = _elapsed_progress_percent(
+                                current, self.segment.start_seconds, self._total_duration
+                            )
+                            disp = _progress_display_percent(elapsed_pct, countdown)
+                            progress.setPercent(disp)
+                            now_wall = time.time()
+                            if (now_wall - self._last_classic_log_ts) >= 1.5:
+                                self._last_classic_log_ts = now_wall
+                                log(
+                                    f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
                                 )
-                                pct_f = _progress_display_percent_float(elapsed_f, countdown)
-                                w = int(
-                                    round(
-                                        (pct_f / 100.0)
-                                        * getattr(
-                                            self,
-                                            "_skip_progress_bar_width",
-                                            self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
-                                        )
-                                    )
-                                )
-                                bar_w = getattr(
-                                    self,
-                                    "_skip_progress_bar_width",
-                                    self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH),
-                                )
-                                w = max(0, min(bar_w, w))
-                                pitch = getattr(self, "_skip_tiled_pitch", 0)
-                                if pitch:
-                                    w = _snap_to_whole_segments(w, bar_w, pitch)
-                                if w != self._last_smooth_fill_w:
-                                    self._last_smooth_fill_w = w
-                                    fill.setWidth(w)
-                                    try:
-                                        self.getControl(_SMOOTH_PROGRESS_TILED_FILL_ID).setWidth(w)
-                                    except Exception:
-                                        pass
-                                now_wall = time.time()
-                                if (now_wall - self._last_smooth_log_ts) >= 1.5:
-                                    self._last_smooth_log_ts = now_wall
-                                    log(
-                                        f"📊 Smooth bar {w}px (≈{pct_f:.2f}%, countdown={countdown}, ups={ups}, raw: '{raw_setting}')"
-                                    )
-                            else:
-                                self._last_smooth_fill_w = None
-                                self._set_smooth_bar_window_visible(False)
-                                progress.setVisible(True)
-                                elapsed_pct = _elapsed_progress_percent(
-                                    current, self.segment.start_seconds, self._total_duration
-                                )
-                                disp = _progress_display_percent(elapsed_pct, countdown)
-                                progress.setPercent(disp)
-                                now_wall = time.time()
-                                if (now_wall - self._last_classic_log_ts) >= 1.5:
-                                    self._last_classic_log_ts = now_wall
-                                    log(
-                                        f"📊 Progress bar {disp}% (elapsed={elapsed_pct}%, countdown={countdown}, raw: '{raw_setting}')"
-                                    )
                         else:
                             self._last_smooth_fill_w = None
                             progress.setVisible(False)
@@ -657,7 +618,93 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
         self.response = response
         self._skippy_dialog_result = response
         self._closing = True
+        # No setPercent / setWidth may run once the dialog is closing.
+        self._stop_progress_driver()
         self.close()
+
+    # --- smooth progress -------------------------------------------------------
+
+    def _progress_driver_running(self) -> bool:
+        driver = getattr(self, "_progress_driver", None)
+        return driver is not None and driver.running
+
+    def _stop_progress_driver(self):
+        driver = getattr(self, "_progress_driver", None)
+        self._progress_driver = None
+        if driver is not None:
+            driver.stop()
+            log(
+                "📊 Smooth bar: %d updates (%s)"
+                % (driver.updates, driver.stopped_because or "stopped")
+            )
+
+    def _start_progress_driver(self, addon):
+        """Draw the bar every video frame (``smooth_progress``) while the dialog is open.
+
+        Settings are read once here. The plain bar (3014, ``<reveal>`` and no ``<info>``) gets
+        ``setPercent(float)``; the segmented (tiled) bar and the combined button fill are images,
+        so they move in whole skin units (the tiled one snaps to whole segments by design).
+        """
+        if self._minimal_mode or getattr(self, "_closing", False):
+            return
+        combined = getattr(self, "_combined_mode", False)
+        if not combined:
+            if not addon_get_bool(addon, "show_progress_bar", True):
+                return
+            if not addon_get_bool(addon, "smooth_progress_bar", True):
+                return
+        countdown = addon_get_bool(addon, "progress_bar_countdown", False) if addon else False
+        start, end = float(self.segment.start_seconds), float(self.segment.end_seconds)
+
+        def percent_at(position):
+            if position >= end:
+                return None
+            return segment_percent(position, start, end, countdown)
+
+        if combined:
+            def apply(pct):
+                self._set_combined_fill_percent(pct)
+        elif getattr(self, "_skip_tiled_pitch", 0):
+            def apply(pct):
+                self._set_tiled_fill_percent(pct)
+        else:
+            def apply(pct):
+                self.getControl(3014).setPercent(pct)
+
+        player = self.player
+        self._progress_driver = ProgressDriver(
+            "skippy-skip-progress",
+            percent_at,
+            apply,
+            position=player.getTime,
+            still_wanted=lambda: not getattr(self, "_closing", False),
+        ).start()
+
+    def _bar_width(self):
+        return getattr(
+            self, "_skip_progress_bar_width", self._skin_sc(FULL_SKIP_PROGRESS_BAR_WIDTH)
+        )
+
+    def _set_tiled_fill_percent(self, pct):
+        bar_w = self._bar_width()
+        w = max(0, min(int(bar_w), int(round(pct / 100.0 * bar_w))))
+        w = _snap_to_whole_segments(w, bar_w, getattr(self, "_skip_tiled_pitch", 0))
+        if w == getattr(self, "_last_smooth_fill_w", None):
+            return
+        self._last_smooth_fill_w = w
+        self.getControl(_SMOOTH_PROGRESS_TILED_FILL_ID).setWidth(w)
+
+    def _set_combined_fill_percent(self, pct):
+        bar_w = self._bar_width()
+        w = int(round((pct / 100.0) * float(bar_w)))
+        w = max(0, min(int(bar_w), w))
+        sliced = self.getProperty("skippy_combined_slice") == "true"
+        if sliced and w > 0:
+            w = max(w, min(int(bar_w), COMBINED_SLICE_MIN_W))
+        if w == getattr(self, "_last_smooth_fill_w", None):
+            return
+        self._last_smooth_fill_w = w
+        self.getControl(COMBINED_FILL_SLICE_ID if sliced else COMBINED_FILL_STRETCH_ID).setWidth(w)
 
     def onClick(self, controlId):
         cid = _normalize_control_id(controlId)
@@ -676,6 +723,7 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
 
 
     def onClose(self):
+        self._stop_progress_driver()
         try:
             if getattr(self, "_minimal_mode", False):
                 return

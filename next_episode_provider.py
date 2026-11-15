@@ -127,6 +127,7 @@ def parse_payload(provider, payload) -> Optional[ProviderData]:
         "episode": parse_int(nxt.get("episode")),
         "file": "",
         "thumb": pick_thumb(nxt.get("art")),
+        "plot": _text(nxt.get("plot")),
     }
     return ProviderData(
         provider=provider,

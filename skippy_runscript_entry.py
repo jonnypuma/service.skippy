@@ -62,6 +62,12 @@ def main():
             return
 
         # --- Statistics / per-title overrides ---
+        if command in ("next_episode_play", "next_episode_close"):
+            # Buttons of a skin's own next episode popup; the service answers the prompt.
+            import xbmc
+
+            xbmc.executebuiltin("NotifyAll(service.skippy,%s)" % command)
+            return
         if command == "skip_current":
             # The service does the skip (it knows the segments and counts it); a
             # notification reaches it within a second.

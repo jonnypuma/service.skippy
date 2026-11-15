@@ -262,7 +262,6 @@ _MODE_VISIBILITY = {
     "progress_bar_style": _FULL_COMPACT,
     "progress_bar_height": _FULL,
     "smooth_progress_bar": _FULL_COMPACT,
-    "progress_bar_updates_per_second": _FULL_COMPACT,
     "skip_dialog_position": _FULL_COMPACT,
     "button_focus_style": _FULL_COMPACT,
     "skip_button_format": _FULL_COMPACT,
@@ -712,24 +711,8 @@ def main():
         2,
         "32083",
         "32084",
-        False,
+        True,
         en=[("show_progress_bar", "true")],
-    )
-    int_setting(
-        g,
-        "progress_bar_updates_per_second",
-        2,
-        "32085",
-        "32086",
-        4,
-        minimum=2,
-        maximum=120,
-        step=1,
-        slider=True,
-        en=[
-            ("show_progress_bar", "true"),
-            ("smooth_progress_bar", "true"),
-        ],
     )
     labelenum_setting(
         g,

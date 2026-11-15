@@ -434,16 +434,8 @@ msgid "Smooth progress bar updates"
 msgstr "Weiche Fortschrittsbalken-Aktualisierungen"
 
 msgctxt "#32084"
-msgid "Full mode: refresh the progress bar more often and ease between values. Turn off if playback stutters on slower devices (default off)."
-msgstr "Vollmodus: Aktualisiert den Fortschrittsbalken häufiger und weicher zwischen den Werten. Ausschalten, wenn die Wiedergabe auf langsameren Geräten ruckelt (Standard: aus)."
-
-msgctxt "#32085"
-msgid "Progress bar updates per second"
-msgstr "Fortschrittsbalken-Aktualisierungen pro Sekunde"
-
-msgctxt "#32086"
-msgid "Smooth mode only: how many times per second to refresh the bar (2–120). Default 4 is fine for most displays; raise only if the bar looks choppy on a high-refresh panel (60–120 Hz)—and lower again if playback stutters."
-msgstr "Nur Weich-Modus: Wie oft pro Sekunde der Balken aktualisiert wird (2–120). Standard 4 ist für die meisten Displays in Ordnung; nur erhöhen, wenn der Balken auf einem Hochfrequenz-Display (60–120 Hz) ruckelt — und wieder senken, wenn die Wiedergabe stockt."
+msgid "Full mode: the bar moves with every video frame instead of in whole-percent steps. Turn off if playback stutters on a slow device (default on)."
+msgstr "Vollmodus: Der Balken bewegt sich mit jedem Videobild statt in ganzen Prozentschritten. Ausschalten, wenn die Wiedergabe auf einem langsamen Gerät ruckelt (Standard: an)."
 
 msgctxt "#32087"
 msgid "Master switch for movies: when off, Skippy does not skip or prompt. While off, Kodi hides the child setting \"Show skip dialog for movies\"."

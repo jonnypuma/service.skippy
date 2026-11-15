@@ -118,6 +118,7 @@ class ParseTests(unittest.TestCase):
                 "episode": 2,
                 "file": "",
                 "thumb": "http://img/thumb.jpg",
+                "plot": "",
             },
         )
         self.assertEqual(lookup.episode_label(found.next_item), "S01E02 · Two")

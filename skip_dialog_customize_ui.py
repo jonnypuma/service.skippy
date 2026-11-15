@@ -336,7 +336,7 @@ _BOOL_DEFAULTS = {
     "show_skip_button_focus_texture": True,
     "hide_skip_icon": False,
     "skip_dialog_all_caps": True,
-    "smooth_progress_bar": False,
+    "smooth_progress_bar": True,
     "compact_full_combined": True,
     "skip_card_enabled": True,
 }
