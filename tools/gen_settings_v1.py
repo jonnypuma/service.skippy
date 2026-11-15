@@ -2,7 +2,9 @@
 """Generate resources/settings.xml in Kodi settings version=\"1\" format."""
 from __future__ import annotations
 
+import json
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 
@@ -210,6 +212,83 @@ UNTRANSLATED_OPTION_SETTINGS = {
 }
 
 
+# Kodi keeps the options of a string setting in two lists: those whose label is a string id and
+# those whose label is plain text. As soon as one option has a string id, a value is valid only if
+# it is one of the string-id options (CSettingString::CheckValidity), so every plain-text option
+# of that setting is refused: setSetting fails without a word and the setting stays at its
+# default. A list is therefore all string ids or all plain text. Names that must stay in English
+# (looks, colours, textures, services) get string ids of their own from this registry, with the
+# English name as the text in every language.
+NAME_LABEL_IDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "option_name_ids.json")
+NAME_LABEL_FIRST_ID = 48200
+_name_label_ids = None
+
+
+def _name_registry() -> dict:
+    global _name_label_ids
+    if _name_label_ids is None:
+        try:
+            with open(NAME_LABEL_IDS_FILE, encoding="utf-8") as handle:
+                _name_label_ids = {str(k): int(v) for k, v in json.load(handle).items()}
+        except (OSError, ValueError):
+            _name_label_ids = {}
+    return _name_label_ids
+
+
+def name_label_id(name: str) -> str:
+    """The string id of an untranslated option name (a new id for a name seen the first time)."""
+    registry = _name_registry()
+    if name not in registry:
+        registry[name] = max([NAME_LABEL_FIRST_ID - 1] + list(registry.values())) + 1
+    return str(registry[name])
+
+
+def uniform_option_labels(labels):
+    """String ids for every label when any label is one, else the labels as they are."""
+    if any(str(l).isdigit() for l in labels) and not all(str(l).isdigit() for l in labels):
+        return [l if str(l).isdigit() else name_label_id(str(l)) for l in labels]
+    return list(labels)
+
+
+def _po_escape(text: str) -> str:
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def save_name_label_strings() -> None:
+    """Keep the registry file, and give every language a string for each name (the name itself)."""
+    registry = _name_registry()
+    with open(NAME_LABEL_IDS_FILE, "w", encoding="utf-8", newline="\n") as handle:
+        json.dump(dict(sorted(registry.items(), key=lambda kv: kv[1])), handle, indent=1, ensure_ascii=False)
+        handle.write("\n")
+    lang_root = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "resources", "language"
+    )
+    if not os.path.isdir(lang_root):
+        return
+    for folder in sorted(os.listdir(lang_root)):
+        path = os.path.join(lang_root, folder, "strings.po")
+        if not os.path.isfile(path):
+            continue
+        with open(path, "rb") as handle:
+            raw = handle.read()
+        crlf = b"\r\n" in raw
+        text = raw.decode("utf-8").replace("\r\n", "\n")
+        known = set(re.findall(r'msgctxt "#(\d+)"', text))
+        missing = [(sid, name) for name, sid in sorted(registry.items(), key=lambda kv: kv[1])
+                   if str(sid) not in known]
+        if not missing:
+            continue
+        entries = [
+            'msgctxt "#%d"\nmsgid "%s"\nmsgstr "%s"\n' % (sid, _po_escape(name), _po_escape(name))
+            for sid, name in missing
+        ]
+        text = text.rstrip("\n") + "\n\n" + "\n".join(entries)
+        if crlf:
+            text = text.replace("\n", "\r\n")
+        with open(path, "wb") as handle:
+            handle.write(text.encode("utf-8"))
+
+
 def labelenum_setting(g, sid, level, label, help_s, default_val, pairs, vis=None, en=None):
     """pairs: list of (display_label, stored_value)."""
     s = ET.SubElement(g, "setting", id=sid, type="string", label=str(label), help=help_s)
@@ -218,10 +297,9 @@ def labelenum_setting(g, sid, level, label, help_s, default_val, pairs, vis=None
     co = sub(s, "constraints")
     opts = sub(co, "options")
     translate = sid not in UNTRANSLATED_OPTION_SETTINGS
-    for disp, val in pairs:
-        if translate:
-            disp = OPTION_LABEL_IDS.get(disp, disp)
-        o = ET.SubElement(opts, "option", {"label": disp})
+    labels = [OPTION_LABEL_IDS.get(disp, disp) if translate else disp for disp, _val in pairs]
+    for disp, (_label, val) in zip(uniform_option_labels(labels), pairs):
+        o = ET.SubElement(opts, "option", {"label": str(disp)})
         o.text = val
     sub(co, "allowempty", "true")
     sub(s, "control", type="spinner", format="string")
@@ -1575,6 +1653,7 @@ def main():
     )
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(x)
+    save_name_label_strings()
     print("Wrote", out_path)
 
 

@@ -2922,3 +2922,543 @@ msgstr "Reeks beëindigen na een pauze van (minuten)"
 msgctxt "#48046"
 msgid "A run ends when nothing of the show has played for this many minutes, so the next sitting starts with the intro again."
 msgstr "Een reeks stopt als er zoveel minuten niets van de serie heeft gespeeld; de volgende keer begint weer met de intro."
+
+msgctxt "#48200"
+msgid "Classic"
+msgstr "Classic"
+
+msgctxt "#48201"
+msgid "Modern"
+msgstr "Modern"
+
+msgctxt "#48202"
+msgid "Stylish"
+msgstr "Stylish"
+
+msgctxt "#48203"
+msgid "Colorful"
+msgstr "Colorful"
+
+msgctxt "#48204"
+msgid "Vibrant"
+msgstr "Vibrant"
+
+msgctxt "#48205"
+msgid "Glass"
+msgstr "Glass"
+
+msgctxt "#48206"
+msgid "Outline"
+msgstr "Outline"
+
+msgctxt "#48207"
+msgid "Subtle"
+msgstr "Subtle"
+
+msgctxt "#48208"
+msgid "Sleek"
+msgstr "Sleek"
+
+msgctxt "#48209"
+msgid "Clean"
+msgstr "Clean"
+
+msgctxt "#48210"
+msgid "Mono"
+msgstr "Mono"
+
+msgctxt "#48211"
+msgid "Slate"
+msgstr "Slate"
+
+msgctxt "#48212"
+msgid "Gold"
+msgstr "Gold"
+
+msgctxt "#48213"
+msgid "Neon"
+msgstr "Neon"
+
+msgctxt "#48214"
+msgid "Neon Pink"
+msgstr "Neon Pink"
+
+msgctxt "#48215"
+msgid "Frosted"
+msgstr "Frosted"
+
+msgctxt "#48216"
+msgid "Steel"
+msgstr "Steel"
+
+msgctxt "#48217"
+msgid "Retro"
+msgstr "Retro"
+
+msgctxt "#48218"
+msgid "Segments"
+msgstr "Segments"
+
+msgctxt "#48219"
+msgid "Stripes"
+msgstr "Stripes"
+
+msgctxt "#48220"
+msgid "Sunset"
+msgstr "Sunset"
+
+msgctxt "#48221"
+msgid "Big & Bold"
+msgstr "Big & Bold"
+
+msgctxt "#48222"
+msgid "Ghost"
+msgstr "Ghost"
+
+msgctxt "#48223"
+msgid "Accessible"
+msgstr "Accessible"
+
+msgctxt "#48224"
+msgid "Arcade"
+msgstr "Arcade"
+
+msgctxt "#48225"
+msgid "Terminal"
+msgstr "Terminal"
+
+msgctxt "#48226"
+msgid "Blueprint"
+msgstr "Blueprint"
+
+msgctxt "#48227"
+msgid "Lava"
+msgstr "Lava"
+
+msgctxt "#48228"
+msgid "Deep Sea"
+msgstr "Deep Sea"
+
+msgctxt "#48229"
+msgid "Candy"
+msgstr "Candy"
+
+msgctxt "#48230"
+msgid "Noir"
+msgstr "Noir"
+
+msgctxt "#48231"
+msgid "Aurora"
+msgstr "Aurora"
+
+msgctxt "#48232"
+msgid "Pill"
+msgstr "Pill"
+
+msgctxt "#48233"
+msgid "Underline"
+msgstr "Underline"
+
+msgctxt "#48234"
+msgid "White"
+msgstr "White"
+
+msgctxt "#48235"
+msgid "Light grey"
+msgstr "Light grey"
+
+msgctxt "#48236"
+msgid "Grey"
+msgstr "Grey"
+
+msgctxt "#48237"
+msgid "Dark grey"
+msgstr "Dark grey"
+
+msgctxt "#48238"
+msgid "Black"
+msgstr "Black"
+
+msgctxt "#48239"
+msgid "Blue"
+msgstr "Blue"
+
+msgctxt "#48240"
+msgid "Red"
+msgstr "Red"
+
+msgctxt "#48241"
+msgid "Green"
+msgstr "Green"
+
+msgctxt "#48242"
+msgid "Aquamarine"
+msgstr "Aquamarine"
+
+msgctxt "#48243"
+msgid "Pink"
+msgstr "Pink"
+
+msgctxt "#48244"
+msgid "Purple"
+msgstr "Purple"
+
+msgctxt "#48245"
+msgid "Peach"
+msgstr "Peach"
+
+msgctxt "#48246"
+msgid "Orange"
+msgstr "Orange"
+
+msgctxt "#48247"
+msgid "Yellow"
+msgstr "Yellow"
+
+msgctxt "#48248"
+msgid "Default"
+msgstr "Default"
+
+msgctxt "#48249"
+msgid "Aqua"
+msgstr "Aqua"
+
+msgctxt "#48250"
+msgid "Aqua Bevel"
+msgstr "Aqua Bevel"
+
+msgctxt "#48251"
+msgid "Aqua Dark"
+msgstr "Aqua Dark"
+
+msgctxt "#48252"
+msgid "Aqua Vignette"
+msgstr "Aqua Vignette"
+
+msgctxt "#48253"
+msgid "Aqua Rounded"
+msgstr "Aqua Rounded"
+
+msgctxt "#48254"
+msgid "Blue Rectangular 3D"
+msgstr "Blue Rectangular 3D"
+
+msgctxt "#48255"
+msgid "Blue Rounded 3D"
+msgstr "Blue Rounded 3D"
+
+msgctxt "#48256"
+msgid "Gold Rectangular 3D"
+msgstr "Gold Rectangular 3D"
+
+msgctxt "#48257"
+msgid "Green 3D"
+msgstr "Green 3D"
+
+msgctxt "#48258"
+msgid "Pink 3D"
+msgstr "Pink 3D"
+
+msgctxt "#48259"
+msgid "Light Pink 3D"
+msgstr "Light Pink 3D"
+
+msgctxt "#48260"
+msgid "Cyan 3D"
+msgstr "Cyan 3D"
+
+msgctxt "#48261"
+msgid "Silver 3D"
+msgstr "Silver 3D"
+
+msgctxt "#48262"
+msgid "Orange 3D"
+msgstr "Orange 3D"
+
+msgctxt "#48263"
+msgid "Violet 3D"
+msgstr "Violet 3D"
+
+msgctxt "#48264"
+msgid "Graphite 3D"
+msgstr "Graphite 3D"
+
+msgctxt "#48265"
+msgid "Ice 3D"
+msgstr "Ice 3D"
+
+msgctxt "#48266"
+msgid "Flat Blue"
+msgstr "Flat Blue"
+
+msgctxt "#48267"
+msgid "Flat Teal"
+msgstr "Flat Teal"
+
+msgctxt "#48268"
+msgid "Flat Green"
+msgstr "Flat Green"
+
+msgctxt "#48269"
+msgid "Flat Rose"
+msgstr "Flat Rose"
+
+msgctxt "#48270"
+msgid "Flat Orange"
+msgstr "Flat Orange"
+
+msgctxt "#48271"
+msgid "Flat Violet"
+msgstr "Flat Violet"
+
+msgctxt "#48272"
+msgid "Flat Slate"
+msgstr "Flat Slate"
+
+msgctxt "#48273"
+msgid "Flat White"
+msgstr "Flat White"
+
+msgctxt "#48274"
+msgid "Glass White"
+msgstr "Glass White"
+
+msgctxt "#48275"
+msgid "Glass Blue"
+msgstr "Glass Blue"
+
+msgctxt "#48276"
+msgid "Glass Dark"
+msgstr "Glass Dark"
+
+msgctxt "#48277"
+msgid "Outline White"
+msgstr "Outline White"
+
+msgctxt "#48278"
+msgid "Outline Cyan"
+msgstr "Outline Cyan"
+
+msgctxt "#48279"
+msgid "Underline White"
+msgstr "Underline White"
+
+msgctxt "#48280"
+msgid "Underline Cyan"
+msgstr "Underline Cyan"
+
+msgctxt "#48281"
+msgid "Frosted White"
+msgstr "Frosted White"
+
+msgctxt "#48282"
+msgid "Brushed Steel"
+msgstr "Brushed Steel"
+
+msgctxt "#48283"
+msgid "Neon Cyan"
+msgstr "Neon Cyan"
+
+msgctxt "#48284"
+msgid "Neon Magenta"
+msgstr "Neon Magenta"
+
+msgctxt "#48285"
+msgid "Gold Leaf"
+msgstr "Gold Leaf"
+
+msgctxt "#48286"
+msgid "Pastel Mint"
+msgstr "Pastel Mint"
+
+msgctxt "#48287"
+msgid "Pastel Peach"
+msgstr "Pastel Peach"
+
+msgctxt "#48288"
+msgid "Pastel Lavender"
+msgstr "Pastel Lavender"
+
+msgctxt "#48289"
+msgid "Bracket White"
+msgstr "Bracket White"
+
+msgctxt "#48290"
+msgid "Bracket Cyan"
+msgstr "Bracket Cyan"
+
+msgctxt "#48291"
+msgid "Bracket Green"
+msgstr "Bracket Green"
+
+msgctxt "#48292"
+msgid "Green (Default)"
+msgstr "Green (Default)"
+
+msgctxt "#48293"
+msgid "Blue/purple gradient"
+msgstr "Blue/purple gradient"
+
+msgctxt "#48294"
+msgid "Dark yellow"
+msgstr "Dark yellow"
+
+msgctxt "#48295"
+msgid "Green/blue gradient"
+msgstr "Green/blue gradient"
+
+msgctxt "#48296"
+msgid "Light blue"
+msgstr "Light blue"
+
+msgctxt "#48297"
+msgid "Light green"
+msgstr "Light green"
+
+msgctxt "#48298"
+msgid "Light yellow"
+msgstr "Light yellow"
+
+msgctxt "#48299"
+msgid "Pink/light blue gradient"
+msgstr "Pink/light blue gradient"
+
+msgctxt "#48300"
+msgid "Yellow/red gradient"
+msgstr "Yellow/red gradient"
+
+msgctxt "#48301"
+msgid "Gradient Ocean"
+msgstr "Gradient Ocean"
+
+msgctxt "#48302"
+msgid "Gradient Aurora"
+msgstr "Gradient Aurora"
+
+msgctxt "#48303"
+msgid "Gradient Sunset"
+msgstr "Gradient Sunset"
+
+msgctxt "#48304"
+msgid "Segmented White"
+msgstr "Segmented White"
+
+msgctxt "#48305"
+msgid "Segmented Teal"
+msgstr "Segmented Teal"
+
+msgctxt "#48306"
+msgid "Segmented Green"
+msgstr "Segmented Green"
+
+msgctxt "#48307"
+msgid "Glow Cyan"
+msgstr "Glow Cyan"
+
+msgctxt "#48308"
+msgid "Glow Magenta"
+msgstr "Glow Magenta"
+
+msgctxt "#48309"
+msgid "Striped Blue"
+msgstr "Striped Blue"
+
+msgctxt "#48310"
+msgid "Striped Orange"
+msgstr "Striped Orange"
+
+msgctxt "#48311"
+msgid "Gradient Gold"
+msgstr "Gradient Gold"
+
+msgctxt "#48312"
+msgid "0%"
+msgstr "0%"
+
+msgctxt "#48313"
+msgid "5%"
+msgstr "5%"
+
+msgctxt "#48314"
+msgid "10%"
+msgstr "10%"
+
+msgctxt "#48315"
+msgid "15%"
+msgstr "15%"
+
+msgctxt "#48316"
+msgid "20%"
+msgstr "20%"
+
+msgctxt "#48317"
+msgid "25%"
+msgstr "25%"
+
+msgctxt "#48318"
+msgid "30%"
+msgstr "30%"
+
+msgctxt "#48319"
+msgid "35%"
+msgstr "35%"
+
+msgctxt "#48320"
+msgid "40%"
+msgstr "40%"
+
+msgctxt "#48321"
+msgid "45%"
+msgstr "45%"
+
+msgctxt "#48322"
+msgid "50%"
+msgstr "50%"
+
+msgctxt "#48323"
+msgid "55%"
+msgstr "55%"
+
+msgctxt "#48324"
+msgid "60%"
+msgstr "60%"
+
+msgctxt "#48325"
+msgid "65%"
+msgstr "65%"
+
+msgctxt "#48326"
+msgid "70%"
+msgstr "70%"
+
+msgctxt "#48327"
+msgid "75%"
+msgstr "75%"
+
+msgctxt "#48328"
+msgid "80%"
+msgstr "80%"
+
+msgctxt "#48329"
+msgid "85%"
+msgstr "85%"
+
+msgctxt "#48330"
+msgid "90%"
+msgstr "90%"
+
+msgctxt "#48331"
+msgid "95%"
+msgstr "95%"
+
+msgctxt "#48332"
+msgid "100%"
+msgstr "100%"
+
+msgctxt "#48333"
+msgid "TheIntroDB.org"
+msgstr "TheIntroDB.org"
+
+msgctxt "#48334"
+msgid "IntroDB.app"
+msgstr "IntroDB.app"

@@ -50,6 +50,33 @@ class OptionLabelTests(unittest.TestCase):
                     english.append("%s: %s" % (sid, label))
         self.assertEqual(english, [])
 
+    def test_no_setting_mixes_string_ids_and_plain_labels(self):
+        """Kodi then accepts only the string-id options: every other choice is refused silently
+        (CSettingString::CheckValidity), and the setting stays at its default (issue #5)."""
+        mixed = []
+        for sid, setting in _settings().items():
+            labels = [option.get("label") or "" for option in setting.iter("option")]
+            numeric = sum(label.isdigit() for label in labels)
+            if numeric and numeric != len(labels):
+                mixed.append(sid)
+        self.assertEqual(mixed, [])
+
+    def test_every_value_the_customize_screens_save_is_an_option(self):
+        """What Customize next episode popup can store must be a choice Kodi accepts."""
+        import sys
+
+        from tests.kodi_stubs import install_kodi_stubs
+
+        install_kodi_stubs()
+        sys.path.insert(0, ROOT)
+        from next_episode_appearance import CHOICE_KEYS
+
+        settings = _settings()
+        for key, choices in CHOICE_KEYS.items():
+            with self.subTest(setting=key):
+                options = [o.text for o in settings[key].iter("option")]
+                self.assertEqual(sorted(set(choices) - set(options)), [])
+
     def test_every_language_defines_every_option_string(self):
         used = set()
         for setting in _settings().values():

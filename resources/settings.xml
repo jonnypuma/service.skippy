@@ -885,40 +885,40 @@
                         <options>
                             <option label="30127">Default</option>
                             <option label="30128">SkipDialog</option>
-                            <option label="Classic">Classic</option>
-                            <option label="Modern">Modern</option>
-                            <option label="Stylish">Stylish</option>
-                            <option label="Colorful">Colorful</option>
-                            <option label="Vibrant">Vibrant</option>
-                            <option label="Glass">Glass</option>
-                            <option label="Outline">Outline</option>
-                            <option label="Subtle">Subtle</option>
-                            <option label="Sleek">Sleek</option>
-                            <option label="Clean">Clean</option>
-                            <option label="Mono">Mono</option>
-                            <option label="Slate">Slate</option>
-                            <option label="Gold">Gold</option>
-                            <option label="Neon">Neon</option>
-                            <option label="Neon Pink">NeonPink</option>
-                            <option label="Frosted">Frosted</option>
-                            <option label="Steel">Steel</option>
-                            <option label="Retro">Retro</option>
-                            <option label="Segments">Segments</option>
-                            <option label="Stripes">Stripes</option>
-                            <option label="Sunset">Sunset</option>
-                            <option label="Big &amp; Bold">BigBold</option>
-                            <option label="Ghost">Ghost</option>
-                            <option label="Accessible">Accessible</option>
-                            <option label="Arcade">Arcade</option>
-                            <option label="Terminal">Terminal</option>
-                            <option label="Blueprint">Blueprint</option>
-                            <option label="Lava">Lava</option>
-                            <option label="Deep Sea">DeepSea</option>
-                            <option label="Candy">Candy</option>
-                            <option label="Noir">Noir</option>
-                            <option label="Aurora">Aurora</option>
-                            <option label="Pill">Pill</option>
-                            <option label="Underline">Underline</option>
+                            <option label="48200">Classic</option>
+                            <option label="48201">Modern</option>
+                            <option label="48202">Stylish</option>
+                            <option label="48203">Colorful</option>
+                            <option label="48204">Vibrant</option>
+                            <option label="48205">Glass</option>
+                            <option label="48206">Outline</option>
+                            <option label="48207">Subtle</option>
+                            <option label="48208">Sleek</option>
+                            <option label="48209">Clean</option>
+                            <option label="48210">Mono</option>
+                            <option label="48211">Slate</option>
+                            <option label="48212">Gold</option>
+                            <option label="48213">Neon</option>
+                            <option label="48214">NeonPink</option>
+                            <option label="48215">Frosted</option>
+                            <option label="48216">Steel</option>
+                            <option label="48217">Retro</option>
+                            <option label="48218">Segments</option>
+                            <option label="48219">Stripes</option>
+                            <option label="48220">Sunset</option>
+                            <option label="48221">BigBold</option>
+                            <option label="48222">Ghost</option>
+                            <option label="48223">Accessible</option>
+                            <option label="48224">Arcade</option>
+                            <option label="48225">Terminal</option>
+                            <option label="48226">Blueprint</option>
+                            <option label="48227">Lava</option>
+                            <option label="48228">DeepSea</option>
+                            <option label="48229">Candy</option>
+                            <option label="48230">Noir</option>
+                            <option label="48231">Aurora</option>
+                            <option label="48232">Pill</option>
+                            <option label="48233">Underline</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -934,20 +934,20 @@
                     <constraints>
                         <options>
                             <option label="47111">Look</option>
-                            <option label="White">FFFFFFFF</option>
-                            <option label="Light grey">FF8E8E8E</option>
-                            <option label="Grey">FF6E6E6E</option>
-                            <option label="Dark grey">FF3D3D3D</option>
-                            <option label="Black">FF000000</option>
-                            <option label="Blue">FF1976D2</option>
-                            <option label="Red">FFE5392F</option>
-                            <option label="Green">FF43A047</option>
-                            <option label="Aquamarine">FF00ACC1</option>
-                            <option label="Pink">FFE91E63</option>
-                            <option label="Purple">FF8E24AA</option>
-                            <option label="Peach">FFFF8A65</option>
-                            <option label="Orange">FFEF6C00</option>
-                            <option label="Yellow">FFF9A825</option>
+                            <option label="48234">FFFFFFFF</option>
+                            <option label="48235">FF8E8E8E</option>
+                            <option label="48236">FF6E6E6E</option>
+                            <option label="48237">FF3D3D3D</option>
+                            <option label="48238">FF000000</option>
+                            <option label="48239">FF1976D2</option>
+                            <option label="48240">FFE5392F</option>
+                            <option label="48241">FF43A047</option>
+                            <option label="48242">FF00ACC1</option>
+                            <option label="48243">FFE91E63</option>
+                            <option label="48244">FF8E24AA</option>
+                            <option label="48245">FFFF8A65</option>
+                            <option label="48246">FFEF6C00</option>
+                            <option label="48247">FFF9A825</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -963,20 +963,20 @@
                     <constraints>
                         <options>
                             <option label="47111">Look</option>
-                            <option label="White">FFFFFFFF</option>
-                            <option label="Light grey">FF8E8E8E</option>
-                            <option label="Grey">FF6E6E6E</option>
-                            <option label="Dark grey">FF3D3D3D</option>
-                            <option label="Black">FF000000</option>
-                            <option label="Blue">FF1976D2</option>
-                            <option label="Red">FFE5392F</option>
-                            <option label="Green">FF43A047</option>
-                            <option label="Aquamarine">FF00ACC1</option>
-                            <option label="Pink">FFE91E63</option>
-                            <option label="Purple">FF8E24AA</option>
-                            <option label="Peach">FFFF8A65</option>
-                            <option label="Orange">FFEF6C00</option>
-                            <option label="Yellow">FFF9A825</option>
+                            <option label="48234">FFFFFFFF</option>
+                            <option label="48235">FF8E8E8E</option>
+                            <option label="48236">FF6E6E6E</option>
+                            <option label="48237">FF3D3D3D</option>
+                            <option label="48238">FF000000</option>
+                            <option label="48239">FF1976D2</option>
+                            <option label="48240">FFE5392F</option>
+                            <option label="48241">FF43A047</option>
+                            <option label="48242">FF00ACC1</option>
+                            <option label="48243">FFE91E63</option>
+                            <option label="48244">FF8E24AA</option>
+                            <option label="48245">FFFF8A65</option>
+                            <option label="48246">FFEF6C00</option>
+                            <option label="48247">FFF9A825</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1009,51 +1009,51 @@
                     <constraints>
                         <options>
                             <option label="47111">Look</option>
-                            <option label="Default">button_focus.png</option>
-                            <option label="Aqua">button_focus_aqua.png</option>
-                            <option label="Aqua Bevel">button_focus_aqua_bevel.png</option>
-                            <option label="Aqua Dark">button_focus_aqua_dark.png</option>
-                            <option label="Aqua Vignette">button_focus_aqua_vignette.png</option>
-                            <option label="Aqua Rounded">button_focus_aqua_rounded.png</option>
-                            <option label="Blue">button_focus_blue.png</option>
-                            <option label="Blue Rectangular 3D">button_focus_blue_rectangular_3d.png</option>
-                            <option label="Blue Rounded 3D">button_focus_blue_rounded_3d.png</option>
-                            <option label="Gold Rectangular 3D">button_focus_gold_rectangular_3d.png</option>
-                            <option label="Green 3D">button_focus_3d_green.png</option>
-                            <option label="Pink 3D">button_focus_3d_pink.png</option>
-                            <option label="Light Pink 3D">button_focus_3d_light_pink.png</option>
-                            <option label="Cyan 3D">button_focus_3d_cyan.png</option>
-                            <option label="Silver 3D">button_focus_3d_silver.png</option>
-                            <option label="Orange 3D">button_focus_3d_orange.png</option>
-                            <option label="Violet 3D">button_focus_3d_violet.png</option>
-                            <option label="Graphite 3D">button_focus_3d_graphite.png</option>
-                            <option label="Ice 3D">button_focus_3d_ice.png</option>
-                            <option label="Flat Blue">button_focus_flat_blue.png</option>
-                            <option label="Flat Teal">button_focus_flat_teal.png</option>
-                            <option label="Flat Green">button_focus_flat_green.png</option>
-                            <option label="Flat Rose">button_focus_flat_rose.png</option>
-                            <option label="Flat Orange">button_focus_flat_orange.png</option>
-                            <option label="Flat Violet">button_focus_flat_violet.png</option>
-                            <option label="Flat Slate">button_focus_flat_slate.png</option>
-                            <option label="Flat White">button_focus_flat_white.png</option>
-                            <option label="Glass White">button_focus_glass_white.png</option>
-                            <option label="Glass Blue">button_focus_glass_blue.png</option>
-                            <option label="Glass Dark">button_focus_glass_dark.png</option>
-                            <option label="Outline White">button_focus_outline_white.png</option>
-                            <option label="Outline Cyan">button_focus_outline_cyan.png</option>
-                            <option label="Underline White">button_focus_underline_white.png</option>
-                            <option label="Underline Cyan">button_focus_underline_cyan.png</option>
-                            <option label="Frosted White">button_focus_frosted_white.png</option>
-                            <option label="Brushed Steel">button_focus_steel.png</option>
-                            <option label="Neon Cyan">button_focus_neon_cyan.png</option>
-                            <option label="Neon Magenta">button_focus_neon_magenta.png</option>
-                            <option label="Gold Leaf">button_focus_gold.png</option>
-                            <option label="Pastel Mint">button_focus_pastel_mint.png</option>
-                            <option label="Pastel Peach">button_focus_pastel_peach.png</option>
-                            <option label="Pastel Lavender">button_focus_pastel_lavender.png</option>
-                            <option label="Bracket White">button_focus_bracket_white.png</option>
-                            <option label="Bracket Cyan">button_focus_bracket_cyan.png</option>
-                            <option label="Bracket Green">button_focus_bracket_green.png</option>
+                            <option label="48248">button_focus.png</option>
+                            <option label="48249">button_focus_aqua.png</option>
+                            <option label="48250">button_focus_aqua_bevel.png</option>
+                            <option label="48251">button_focus_aqua_dark.png</option>
+                            <option label="48252">button_focus_aqua_vignette.png</option>
+                            <option label="48253">button_focus_aqua_rounded.png</option>
+                            <option label="48239">button_focus_blue.png</option>
+                            <option label="48254">button_focus_blue_rectangular_3d.png</option>
+                            <option label="48255">button_focus_blue_rounded_3d.png</option>
+                            <option label="48256">button_focus_gold_rectangular_3d.png</option>
+                            <option label="48257">button_focus_3d_green.png</option>
+                            <option label="48258">button_focus_3d_pink.png</option>
+                            <option label="48259">button_focus_3d_light_pink.png</option>
+                            <option label="48260">button_focus_3d_cyan.png</option>
+                            <option label="48261">button_focus_3d_silver.png</option>
+                            <option label="48262">button_focus_3d_orange.png</option>
+                            <option label="48263">button_focus_3d_violet.png</option>
+                            <option label="48264">button_focus_3d_graphite.png</option>
+                            <option label="48265">button_focus_3d_ice.png</option>
+                            <option label="48266">button_focus_flat_blue.png</option>
+                            <option label="48267">button_focus_flat_teal.png</option>
+                            <option label="48268">button_focus_flat_green.png</option>
+                            <option label="48269">button_focus_flat_rose.png</option>
+                            <option label="48270">button_focus_flat_orange.png</option>
+                            <option label="48271">button_focus_flat_violet.png</option>
+                            <option label="48272">button_focus_flat_slate.png</option>
+                            <option label="48273">button_focus_flat_white.png</option>
+                            <option label="48274">button_focus_glass_white.png</option>
+                            <option label="48275">button_focus_glass_blue.png</option>
+                            <option label="48276">button_focus_glass_dark.png</option>
+                            <option label="48277">button_focus_outline_white.png</option>
+                            <option label="48278">button_focus_outline_cyan.png</option>
+                            <option label="48279">button_focus_underline_white.png</option>
+                            <option label="48280">button_focus_underline_cyan.png</option>
+                            <option label="48281">button_focus_frosted_white.png</option>
+                            <option label="48282">button_focus_steel.png</option>
+                            <option label="48283">button_focus_neon_cyan.png</option>
+                            <option label="48284">button_focus_neon_magenta.png</option>
+                            <option label="48285">button_focus_gold.png</option>
+                            <option label="48286">button_focus_pastel_mint.png</option>
+                            <option label="48287">button_focus_pastel_peach.png</option>
+                            <option label="48288">button_focus_pastel_lavender.png</option>
+                            <option label="48289">button_focus_bracket_white.png</option>
+                            <option label="48290">button_focus_bracket_cyan.png</option>
+                            <option label="48291">button_focus_bracket_green.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1069,42 +1069,42 @@
                     <constraints>
                         <options>
                             <option label="47111">Look</option>
-                            <option label="Green (Default)">progress_mid.png</option>
-                            <option label="Blue/purple gradient">progress_mid_blue_purple.png</option>
-                            <option label="Dark yellow">progress_mid_darkyellow.png</option>
-                            <option label="Green/blue gradient">progress_mid_green_blue.png</option>
-                            <option label="Light blue">progress_mid_lightblue.png</option>
-                            <option label="Light green">progress_mid_lightgreen.png</option>
-                            <option label="Light yellow">progress_mid_lightyellow.png</option>
-                            <option label="Pink">progress_mid_pink.png</option>
-                            <option label="Pink/light blue gradient">progress_mid_pink_lightblue.png</option>
-                            <option label="Purple">progress_mid_purple.png</option>
-                            <option label="Yellow/red gradient">progress_mid_yellow_red.png</option>
-                            <option label="Cyan 3D">progress_mid_3d_cyan.png</option>
-                            <option label="Silver 3D">progress_mid_3d_silver.png</option>
-                            <option label="Orange 3D">progress_mid_3d_orange.png</option>
-                            <option label="Violet 3D">progress_mid_3d_violet.png</option>
-                            <option label="Graphite 3D">progress_mid_3d_graphite.png</option>
-                            <option label="Ice 3D">progress_mid_3d_ice.png</option>
-                            <option label="Flat Blue">progress_mid_flat_blue.png</option>
-                            <option label="Flat Teal">progress_mid_flat_teal.png</option>
-                            <option label="Flat Green">progress_mid_flat_green.png</option>
-                            <option label="Flat Rose">progress_mid_flat_rose.png</option>
-                            <option label="Flat Orange">progress_mid_flat_orange.png</option>
-                            <option label="Flat Violet">progress_mid_flat_violet.png</option>
-                            <option label="Flat Slate">progress_mid_flat_slate.png</option>
-                            <option label="Flat White">progress_mid_flat_white.png</option>
-                            <option label="Gradient Ocean">progress_mid_grad_ocean.png</option>
-                            <option label="Gradient Aurora">progress_mid_grad_aurora.png</option>
-                            <option label="Gradient Sunset">progress_mid_grad_sunset.png</option>
-                            <option label="Segmented White">progress_mid_segmented_white.png</option>
-                            <option label="Segmented Teal">progress_mid_segmented_teal.png</option>
-                            <option label="Segmented Green">progress_mid_segmented_green.png</option>
-                            <option label="Glow Cyan">progress_mid_glow_cyan.png</option>
-                            <option label="Glow Magenta">progress_mid_glow_magenta.png</option>
-                            <option label="Striped Blue">progress_mid_striped_blue.png</option>
-                            <option label="Striped Orange">progress_mid_striped_orange.png</option>
-                            <option label="Gradient Gold">progress_mid_grad_gold.png</option>
+                            <option label="48292">progress_mid.png</option>
+                            <option label="48293">progress_mid_blue_purple.png</option>
+                            <option label="48294">progress_mid_darkyellow.png</option>
+                            <option label="48295">progress_mid_green_blue.png</option>
+                            <option label="48296">progress_mid_lightblue.png</option>
+                            <option label="48297">progress_mid_lightgreen.png</option>
+                            <option label="48298">progress_mid_lightyellow.png</option>
+                            <option label="48243">progress_mid_pink.png</option>
+                            <option label="48299">progress_mid_pink_lightblue.png</option>
+                            <option label="48244">progress_mid_purple.png</option>
+                            <option label="48300">progress_mid_yellow_red.png</option>
+                            <option label="48260">progress_mid_3d_cyan.png</option>
+                            <option label="48261">progress_mid_3d_silver.png</option>
+                            <option label="48262">progress_mid_3d_orange.png</option>
+                            <option label="48263">progress_mid_3d_violet.png</option>
+                            <option label="48264">progress_mid_3d_graphite.png</option>
+                            <option label="48265">progress_mid_3d_ice.png</option>
+                            <option label="48266">progress_mid_flat_blue.png</option>
+                            <option label="48267">progress_mid_flat_teal.png</option>
+                            <option label="48268">progress_mid_flat_green.png</option>
+                            <option label="48269">progress_mid_flat_rose.png</option>
+                            <option label="48270">progress_mid_flat_orange.png</option>
+                            <option label="48271">progress_mid_flat_violet.png</option>
+                            <option label="48272">progress_mid_flat_slate.png</option>
+                            <option label="48273">progress_mid_flat_white.png</option>
+                            <option label="48301">progress_mid_grad_ocean.png</option>
+                            <option label="48302">progress_mid_grad_aurora.png</option>
+                            <option label="48303">progress_mid_grad_sunset.png</option>
+                            <option label="48304">progress_mid_segmented_white.png</option>
+                            <option label="48305">progress_mid_segmented_teal.png</option>
+                            <option label="48306">progress_mid_segmented_green.png</option>
+                            <option label="48307">progress_mid_glow_cyan.png</option>
+                            <option label="48308">progress_mid_glow_magenta.png</option>
+                            <option label="48309">progress_mid_striped_blue.png</option>
+                            <option label="48310">progress_mid_striped_orange.png</option>
+                            <option label="48311">progress_mid_grad_gold.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1121,27 +1121,27 @@
                     <constraints>
                         <options>
                             <option label="47111">Look</option>
-                            <option label="0%">0</option>
-                            <option label="5%">5</option>
-                            <option label="10%">10</option>
-                            <option label="15%">15</option>
-                            <option label="20%">20</option>
-                            <option label="25%">25</option>
-                            <option label="30%">30</option>
-                            <option label="35%">35</option>
-                            <option label="40%">40</option>
-                            <option label="45%">45</option>
-                            <option label="50%">50</option>
-                            <option label="55%">55</option>
-                            <option label="60%">60</option>
-                            <option label="65%">65</option>
-                            <option label="70%">70</option>
-                            <option label="75%">75</option>
-                            <option label="80%">80</option>
-                            <option label="85%">85</option>
-                            <option label="90%">90</option>
-                            <option label="95%">95</option>
-                            <option label="100%">100</option>
+                            <option label="48312">0</option>
+                            <option label="48313">5</option>
+                            <option label="48314">10</option>
+                            <option label="48315">15</option>
+                            <option label="48316">20</option>
+                            <option label="48317">25</option>
+                            <option label="48318">30</option>
+                            <option label="48319">35</option>
+                            <option label="48320">40</option>
+                            <option label="48321">45</option>
+                            <option label="48322">50</option>
+                            <option label="48323">55</option>
+                            <option label="48324">60</option>
+                            <option label="48325">65</option>
+                            <option label="48326">70</option>
+                            <option label="48327">75</option>
+                            <option label="48328">80</option>
+                            <option label="48329">85</option>
+                            <option label="48330">90</option>
+                            <option label="48331">95</option>
+                            <option label="48332">100</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1681,8 +1681,8 @@
                     <constraints>
                         <options>
                             <option label="39010">Both</option>
-                            <option label="TheIntroDB.org">TheIntroDB</option>
-                            <option label="IntroDB.app">IntroDBApp</option>
+                            <option label="48333">TheIntroDB</option>
+                            <option label="48334">IntroDBApp</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>

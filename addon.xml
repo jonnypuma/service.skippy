@@ -1,6 +1,6 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="7.15.1"
+       version="7.15.2"
        provider-name="Skippy-McSkipface">
        
     <requires>
@@ -44,7 +44,8 @@
         <platform>all</platform>
         <license>MIT</license>
         <source>https://github.com/jonnypuma/service.skippy</source>
-        <news>v7.15.1: What you save in Customize next episode popup and Customize skip dialog is kept when you leave the settings with Back or Cancel.
+        <news>v7.15.2: The next episode popup's look, colours, button highlight, bar and card opacity, and the default upload target, can be changed again: Kodi refused every choice but the default.
+v7.15.1: What you save in Customize next episode popup and Customize skip dialog is kept when you leave the settings with Back or Cancel.
 v7.15.0: Progress bars move with every video frame instead of jumping a percent at a time, in the skip dialog, the next episode popup and in skins that ask Skippy to drive their own bar. Smooth progress is on by default.
 v7.14.0: Skins can draw their own next episode popup, the way they can draw their own skip button: Skippy fills Home window properties and the skin's buttons answer it.
 v7.13.1: Customize next episode popup and Customize skip dialog show what you saved when opened again from the settings.

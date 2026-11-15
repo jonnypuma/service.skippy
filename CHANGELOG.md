@@ -1,5 +1,13 @@
 # Changelog
 
+## [7.15.2] - 2026-11-15
+
+### Fixed
+
+- **The next episode popup's look can be changed again (issue #5).** Kodi refused every choice of **Popup look**, **Text colour**, **Heading colour**, **Button highlight**, **Progress bar style** and **Card opacity** except the default, so whatever was picked in Customize next episode popup or in the settings went back to the default look (the teal highlight) on the next start, also when the settings were left with OK. The cause was in `settings.xml`: in those lists the first choice (**Same as look**) had a translated label and the others a plain name. When a list has translated labels, Kodi accepts only the translated choices and drops every other value without a message. Every choice in such a list now has a translated label; names of looks, colours and textures keep their English names in every language (135 new strings that are the name itself). This had been so since 7.5.0.
+- **The default upload target can be TheIntroDB.org or IntroDB.app again.** The same mix (a translated **Both** next to the two service names) appeared in 7.11.6 when the settings choices were translated, so only **Both** could be chosen.
+- `tools/gen_settings_v1.py` now gives a list translated labels for all choices or for none, keeping the ids of the untranslated names in `tools/option_name_ids.json` so they never change, and adds their strings to every language. A test fails when a setting mixes the two kinds, and another checks that every value Customize next episode popup can save is a choice Kodi accepts.
+
 ## [7.15.1] - 2026-11-15
 
 ### Fixed

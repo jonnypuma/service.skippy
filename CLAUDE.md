@@ -27,7 +27,7 @@ Run generators from the add-on root:
 
 Layout changes: edit `720p`, then run `gen_skin_1080i.py` (add `--overwrite` only when you mean it). The user runs 1080i.
 
-Strings: add the new id to `resources/language/resource.language.en_gb/strings.po`, then to every other folder under `resources/language/` (10 languages). Folder names must be Kodi's language add-on ids (`resource.language.de_de`, `resource.language.pt_br`, ...), never English names such as `German`: Kodi 23 nightlies no longer find those, and then every settings label is blank (`tests/test_language_pack_sync.py` guards this). Ids used so far reach 48046 (47000-47154 is the Next episode block; 48000-48046 statistics per title, Current video and binge mode). `addon.xml` also carries translated `<summary>` / `<description>` per language.
+Strings: add the new id to `resources/language/resource.language.en_gb/strings.po`, then to every other folder under `resources/language/` (10 languages). Folder names must be Kodi's language add-on ids (`resource.language.de_de`, `resource.language.pt_br`, ...), never English names such as `German`: Kodi 23 nightlies no longer find those, and then every settings label is blank (`tests/test_language_pack_sync.py` guards this). Ids used so far reach 48334 (47000-47154 is the Next episode block; 48000-48046 statistics per title, Current video and binge mode; 48200 up: untranslated option names, assigned by the generator). `addon.xml` also carries translated `<summary>` / `<description>` per language.
 
 Do not add files named `_*.png`, `tools/_*.py` or `*-Jon.*` to commits — they are scratch/personal files.
 
@@ -75,6 +75,8 @@ Run these before finishing a change that touches Python (install once with `pip 
 ## Verifying in Kodi
 
 Python and skin XML are cached by Kodi: after changing Python or a skip-dialog XML, restart Kodi, or disable then enable the add-on from its info page. The Full skip dialog must open from the add-on path: the textures it gets from window properties and from Python (`setImage`) are bare file names that Kodi looks up in the `media` folder next to the XML it loaded. Opening it from a copy elsewhere loses them (tried in 7.11.6, reverted). The Customize modal reloads its own XML each time it opens. A running service does not pick up `.py` edits.
+
+Settings option lists: Kodi accepts a value only from the options with a numeric (string id) label as soon as one option has one, and refuses the rest without a word. `gen_settings_v1.py` therefore makes a list all string ids or all plain text; untranslated names get ids from `tools/option_name_ids.json` (48200 up). Never hand-edit an option label in `settings.xml`.
 
 Settings windows: a RunScript started from the add-on's settings window that calls `setSetting` does not write to disk. Kodi hands the value to the open settings window, which stores it only when the user closes it with **OK**; Back or Cancel reloads the settings from disk and the value is lost, and `getSetting` returns the old value until then. Anything that saves from a screen opened in the settings (the Customize screens) goes through `settings_pending.with_pending(addon)`, which also writes the values into `addon_data/.../settings.xml` and remembers them for a screen opened again.
 

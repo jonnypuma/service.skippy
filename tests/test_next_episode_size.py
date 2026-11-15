@@ -339,6 +339,11 @@ class SettingsFileTests(unittest.TestCase):
             os.makedirs(os.path.join(tmp, "resources"))
             script = os.path.join(tmp, "tools", "gen_settings_v1.py")
             shutil.copyfile(os.path.join(ROOT, "tools", "gen_settings_v1.py"), script)
+            # The string ids of option names that stay in English (see gen_settings_v1.py).
+            shutil.copyfile(
+                os.path.join(ROOT, "tools", "option_name_ids.json"),
+                os.path.join(tmp, "tools", "option_name_ids.json"),
+            )
             env = dict(os.environ, PYTHONPATH=ROOT, PYTHONDONTWRITEBYTECODE="1")
             run = subprocess.run([sys.executable, script], capture_output=True, text=True, env=env, cwd=tmp)
             self.assertEqual(run.returncode, 0, run.stderr)
