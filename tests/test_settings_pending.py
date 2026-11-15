@@ -6,7 +6,11 @@ disk, so ``getSetting`` keeps answering the old value until that window is close
 add-on below behaves the same way.
 """
 
+import os
+import shutil
+import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import MagicMock, patch
 
 from tests.kodi_stubs import import_fresh, install_kodi_stubs
@@ -32,12 +36,22 @@ class _Win:
 
 
 class _KodiAddon:
-    """Stores on disk only when the settings window is closed, like Kodi."""
+    """Kodi's add-on settings, stored in a real settings.xml.
+
+    While the settings window is open, ``setSetting`` only reaches the window. Closing it with
+    OK stores the window's values; Back or Cancel reloads the file and drops them.
+    """
 
     def __init__(self, test):
         self.test = test
-        self.disk = {}
+        self.path = test.settings_path
         self.window_values = {}
+
+    @property
+    def disk(self):
+        if not os.path.isfile(self.path):
+            return {}
+        return {el.get("id"): el.text or "" for el in ET.parse(self.path).getroot().iter("setting")}
 
     def getSetting(self, key):
         return self.disk.get(key, "")
@@ -46,10 +60,11 @@ class _KodiAddon:
         if self.test.settings_open:
             self.window_values[key] = value
         else:
-            self.disk[key] = value
+            pending.write_settings_file({key: value}, self.path)
 
-    def close_settings_window(self):
-        self.disk.update(self.window_values)
+    def close_settings_window(self, ok=True):
+        if ok:
+            pending.write_settings_file(self.window_values, self.path)
         self.window_values = {}
         self.test.settings_open = False
 
@@ -64,6 +79,12 @@ class _Base(unittest.TestCase):
     def setUp(self):
         self.settings_open = True
         self.win = _Win()
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.settings_path = os.path.join(self.tmp, "settings.xml")
+        file_patch = patch.object(pending, "_settings_file", return_value=self.settings_path)
+        file_patch.start()
+        self.addCleanup(file_patch.stop)
         for target, kwargs in (
             (pending, {"_window": MagicMock(return_value=self.win)}),
             (pending, {"addon_settings_open": MagicMock(side_effect=lambda: self.settings_open)}),
@@ -78,7 +99,7 @@ class PendingTests(_Base):
         addon = _KodiAddon(self)
         first = pending.with_pending(addon)
         first.setSetting("next_episode_popup_position", "TopLeft")
-        self.assertEqual(addon.getSetting("next_episode_popup_position"), "")  # Kodi: not on disk yet
+        self.assertEqual(addon.window_values["next_episode_popup_position"], "TopLeft")
         again = pending.with_pending(addon)
         self.assertEqual(again.getSetting("next_episode_popup_position"), "TopLeft")
         self.assertEqual(again.getSetting("other"), "")
@@ -113,6 +134,50 @@ class PendingTests(_Base):
         self.assertEqual(pending.read_pending(), {})
         self.win.props[pending.PENDING_PROP] = "[1]"
         self.assertEqual(pending.read_pending(), {})
+
+
+class SettingsFileTests(_Base):
+    def test_updates_only_the_given_ids_and_drops_the_default_mark(self):
+        with open(self.settings_path, "w", encoding="utf-8") as handle:
+            handle.write('<settings version="2">\n'
+                         '    <setting id="next_episode_popup_look" default="true">Default</setting>\n'
+                         '    <setting id="other">keep</setting>\n'
+                         '</settings>\n')
+        self.assertTrue(pending.write_settings_file(
+            {"next_episode_popup_look": "Neon", "next_episode_popup_focus_style": "x.png"}))
+        root = ET.parse(self.settings_path).getroot()
+        self.assertEqual(root.get("version"), "2")
+        rows = {el.get("id"): (el.text, el.get("default")) for el in root.iter("setting")}
+        self.assertEqual(rows["next_episode_popup_look"], ("Neon", None))
+        self.assertEqual(rows["other"], ("keep", None))
+        self.assertEqual(rows["next_episode_popup_focus_style"], ("x.png", None))
+        self.assertFalse(os.path.exists(self.settings_path + ".tmp"))
+
+    def test_creates_a_missing_file_and_refuses_a_broken_one(self):
+        self.assertTrue(pending.write_settings_file({"k": "v"}))
+        self.assertEqual(ET.parse(self.settings_path).getroot().find("setting").text, "v")
+        with open(self.settings_path, "w", encoding="utf-8") as handle:
+            handle.write("<settings><broken")
+        self.assertFalse(pending.write_settings_file({"k": "w"}))
+        self.assertTrue(pending.write_settings_file({}))
+
+    def test_save_survives_back_and_ok(self):
+        """The report: leaving the settings with Back dropped every Customize change."""
+        for ok in (False, True):
+            self.settings_open = True
+            addon = _KodiAddon(self)
+            pending.with_pending(addon).setSetting("next_episode_popup_focus_style", "neon_%s.png" % ok)
+            addon.close_settings_window(ok=ok)
+            self.assertEqual(addon.getSetting("next_episode_popup_focus_style"), "neon_%s.png" % ok)
+
+    def test_no_file_write_when_the_settings_window_is_closed(self):
+        self.settings_open = False
+        addon = MagicMock()
+        proxy = pending.PendingSettingsAddon(addon, {})
+        with patch.object(pending, "write_settings_file") as write:
+            proxy.setSetting("k", "v")
+        write.assert_not_called()
+        addon.setSetting.assert_called_once_with("k", "v")
 
 
 class NextEpisodeCustomizeTests(_Base):

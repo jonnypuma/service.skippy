@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.15.1] - 2026-11-15
+
+### Fixed
+
+- **Customize Save is kept however you leave the settings.** Saved from a Customize screen opened in the settings, the values went only to Kodi's settings window, and Kodi stores that window's values only when it is closed with **OK**. Leaving the settings with Back or Cancel reloaded them from disk, so every change was lost and the popup went back to its default look (reported as reverting to the default teal every time; 7.13.1 only fixed what the screen showed while the settings stayed open). A Save now also writes the changed values straight into Skippy's stored settings, so Back and Cancel keep them, and still hands them to the settings window, so **OK** keeps them too. The same applies to **Customize skip dialog** and **Skip dialog presets…**.
+- 4 tests, including saving and then leaving the settings with Back and with OK, against an add-on that keeps its settings in a real settings file the way Kodi does.
+
 ## [7.15.0] - 2026-11-15
 
 ### Changed

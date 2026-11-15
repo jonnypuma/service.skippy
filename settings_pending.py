@@ -7,15 +7,23 @@ stores it when it is closed. A script that reads the setting before then (``getS
 still gets the old value from disk. So a Customize screen opened a second time from the
 settings window showed the values from before the first Save, as if the Save was lost.
 
-Customize screens therefore keep what they saved in a Home window property while the
-settings window is open, and read it back first. The property is cleared when the
-settings window has been closed (the service's ``onSettingsChanged``), or the next time it
-is read with no settings window open.
+Worse, the settings window stores what it holds only when it is closed with **OK**. Closed
+with Back or Cancel, Kodi reloads the settings from disk and everything the Customize screen
+saved is gone (reported as "settings revert to the default teal every time").
+
+So while the settings window is open, a Customize Save does three things: it hands the values
+to the window as before (so **OK** stores them with the rest), it writes them straight into
+``addon_data/service.skippy/settings.xml`` (so Back and Cancel reload them), and it keeps them in
+a Home window property, read back first by a Customize screen opened again before the settings
+window closes. The property is cleared when the settings window has been closed (the service's
+``onSettingsChanged``), or the next time it is read with no settings window open.
 """
 
 from __future__ import annotations
 
 import json
+import os
+import xml.etree.ElementTree as ET
 
 PENDING_PROP = "skippy.pending_settings.v1"
 
@@ -91,6 +99,54 @@ def drop_if_settings_closed(win=None) -> bool:
     return True
 
 
+SETTINGS_FILE = "settings.xml"
+
+
+def _settings_file():
+    from skippy_profile_store import profile_path
+
+    return profile_path(SETTINGS_FILE)
+
+
+def write_settings_file(values, path=None) -> bool:
+    """Put ``values`` into Kodi's stored settings file for this add-on; True when written.
+
+    Only the given ids change; every other line is kept. A changed value loses Kodi's
+    ``default="true"`` mark (it is the user's choice now). A missing file is created.
+    """
+    if not values:
+        return True
+    path = path or _settings_file()
+    if not path:
+        return False
+    try:
+        if os.path.isfile(path):
+            tree = ET.parse(path)
+            root = tree.getroot()
+        else:
+            root = ET.Element("settings", {"version": "2"})
+            tree = ET.ElementTree(root)
+        by_id = {el.get("id"): el for el in root.findall("setting")}
+        for key, value in values.items():
+            el = by_id.get(key)
+            if el is None:
+                el = ET.SubElement(root, "setting", {"id": str(key)})
+            el.attrib.pop("default", None)
+            el.text = str(value)
+        try:
+            ET.indent(tree, space="    ")
+        except AttributeError:
+            pass
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = path + ".tmp"
+        with open(tmp, "wb") as handle:
+            tree.write(handle, encoding="utf-8", xml_declaration=False, short_empty_elements=False)
+        os.replace(tmp, path)
+        return True
+    except Exception:
+        return False
+
+
 class PendingSettingsAddon:
     """An ``xbmcaddon.Addon`` that reads values a Customize screen saved but Kodi has not stored yet.
 
@@ -115,6 +171,9 @@ class PendingSettingsAddon:
     def setSetting(self, key, value):
         result = self._addon.setSetting(key, value)
         self._pending[key] = str(value)
+        if addon_settings_open():
+            # The open settings window holds the value until OK; Back or Cancel would drop it.
+            write_settings_file({key: value})
         note_pending({key: value})
         return result
 

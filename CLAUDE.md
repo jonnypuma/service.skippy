@@ -76,7 +76,7 @@ Run these before finishing a change that touches Python (install once with `pip 
 
 Python and skin XML are cached by Kodi: after changing Python or a skip-dialog XML, restart Kodi, or disable then enable the add-on from its info page. The Full skip dialog must open from the add-on path: the textures it gets from window properties and from Python (`setImage`) are bare file names that Kodi looks up in the `media` folder next to the XML it loaded. Opening it from a copy elsewhere loses them (tried in 7.11.6, reverted). The Customize modal reloads its own XML each time it opens. A running service does not pick up `.py` edits.
 
-Settings windows: a RunScript started from the add-on's settings window that calls `setSetting` does not write to disk. Kodi hands the value to the open settings window, which stores it when the user leaves the settings; `getSetting` keeps returning the old value until then. Anything that saves and may be opened again from the settings (the Customize screens) goes through `settings_pending.with_pending(addon)`.
+Settings windows: a RunScript started from the add-on's settings window that calls `setSetting` does not write to disk. Kodi hands the value to the open settings window, which stores it only when the user closes it with **OK**; Back or Cancel reloads the settings from disk and the value is lost, and `getSetting` returns the old value until then. Anything that saves from a screen opened in the settings (the Customize screens) goes through `settings_pending.with_pending(addon)`, which also writes the values into `addon_data/.../settings.xml` and remembers them for a screen opened again.
 
 Skip-dialog notes learned the hard way:
 
