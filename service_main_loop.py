@@ -14,6 +14,7 @@ from playback_identity import title_identity
 from segment_editor_utils import get_home_window
 from service_diagnostics import note_loop_error, publish_diagnostics
 import skin_properties
+from settings_pending import drop_if_settings_closed
 from service_loop_nested import handle_rewind_and_nested_segments
 from service_loop_next_episode import handle_next_episode, handle_remote_next_episode
 from service_loop_playback import handle_replay_detection, handle_video_change
@@ -302,6 +303,7 @@ def run_service_main_loop(ctx: ServiceLoopBindings) -> None:
             except RuntimeError:
                 playing_video = False
             tick_skippy_skipping_property(ctx.monitor, playing=playing_video)
+            drop_if_settings_closed(get_home_window(ctx.monitor))
 
             try:
                 win = get_home_window(ctx.monitor)

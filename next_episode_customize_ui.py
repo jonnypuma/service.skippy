@@ -66,6 +66,7 @@ from next_episode_view import (
     popup_texts,
     skip_text_color,
 )
+from settings_pending import with_pending
 from settings_utils import get_addon, get_localized, log
 
 XML_NAME = "NextEpisodeCustomize.xml"
@@ -229,7 +230,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         self._skin_resolution = init_window_xml_dialog(super(NextEpisodeCustomize, self), args)
         self._xml_layout = args[0] if args else XML_NAME
-        self.addon = kwargs.get("addon") or get_addon()
+        self.addon = kwargs.get("addon") or with_pending(get_addon())
         self._draft = dict(kwargs.get("draft") or load_popup_draft(self.addon))
         self._original = dict(kwargs.get("original") or self._draft)
         self._saved = False
@@ -534,7 +535,8 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
 
 def show_next_episode_customize(draft=None, original=None):
     """Open the Customize modal. Returns True when the user saved."""
-    addon = get_addon()
+    # Opened from the settings window, it must see what an earlier Save handed to that window.
+    addon = with_pending(get_addon())
     if not addon:
         return False
     kwargs = {"addon": addon}

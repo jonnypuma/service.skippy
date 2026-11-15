@@ -1,6 +1,6 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="7.13.0"
+       version="7.13.1"
        provider-name="Skippy-McSkipface">
        
     <requires>
@@ -44,7 +44,8 @@
         <platform>all</platform>
         <license>MIT</license>
         <source>https://github.com/jonnypuma/service.skippy</source>
-        <news>v7.13.0: Skins can show the segment playing, the time left, the next segment and the next episode from Home window properties, and draw their own skip button with RunScript(service.skippy,skip_current), which also works from a key.
+        <news>v7.13.1: Customize next episode popup and Customize skip dialog show what you saved when opened again from the settings.
+v7.13.0: Skins can show the segment playing, the time left, the next segment and the next episode from Home window properties, and draw their own skip button with RunScript(service.skippy,skip_current), which also works from a key.
 v7.12.0: Binge mode: the intro plays on the first episode of a sitting and is skipped from the second on, optionally the recap too. Statistics show time saved per show or film. A new Current video window shows where the segments came from, what each one will do and why, and the last error.
 v7.11.6: Merge and Update online sidecar saves no longer stop a video's segments from loading. "Still watching?" counts episodes Kodi starts by itself. A new video starts without the previous video's segments. Code defaults match the settings. A failed save to an NFS share no longer lands in the share's root folder. Unknown RunScript commands no longer mark a segment. Online lookups check the year, so remakes get their own segments. Hide OSD display during skip is on by default. More screens are translated.
 v7.11.5: The native next episode toast no longer blocks every later toast after it is closed early.

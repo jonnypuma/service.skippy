@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.13.1] - 2026-11-15
+
+### Fixed
+
+- **Customize next episode popup no longer seems to forget what you saved.** Opened from the settings, the screen saves into Kodi's settings window, which keeps the values and stores them only when you leave the settings. Opened a second time before that, the screen read the stored values and showed the old look, so the Save looked lost, and saving again from there could undo the first Save. The screen now remembers what it saved while the settings window is open and shows it. The same applies to **Customize skip dialog** and **Skip dialog presets…**. The values are forgotten once the settings window is closed.
+- 9 tests, including one that saves, opens the screen again and saves once more, with an add-on that stores values the way Kodi does while its settings window is open.
+
 ## [7.13.0] - 2026-11-12
 
 ### Added

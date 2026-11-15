@@ -20,6 +20,7 @@ from settings_utils import (
     get_addon,
     get_localized,
 )
+from settings_pending import with_pending
 import skip_dialog_presets as sp
 from skip_dialog_presets_ui import (
     present_preset_menu,
@@ -534,7 +535,7 @@ def _yes_no(addon, flag):
 class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         self._skin_resolution = init_window_xml_dialog(super(SkipDialogCustomize, self), args)
-        self.addon = kwargs.get("addon") or get_addon()
+        self.addon = kwargs.get("addon") or with_pending(get_addon())
         self._draft = kwargs.get("draft") or load_skip_dialog_draft(self.addon)
         self._original = dict(kwargs.get("original") or self._draft)
         self._saved = False
@@ -1162,7 +1163,8 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 def show_skip_dialog_customize(draft=None, original=None):
     """Open the Customize modal. ``draft`` previews unsaved values (e.g. a preset);
     ``original`` is what is currently stored, so Save writes only real changes."""
-    addon = get_addon()
+    # Opened from the settings window, it must see what an earlier Save handed to that window.
+    addon = with_pending(get_addon())
     if not addon:
         return False
     path = addon.getAddonInfo("path")

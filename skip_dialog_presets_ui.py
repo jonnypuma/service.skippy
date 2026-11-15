@@ -206,7 +206,9 @@ def show_skip_dialog_presets_menu():
 
     Nothing is stored until **Save** is pressed there; Cancel keeps the old look.
     """
-    addon = get_addon()
+    from settings_pending import with_pending
+
+    addon = with_pending(get_addon())
     if not addon:
         return False
     from skip_dialog_customize_ui import load_skip_dialog_draft, show_skip_dialog_customize

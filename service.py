@@ -115,6 +115,13 @@ class PlayerMonitor(xbmc.Monitor):
 
     def onSettingsChanged(self):
         try:
+            # Kodi has stored the settings window's values: nothing is pending any more.
+            from settings_pending import clear_pending
+
+            clear_pending()
+        except Exception:
+            pass
+        try:
             install_marker_keymap(get_addon())
         except Exception as exc:
             log(f"⚠️ Failed to refresh Segment Marker keymap after settings change: {exc}")
