@@ -196,7 +196,7 @@ class NextEpisodeCustomizeTests(_Base):
         addon = _KodiAddon(self)
         first = self.open_customize(m, addon)
         first._nudge(m.ROW_IDS[m.KEY_POSITION], 1)
-        first._nudge(m.ROW_IDS[m.KEY_THUMBNAIL], 1)
+        first._nudge(m.ROW_IDS[m.KEY_THUMBNAIL], -1)  # the picture row: one step back from Episode picture is Off
         first.onClick(m.ID_SAVE)
         self.assertEqual(addon.window_values["next_episode_popup_position"], "TopRight")
         second = self.open_customize(m, addon)

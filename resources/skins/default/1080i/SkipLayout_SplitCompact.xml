@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Written by tools/gen_skip_layouts.py: edit that, not this file. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>3210</defaultcontrol>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="250"></effect>
+  </animation>
+  <controls>
+    <control type="image" id="3290">
+      <left>0</left>
+      <top>0</top>
+      <width>645</width>
+      <height>2</height>
+      <texture>white.png</texture>
+      <colordiffuse>00FFFFFF</colordiffuse>
+    </control>
+    <control type="image" id="3295">
+      <left>0</left>
+      <top>0</top>
+      <width>2</width>
+      <height>2</height>
+      <texture border="24">$INFO[Window.Property(skl_overlay9)]</texture>
+      <visible>String.IsEqual(Window.Property(skippy_dialog_ready),true) + !String.IsEmpty(Window.Property(skl_overlay9))</visible>
+      <animation type="Visible">
+        <effect type="fade" start="0" end="100" time="300"></effect>
+      </animation>
+    </control>
+    <control type="image" id="3296">
+      <left>0</left>
+      <top>0</top>
+      <width>2</width>
+      <height>2</height>
+      <texture>$INFO[Window.Property(skl_overlay)]</texture>
+      <visible>String.IsEqual(Window.Property(skippy_dialog_ready),true) + !String.IsEmpty(Window.Property(skl_overlay))</visible>
+      <animation type="Visible">
+        <effect type="fade" start="0" end="100" time="300"></effect>
+      </animation>
+    </control>
+    <control type="group" id="3200">
+      <posx>0</posx>
+      <posy>0</posy>
+      <width>630</width>
+      <height>66</height>
+      <visible>String.IsEqual(Window.Property(skippy_dialog_ready),true)</visible>
+      <animation type="Visible" condition="String.IsEqual(Window.Property(skl_in),Rise)">
+        <effect type="slide" start="0,18" end="0,0" time="180" tween="cubic" easing="out"></effect>
+        <effect type="fade" start="0" end="100" time="180"></effect>
+      </animation>
+      <animation type="Visible" condition="String.IsEqual(Window.Property(skl_in),Pop)">
+        <effect type="zoom" start="86" end="100" center="auto" time="170" tween="back" easing="out"></effect>
+        <effect type="fade" start="0" end="100" time="140"></effect>
+      </animation>
+      <animation type="Visible" condition="String.IsEqual(Window.Property(skl_in),SlideRight)">
+        <effect type="slide" start="60,0" end="0,0" time="200" tween="cubic" easing="out"></effect>
+        <effect type="fade" start="0" end="100" time="200"></effect>
+      </animation>
+      <animation type="Visible" condition="String.IsEqual(Window.Property(skl_in),SlideLeft)">
+        <effect type="slide" start="-60,0" end="0,0" time="200" tween="cubic" easing="out"></effect>
+        <effect type="fade" start="0" end="100" time="200"></effect>
+      </animation>
+      <animation type="Visible">
+        <effect type="fade" start="0" end="100" time="300"></effect>
+      </animation>
+      <animation type="WindowClose" condition="String.IsEqual(Window.Property(skl_out),Drop)">
+        <effect type="slide" start="0,0" end="0,15" time="150"></effect>
+        <effect type="fade" start="100" end="0" time="150"></effect>
+      </animation>
+      <animation type="WindowClose" condition="String.IsEqual(Window.Property(skl_out),Shrink)">
+        <effect type="zoom" start="100" end="88" center="auto" time="150"></effect>
+        <effect type="fade" start="100" end="0" time="150"></effect>
+      </animation>
+      <animation effect="zoom" start="100" end="104" center="auto" time="500" pulse="true" condition="String.IsEqual(Window.Property(skl_pulse),true)">Conditional</animation>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>282</width>
+        <height>66</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>18</left>
+        <top>15</top>
+        <width>246</width>
+        <height>36</height>
+        <label>$INFO[Window.Property(skl_kicker)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>294</left>
+        <top>0</top>
+        <width>258</width>
+        <height>66</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+        <visible>!Control.HasFocus(3210)</visible>
+      </control>
+      <control type="image">
+        <left>294</left>
+        <top>0</top>
+        <width>258</width>
+        <height>66</height>
+        <texture border="20">$INFO[Window.Property(skl_tile)]</texture>
+        <visible>Control.HasFocus(3210)</visible>
+      </control>
+      <control type="image" id="3231">
+        <left>306</left>
+        <top>12</top>
+        <width>0</width>
+        <height>0</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_tile_fill)]</colordiffuse>
+      </control>
+      <control type="button" id="3210">
+        <left>294</left>
+        <top>0</top>
+        <width>258</width>
+        <height>66</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(skl_focus_text)]</focusedcolor>
+        <disabledcolor>$INFO[Window.Property(skl_button_text)]</disabledcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <texturefocus>-</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textoffsetx>0</textoffsetx>
+        <onleft>3220</onleft>
+        <onright>3220</onright>
+        <onup>3220</onup>
+        <ondown>3220</ondown>
+      </control>
+      <control type="image">
+        <left>564</left>
+        <top>0</top>
+        <width>66</width>
+        <height>66</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+        <visible>!Control.HasFocus(3220)</visible>
+      </control>
+      <control type="image">
+        <left>564</left>
+        <top>0</top>
+        <width>66</width>
+        <height>66</height>
+        <texture border="20">$INFO[Window.Property(skl_tile)]</texture>
+        <visible>Control.HasFocus(3220)</visible>
+      </control>
+      <control type="button" id="3220">
+        <left>564</left>
+        <top>0</top>
+        <width>66</width>
+        <height>66</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(skl_focus_text)]</focusedcolor>
+        <disabledcolor>$INFO[Window.Property(skl_button_text)]</disabledcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <texturefocus>-</texturefocus>
+        <texturenofocus>-</texturenofocus>
+        <align>center</align>
+        <aligny>center</aligny>
+        <textoffsetx>0</textoffsetx>
+        <onleft>3210</onleft>
+        <onright>3210</onright>
+        <onup>3210</onup>
+        <ondown>3210</ondown>
+      </control>
+    </control>
+  </controls>
+</window>

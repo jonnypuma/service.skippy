@@ -464,7 +464,8 @@ class SkipDialog(xbmcgui.WindowXMLDialog):
             self._refresh_countdown_label()
             self._refresh_skip_duration_label(current)
 
-            if not self._minimal_mode and not driven:
+            # A layout dialog (skip_layout_dialog.py) draws its own progress.
+            if not self._minimal_mode and not driven and not getattr(self, "_own_progress", False):
                 try:
                     if getattr(self, "_combined_mode", False):
                         self._update_combined_fill(current)

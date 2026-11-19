@@ -2,6 +2,7 @@
 """Source picker modal: review local vs online segment times and keep one source."""
 from __future__ import annotations
 
+import skippy_modal_style
 import xbmc
 import xbmcgui
 
@@ -40,6 +41,7 @@ def online_names(sources) -> str:
 
 class SourcePicker(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skippy_modal_style.apply(self)  # before the window shows
         init_window_xml_dialog(super(SourcePicker, self), args)
         self.conflict = kwargs.get("conflict")
         self.addon = kwargs.get("addon")
@@ -50,6 +52,7 @@ class SourcePicker(xbmcgui.WindowXMLDialog):
         return get_localized(self.addon, sid, default, *args)
 
     def onInit(self):
+        skippy_modal_style.apply(self)
         c = self.conflict
         label = c.label.replace("_", " ").title() if c.label else c.bucket.title()
         self.getControl(ID_TITLE).setLabel(self._s(46047, "Sources disagree: %s", label))
@@ -145,7 +148,8 @@ def review_source_conflicts(addon, video_path, conflicts, segment_monitor):
     changed = False
     for conflict in conflicts:
         dlg = SourcePicker(
-            "SourcePicker.xml", addon.getAddonInfo("path"), "default", conflict=conflict, addon=addon
+            skippy_modal_style.xml_name("SourcePicker.xml", addon=addon),
+            addon.getAddonInfo("path"), "default", conflict=conflict, addon=addon
         )
         dlg.doModal()
         choice = dlg.choice

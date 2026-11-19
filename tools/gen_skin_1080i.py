@@ -40,6 +40,14 @@ def convert(xml):
         lambda m: m.group(1) + _s(m.group(2)) + m.group(3),
         xml,
     )
+    # The pill buttons of the skip dialog layouts (skip_layouts.py): a pill needs a nine-slice border
+    # of half the button's height, and the pictures are cut per folder (sl_*_720.png / _1080.png). The same
+    # goes for the switch rows of the Studio (st_well, st_chip).
+    xml = re.sub(
+        r'(<texture border=")([\d,]+)(">\$INFO\[Window\.Property\((?:skl_button|skl_focus|st_well|st_chip|cv_[a-z0-9_]+)\)\])',
+        lambda m: m.group(1) + ",".join(_s(part) for part in m.group(2).split(",")) + m.group(3),
+        xml,
+    )
     # progress_tiled_segmented_teal_h10.png: that texture is made for a bar of exactly this
     # many pixels high, so its name follows the scaled height.
     xml = re.sub(
@@ -55,13 +63,13 @@ def convert(xml):
             return re.sub(
                 r'\b(start|end)="([^"]*)"', lambda a: '%s="%s"' % (a.group(1), _scale_pair(a.group(2))), tag
             )
-        if 'type="zoom"' in tag:
+        if 'type="zoom"' in tag or 'effect="zoom"' in tag:  # also <animation effect="zoom" center="x,y" ...>
             return re.sub(
                 r'\b(center)="([^"]*)"', lambda a: '%s="%s"' % (a.group(1), _scale_pair(a.group(2))), tag
             )
         return tag
 
-    xml = re.sub(r"<effect\b[^>]*>", effect, xml)
+    xml = re.sub(r"<(?:effect|animation)\b[^>]*>", effect, xml)
     # <itemlayout width="960" height="48"> sizes
     return re.sub(
         r"<((?:item|focused)layout)\b([^>]*)>",
@@ -104,6 +112,8 @@ def corner_sources():
 
 # Files whose 1080i version is intentionally different (own fonts / extra controls); never rewritten.
 MANUAL = {"SegmentEditorDialog.xml", "SegmentMarkerTypePicker.xml", "SkipDialog.xml"}
+# The per-look copies of a manual file (tools/gen_modal_style_variants.py) are copies of it, so manual too.
+MANUAL |= {"%s_%s.xml" % (_name[:-4], _code) for _name in tuple(MANUAL) for _code in ("fgd", "fgc", "aeo", "agl")}
 
 
 def _norm_lines(text):

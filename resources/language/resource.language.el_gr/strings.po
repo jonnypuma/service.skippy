@@ -3462,3 +3462,1139 @@ msgstr "TheIntroDB.org"
 msgctxt "#48334"
 msgid "IntroDB.app"
 msgstr "IntroDB.app"
+
+msgctxt "#49000"
+msgid "Skippy's windows"
+msgstr "Παράθυρα του Skippy"
+
+msgctxt "#49001"
+msgid "Window style"
+msgstr "Στυλ παραθύρων"
+
+msgctxt "#49002"
+msgid "The look of Skippy's own windows: the segment editor, the type picker, the segment types editor, the source picker, statistics and lists, and the two Customize screens. The skip dialog and the next episode popup have their own looks. Takes effect the next time a window opens."
+msgstr "Η εμφάνιση των παραθύρων του ίδιου του Skippy: ο επεξεργαστής τμημάτων, ο επιλογέας τύπου, ο επεξεργαστής τύπων τμημάτων, ο επιλογέας πηγής, τα στατιστικά και οι λίστες, καθώς και οι δύο οθόνες προσαρμογής. Ο διάλογος παράλειψης και το αναδυόμενο παράθυρο επόμενου επεισοδίου έχουν τη δική τους εμφάνιση. Ισχύει την επόμενη φορά που θα ανοίξει ένα παράθυρο."
+
+msgctxt "#49003"
+msgid "Editor layout"
+msgstr "Διάταξη επεξεργαστή"
+
+msgctxt "#49004"
+msgid "How the segment editor sits over the video. List and drawer: the segments in a list at the left, everything else in a drawer along the bottom. Drawer: everything in one drawer along the bottom, the segments as a row of chips. Classic: the large panel of earlier versions. Every button is there in all three."
+msgstr "Πώς εμφανίζεται ο επεξεργαστής τμημάτων πάνω από το βίντεο. Λίστα και συρτάρι: τα τμήματα σε λίστα αριστερά και όλα τα άλλα σε συρτάρι στο κάτω μέρος. Συρτάρι: όλα σε ένα συρτάρι στο κάτω μέρος, με τα τμήματα σε σειρά ετικετών. Κλασική: το μεγάλο πλαίσιο των προηγούμενων εκδόσεων. Όλα τα κουμπιά υπάρχουν και στις τρεις."
+
+msgctxt "#49005"
+msgid "List and drawer"
+msgstr "Λίστα και συρτάρι"
+
+msgctxt "#49006"
+msgid "Drawer"
+msgstr "Συρτάρι"
+
+msgctxt "#49007"
+msgid "Classic"
+msgstr "Κλασική"
+
+msgctxt "#49008"
+msgid "Card style"
+msgstr "Στιλ κάρτας"
+
+msgctxt "#49009"
+msgid "The shape of the card behind the Full skip dialog and the next episode popup. Flat is the plain black card. Rounded has round corners. The others are the looks of the skin Aeon Fuse; they keep their own colours and the card opacity only fades them."
+msgstr "Το σχήμα της κάρτας πίσω από τον πλήρη διάλογο παράλειψης και το αναδυόμενο παράθυρο επόμενου επεισοδίου. Το Flat είναι η απλή μαύρη κάρτα. Το Rounded έχει στρογγυλές γωνίες. Τα υπόλοιπα είναι οι εμφανίσεις του skin Aeon Fuse· κρατούν τα δικά τους χρώματα και η αδιαφάνεια της κάρτας απλώς τα ξεθωριάζει."
+
+msgctxt "#48335"
+msgid "Fused Glass Dark"
+msgstr "Fused Glass Dark"
+
+msgctxt "#48336"
+msgid "Fused Glass Frost"
+msgstr "Fused Glass Frost"
+
+msgctxt "#48337"
+msgid "Fused Glass Clear"
+msgstr "Fused Glass Clear"
+
+msgctxt "#48338"
+msgid "Fused Glass style"
+msgstr "Fused Glass style"
+
+msgctxt "#48339"
+msgid "Aeon"
+msgstr "Aeon"
+
+msgctxt "#48340"
+msgid "Aeon Glass"
+msgstr "Aeon Glass"
+
+msgctxt "#48341"
+msgid "Aeon Glass Fill"
+msgstr "Aeon Glass Fill"
+
+msgctxt "#48342"
+msgid "Fused Glass Bare"
+msgstr "Fused Glass Bare"
+
+msgctxt "#48343"
+msgid "Aeon Bare"
+msgstr "Aeon Bare"
+
+msgctxt "#48344"
+msgid "Fused Glass Compact"
+msgstr "Fused Glass Compact"
+
+msgctxt "#48345"
+msgid "Fused Glass style Compact"
+msgstr "Fused Glass style Compact"
+
+msgctxt "#48346"
+msgid "Aeon Compact"
+msgstr "Aeon Compact"
+
+msgctxt "#48347"
+msgid "Aeon Glass Compact"
+msgstr "Aeon Glass Compact"
+
+msgctxt "#48348"
+msgid "Classic (legacy)"
+msgstr "Classic (legacy)"
+
+msgctxt "#48349"
+msgid "Modern (legacy)"
+msgstr "Modern (legacy)"
+
+msgctxt "#48350"
+msgid "Stylish (legacy)"
+msgstr "Stylish (legacy)"
+
+msgctxt "#48351"
+msgid "Colorful (legacy)"
+msgstr "Colorful (legacy)"
+
+msgctxt "#48352"
+msgid "Vibrant (legacy)"
+msgstr "Vibrant (legacy)"
+
+msgctxt "#48353"
+msgid "Glass (legacy)"
+msgstr "Glass (legacy)"
+
+msgctxt "#48354"
+msgid "Outline (legacy)"
+msgstr "Outline (legacy)"
+
+msgctxt "#48355"
+msgid "Subtle (legacy)"
+msgstr "Subtle (legacy)"
+
+msgctxt "#48356"
+msgid "Sleek (legacy)"
+msgstr "Sleek (legacy)"
+
+msgctxt "#48357"
+msgid "Clean (legacy)"
+msgstr "Clean (legacy)"
+
+msgctxt "#48358"
+msgid "Mono (legacy)"
+msgstr "Mono (legacy)"
+
+msgctxt "#48359"
+msgid "Slate (legacy)"
+msgstr "Slate (legacy)"
+
+msgctxt "#48360"
+msgid "Gold (legacy)"
+msgstr "Gold (legacy)"
+
+msgctxt "#48361"
+msgid "Neon (legacy)"
+msgstr "Neon (legacy)"
+
+msgctxt "#48362"
+msgid "Neon Pink (legacy)"
+msgstr "Neon Pink (legacy)"
+
+msgctxt "#48363"
+msgid "Frosted (legacy)"
+msgstr "Frosted (legacy)"
+
+msgctxt "#48364"
+msgid "Steel (legacy)"
+msgstr "Steel (legacy)"
+
+msgctxt "#48365"
+msgid "Retro (legacy)"
+msgstr "Retro (legacy)"
+
+msgctxt "#48366"
+msgid "Segments (legacy)"
+msgstr "Segments (legacy)"
+
+msgctxt "#48367"
+msgid "Stripes (legacy)"
+msgstr "Stripes (legacy)"
+
+msgctxt "#48368"
+msgid "Sunset (legacy)"
+msgstr "Sunset (legacy)"
+
+msgctxt "#48369"
+msgid "Big & Bold (legacy)"
+msgstr "Big & Bold (legacy)"
+
+msgctxt "#48370"
+msgid "Ghost (legacy)"
+msgstr "Ghost (legacy)"
+
+msgctxt "#48371"
+msgid "Accessible (legacy)"
+msgstr "Accessible (legacy)"
+
+msgctxt "#48372"
+msgid "Arcade (legacy)"
+msgstr "Arcade (legacy)"
+
+msgctxt "#48373"
+msgid "Terminal (legacy)"
+msgstr "Terminal (legacy)"
+
+msgctxt "#48374"
+msgid "Blueprint (legacy)"
+msgstr "Blueprint (legacy)"
+
+msgctxt "#48375"
+msgid "Lava (legacy)"
+msgstr "Lava (legacy)"
+
+msgctxt "#48376"
+msgid "Deep Sea (legacy)"
+msgstr "Deep Sea (legacy)"
+
+msgctxt "#48377"
+msgid "Candy (legacy)"
+msgstr "Candy (legacy)"
+
+msgctxt "#48378"
+msgid "Noir (legacy)"
+msgstr "Noir (legacy)"
+
+msgctxt "#48379"
+msgid "Aurora (legacy)"
+msgstr "Aurora (legacy)"
+
+msgctxt "#48380"
+msgid "Pill (legacy)"
+msgstr "Pill (legacy)"
+
+msgctxt "#48381"
+msgid "Underline (legacy)"
+msgstr "Underline (legacy)"
+
+msgctxt "#48382"
+msgid "Fuse Square"
+msgstr "Fuse Square"
+
+msgctxt "#48383"
+msgid "Fuse Glass"
+msgstr "Fuse Glass"
+
+msgctxt "#48384"
+msgid "Fuse Bar"
+msgstr "Fuse Bar"
+
+msgctxt "#48385"
+msgid "Fuse Gold"
+msgstr "Fuse Gold"
+
+msgctxt "#48386"
+msgid "Fuse White"
+msgstr "Fuse White"
+
+msgctxt "#49010"
+msgid "Skip dialog layout"
+msgstr "Διάταξη διαλόγου παράλειψης"
+
+msgctxt "#49011"
+msgid "How the skip dialog is built. Card is the dialog of earlier versions, with its presets and every option below. The others are new: Corner slab (a slab in the corner with the bar along its top), Dial (the time left as a ring), Cinema band (a band across the screen), Float (large text straight on the picture), Split (a big Skip tile that fills up), Timeline (where you are in the segment and where Skip lands) and Side rail (a tab on the side of the screen). Full mode shows the large form of a layout, Compact Full the small one; Minimal keeps its chip. The new layouts take their colours from Layout look and use Skip Dialog Position and Skip Button Format; the card's own options do not apply to them."
+msgstr "Πώς είναι φτιαγμένος ο διάλογος παράλειψης. Το Card είναι ο διάλογος των προηγούμενων εκδόσεων, με τις προεπιλογές του και όλες τις επιλογές παρακάτω. Τα υπόλοιπα είναι νέα: Corner slab (μια πλάκα στη γωνία με τη μπάρα στο πάνω μέρος), Dial (ο χρόνος που απομένει ως δακτύλιος), Cinema band (μια ζώνη σε όλο το πλάτος της οθόνης), Float (μεγάλο κείμενο απευθείας πάνω στην εικόνα), Split (ένα μεγάλο πλακίδιο Παράλειψης που γεμίζει), Timeline (πού βρίσκεστε στο τμήμα και πού καταλήγει η Παράλειψη) και Side rail (μια καρτέλα στο πλάι της οθόνης). Η Πλήρης λειτουργία δείχνει τη μεγάλη μορφή μιας διάταξης, η Συμπαγής πλήρης τη μικρή· η Ελάχιστη κρατά την ετικέτα της. Οι νέες διατάξεις παίρνουν τα χρώματά τους από την Εμφάνιση διάταξης και χρησιμοποιούν τη θέση του διαλόγου και τη μορφή του κουμπιού· οι επιλογές της κάρτας δεν ισχύουν γι' αυτές."
+
+msgctxt "#49012"
+msgid "Layout look"
+msgstr "Εμφάνιση διάταξης"
+
+msgctxt "#49013"
+msgid "The look of the new skip dialog layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has its presets."
+msgstr "Η εμφάνιση των νέων διατάξεων του διαλόγου παράλειψης, σύμφωνα με το skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon ή Aeon Glass. Η διάταξη Card δεν τη χρησιμοποιεί· έχει τις προεπιλογές της."
+
+msgctxt "#49020"
+msgid "Look"
+msgstr "Εμφάνιση"
+
+msgctxt "#49021"
+msgid "Layout"
+msgstr "Διάταξη"
+
+msgctxt "#49022"
+msgid "Text"
+msgstr "Κείμενο"
+
+msgctxt "#49023"
+msgid "Buttons"
+msgstr "Κουμπιά"
+
+msgctxt "#49024"
+msgid "Bar"
+msgstr "Μπάρα"
+
+msgctxt "#49025"
+msgid "Save as preset"
+msgstr "Αποθήκευση ως προεπιλογή"
+
+msgctxt "#49026"
+msgid "Reset"
+msgstr "Επαναφορά"
+
+msgctxt "#49027"
+msgid "LIVE PREVIEW"
+msgstr "ΖΩΝΤΑΝΗ ΠΡΟΕΠΙΣΚΟΠΗΣΗ"
+
+msgctxt "#49028"
+msgid "PRESETS"
+msgstr "ΠΡΟΕΠΙΛΟΓΕΣ"
+
+msgctxt "#49029"
+msgid "LOOKS"
+msgstr "ΕΜΦΑΝΙΣΕΙΣ"
+
+msgctxt "#49030"
+msgid "Up / Down: choose a row     Left / Right: change it     OK: next choice     Back: close without saving"
+msgstr "Πάνω / Κάτω: επιλογή γραμμής     Αριστερά / Δεξιά: αλλαγή     OK: επόμενη επιλογή     Πίσω: κλείσιμο χωρίς αποθήκευση"
+
+msgctxt "#49031"
+msgid "Bar colour"
+msgstr "Χρώμα μπάρας"
+
+msgctxt "#49032"
+msgid "Segment type"
+msgstr "Τύπος τμήματος"
+
+msgctxt "#49034"
+msgid "What colours the progress of a new skip dialog layout (bar, ring, fill or timeline). Segment type: the colour of the kind of segment, the same as in the segment editor (gold for an intro, blue for a recap and so on). Look: the colour of the layout look. The Card layout has its own Progress bar style."
+msgstr "Τι χρωματίζει την πρόοδο μιας νέας διάταξης του διαλόγου παράλειψης (μπάρα, δακτύλιο, γέμισμα ή χρονογραμμή). Τύπος τμήματος: το χρώμα του είδους του τμήματος, όπως στον επεξεργαστή τμημάτων (χρυσό για εισαγωγή, μπλε για ανακεφαλαίωση κ.ο.κ.). Εμφάνιση: το χρώμα της εμφάνισης διάταξης. Η διάταξη Card έχει το δικό της στιλ μπάρας προόδου."
+
+msgctxt "#49035"
+msgid "Picture"
+msgstr "Εικόνα"
+
+msgctxt "#49036"
+msgid "Episode picture"
+msgstr "Εικόνα επεισοδίου"
+
+msgctxt "#49037"
+msgid "Poster"
+msgstr "Αφίσα"
+
+msgctxt "#49038"
+msgid "Poster and episode"
+msgstr "Αφίσα και επεισόδιο"
+
+msgctxt "#49039"
+msgid "Fanart"
+msgstr "Fanart"
+
+msgctxt "#49040"
+msgid "Which picture the next episode popup shows while Show episode picture is on. Episode picture: the wide picture of the next episode. Poster: the poster of the show, useful when episode pictures give too much away or are missing. Poster and episode: the poster and the episode picture side by side, at the same height. Fanart: the fanart behind the whole popup. Fanart and poster, Fanart and episode: the fanart behind the popup with the poster or the episode picture in front of it. A choice whose picture is missing falls back to the nearest one that can be shown."
+msgstr "Ποια εικόνα δείχνει το αναδυόμενο του επόμενου επεισοδίου όσο είναι ενεργή η Εμφάνιση εικόνας επεισοδίου. Εικόνα επεισοδίου: η πλατιά εικόνα του επόμενου επεισοδίου. Αφίσα: η αφίσα της σειράς, χρήσιμη όταν οι εικόνες επεισοδίων αποκαλύπτουν πολλά ή λείπουν. Αφίσα και επεισόδιο: η αφίσα και η εικόνα του επεισοδίου δίπλα δίπλα, στο ίδιο ύψος. Fanart: το fanart πίσω από όλο το αναδυόμενο. Fanart και αφίσα, Fanart και επεισόδιο: το fanart πίσω από το αναδυόμενο με την αφίσα ή την εικόνα του επεισοδίου μπροστά του. Αν λείπει η εικόνα μιας επιλογής, εμφανίζεται η πλησιέστερη που υπάρχει."
+
+msgctxt "#49041"
+msgid "Popup layout"
+msgstr "Διάταξη αναδυόμενου"
+
+msgctxt "#49042"
+msgid "How the next episode popup is built. Card is the popup of earlier versions, with its looks and every option of this page. The others are new: Poster card (the poster at the left), Picture slab (a slab in the corner with the picture across it), Play ring (the countdown as a ring on the picture), Lower third (a band across the screen), Float (large text straight on the video) and Side rail (a tab on the side of the screen). The new layouts take their colours from Layout look and use Popup position and Default button; Popup look, the colour rows, Popup size and the picture rows are for the Card."
+msgstr "Πώς είναι φτιαγμένο το αναδυόμενο παράθυρο επόμενου επεισοδίου. Το Card είναι το παράθυρο των προηγούμενων εκδόσεων, με τις εμφανίσεις του και όλες τις επιλογές αυτής της σελίδας. Τα υπόλοιπα είναι νέα: Poster card (η αφίσα αριστερά), Picture slab (μια πλάκα στη γωνία με την εικόνα σε όλο το πλάτος), Play ring (η αντίστροφη μέτρηση ως δακτύλιος πάνω στην εικόνα), Lower third (μια ζώνη σε όλο το πλάτος της οθόνης), Float (μεγάλο κείμενο απευθείας πάνω στο βίντεο) και Side rail (μια καρτέλα στο πλάι της οθόνης). Οι νέες διατάξεις παίρνουν τα χρώματά τους από την Εμφάνιση διάταξης και χρησιμοποιούν τη θέση και το προεπιλεγμένο κουμπί· η εμφάνιση, οι γραμμές χρωμάτων, το μέγεθος και οι γραμμές εικόνας αφορούν το Card."
+
+msgctxt "#49043"
+msgid "The look of the new popup layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has Popup look."
+msgstr "Η εμφάνιση των νέων διατάξεων του αναδυόμενου, σύμφωνα με το skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon ή Aeon Glass. Η διάταξη Card δεν τη χρησιμοποιεί· έχει τη δική της εμφάνιση."
+
+msgctxt "#49045"
+msgid "Presets"
+msgstr "Προεπιλογές"
+
+msgctxt "#49046"
+msgid "Save, delete, export…"
+msgstr "Αποθήκευση, διαγραφή, εξαγωγή…"
+
+msgctxt "#49047"
+msgid "Arrows: choose     OK: use this preset     Back: keep the current one"
+msgstr "Βέλη: επιλογή     OK: χρήση αυτής της προεπιλογής     Πίσω: διατήρηση της τρέχουσας"
+
+msgctxt "#49048"
+msgid "Fanart and poster"
+msgstr "Fanart και αφίσα"
+
+msgctxt "#49049"
+msgid "Fanart and episode"
+msgstr "Fanart και επεισόδιο"
+
+msgctxt "#49050"
+msgid "Background overlay"
+msgstr "Σκίαση φόντου"
+
+msgctxt "#49051"
+msgid "A shade behind the new skip dialog layouts, so they read on a bright picture. Square: a hard rectangle out of the screen corner. Square, fading: the same, fading out towards the picture. Rounded: a rounded shade around the dialog. Rounded, fading: light at the top left, full at the bottom right. Band: across the whole screen. Corner glow: a round shade from the corner with no edge. Cinema band has its own band and takes none."
+msgstr "Μια σκίαση πίσω από τις νέες διατάξεις του διαλόγου παράλειψης, ώστε να διαβάζονται σε φωτεινή εικόνα. Τετράγωνη: ένα σκληρό ορθογώνιο από τη γωνία της οθόνης. Τετράγωνη, σβηστή: το ίδιο, που σβήνει προς την εικόνα. Στρογγυλεμένη: μια στρογγυλεμένη σκίαση γύρω από τον διάλογο. Στρογγυλεμένη, σβηστή: ανοιχτή πάνω αριστερά, πλήρης κάτω δεξιά. Ζώνη: σε όλο το πλάτος της οθόνης. Λάμψη γωνίας: μια στρογγυλή σκίαση από τη γωνία χωρίς άκρη. Η Ζώνη σινεμά έχει τη δική της ζώνη και δεν παίρνει καμία."
+
+msgctxt "#49052"
+msgid "None"
+msgstr "Καμία"
+
+msgctxt "#49053"
+msgid "Square"
+msgstr "Τετράγωνη"
+
+msgctxt "#49054"
+msgid "Square, fading"
+msgstr "Τετράγωνη, σβηστή"
+
+msgctxt "#49055"
+msgid "Rounded"
+msgstr "Στρογγυλεμένη"
+
+msgctxt "#49056"
+msgid "Rounded, fading"
+msgstr "Στρογγυλεμένη, σβηστή"
+
+msgctxt "#49057"
+msgid "Band"
+msgstr "Ζώνη"
+
+msgctxt "#49058"
+msgid "Corner glow"
+msgstr "Λάμψη γωνίας"
+
+msgctxt "#49059"
+msgid "Appears"
+msgstr "Εμφάνιση"
+
+msgctxt "#49060"
+msgid "How a new skip dialog layout comes on screen. Fade: as before. Rise: a short move up. Pop: it grows a little. Slide in: from the side of the screen it sits at."
+msgstr "Πώς εμφανίζεται μια νέα διάταξη του διαλόγου παράλειψης. Σβήσιμο: όπως πριν. Άνοδος: μια σύντομη κίνηση προς τα πάνω. Ποπ: μεγαλώνει λίγο. Ολίσθηση: από την πλευρά της οθόνης όπου βρίσκεται."
+
+msgctxt "#49061"
+msgid "Fade"
+msgstr "Σβήσιμο"
+
+msgctxt "#49062"
+msgid "Rise"
+msgstr "Άνοδος"
+
+msgctxt "#49063"
+msgid "Pop"
+msgstr "Ποπ"
+
+msgctxt "#49064"
+msgid "Slide in"
+msgstr "Ολίσθηση"
+
+msgctxt "#49065"
+msgid "Leaves"
+msgstr "Αποχώρηση"
+
+msgctxt "#49066"
+msgid "How a new skip dialog layout goes away. Fade: as before. Drop: a short move down. Shrink: it gets a little smaller."
+msgstr "Πώς φεύγει μια νέα διάταξη του διαλόγου παράλειψης. Σβήσιμο: όπως πριν. Πτώση: μια σύντομη κίνηση προς τα κάτω. Σμίκρυνση: μικραίνει λίγο."
+
+msgctxt "#49067"
+msgid "Drop"
+msgstr "Πτώση"
+
+msgctxt "#49068"
+msgid "Shrink"
+msgstr "Σμίκρυνση"
+
+msgctxt "#49069"
+msgid "Pulse in the last five seconds"
+msgstr "Παλμός στα τελευταία πέντε δευτερόλεπτα"
+
+msgctxt "#49070"
+msgid "The dialog beats once a second during the last five seconds of the segment, so the eye finds it without sound."
+msgstr "Ο διάλογος πάλλεται μία φορά το δευτερόλεπτο στα τελευταία πέντε δευτερόλεπτα του τμήματος, ώστε το μάτι να τον βρίσκει χωρίς ήχο."
+
+msgctxt "#49071"
+msgid "Press Preview to see this layout on the whole screen"
+msgstr "Πατήστε Προεπισκόπηση για να δείτε αυτή τη διάταξη σε όλη την οθόνη"
+
+msgctxt "#49072"
+msgid "Corners"
+msgstr "Γωνίες"
+
+msgctxt "#49073"
+msgid "The corners of a drawn skip dialog design (Stack card). The look's own: rounded in the round looks, square in Aeon and Fused Glass style. Hard and Rounded force one shape whatever the look."
+msgstr "Οι γωνίες μιας σχεδιασμένης διάταξης του διαλόγου παράλειψης (Κάρτα στοίβας). Της εμφάνισης: στρογγυλές στις στρογγυλές εμφανίσεις, τετράγωνες στο Aeon και στο στιλ Fused Glass. Οι επιλογές Σκληρές και Στρογγυλεμένες επιβάλλουν ένα σχήμα σε κάθε εμφάνιση."
+
+msgctxt "#49074"
+msgid "The look's own"
+msgstr "Της εμφάνισης"
+
+msgctxt "#49075"
+msgid "Hard"
+msgstr "Σκληρές"
+
+msgctxt "#49076"
+msgid "Rounded"
+msgstr "Στρογγυλεμένες"
+
+msgctxt "#49077"
+msgid "Close button"
+msgstr "Κουμπί Κλείσιμο"
+
+msgctxt "#49078"
+msgid "Show the Close button on a drawn design. Without it the Skip button takes the whole row."
+msgstr "Εμφάνιση του κουμπιού Κλείσιμο σε σχεδιασμένη διάταξη. Χωρίς αυτό το κουμπί Παράλειψη πιάνει όλη τη σειρά."
+
+msgctxt "#49079"
+msgid "Icons on the buttons"
+msgstr "Εικονίδια στα κουμπιά"
+
+msgctxt "#49080"
+msgid "Show the icons on Skip and Close of a drawn design."
+msgstr "Εμφάνιση των εικονιδίων στα κουμπιά Παράλειψη και Κλείσιμο μιας σχεδιασμένης διάταξης."
+
+msgctxt "#49081"
+msgid "Type and range line"
+msgstr "Γραμμή τύπου και εύρους"
+
+msgctxt "#49082"
+msgid "Show the line with the segment type and its start and end on a drawn design."
+msgstr "Εμφάνιση της γραμμής με τον τύπο του τμήματος και την αρχή και το τέλος του."
+
+msgctxt "#49083"
+msgid "Nested line"
+msgstr "Ένθετη γραμμή"
+
+msgctxt "#49084"
+msgid "Show the line that says where Skip lands when a segment lies inside another."
+msgstr "Εμφάνιση της γραμμής που λέει πού καταλήγει η Παράλειψη όταν ένα τμήμα βρίσκεται μέσα σε άλλο."
+
+msgctxt "#49085"
+msgid "The design's own"
+msgstr "Της διάταξης"
+
+msgctxt "#49086"
+msgid "Text shadow"
+msgstr "Σκιά κειμένου"
+
+msgctxt "#49087"
+msgid "The shadow under texts that lie straight on the video (Dial, Cinema band, Float). Heavy is the mockup's: readable on any picture."
+msgstr "Η σκιά κάτω από κείμενα που βρίσκονται απευθείας πάνω στο βίντεο. Η βαριά διαβάζεται σε κάθε εικόνα."
+
+msgctxt "#49088"
+msgid "Off"
+msgstr "Ανενεργή"
+
+msgctxt "#49089"
+msgid "Mild"
+msgstr "Ήπια"
+
+msgctxt "#49090"
+msgid "Medium"
+msgstr "Μέτρια"
+
+msgctxt "#49091"
+msgid "Strong"
+msgstr "Δυνατή"
+
+msgctxt "#49092"
+msgid "Heavy"
+msgstr "Βαριά"
+
+msgctxt "#49093"
+msgid "Text size"
+msgstr "Μέγεθος κειμένου"
+
+msgctxt "#49094"
+msgid "The size of the texts in a drawn skip dialog design. Buttons grow with their text."
+msgstr "Το μέγεθος των κειμένων σε μια σχεδιασμένη διάταξη του διαλόγου παράλειψης. Τα κουμπιά μεγαλώνουν με το κείμενό τους."
+
+msgctxt "#49095"
+msgid "Small"
+msgstr "Μικρό"
+
+msgctxt "#49096"
+msgid "Standard"
+msgstr "Κανονικό"
+
+msgctxt "#49097"
+msgid "Large"
+msgstr "Μεγάλο"
+
+msgctxt "#49098"
+msgid "Larger"
+msgstr "Μεγαλύτερο"
+
+msgctxt "#49099"
+msgid "Size on screen"
+msgstr "Μέγεθος στην οθόνη"
+
+msgctxt "#49100"
+msgid "How large a drawn skip dialog is: Small, Medium or Large. Large is the size of the designs as drawn; smaller takes less of the picture."
+msgstr "Πόσο μεγάλος είναι ένας σχεδιασμένος διάλογος παράλειψης: Μικρό, Μέτριο ή Μεγάλο. Το Μεγάλο είναι το μέγεθος των διατάξεων όπως σχεδιάστηκαν."
+
+msgctxt "#49101"
+msgid "Accent colour"
+msgstr "Χρώμα έμφασης"
+
+msgctxt "#49102"
+msgid "The colour of the bar, the dot and the arrow of a drawn design. The bar colour setting follows Progress colour: the segment type's colour or the look's accent."
+msgstr "Το χρώμα της μπάρας, της κουκκίδας και του βέλους μιας σχεδιασμένης διάταξης. Η ρύθμιση χρώματος μπάρας ακολουθεί το χρώμα προόδου."
+
+msgctxt "#49103"
+msgid "The bar colour setting"
+msgstr "Η ρύθμιση χρώματος μπάρας"
+
+msgctxt "#49104"
+msgid "Gold"
+msgstr "Χρυσό"
+
+msgctxt "#49105"
+msgid "Blue"
+msgstr "Μπλε"
+
+msgctxt "#49106"
+msgid "Red"
+msgstr "Κόκκινο"
+
+msgctxt "#49107"
+msgid "Green"
+msgstr "Πράσινο"
+
+msgctxt "#49108"
+msgid "Teal"
+msgstr "Πετρόλ"
+
+msgctxt "#49109"
+msgid "Purple"
+msgstr "Μοβ"
+
+msgctxt "#49110"
+msgid "White"
+msgstr "Λευκό"
+
+msgctxt "#49111"
+msgid "Progress style"
+msgstr "Στιλ προόδου"
+
+msgctxt "#49112"
+msgid "How the time left is shown. The design's own: a line, a ring, a tile or a timeline, as drawn. Circle and Fill move the line of Stack card, Corner slab and Cinema band into the Skip button."
+msgstr "Πώς εμφανίζεται ο χρόνος που απομένει. Της διάταξης: γραμμή, δακτύλιος, πλακίδιο ή χρονολόγιο, όπως σχεδιάστηκε. Ο Κύκλος και το Γέμισμα μεταφέρουν τη γραμμή μέσα στο κουμπί Παράλειψη."
+
+msgctxt "#49113"
+msgid "Line"
+msgstr "Γραμμή"
+
+msgctxt "#49114"
+msgid "Circle"
+msgstr "Κύκλος"
+
+msgctxt "#49115"
+msgid "Fill"
+msgstr "Γέμισμα"
+
+msgctxt "#49116"
+msgid "Overlay gradient"
+msgstr "Διαβάθμιση επικάλυψης"
+
+msgctxt "#49117"
+msgid "Let a Square or Rounded background overlay fade out towards the picture instead of ending in an edge."
+msgstr "Η τετράγωνη ή στρογγυλεμένη επικάλυψη φόντου σβήνει προς την εικόνα αντί να τελειώνει σε ακμή."
+
+msgctxt "#49118"
+msgid "Gradient direction"
+msgstr "Κατεύθυνση διαβάθμισης"
+
+msgctxt "#49119"
+msgid "Which way the overlay fades. Away from the dialog picks the direction from where the dialog stands."
+msgstr "Προς ποια κατεύθυνση σβήνει η επικάλυψη. Μακριά από τον διάλογο: ανάλογα με τη θέση του διαλόγου."
+
+msgctxt "#49120"
+msgid "Away from the dialog"
+msgstr "Μακριά από τον διάλογο"
+
+msgctxt "#49121"
+msgid "Top to bottom"
+msgstr "Από πάνω προς τα κάτω"
+
+msgctxt "#49122"
+msgid "Side to side"
+msgstr "Από πλευρά σε πλευρά"
+
+msgctxt "#49123"
+msgid "Round"
+msgstr "Κυκλική"
+
+msgctxt "#49124"
+msgid "Text outline"
+msgstr "Περίγραμμα κειμένου"
+
+msgctxt "#49125"
+msgid "Draw a dark line around the letters of texts that lie straight on the video (Float, Cinema band). With a mild shadow this stays readable on any picture. A design with an overlay behind it needs none and gets none."
+msgstr "Σκούρα γραμμή γύρω από τα γράμματα των κειμένων που βρίσκονται απευθείας πάνω στο βίντεο. Με ήπια σκιά διαβάζεται σε κάθε εικόνα. Διάταξη με επικάλυψη από πίσω δεν παίρνει περίγραμμα."
+
+msgctxt "#49126"
+msgid "Motion"
+msgstr "Κίνηση"
+
+msgctxt "#49127"
+msgid "Behaviour"
+msgstr "Συμπεριφορά"
+
+msgctxt "#49128"
+msgid "ABOUT THIS SETTING"
+msgstr "ΣΧΕΤΙΚΑ ΜΕ ΤΗ ΡΥΘΜΙΣΗ"
+
+msgctxt "#49129"
+msgid "Distance from the edge"
+msgstr "Απόσταση από την άκρη"
+
+msgctxt "#49130"
+msgid "Button the focus starts on"
+msgstr "Κουμπί αρχικής εστίασης"
+
+msgctxt "#49131"
+msgid "How far a drawn skip dialog stands from the edge of the screen it sits at, in pixels of a 1080 screen. A design that lies against the edge (Corner slab, Side rail) keeps to the edge."
+msgstr "Πόσο απέχει ένας σχεδιασμένος διάλογος παράλειψης από την άκρη της οθόνης, σε pixel οθόνης 1080. Μια διάταξη που ακουμπά στην άκρη μένει στην άκρη."
+
+msgctxt "#49132"
+msgid "Which button has the focus when the dialog opens. With Close, OK closes the dialog and one press of Left reaches Skip."
+msgstr "Ποιο κουμπί έχει την εστίαση όταν ανοίγει ο διάλογος. Με το Κλείσιμο, το OK κλείνει τον διάλογο και ένα πάτημα Αριστερά φτάνει στην Παράλειψη."
+
+msgctxt "#49133"
+msgid "[B]Up / Down[/B]  choose a row      [B]Left / Right[/B]  pick      [B]OK[/B]  next choice      [B]Back[/B]  close without saving"
+msgstr "[B]Πάνω / Κάτω[/B]  επιλογή σειράς      [B]Αριστερά / Δεξιά[/B]  επιλογή      [B]OK[/B]  επόμενη επιλογή      [B]Πίσω[/B]  κλείσιμο χωρίς αποθήκευση"
+
+msgctxt "#49134"
+msgid "Intro"
+msgstr "Εισαγωγή"
+
+msgctxt "#49135"
+msgid "Credits"
+msgstr "Τίτλοι τέλους"
+
+msgctxt "#49136"
+msgid "Nested"
+msgstr "Ένθετο"
+
+msgctxt "#49137"
+msgid "Place on the screen"
+msgstr "Θέση στην οθόνη"
+
+msgctxt "#49138"
+msgid "Top left"
+msgstr "Πάνω αριστερά"
+
+msgctxt "#49139"
+msgid "Top"
+msgstr "Πάνω"
+
+msgctxt "#49140"
+msgid "Top right"
+msgstr "Πάνω δεξιά"
+
+msgctxt "#49141"
+msgid "Left"
+msgstr "Αριστερά"
+
+msgctxt "#49142"
+msgid "Centre"
+msgstr "Κέντρο"
+
+msgctxt "#49143"
+msgid "Right"
+msgstr "Δεξιά"
+
+msgctxt "#49144"
+msgid "Bottom left"
+msgstr "Κάτω αριστερά"
+
+msgctxt "#49145"
+msgid "Bottom"
+msgstr "Κάτω"
+
+msgctxt "#49146"
+msgid "Bottom right"
+msgstr "Κάτω δεξιά"
+
+msgctxt "#49147"
+msgid "Skip dialog"
+msgstr "Διάλογος παράλειψης"
+
+msgctxt "#49148"
+msgid "A preset sets the design, its look and its colours in one step. Left and Right step through the presets; OK opens the wall with all of them, yours included."
+msgstr "Μια προεπιλογή ορίζει διάταξη, εμφάνιση και χρώματα σε ένα βήμα. Αριστερά και Δεξιά περνούν από τις προεπιλογές· το OK ανοίγει τον τοίχο με όλες."
+
+msgctxt "#49149"
+msgid "Skin"
+msgstr "Skin"
+
+msgctxt "#49150"
+msgid "Design"
+msgstr "Σχέδιο"
+
+msgctxt "#49151"
+msgid "Position"
+msgstr "Θέση"
+
+msgctxt "#49152"
+msgid "Size"
+msgstr "Μέγεθος"
+
+msgctxt "#49153"
+msgid "Minimal position"
+msgstr "Θέση Minimal"
+
+msgctxt "#49154"
+msgid "Progress"
+msgstr "Πρόοδος"
+
+msgctxt "#49155"
+msgid "The corner or edge the dialog sits in; the nine dots are the nine places of a drawn design. The classic card knows the four corners."
+msgstr "Η γωνία ή η άκρη όπου βρίσκεται ο διάλογος· οι εννέα κουκκίδες είναι οι εννέα θέσεις μιας σχεδιασμένης διάταξης. Η κλασική κάρτα γνωρίζει τις τέσσερις γωνίες."
+
+msgctxt "#49156"
+msgid "The corner the Minimal form sits in: it has a position of its own."
+msgstr "Η γωνία όπου βρίσκεται η μορφή Minimal: έχει δική της θέση."
+
+msgctxt "#49157"
+msgid "Which segment the live preview shows: an intro, the credits, or a segment that lies inside another, which adds the line that says where Skip lands."
+msgstr "Ποιο τμήμα δείχνει η ζωντανή προεπισκόπηση: εισαγωγή, τίτλους τέλους ή τμήμα μέσα σε άλλο, που προσθέτει τη γραμμή για το πού καταλήγει η Παράλειψη."
+
+msgctxt "#49158"
+msgid "For the drawn designs: choose a Design other than Card to use it."
+msgstr "Για τις σχεδιασμένες διατάξεις: επιλέξτε σχέδιο άλλο από την Κάρτα για να το χρησιμοποιήσετε."
+
+msgctxt "#49159"
+msgid "For the classic Card only; the design in use does not have it."
+msgstr "Μόνο για την κλασική κάρτα· το σχέδιο σε χρήση δεν το έχει."
+
+msgctxt "#49160"
+msgid "Not built for the drawn designs yet."
+msgstr "Δεν έχει φτιαχτεί ακόμη για τις σχεδιασμένες διατάξεις."
+
+msgctxt "#49161"
+msgid "Light"
+msgstr "Ελαφρύ"
+
+msgctxt "#49162"
+msgid "A dark line around the letters of texts that lie straight on the video (Float, Cinema band), so they stay readable on any picture: Off, Light, Medium or Strong. A design with an overlay behind it gets none."
+msgstr "Σκούρα γραμμή γύρω από τα γράμματα των κειμένων που βρίσκονται απευθείας πάνω στο βίντεο: Ανενεργό, Ελαφρύ, Μέτριο ή Δυνατό. Διάταξη με επικάλυψη από πίσω δεν παίρνει."
+
+msgctxt "#49163"
+msgid "Not used with the choices made on this screen."
+msgstr "Δεν χρησιμοποιείται με τις επιλογές αυτής της οθόνης."
+
+msgctxt "#49164"
+msgid "Preview segment type"
+msgstr "Τύπος τμήματος προεπισκόπησης"
+
+msgctxt "#49165"
+msgid "Time on the Skip button"
+msgstr "Χρόνος στο κουμπί Παράλειψη"
+
+msgctxt "#49166"
+msgid "Show the time on the Skip button of a drawn design. Skip Duration Format and Skip Duration Content say how it is written and whether it is the segment's length or the time left."
+msgstr "Εμφάνιση του χρόνου στο κουμπί Παράλειψη μιας σχεδιασμένης διάταξης. Η μορφή και το περιεχόμενο διάρκειας ορίζουν πώς γράφεται και αν είναι η διάρκεια του τμήματος ή ο χρόνος που απομένει."
+
+msgctxt "#49167"
+msgid "The segment type the live preview shows: step through all your types to see each in its own colour and wording. It is for the preview only and is not saved."
+msgstr "Ο τύπος τμήματος που δείχνει η προεπισκόπηση: περάστε από όλους τους τύπους σας. Μόνο για την προεπισκόπηση· δεν αποθηκεύεται."
+
+msgctxt "#49168"
+msgid "Progress countdown"
+msgstr "Αντίστροφη μέτρηση προόδου"
+
+msgctxt "#49169"
+msgid "%d segments"
+msgstr "%d τμήματα"
+
+msgctxt "#49170"
+msgid "1 segment"
+msgstr "1 τμήμα"
+
+msgctxt "#49171"
+msgid "HIGHLIGHTED SEGMENT · %s"
+msgstr "ΕΠΙΛΕΓΜΕΝΟ ΤΜΗΜΑ · %s"
+
+msgctxt "#49172"
+msgid "TIMELINE"
+msgstr "ΧΡΟΝΟΛΟΓΙΟ"
+
+msgctxt "#49173"
+msgid "SHOWING %s – %s"
+msgstr "ΔΕΙΧΝΕΙ %s – %s"
+
+msgctxt "#49174"
+msgid "SEEK"
+msgstr "ΑΝΑΖΗΤΗΣΗ"
+
+msgctxt "#49175"
+msgid "MARK"
+msgstr "ΣΗΜΑΝΣΗ"
+
+msgctxt "#49176"
+msgid "SEGMENTS AND FILE"
+msgstr "ΤΜΗΜΑΤΑ ΚΑΙ ΑΡΧΕΙΟ"
+
+msgctxt "#49177"
+msgid "LIVE VIDEO"
+msgstr "ΖΩΝΤΑΝΟ ΒΙΝΤΕΟ"
+
+msgctxt "#49178"
+msgid "DARK OVERLAY: ON"
+msgstr "ΣΚΟΥΡΑ ΕΠΙΚΑΛΥΨΗ: ΝΑΙ"
+
+msgctxt "#49179"
+msgid "DARK OVERLAY: OFF"
+msgstr "ΣΚΟΥΡΑ ΕΠΙΚΑΛΥΨΗ: ΟΧΙ"
+
+msgctxt "#49180"
+msgid "[B]OK on a segment[/B]  jumps to its start      [B]Left[/B]  its nine actions      [B]Right[/B]  the timeline      [B]Back[/B]  asks to save"
+msgstr "[B]OK σε τμήμα[/B]  μεταβαίνει στην αρχή του      [B]Αριστερά[/B]  οι εννέα ενέργειές του      [B]Δεξιά[/B]  το χρονολόγιο      [B]Πίσω[/B]  ρωτά για αποθήκευση"
+
+msgctxt "#49181"
+msgid "NESTED"
+msgstr "ΕΝΘΕΤΟ"
+
+msgctxt "#49182"
+msgid "OVERLAP"
+msgstr "ΕΠΙΚΑΛΥΨΗ"
+
+msgctxt "#49183"
+msgid "LOOK"
+msgstr "ΕΜΦΑΝΙΣΗ"
+
+msgctxt "#49184"
+msgid "Dark overlay: on"
+msgstr "Σκούρα επικάλυψη: ναι"
+
+msgctxt "#49185"
+msgid "Dark overlay: off"
+msgstr "Σκούρα επικάλυψη: όχι"
+
+msgctxt "#49186"
+msgid "Panels: %s"
+msgstr "Πλαίσια: %s"
+
+msgctxt "#49187"
+msgid "Dark"
+msgstr "Σκούρο"
+
+msgctxt "#49188"
+msgid "Frost"
+msgstr "Frost"
+
+msgctxt "#49189"
+msgid "Clear"
+msgstr "Διάφανο"
+
+msgctxt "#49190"
+msgid "Editor panels"
+msgstr "Πλαίσια επεξεργαστή"
+
+msgctxt "#49191"
+msgid "The look of the panels of the List and drawer editor: Fused Glass Dark, Frost or Clear. The Panels button in the editor's Look row steps through the same three."
+msgstr "Η εμφάνιση των πλαισίων του επεξεργαστή Λίστα και συρτάρι: Fused Glass Dark, Frost ή Clear. Το κουμπί Πλαίσια στη σειρά Εμφάνιση του επεξεργαστή περνά από τα ίδια τρία."
+
+msgctxt "#49192"
+msgid "Up next"
+msgstr "Επόμενο"
+
+msgctxt "#49193"
+msgid "Starts in %s"
+msgstr "Ξεκινά σε %s"
+
+msgctxt "#49194"
+msgid "Up next in %s"
+msgstr "Επόμενο σε %s"
+
+msgctxt "#49195"
+msgid "Next"
+msgstr "Επόμενο"
+
+msgctxt "#49196"
+msgid "%d min"
+msgstr "%d λεπ."
+
+msgctxt "#49197"
+msgid "Play a later one"
+msgstr "Αναπαραγωγή επόμενου"
+
+msgctxt "#49198"
+msgid "Play %s"
+msgstr "Αναπαραγωγή %s"
+
+msgctxt "#49199"
+msgid "Compact"
+msgstr "Συμπαγές"
+
+msgctxt "#48387"
+msgid "Fused Glass Dark (legacy)"
+msgstr "Fused Glass Dark (legacy)"
+
+msgctxt "#48388"
+msgid "Fused Glass Frost (legacy)"
+msgstr "Fused Glass Frost (legacy)"
+
+msgctxt "#48389"
+msgid "Fused Glass Clear (legacy)"
+msgstr "Fused Glass Clear (legacy)"
+
+msgctxt "#48390"
+msgid "Fused Glass style (legacy)"
+msgstr "Fused Glass style (legacy)"
+
+msgctxt "#48391"
+msgid "Aeon (legacy)"
+msgstr "Aeon (legacy)"
+
+msgctxt "#48392"
+msgid "Aeon Glass (legacy)"
+msgstr "Aeon Glass (legacy)"
+
+msgctxt "#48393"
+msgid "Aeon Glass Fill (legacy)"
+msgstr "Aeon Glass Fill (legacy)"
+
+msgctxt "#48394"
+msgid "Fused Glass Bare (legacy)"
+msgstr "Fused Glass Bare (legacy)"
+
+msgctxt "#48395"
+msgid "Aeon Bare (legacy)"
+msgstr "Aeon Bare (legacy)"
+
+msgctxt "#48396"
+msgid "Fused Glass Compact (legacy)"
+msgstr "Fused Glass Compact (legacy)"
+
+msgctxt "#48397"
+msgid "Fused Glass style Compact (legacy)"
+msgstr "Fused Glass style Compact (legacy)"
+
+msgctxt "#48398"
+msgid "Aeon Compact (legacy)"
+msgstr "Aeon Compact (legacy)"
+
+msgctxt "#48399"
+msgid "Aeon Glass Compact (legacy)"
+msgstr "Aeon Glass Compact (legacy)"
+
+msgctxt "#49200"
+msgid "Autoplay"
+msgstr "Αυτόματη αναπαραγωγή"
+
+msgctxt "#49201"
+msgid "Plot"
+msgstr "Πλοκή"
+
+msgctxt "#49202"
+msgid "Episode line"
+msgstr "Γραμμή επεισοδίου"
+
+msgctxt "#49203"
+msgid "Show logo"
+msgstr "Εμφάνιση λογότυπου"
+
+msgctxt "#49204"
+msgid "Cancel button"
+msgstr "Κουμπί Άκυρο"
+
+msgctxt "#49205"
+msgid "Options of Card (legacy)…"
+msgstr "Επιλογές της Κάρτας (legacy)…"
+
+msgctxt "#49206"
+msgid "Same look as the skip dialog"
+msgstr "Ίδια εμφάνιση με το παράθυρο παράλειψης"
+
+msgctxt "#49207"
+msgid "Fill shows on"
+msgstr "Το γέμισμα φαίνεται σε"
+
+msgctxt "#49208"
+msgid "Follow the skin style"
+msgstr "Ακολούθησε το στυλ του skin"
+
+msgctxt "#49209"
+msgid "Keep clear of subtitles"
+msgstr "Μακριά από τους υπότιτλους"
+
+msgctxt "#49210"
+msgid "When there is no episode picture"
+msgstr "Όταν δεν υπάρχει εικόνα επεισοδίου"
+
+msgctxt "#49211"
+msgid "Time left"
+msgstr "Χρόνος που απομένει"
+
+msgctxt "#49212"
+msgid "All capitals"
+msgstr "Όλα κεφαλαία"
+
+msgctxt "#49213"
+msgid "Watch credits button"
+msgstr "Κουμπί Προβολή τίτλων τέλους"
+
+msgctxt "#49214"
+msgid "Focus style"
+msgstr "Στυλ εστίασης"
+
+msgctxt "#49215"
+msgid "Bar"
+msgstr "Μπάρα"
+
+msgctxt "#49216"
+msgid "Speed"
+msgstr "Ταχύτητα"
+
+msgctxt "#49217"
+msgid "A preset is a design in a look. Left and Right step through all of them, your saved ones included; OK opens the list that loads, saves and deletes them."
+msgstr "Μια προεπιλογή είναι ένα σχέδιο σε μια εμφάνιση. Αριστερά και Δεξιά περνούν από όλες, και τις αποθηκευμένες σου· το OK ανοίγει τη λίστα που τις φορτώνει, τις αποθηκεύει και τις διαγράφει."
+
+msgctxt "#49218"
+msgid "Watch credits"
+msgstr "Προβολή τίτλων"
+
+msgctxt "#49219"
+msgid "Smooth"
+msgstr "Ομαλά"
+
+msgctxt "#49220"
+msgid "Steps"
+msgstr "Βήματα"
+
+msgctxt "#49221"
+msgid "Button"
+msgstr "Κουμπί"
+
+msgctxt "#49222"
+msgid "Card"
+msgstr "Κάρτα"
+
+msgctxt "#49223"
+msgid "Nothing"
+msgstr "Τίποτα"
+
+msgctxt "#49224"
+msgid "Auto"
+msgstr "Αυτόματα"
+
+msgctxt "#49225"
+msgid "Accent"
+msgstr "Έμφαση"
+
+msgctxt "#49226"
+msgid "Outline"
+msgstr "Περίγραμμα"

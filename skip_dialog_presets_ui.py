@@ -21,7 +21,7 @@ def _loc(addon, sid, default, *args):
 def preset_row_parts(addon, draft) -> tuple:
     """``(name, value)`` of the Preset row: the row's name and the preset the draft matches."""
     name = sp.detect_preset(draft)
-    return _loc(addon, 46015, "Preset"), name if name else _loc(addon, 46016, "Custom")
+    return _loc(addon, 46015, "Preset"), sp.display_name(name) if name else _loc(addon, 46016, "Custom")
 
 
 def preset_row_label(addon, draft) -> str:
@@ -37,7 +37,7 @@ def _select(heading, items, preselect=-1):
 
 
 def _item_label(addon, name, builtin, current):
-    label = name if builtin else _loc(addon, 46025, "%s (saved)", name)
+    label = sp.display_name(name) if builtin else _loc(addon, 46025, "%s (saved)", name)
     return ("✓ " + label) if name == current else label
 
 
@@ -54,7 +54,7 @@ def _save_current(addon, draft, suggested=""):
     name = sp.clean_name(name)
     if not name:
         return
-    if name.lower() in {b.lower() for b in sp.builtin_names()}:
+    if name.lower() in sp.reserved_names():
         dlg.ok("Skippy", _loc(addon, 46028, "That name is used by a built-in preset."))
         return
     if any(n.lower() == name.lower() for n in sp.load_user_presets()):

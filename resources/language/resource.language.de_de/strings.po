@@ -3462,3 +3462,1139 @@ msgstr "TheIntroDB.org"
 msgctxt "#48334"
 msgid "IntroDB.app"
 msgstr "IntroDB.app"
+
+msgctxt "#49000"
+msgid "Skippy's windows"
+msgstr "Skippys Fenster"
+
+msgctxt "#49001"
+msgid "Window style"
+msgstr "Fensterstil"
+
+msgctxt "#49002"
+msgid "The look of Skippy's own windows: the segment editor, the type picker, the segment types editor, the source picker, statistics and lists, and the two Customize screens. The skip dialog and the next episode popup have their own looks. Takes effect the next time a window opens."
+msgstr "Das Aussehen von Skippys eigenen Fenstern: Segmenteditor, Typauswahl, Editor für Segmenttypen, Quellenauswahl, Statistik und Listen sowie die beiden Anpassen-Bildschirme. Der Überspringen-Dialog und das Popup für die nächste Folge haben ihr eigenes Aussehen. Gilt ab dem nächsten Öffnen eines Fensters."
+
+msgctxt "#49003"
+msgid "Editor layout"
+msgstr "Editor-Layout"
+
+msgctxt "#49004"
+msgid "How the segment editor sits over the video. List and drawer: the segments in a list at the left, everything else in a drawer along the bottom. Drawer: everything in one drawer along the bottom, the segments as a row of chips. Classic: the large panel of earlier versions. Every button is there in all three."
+msgstr "Wie der Segmenteditor über dem Video liegt. Liste und Leiste: die Segmente in einer Liste links, alles andere in einer Leiste am unteren Rand. Leiste: alles in einer Leiste am unteren Rand, die Segmente als Reihe von Marken. Klassisch: das große Fenster früherer Versionen. Alle Schaltflächen gibt es in allen dreien."
+
+msgctxt "#49005"
+msgid "List and drawer"
+msgstr "Liste und Leiste"
+
+msgctxt "#49006"
+msgid "Drawer"
+msgstr "Leiste"
+
+msgctxt "#49007"
+msgid "Classic"
+msgstr "Klassisch"
+
+msgctxt "#49008"
+msgid "Card style"
+msgstr "Kartenstil"
+
+msgctxt "#49009"
+msgid "The shape of the card behind the Full skip dialog and the next episode popup. Flat is the plain black card. Rounded has round corners. The others are the looks of the skin Aeon Fuse; they keep their own colours and the card opacity only fades them."
+msgstr "Die Form der Karte hinter dem vollständigen Überspringen-Dialog und dem Popup für die nächste Folge. Flat ist die schlichte schwarze Karte. Rounded hat runde Ecken. Die anderen sind die Looks des Skins Aeon Fuse; sie behalten ihre eigenen Farben, die Kartendeckkraft blendet sie nur aus."
+
+msgctxt "#48335"
+msgid "Fused Glass Dark"
+msgstr "Fused Glass Dark"
+
+msgctxt "#48336"
+msgid "Fused Glass Frost"
+msgstr "Fused Glass Frost"
+
+msgctxt "#48337"
+msgid "Fused Glass Clear"
+msgstr "Fused Glass Clear"
+
+msgctxt "#48338"
+msgid "Fused Glass style"
+msgstr "Fused Glass style"
+
+msgctxt "#48339"
+msgid "Aeon"
+msgstr "Aeon"
+
+msgctxt "#48340"
+msgid "Aeon Glass"
+msgstr "Aeon Glass"
+
+msgctxt "#48341"
+msgid "Aeon Glass Fill"
+msgstr "Aeon Glass Fill"
+
+msgctxt "#48342"
+msgid "Fused Glass Bare"
+msgstr "Fused Glass Bare"
+
+msgctxt "#48343"
+msgid "Aeon Bare"
+msgstr "Aeon Bare"
+
+msgctxt "#48344"
+msgid "Fused Glass Compact"
+msgstr "Fused Glass Compact"
+
+msgctxt "#48345"
+msgid "Fused Glass style Compact"
+msgstr "Fused Glass style Compact"
+
+msgctxt "#48346"
+msgid "Aeon Compact"
+msgstr "Aeon Compact"
+
+msgctxt "#48347"
+msgid "Aeon Glass Compact"
+msgstr "Aeon Glass Compact"
+
+msgctxt "#48348"
+msgid "Classic (legacy)"
+msgstr "Classic (legacy)"
+
+msgctxt "#48349"
+msgid "Modern (legacy)"
+msgstr "Modern (legacy)"
+
+msgctxt "#48350"
+msgid "Stylish (legacy)"
+msgstr "Stylish (legacy)"
+
+msgctxt "#48351"
+msgid "Colorful (legacy)"
+msgstr "Colorful (legacy)"
+
+msgctxt "#48352"
+msgid "Vibrant (legacy)"
+msgstr "Vibrant (legacy)"
+
+msgctxt "#48353"
+msgid "Glass (legacy)"
+msgstr "Glass (legacy)"
+
+msgctxt "#48354"
+msgid "Outline (legacy)"
+msgstr "Outline (legacy)"
+
+msgctxt "#48355"
+msgid "Subtle (legacy)"
+msgstr "Subtle (legacy)"
+
+msgctxt "#48356"
+msgid "Sleek (legacy)"
+msgstr "Sleek (legacy)"
+
+msgctxt "#48357"
+msgid "Clean (legacy)"
+msgstr "Clean (legacy)"
+
+msgctxt "#48358"
+msgid "Mono (legacy)"
+msgstr "Mono (legacy)"
+
+msgctxt "#48359"
+msgid "Slate (legacy)"
+msgstr "Slate (legacy)"
+
+msgctxt "#48360"
+msgid "Gold (legacy)"
+msgstr "Gold (legacy)"
+
+msgctxt "#48361"
+msgid "Neon (legacy)"
+msgstr "Neon (legacy)"
+
+msgctxt "#48362"
+msgid "Neon Pink (legacy)"
+msgstr "Neon Pink (legacy)"
+
+msgctxt "#48363"
+msgid "Frosted (legacy)"
+msgstr "Frosted (legacy)"
+
+msgctxt "#48364"
+msgid "Steel (legacy)"
+msgstr "Steel (legacy)"
+
+msgctxt "#48365"
+msgid "Retro (legacy)"
+msgstr "Retro (legacy)"
+
+msgctxt "#48366"
+msgid "Segments (legacy)"
+msgstr "Segments (legacy)"
+
+msgctxt "#48367"
+msgid "Stripes (legacy)"
+msgstr "Stripes (legacy)"
+
+msgctxt "#48368"
+msgid "Sunset (legacy)"
+msgstr "Sunset (legacy)"
+
+msgctxt "#48369"
+msgid "Big & Bold (legacy)"
+msgstr "Big & Bold (legacy)"
+
+msgctxt "#48370"
+msgid "Ghost (legacy)"
+msgstr "Ghost (legacy)"
+
+msgctxt "#48371"
+msgid "Accessible (legacy)"
+msgstr "Accessible (legacy)"
+
+msgctxt "#48372"
+msgid "Arcade (legacy)"
+msgstr "Arcade (legacy)"
+
+msgctxt "#48373"
+msgid "Terminal (legacy)"
+msgstr "Terminal (legacy)"
+
+msgctxt "#48374"
+msgid "Blueprint (legacy)"
+msgstr "Blueprint (legacy)"
+
+msgctxt "#48375"
+msgid "Lava (legacy)"
+msgstr "Lava (legacy)"
+
+msgctxt "#48376"
+msgid "Deep Sea (legacy)"
+msgstr "Deep Sea (legacy)"
+
+msgctxt "#48377"
+msgid "Candy (legacy)"
+msgstr "Candy (legacy)"
+
+msgctxt "#48378"
+msgid "Noir (legacy)"
+msgstr "Noir (legacy)"
+
+msgctxt "#48379"
+msgid "Aurora (legacy)"
+msgstr "Aurora (legacy)"
+
+msgctxt "#48380"
+msgid "Pill (legacy)"
+msgstr "Pill (legacy)"
+
+msgctxt "#48381"
+msgid "Underline (legacy)"
+msgstr "Underline (legacy)"
+
+msgctxt "#48382"
+msgid "Fuse Square"
+msgstr "Fuse Square"
+
+msgctxt "#48383"
+msgid "Fuse Glass"
+msgstr "Fuse Glass"
+
+msgctxt "#48384"
+msgid "Fuse Bar"
+msgstr "Fuse Bar"
+
+msgctxt "#48385"
+msgid "Fuse Gold"
+msgstr "Fuse Gold"
+
+msgctxt "#48386"
+msgid "Fuse White"
+msgstr "Fuse White"
+
+msgctxt "#49010"
+msgid "Skip dialog layout"
+msgstr "Layout des Überspringen-Dialogs"
+
+msgctxt "#49011"
+msgid "How the skip dialog is built. Card is the dialog of earlier versions, with its presets and every option below. The others are new: Corner slab (a slab in the corner with the bar along its top), Dial (the time left as a ring), Cinema band (a band across the screen), Float (large text straight on the picture), Split (a big Skip tile that fills up), Timeline (where you are in the segment and where Skip lands) and Side rail (a tab on the side of the screen). Full mode shows the large form of a layout, Compact Full the small one; Minimal keeps its chip. The new layouts take their colours from Layout look and use Skip Dialog Position and Skip Button Format; the card's own options do not apply to them."
+msgstr "Wie der Überspringen-Dialog aufgebaut ist. Card ist der Dialog früherer Versionen mit seinen Voreinstellungen und allen Optionen darunter. Die anderen sind neu: Corner slab (eine Platte in der Ecke mit dem Balken an der Oberkante), Dial (die Restzeit als Ring), Cinema band (ein Band quer über den Bildschirm), Float (große Schrift direkt auf dem Bild), Split (eine große Überspringen-Kachel, die sich füllt), Timeline (wo man im Segment ist und wohin Überspringen führt) und Side rail (ein Reiter am Bildschirmrand). Der Modus Voll zeigt die große Form eines Layouts, Kompakt voll die kleine; Minimal behält seinen Chip. Die neuen Layouts nehmen ihre Farben aus Layout-Look und nutzen Dialogposition und Schaltflächenformat; die eigenen Optionen der Karte gelten für sie nicht."
+
+msgctxt "#49012"
+msgid "Layout look"
+msgstr "Layout-Look"
+
+msgctxt "#49013"
+msgid "The look of the new skip dialog layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has its presets."
+msgstr "Der Look der neuen Layouts des Überspringen-Dialogs, nach dem Skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon oder Aeon Glass. Das Layout Card nutzt ihn nicht; es hat seine Voreinstellungen."
+
+msgctxt "#49020"
+msgid "Look"
+msgstr "Look"
+
+msgctxt "#49021"
+msgid "Layout"
+msgstr "Layout"
+
+msgctxt "#49022"
+msgid "Text"
+msgstr "Text"
+
+msgctxt "#49023"
+msgid "Buttons"
+msgstr "Tasten"
+
+msgctxt "#49024"
+msgid "Bar"
+msgstr "Balken"
+
+msgctxt "#49025"
+msgid "Save as preset"
+msgstr "Als Voreinstellung speichern"
+
+msgctxt "#49026"
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+msgctxt "#49027"
+msgid "LIVE PREVIEW"
+msgstr "LIVE-VORSCHAU"
+
+msgctxt "#49028"
+msgid "PRESETS"
+msgstr "VOREINSTELLUNGEN"
+
+msgctxt "#49029"
+msgid "LOOKS"
+msgstr "LOOKS"
+
+msgctxt "#49030"
+msgid "Up / Down: choose a row     Left / Right: change it     OK: next choice     Back: close without saving"
+msgstr "Auf / Ab: Zeile wählen     Links / Rechts: ändern     OK: nächste Auswahl     Zurück: ohne Speichern schließen"
+
+msgctxt "#49031"
+msgid "Bar colour"
+msgstr "Balkenfarbe"
+
+msgctxt "#49032"
+msgid "Segment type"
+msgstr "Segmenttyp"
+
+msgctxt "#49034"
+msgid "What colours the progress of a new skip dialog layout (bar, ring, fill or timeline). Segment type: the colour of the kind of segment, the same as in the segment editor (gold for an intro, blue for a recap and so on). Look: the colour of the layout look. The Card layout has its own Progress bar style."
+msgstr "Was den Fortschritt eines neuen Layouts des Überspringen-Dialogs färbt (Balken, Ring, Füllung oder Zeitleiste). Segmenttyp: die Farbe der Art des Segments, wie im Segmenteditor (Gold für ein Intro, Blau für eine Rückblende usw.). Look: die Farbe des Layout-Looks. Das Layout Card hat seinen eigenen Fortschrittsbalken-Stil."
+
+msgctxt "#49035"
+msgid "Picture"
+msgstr "Bild"
+
+msgctxt "#49036"
+msgid "Episode picture"
+msgstr "Episodenbild"
+
+msgctxt "#49037"
+msgid "Poster"
+msgstr "Poster"
+
+msgctxt "#49038"
+msgid "Poster and episode"
+msgstr "Poster und Episode"
+
+msgctxt "#49039"
+msgid "Fanart"
+msgstr "Fanart"
+
+msgctxt "#49040"
+msgid "Which picture the next episode popup shows while Show episode picture is on. Episode picture: the wide picture of the next episode. Poster: the poster of the show, useful when episode pictures give too much away or are missing. Poster and episode: the poster and the episode picture side by side, at the same height. Fanart: the fanart behind the whole popup. Fanart and poster, Fanart and episode: the fanart behind the popup with the poster or the episode picture in front of it. A choice whose picture is missing falls back to the nearest one that can be shown."
+msgstr "Welches Bild das Popup für die nächste Folge zeigt, solange Episodenbild anzeigen eingeschaltet ist. Episodenbild: das breite Bild der nächsten Folge. Poster: das Poster der Serie, nützlich, wenn Episodenbilder zu viel verraten oder fehlen. Poster und Episode: das Poster und das Episodenbild nebeneinander in gleicher Höhe. Fanart: die Fanart hinter dem ganzen Popup. Fanart und Poster, Fanart und Episode: die Fanart hinter dem Popup, davor das Poster oder das Episodenbild. Fehlt das Bild einer Auswahl, wird die nächstliegende gezeigt, die möglich ist."
+
+msgctxt "#49041"
+msgid "Popup layout"
+msgstr "Popup-Layout"
+
+msgctxt "#49042"
+msgid "How the next episode popup is built. Card is the popup of earlier versions, with its looks and every option of this page. The others are new: Poster card (the poster at the left), Picture slab (a slab in the corner with the picture across it), Play ring (the countdown as a ring on the picture), Lower third (a band across the screen), Float (large text straight on the video) and Side rail (a tab on the side of the screen). The new layouts take their colours from Layout look and use Popup position and Default button; Popup look, the colour rows, Popup size and the picture rows are for the Card."
+msgstr "Wie das Popup für die nächste Folge aufgebaut ist. Card ist das Popup früherer Versionen mit seinen Looks und allen Optionen dieser Seite. Die anderen sind neu: Poster card (das Poster links), Picture slab (eine Platte in der Ecke mit dem Bild darüber), Play ring (der Countdown als Ring auf dem Bild), Lower third (ein Band quer über den Bildschirm), Float (große Schrift direkt auf dem Video) und Side rail (ein Reiter am Bildschirmrand). Die neuen Layouts nehmen ihre Farben aus Layout-Look und nutzen Position und Standardschaltfläche; Popup-Look, die Farbzeilen, die Größe und die Bildzeilen gelten für Card."
+
+msgctxt "#49043"
+msgid "The look of the new popup layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has Popup look."
+msgstr "Der Look der neuen Popup-Layouts, nach dem Skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon oder Aeon Glass. Das Layout Card nutzt ihn nicht; es hat den Popup-Look."
+
+msgctxt "#49045"
+msgid "Presets"
+msgstr "Voreinstellungen"
+
+msgctxt "#49046"
+msgid "Save, delete, export…"
+msgstr "Speichern, löschen, exportieren…"
+
+msgctxt "#49047"
+msgid "Arrows: choose     OK: use this preset     Back: keep the current one"
+msgstr "Pfeile: wählen     OK: diese Voreinstellung verwenden     Zurück: die aktuelle behalten"
+
+msgctxt "#49048"
+msgid "Fanart and poster"
+msgstr "Fanart und Poster"
+
+msgctxt "#49049"
+msgid "Fanart and episode"
+msgstr "Fanart und Episode"
+
+msgctxt "#49050"
+msgid "Background overlay"
+msgstr "Hintergrundschatten"
+
+msgctxt "#49051"
+msgid "A shade behind the new skip dialog layouts, so they read on a bright picture. Square: a hard rectangle out of the screen corner. Square, fading: the same, fading out towards the picture. Rounded: a rounded shade around the dialog. Rounded, fading: light at the top left, full at the bottom right. Band: across the whole screen. Corner glow: a round shade from the corner with no edge. Cinema band has its own band and takes none."
+msgstr "Ein Schatten hinter den neuen Layouts des Überspringen-Dialogs, damit sie auf hellem Bild lesbar sind. Eckig: ein hartes Rechteck aus der Bildschirmecke. Eckig, auslaufend: dasselbe, zum Bild hin auslaufend. Abgerundet: ein abgerundeter Schatten um den Dialog. Abgerundet, auslaufend: oben links hell, unten rechts voll. Band: über den ganzen Bildschirm. Eckschein: ein runder Schatten aus der Ecke ohne Kante. Kinoband hat sein eigenes Band und bekommt keinen."
+
+msgctxt "#49052"
+msgid "None"
+msgstr "Keiner"
+
+msgctxt "#49053"
+msgid "Square"
+msgstr "Eckig"
+
+msgctxt "#49054"
+msgid "Square, fading"
+msgstr "Eckig, auslaufend"
+
+msgctxt "#49055"
+msgid "Rounded"
+msgstr "Abgerundet"
+
+msgctxt "#49056"
+msgid "Rounded, fading"
+msgstr "Abgerundet, auslaufend"
+
+msgctxt "#49057"
+msgid "Band"
+msgstr "Band"
+
+msgctxt "#49058"
+msgid "Corner glow"
+msgstr "Eckschein"
+
+msgctxt "#49059"
+msgid "Appears"
+msgstr "Erscheint"
+
+msgctxt "#49060"
+msgid "How a new skip dialog layout comes on screen. Fade: as before. Rise: a short move up. Pop: it grows a little. Slide in: from the side of the screen it sits at."
+msgstr "Wie ein neues Layout des Überspringen-Dialogs erscheint. Einblenden: wie bisher. Aufsteigen: eine kurze Bewegung nach oben. Pop: es wächst ein wenig. Hereingleiten: von der Bildschirmseite, an der es sitzt."
+
+msgctxt "#49061"
+msgid "Fade"
+msgstr "Einblenden"
+
+msgctxt "#49062"
+msgid "Rise"
+msgstr "Aufsteigen"
+
+msgctxt "#49063"
+msgid "Pop"
+msgstr "Pop"
+
+msgctxt "#49064"
+msgid "Slide in"
+msgstr "Hereingleiten"
+
+msgctxt "#49065"
+msgid "Leaves"
+msgstr "Verschwindet"
+
+msgctxt "#49066"
+msgid "How a new skip dialog layout goes away. Fade: as before. Drop: a short move down. Shrink: it gets a little smaller."
+msgstr "Wie ein neues Layout des Überspringen-Dialogs verschwindet. Ausblenden: wie bisher. Absinken: eine kurze Bewegung nach unten. Schrumpfen: es wird ein wenig kleiner."
+
+msgctxt "#49067"
+msgid "Drop"
+msgstr "Absinken"
+
+msgctxt "#49068"
+msgid "Shrink"
+msgstr "Schrumpfen"
+
+msgctxt "#49069"
+msgid "Pulse in the last five seconds"
+msgstr "Puls in den letzten fünf Sekunden"
+
+msgctxt "#49070"
+msgid "The dialog beats once a second during the last five seconds of the segment, so the eye finds it without sound."
+msgstr "Der Dialog schlägt in den letzten fünf Sekunden des Segments einmal pro Sekunde, damit das Auge ihn ohne Ton findet."
+
+msgctxt "#49071"
+msgid "Press Preview to see this layout on the whole screen"
+msgstr "Vorschau drücken, um dieses Layout auf dem ganzen Bildschirm zu sehen"
+
+msgctxt "#49072"
+msgid "Corners"
+msgstr "Ecken"
+
+msgctxt "#49073"
+msgid "The corners of a drawn skip dialog design (Stack card). The look's own: rounded in the round looks, square in Aeon and Fused Glass style. Hard and Rounded force one shape whatever the look."
+msgstr "Die Ecken eines gezeichneten Layouts des Überspringen-Dialogs (Stapelkarte). Wie der Look: rund in den runden Looks, eckig in Aeon und Fused-Glass-Stil. Eckig und Abgerundet erzwingen eine Form, gleich welcher Look."
+
+msgctxt "#49074"
+msgid "The look's own"
+msgstr "Wie der Look"
+
+msgctxt "#49075"
+msgid "Hard"
+msgstr "Eckig"
+
+msgctxt "#49076"
+msgid "Rounded"
+msgstr "Abgerundet"
+
+msgctxt "#49077"
+msgid "Close button"
+msgstr "Schließen-Schaltfläche"
+
+msgctxt "#49078"
+msgid "Show the Close button on a drawn design. Without it the Skip button takes the whole row."
+msgstr "Die Schließen-Schaltfläche in einem gezeichneten Layout anzeigen. Ohne sie nimmt Überspringen die ganze Zeile ein."
+
+msgctxt "#49079"
+msgid "Icons on the buttons"
+msgstr "Symbole auf den Schaltflächen"
+
+msgctxt "#49080"
+msgid "Show the icons on Skip and Close of a drawn design."
+msgstr "Die Symbole auf Überspringen und Schließen eines gezeichneten Layouts anzeigen."
+
+msgctxt "#49081"
+msgid "Type and range line"
+msgstr "Zeile mit Typ und Bereich"
+
+msgctxt "#49082"
+msgid "Show the line with the segment type and its start and end on a drawn design."
+msgstr "Die Zeile mit dem Segmenttyp und seinem Anfang und Ende in einem gezeichneten Layout anzeigen."
+
+msgctxt "#49083"
+msgid "Nested line"
+msgstr "Verschachtelte Zeile"
+
+msgctxt "#49084"
+msgid "Show the line that says where Skip lands when a segment lies inside another."
+msgstr "Die Zeile anzeigen, die sagt, wo Überspringen landet, wenn ein Segment in einem anderen liegt."
+
+msgctxt "#49085"
+msgid "The design's own"
+msgstr "Wie das Design"
+
+msgctxt "#49086"
+msgid "Text shadow"
+msgstr "Textschatten"
+
+msgctxt "#49087"
+msgid "The shadow under texts that lie straight on the video (Dial, Cinema band, Float). Heavy is the mockup's: readable on any picture."
+msgstr "Der Schatten unter Texten, die direkt auf dem Video liegen (Zifferblatt, Kinoband, Schwebend). Kräftig ist auf jedem Bild lesbar."
+
+msgctxt "#49088"
+msgid "Off"
+msgstr "Aus"
+
+msgctxt "#49089"
+msgid "Mild"
+msgstr "Leicht"
+
+msgctxt "#49090"
+msgid "Medium"
+msgstr "Mittel"
+
+msgctxt "#49091"
+msgid "Strong"
+msgstr "Stark"
+
+msgctxt "#49092"
+msgid "Heavy"
+msgstr "Kräftig"
+
+msgctxt "#49093"
+msgid "Text size"
+msgstr "Textgröße"
+
+msgctxt "#49094"
+msgid "The size of the texts in a drawn skip dialog design. Buttons grow with their text."
+msgstr "Die Größe der Texte in einem gezeichneten Layout des Überspringen-Dialogs. Schaltflächen wachsen mit ihrem Text."
+
+msgctxt "#49095"
+msgid "Small"
+msgstr "Klein"
+
+msgctxt "#49096"
+msgid "Standard"
+msgstr "Standard"
+
+msgctxt "#49097"
+msgid "Large"
+msgstr "Groß"
+
+msgctxt "#49098"
+msgid "Larger"
+msgstr "Größer"
+
+msgctxt "#49099"
+msgid "Size on screen"
+msgstr "Größe auf dem Bildschirm"
+
+msgctxt "#49100"
+msgid "How large a drawn skip dialog is: Small, Medium or Large. Large is the size of the designs as drawn; smaller takes less of the picture."
+msgstr "Wie groß ein gezeichneter Überspringen-Dialog ist: Klein, Mittel oder Groß. Groß ist die gezeichnete Größe der Layouts; kleiner verdeckt weniger vom Bild."
+
+msgctxt "#49101"
+msgid "Accent colour"
+msgstr "Akzentfarbe"
+
+msgctxt "#49102"
+msgid "The colour of the bar, the dot and the arrow of a drawn design. The bar colour setting follows Progress colour: the segment type's colour or the look's accent."
+msgstr "Die Farbe von Balken, Punkt und Pfeil eines gezeichneten Layouts. Die Balkenfarben-Einstellung folgt Fortschrittsfarbe: die Farbe des Segmenttyps oder der Akzent des Looks."
+
+msgctxt "#49103"
+msgid "The bar colour setting"
+msgstr "Die Balkenfarben-Einstellung"
+
+msgctxt "#49104"
+msgid "Gold"
+msgstr "Gold"
+
+msgctxt "#49105"
+msgid "Blue"
+msgstr "Blau"
+
+msgctxt "#49106"
+msgid "Red"
+msgstr "Rot"
+
+msgctxt "#49107"
+msgid "Green"
+msgstr "Grün"
+
+msgctxt "#49108"
+msgid "Teal"
+msgstr "Türkis"
+
+msgctxt "#49109"
+msgid "Purple"
+msgstr "Violett"
+
+msgctxt "#49110"
+msgid "White"
+msgstr "Weiß"
+
+msgctxt "#49111"
+msgid "Progress style"
+msgstr "Fortschrittsstil"
+
+msgctxt "#49112"
+msgid "How the time left is shown. The design's own: a line, a ring, a tile or a timeline, as drawn. Circle and Fill move the line of Stack card, Corner slab and Cinema band into the Skip button."
+msgstr "Wie die Restzeit gezeigt wird. Wie das Layout: eine Linie, ein Ring, eine Kachel oder eine Zeitleiste, wie gezeichnet. Kreis und Füllung verlegen die Linie von Stapelkarte, Eckplatte und Kinoband in die Überspringen-Schaltfläche."
+
+msgctxt "#49113"
+msgid "Line"
+msgstr "Linie"
+
+msgctxt "#49114"
+msgid "Circle"
+msgstr "Kreis"
+
+msgctxt "#49115"
+msgid "Fill"
+msgstr "Füllung"
+
+msgctxt "#49116"
+msgid "Overlay gradient"
+msgstr "Overlay-Verlauf"
+
+msgctxt "#49117"
+msgid "Let a Square or Rounded background overlay fade out towards the picture instead of ending in an edge."
+msgstr "Ein eckiges oder abgerundetes Hintergrund-Overlay zum Bild hin auslaufen lassen, statt an einer Kante zu enden."
+
+msgctxt "#49118"
+msgid "Gradient direction"
+msgstr "Verlaufsrichtung"
+
+msgctxt "#49119"
+msgid "Which way the overlay fades. Away from the dialog picks the direction from where the dialog stands."
+msgstr "In welche Richtung das Overlay ausläuft. Vom Dialog weg wählt die Richtung danach, wo der Dialog steht."
+
+msgctxt "#49120"
+msgid "Away from the dialog"
+msgstr "Vom Dialog weg"
+
+msgctxt "#49121"
+msgid "Top to bottom"
+msgstr "Von oben nach unten"
+
+msgctxt "#49122"
+msgid "Side to side"
+msgstr "Von Seite zu Seite"
+
+msgctxt "#49123"
+msgid "Round"
+msgstr "Rund"
+
+msgctxt "#49124"
+msgid "Text outline"
+msgstr "Textkontur"
+
+msgctxt "#49125"
+msgid "Draw a dark line around the letters of texts that lie straight on the video (Float, Cinema band). With a mild shadow this stays readable on any picture. A design with an overlay behind it needs none and gets none."
+msgstr "Eine dunkle Linie um die Buchstaben von Texten zeichnen, die direkt auf dem Video liegen. Mit leichtem Schatten bleibt das auf jedem Bild lesbar. Ein Layout mit Overlay dahinter bekommt keine."
+
+msgctxt "#49126"
+msgid "Motion"
+msgstr "Bewegung"
+
+msgctxt "#49127"
+msgid "Behaviour"
+msgstr "Verhalten"
+
+msgctxt "#49128"
+msgid "ABOUT THIS SETTING"
+msgstr "ÜBER DIESE EINSTELLUNG"
+
+msgctxt "#49129"
+msgid "Distance from the edge"
+msgstr "Abstand vom Rand"
+
+msgctxt "#49130"
+msgid "Button the focus starts on"
+msgstr "Schaltfläche mit Startfokus"
+
+msgctxt "#49131"
+msgid "How far a drawn skip dialog stands from the edge of the screen it sits at, in pixels of a 1080 screen. A design that lies against the edge (Corner slab, Side rail) keeps to the edge."
+msgstr "Wie weit ein gezeichneter Überspringen-Dialog vom Bildschirmrand entfernt steht, in Pixeln eines 1080-Bildschirms. Ein Layout, das am Rand anliegt, bleibt am Rand."
+
+msgctxt "#49132"
+msgid "Which button has the focus when the dialog opens. With Close, OK closes the dialog and one press of Left reaches Skip."
+msgstr "Welche Schaltfläche den Fokus hat, wenn der Dialog aufgeht. Mit Schließen schließt OK den Dialog, und einmal Links erreicht Überspringen."
+
+msgctxt "#49133"
+msgid "[B]Up / Down[/B]  choose a row      [B]Left / Right[/B]  pick      [B]OK[/B]  next choice      [B]Back[/B]  close without saving"
+msgstr "[B]Auf / Ab[/B]  Zeile wählen      [B]Links / Rechts[/B]  auswählen      [B]OK[/B]  nächste Wahl      [B]Zurück[/B]  ohne Speichern schließen"
+
+msgctxt "#49134"
+msgid "Intro"
+msgstr "Intro"
+
+msgctxt "#49135"
+msgid "Credits"
+msgstr "Abspann"
+
+msgctxt "#49136"
+msgid "Nested"
+msgstr "Verschachtelt"
+
+msgctxt "#49137"
+msgid "Place on the screen"
+msgstr "Platz auf dem Bildschirm"
+
+msgctxt "#49138"
+msgid "Top left"
+msgstr "Oben links"
+
+msgctxt "#49139"
+msgid "Top"
+msgstr "Oben"
+
+msgctxt "#49140"
+msgid "Top right"
+msgstr "Oben rechts"
+
+msgctxt "#49141"
+msgid "Left"
+msgstr "Links"
+
+msgctxt "#49142"
+msgid "Centre"
+msgstr "Mitte"
+
+msgctxt "#49143"
+msgid "Right"
+msgstr "Rechts"
+
+msgctxt "#49144"
+msgid "Bottom left"
+msgstr "Unten links"
+
+msgctxt "#49145"
+msgid "Bottom"
+msgstr "Unten"
+
+msgctxt "#49146"
+msgid "Bottom right"
+msgstr "Unten rechts"
+
+msgctxt "#49147"
+msgid "Skip dialog"
+msgstr "Überspringen-Dialog"
+
+msgctxt "#49148"
+msgid "A preset sets the design, its look and its colours in one step. Left and Right step through the presets; OK opens the wall with all of them, yours included."
+msgstr "Eine Voreinstellung setzt Layout, Look und Farben in einem Schritt. Links und Rechts gehen durch die Voreinstellungen; OK öffnet die Wand mit allen, auch den eigenen."
+
+msgctxt "#49149"
+msgid "Skin"
+msgstr "Skin"
+
+msgctxt "#49150"
+msgid "Design"
+msgstr "Design"
+
+msgctxt "#49151"
+msgid "Position"
+msgstr "Position"
+
+msgctxt "#49152"
+msgid "Size"
+msgstr "Größe"
+
+msgctxt "#49153"
+msgid "Minimal position"
+msgstr "Minimal-Position"
+
+msgctxt "#49154"
+msgid "Progress"
+msgstr "Fortschritt"
+
+msgctxt "#49155"
+msgid "The corner or edge the dialog sits in; the nine dots are the nine places of a drawn design. The classic card knows the four corners."
+msgstr "Die Ecke oder Kante, an der der Dialog sitzt; die neun Punkte sind die neun Plätze eines gezeichneten Layouts. Die klassische Karte kennt die vier Ecken."
+
+msgctxt "#49156"
+msgid "The corner the Minimal form sits in: it has a position of its own."
+msgstr "Die Ecke, in der die Minimal-Form sitzt: sie hat eine eigene Position."
+
+msgctxt "#49157"
+msgid "Which segment the live preview shows: an intro, the credits, or a segment that lies inside another, which adds the line that says where Skip lands."
+msgstr "Welches Segment die Live-Vorschau zeigt: ein Intro, den Abspann oder ein Segment in einem anderen, was die Zeile hinzufügt, die sagt, wo Überspringen landet."
+
+msgctxt "#49158"
+msgid "For the drawn designs: choose a Design other than Card to use it."
+msgstr "Für die gezeichneten Layouts: Wähle ein anderes Design als Karte, um es zu nutzen."
+
+msgctxt "#49159"
+msgid "For the classic Card only; the design in use does not have it."
+msgstr "Nur für die klassische Karte; das gewählte Design hat es nicht."
+
+msgctxt "#49160"
+msgid "Not built for the drawn designs yet."
+msgstr "Für die gezeichneten Layouts noch nicht gebaut."
+
+msgctxt "#49161"
+msgid "Light"
+msgstr "Leicht"
+
+msgctxt "#49162"
+msgid "A dark line around the letters of texts that lie straight on the video (Float, Cinema band), so they stay readable on any picture: Off, Light, Medium or Strong. A design with an overlay behind it gets none."
+msgstr "Eine dunkle Linie um die Buchstaben von Texten, die direkt auf dem Video liegen, damit sie auf jedem Bild lesbar bleiben: Aus, Leicht, Mittel oder Stark. Ein Layout mit Overlay dahinter bekommt keine."
+
+msgctxt "#49163"
+msgid "Not used with the choices made on this screen."
+msgstr "Wird mit den auf diesem Bildschirm getroffenen Einstellungen nicht verwendet."
+
+msgctxt "#49164"
+msgid "Preview segment type"
+msgstr "Segmenttyp der Vorschau"
+
+msgctxt "#49165"
+msgid "Time on the Skip button"
+msgstr "Zeit auf der Überspringen-Schaltfläche"
+
+msgctxt "#49166"
+msgid "Show the time on the Skip button of a drawn design. Skip Duration Format and Skip Duration Content say how it is written and whether it is the segment's length or the time left."
+msgstr "Die Zeit auf der Überspringen-Schaltfläche eines gezeichneten Layouts anzeigen. Dauerformat und Dauerinhalt bestimmen, wie sie geschrieben wird und ob es die Länge des Segments oder die Restzeit ist."
+
+msgctxt "#49167"
+msgid "The segment type the live preview shows: step through all your types to see each in its own colour and wording. It is for the preview only and is not saved."
+msgstr "Der Segmenttyp, den die Live-Vorschau zeigt: Gehe durch alle Typen, um jeden in seiner Farbe und Wortwahl zu sehen. Nur für die Vorschau; wird nicht gespeichert."
+
+msgctxt "#49168"
+msgid "Progress countdown"
+msgstr "Fortschritt zählt herunter"
+
+msgctxt "#49169"
+msgid "%d segments"
+msgstr "%d Segmente"
+
+msgctxt "#49170"
+msgid "1 segment"
+msgstr "1 Segment"
+
+msgctxt "#49171"
+msgid "HIGHLIGHTED SEGMENT · %s"
+msgstr "MARKIERTES SEGMENT · %s"
+
+msgctxt "#49172"
+msgid "TIMELINE"
+msgstr "ZEITLEISTE"
+
+msgctxt "#49173"
+msgid "SHOWING %s – %s"
+msgstr "ZEIGT %s – %s"
+
+msgctxt "#49174"
+msgid "SEEK"
+msgstr "SUCHEN"
+
+msgctxt "#49175"
+msgid "MARK"
+msgstr "MARKIEREN"
+
+msgctxt "#49176"
+msgid "SEGMENTS AND FILE"
+msgstr "SEGMENTE UND DATEI"
+
+msgctxt "#49177"
+msgid "LIVE VIDEO"
+msgstr "LIVE-VIDEO"
+
+msgctxt "#49178"
+msgid "DARK OVERLAY: ON"
+msgstr "DUNKLES OVERLAY: AN"
+
+msgctxt "#49179"
+msgid "DARK OVERLAY: OFF"
+msgstr "DUNKLES OVERLAY: AUS"
+
+msgctxt "#49180"
+msgid "[B]OK on a segment[/B]  jumps to its start      [B]Left[/B]  its nine actions      [B]Right[/B]  the timeline      [B]Back[/B]  asks to save"
+msgstr "[B]OK auf einem Segment[/B]  springt zu seinem Anfang      [B]Links[/B]  seine neun Aktionen      [B]Rechts[/B]  die Zeitleiste      [B]Zurück[/B]  fragt nach dem Speichern"
+
+msgctxt "#49181"
+msgid "NESTED"
+msgstr "VERSCHACHTELT"
+
+msgctxt "#49182"
+msgid "OVERLAP"
+msgstr "ÜBERLAPPT"
+
+msgctxt "#49183"
+msgid "LOOK"
+msgstr "LOOK"
+
+msgctxt "#49184"
+msgid "Dark overlay: on"
+msgstr "Dunkles Overlay: an"
+
+msgctxt "#49185"
+msgid "Dark overlay: off"
+msgstr "Dunkles Overlay: aus"
+
+msgctxt "#49186"
+msgid "Panels: %s"
+msgstr "Felder: %s"
+
+msgctxt "#49187"
+msgid "Dark"
+msgstr "Dunkel"
+
+msgctxt "#49188"
+msgid "Frost"
+msgstr "Frost"
+
+msgctxt "#49189"
+msgid "Clear"
+msgstr "Klar"
+
+msgctxt "#49190"
+msgid "Editor panels"
+msgstr "Felder des Editors"
+
+msgctxt "#49191"
+msgid "The look of the panels of the List and drawer editor: Fused Glass Dark, Frost or Clear. The Panels button in the editor's Look row steps through the same three."
+msgstr "Der Look der Felder im Editor Liste und Schublade: Fused Glass Dark, Frost oder Clear. Die Schaltfläche Felder in der Zeile Look des Editors wechselt durch dieselben drei."
+
+msgctxt "#49192"
+msgid "Up next"
+msgstr "Als Nächstes"
+
+msgctxt "#49193"
+msgid "Starts in %s"
+msgstr "Beginnt in %s"
+
+msgctxt "#49194"
+msgid "Up next in %s"
+msgstr "Als Nächstes in %s"
+
+msgctxt "#49195"
+msgid "Next"
+msgstr "Weiter"
+
+msgctxt "#49196"
+msgid "%d min"
+msgstr "%d Min."
+
+msgctxt "#49197"
+msgid "Play a later one"
+msgstr "Eine spätere abspielen"
+
+msgctxt "#49198"
+msgid "Play %s"
+msgstr "%s abspielen"
+
+msgctxt "#49199"
+msgid "Compact"
+msgstr "Kompakt"
+
+msgctxt "#48387"
+msgid "Fused Glass Dark (legacy)"
+msgstr "Fused Glass Dark (legacy)"
+
+msgctxt "#48388"
+msgid "Fused Glass Frost (legacy)"
+msgstr "Fused Glass Frost (legacy)"
+
+msgctxt "#48389"
+msgid "Fused Glass Clear (legacy)"
+msgstr "Fused Glass Clear (legacy)"
+
+msgctxt "#48390"
+msgid "Fused Glass style (legacy)"
+msgstr "Fused Glass style (legacy)"
+
+msgctxt "#48391"
+msgid "Aeon (legacy)"
+msgstr "Aeon (legacy)"
+
+msgctxt "#48392"
+msgid "Aeon Glass (legacy)"
+msgstr "Aeon Glass (legacy)"
+
+msgctxt "#48393"
+msgid "Aeon Glass Fill (legacy)"
+msgstr "Aeon Glass Fill (legacy)"
+
+msgctxt "#48394"
+msgid "Fused Glass Bare (legacy)"
+msgstr "Fused Glass Bare (legacy)"
+
+msgctxt "#48395"
+msgid "Aeon Bare (legacy)"
+msgstr "Aeon Bare (legacy)"
+
+msgctxt "#48396"
+msgid "Fused Glass Compact (legacy)"
+msgstr "Fused Glass Compact (legacy)"
+
+msgctxt "#48397"
+msgid "Fused Glass style Compact (legacy)"
+msgstr "Fused Glass style Compact (legacy)"
+
+msgctxt "#48398"
+msgid "Aeon Compact (legacy)"
+msgstr "Aeon Compact (legacy)"
+
+msgctxt "#48399"
+msgid "Aeon Glass Compact (legacy)"
+msgstr "Aeon Glass Compact (legacy)"
+
+msgctxt "#49200"
+msgid "Autoplay"
+msgstr "Automatische Wiedergabe"
+
+msgctxt "#49201"
+msgid "Plot"
+msgstr "Handlung"
+
+msgctxt "#49202"
+msgid "Episode line"
+msgstr "Episodenzeile"
+
+msgctxt "#49203"
+msgid "Show logo"
+msgstr "Logo zeigen"
+
+msgctxt "#49204"
+msgid "Cancel button"
+msgstr "Abbrechen-Schaltfläche"
+
+msgctxt "#49205"
+msgid "Options of Card (legacy)…"
+msgstr "Optionen der Karte (legacy)…"
+
+msgctxt "#49206"
+msgid "Same look as the skip dialog"
+msgstr "Gleicher Look wie der Überspringen-Dialog"
+
+msgctxt "#49207"
+msgid "Fill shows on"
+msgstr "Füllung erscheint auf"
+
+msgctxt "#49208"
+msgid "Follow the skin style"
+msgstr "Dem Skin-Stil folgen"
+
+msgctxt "#49209"
+msgid "Keep clear of subtitles"
+msgstr "Untertitel frei lassen"
+
+msgctxt "#49210"
+msgid "When there is no episode picture"
+msgstr "Wenn es kein Episodenbild gibt"
+
+msgctxt "#49211"
+msgid "Time left"
+msgstr "Verbleibende Zeit"
+
+msgctxt "#49212"
+msgid "All capitals"
+msgstr "Nur Großbuchstaben"
+
+msgctxt "#49213"
+msgid "Watch credits button"
+msgstr "Schaltfläche Abspann ansehen"
+
+msgctxt "#49214"
+msgid "Focus style"
+msgstr "Fokus-Stil"
+
+msgctxt "#49215"
+msgid "Bar"
+msgstr "Balken"
+
+msgctxt "#49216"
+msgid "Speed"
+msgstr "Geschwindigkeit"
+
+msgctxt "#49217"
+msgid "A preset is a design in a look. Left and Right step through all of them, your saved ones included; OK opens the list that loads, saves and deletes them."
+msgstr "Eine Voreinstellung ist ein Design in einem Look. Links und Rechts gehen durch alle, auch deine gespeicherten; OK öffnet die Liste, die sie lädt, speichert und löscht."
+
+msgctxt "#49218"
+msgid "Watch credits"
+msgstr "Abspann ansehen"
+
+msgctxt "#49219"
+msgid "Smooth"
+msgstr "Fließend"
+
+msgctxt "#49220"
+msgid "Steps"
+msgstr "Schritte"
+
+msgctxt "#49221"
+msgid "Button"
+msgstr "Schaltfläche"
+
+msgctxt "#49222"
+msgid "Card"
+msgstr "Karte"
+
+msgctxt "#49223"
+msgid "Nothing"
+msgstr "Nichts"
+
+msgctxt "#49224"
+msgid "Auto"
+msgstr "Automatisch"
+
+msgctxt "#49225"
+msgid "Accent"
+msgstr "Akzent"
+
+msgctxt "#49226"
+msgid "Outline"
+msgstr "Umriss"

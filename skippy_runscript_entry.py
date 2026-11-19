@@ -123,7 +123,19 @@ def main():
 
             show_skip_dialog_customize()
             return
+        if command == "customize_skip_dialog_classic":
+            # the list screen of the versions before the Studio
+            from skip_dialog_customize_ui import show_skip_dialog_customize_classic
+
+            show_skip_dialog_customize_classic()
+            return
         if command == "customize_next_episode_popup":
+            # the Studio; the list screen of earlier versions is reached from it (Options of Card (legacy))
+            from next_studio_ui import show_next_studio
+
+            show_next_studio()
+            return
+        if command == "customize_next_episode_popup_classic":
             from next_episode_customize_ui import show_next_episode_customize
 
             show_next_episode_customize()

@@ -1,0 +1,1095 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+
+  <zorder>1</zorder>
+  <defaultcontrol>5018</defaultcontrol>
+
+  <animation type="WindowOpen">
+    <effect type="slide" start="0,100" end="0,0" time="300" tween="quadratic" easing="out" />
+    <effect type="fade" start="0" end="100" time="400" />
+  </animation>
+
+  <animation type="WindowClose">
+    <effect type="slide" start="0,0" end="0,100" time="300" tween="quadratic" easing="in" />
+    <effect type="fade" start="100" end="0" time="300" />
+  </animation>
+
+  <controls>
+    <!-- Background - semi-transparent black overlay like Skippy -->
+    <!-- Only visible if EnableFullscreenOverlay property is set to "true" -->
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1280</width>
+      <height>720</height>
+      <texture>white.png</texture>
+      <colordiffuse>F0000000</colordiffuse>
+      <visible>String.IsEqual(Window.Property(EnableFullscreenOverlay),true)</visible>
+    </control>
+
+    <!-- Main panel - centered and sized to fit within video window -->
+    <control type="group">
+      <left>50</left>
+      <top>60</top>
+      <width>1170</width>
+      <height>585</height>
+
+      <!-- Panel background - darker semi-transparent background -->
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1170</width>
+        <height>585</height>
+        <texture border="28">ms_fgd_panel.png</texture>
+      </control>
+
+      <!-- Title banner (top-left, proportional — do not stretch full width) -->
+      <control type="image">
+        <left>20</left>
+        <top>20</top>
+        <width>229</width>
+        <height>40</height>
+        <texture>segment_editor_banner.png</texture>
+        <aspectratio aligny="center">keep</aspectratio>
+      </control>
+
+      <!-- Current time label -->
+      <control type="label" id="5001">
+        <left>20</left>
+        <top>70</top>
+        <width>480</width>
+        <height>30</height>
+        <label>Current Time: --:--:--</label>
+        <font>font16</font>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <!-- Status label (for marked times) -->
+      <control type="label" id="5008">
+        <left>520</left>
+        <top>70</top>
+        <width>460</width>
+        <height>30</height>
+        <label></label>
+        <font>font14</font>
+        <textcolor>FFFFAA00</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+      </control>
+
+      <!-- Segments list -->
+      <control type="list" id="5000">
+        <left>20</left>
+        <top>110</top>
+        <width>1140</width>
+        <height>290</height>
+        <ondown>5018</ondown>
+        <onup>5018</onup>
+        <onright>5037</onright>
+        <itemlayout width="1140" height="50">
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>680</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <align>left</align>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FFFF0000</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FF0080FF</textcolor>
+            <align>left</align>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+        </itemlayout>
+        <focusedlayout width="1140" height="50">
+          <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1140</width>
+            <height>50</height>
+            <texture border="14">ms_fgd_row.png</texture>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>5</top>
+            <width>680</width>
+            <height>25</height>
+            <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <align>left</align>
+            <scroll>true</scroll>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
+            <align>left</align>
+            <scroll>true</scroll>
+            <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FFFF0000</textcolor>
+            <align>left</align>
+            <scroll>true</scroll>
+            <visible>String.IsEqual(ListItem.Property(segment_type),nested)</visible>
+          </control>
+          <control type="label">
+            <left>10</left>
+            <top>28</top>
+            <width>1000</width>
+            <height>20</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font10</font>
+            <textcolor>FF0080FF</textcolor>
+            <align>left</align>
+            <scroll>true</scroll>
+            <visible>String.IsEqual(ListItem.Property(segment_type),overlapping)</visible>
+          </control>
+        </focusedlayout>
+      </control>
+
+      <!-- List row actions — Y position tracks selection (set in Python) -->
+      <control type="button" id="5037">
+        <left>425</left>
+        <top>110</top>
+        <width>105</width>
+        <height>30</height>
+        <label>Start@Curr</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5038</onright>
+        <onleft>5000</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5038">
+        <left>532</left>
+        <top>110</top>
+        <width>91</width>
+        <height>30</height>
+        <label>End@Curr</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5027</onright>
+        <onleft>5037</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5027">
+        <left>625</left>
+        <top>110</top>
+        <width>95</width>
+        <height>30</height>
+        <label>Snap Start</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5028</onright>
+        <onleft>5038</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5028">
+        <left>722</left>
+        <top>110</top>
+        <width>97</width>
+        <height>30</height>
+        <label>Snap End</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5041</onright>
+        <onleft>5027</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5041">
+        <left>821</left>
+        <top>110</top>
+        <width>75</width>
+        <height>30</height>
+        <label>Merge</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5042</onright>
+        <onleft>5028</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5042">
+        <left>898</left>
+        <top>110</top>
+        <width>53</width>
+        <height>30</height>
+        <label>Split</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5043</onright>
+        <onleft>5041</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5043">
+        <left>953</left>
+        <top>110</top>
+        <width>85</width>
+        <height>30</height>
+        <label>Fix Ovl</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5021</onright>
+        <onleft>5042</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5021">
+        <left>1040</left>
+        <top>110</top>
+        <width>53</width>
+        <height>30</height>
+        <label>Edit</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onright>5022</onright>
+        <onleft>5043</onleft>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+      <control type="button" id="5022">
+        <left>1095</left>
+        <top>110</top>
+        <width>55</width>
+        <height>30</height>
+        <label>Del</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onleft>5021</onleft>
+        <onright>5000</onright>
+        <onup>5000</onup>
+        <ondown>5000</ondown>
+      </control>
+
+
+      <!-- Row 1: Seek controls (-10m … Resume … +10m) -->
+      <control type="button" id="5031">
+        <left>6</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>-10m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onright>5032</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5032">
+        <left>85</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>-5m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5031</onleft>
+        <onright>5033</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5033">
+        <left>160</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>-1m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5032</onleft>
+        <onright>5011</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5011">
+        <left>235</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>-30s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5033</onleft>
+        <onright>5010</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5010">
+        <left>314</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>-10s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5011</onleft>
+        <onright>5009</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5009">
+        <left>393</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>-5s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5010</onleft>
+        <onright>5019</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5019">
+        <left>468</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>-1s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5009</onleft>
+        <onright>5018</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5018">
+        <left>543</left>
+        <top>450</top>
+        <width>83</width>
+        <height>30</height>
+        <label>Pause</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5019</onleft>
+        <onright>5020</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5020">
+        <left>628</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>+1s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5018</onleft>
+        <onright>5012</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5012">
+        <left>703</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>+5s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5020</onleft>
+        <onright>5013</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5013">
+        <left>778</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>+10s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5012</onleft>
+        <onright>5014</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5014">
+        <left>857</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>+30s</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5013</onleft>
+        <onright>5034</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5034">
+        <left>936</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>+1m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5014</onleft>
+        <onright>5035</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5035">
+        <left>1011</left>
+        <top>450</top>
+        <width>73</width>
+        <height>30</height>
+        <label>+5m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5034</onleft>
+        <onright>5036</onright>
+        <ondown>5015</ondown>
+      </control>
+
+      <control type="button" id="5036">
+        <left>1086</left>
+        <top>450</top>
+        <width>77</width>
+        <height>30</height>
+        <label>+10m</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5000</onup>
+        <onleft>5035</onleft>
+        <ondown>5015</ondown>
+      </control>
+
+      <!-- Row 2: Mark / create controls -->
+      <control type="button" id="5015">
+        <left>0</left>
+        <top>490</top>
+        <width>128</width>
+        <height>30</height>
+        <label>Set as Start</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onright>5029</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5029">
+        <left>130</left>
+        <top>490</top>
+        <width>194</width>
+        <height>30</height>
+        <label>Set to Start of File</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5015</onleft>
+        <onright>5016</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5016">
+        <left>326</left>
+        <top>490</top>
+        <width>120</width>
+        <height>30</height>
+        <label>Set as End</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5029</onleft>
+        <onright>5030</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5030">
+        <left>448</left>
+        <top>490</top>
+        <width>184</width>
+        <height>30</height>
+        <label>Set to End of File</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5016</onleft>
+        <onright>5017</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5017">
+        <left>634</left>
+        <top>490</top>
+        <width>88</width>
+        <height>30</height>
+        <label>Create</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5030</onleft>
+        <onright>5023</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5023">
+        <left>724</left>
+        <top>490</top>
+        <width>222</width>
+        <height>30</height>
+        <label>Start at End of Segment</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5017</onleft>
+        <onright>5024</onright>
+        <ondown>5025</ondown>
+      </control>
+
+      <control type="button" id="5024">
+        <left>948</left>
+        <top>490</top>
+        <width>222</width>
+        <height>30</height>
+        <label>End at Start of Segment</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5018</onup>
+        <onleft>5023</onleft>
+        <ondown>5025</ondown>
+      </control>
+
+      <!-- Row 3: Action buttons -->
+      <control type="button" id="5025">
+        <left>2</left>
+        <top>530</top>
+        <width>118</width>
+        <height>30</height>
+        <label>Jump To</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onright>5005</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5005">
+        <left>122</left>
+        <top>530</top>
+        <width>268</width>
+        <height>30</height>
+        <label>Add Current + User Set Time</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5025</onleft>
+        <onright>5002</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5002">
+        <left>392</left>
+        <top>530</top>
+        <width>238</width>
+        <height>30</height>
+        <label>Manual Start + End Times</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5005</onleft>
+        <onright>5004</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5004">
+        <left>632</left>
+        <top>530</top>
+        <width>128</width>
+        <height>30</height>
+        <label>Delete All</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5002</onleft>
+        <onright>5040</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5040">
+        <left>762</left>
+        <top>530</top>
+        <width>98</width>
+        <height>30</height>
+        <label>Undo</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5004</onleft>
+        <onright>5026</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5026">
+        <left>862</left>
+        <top>530</top>
+        <width>112</width>
+        <height>30</height>
+        <label>Upload</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5040</onleft>
+        <onright>5006</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5006">
+        <left>976</left>
+        <top>530</top>
+        <width>96</width>
+        <height>30</height>
+        <label>Save</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5026</onleft>
+        <onright>5007</onright>
+        <ondown>5000</ondown>
+      </control>
+
+      <control type="button" id="5007">
+        <left>1074</left>
+        <top>530</top>
+        <width>94</width>
+        <height>30</height>
+        <label>Exit</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgd_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgd_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onup>5015</onup>
+        <onleft>5006</onleft>
+        <ondown>5000</ondown>
+      </control>
+    </control>
+  </controls>
+</window>
+

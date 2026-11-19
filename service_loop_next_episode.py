@@ -45,6 +45,8 @@ from next_episode_state import (
     LOOKUP_RUNNING,
     MIN_REPROMPT_S,
     TIMED_OUT,
+    AFTER_CREDITS,
+    AFTER_CREDITS_LEAD_S,
     NextEpisodeState,
     in_prompt_window,
     popup_span,
@@ -164,6 +166,10 @@ def _handle(
     if state.lookup != LOOKUP_FOUND:
         return IDLE_TICK
 
+    if not state.preloaded and state.next_item:
+        # The next episode is known long before its popup is due: have what the popup needs ready now.
+        state.preloaded = True
+        _preload_popup(addon, state.next_item)
     total = _total_time(ctx.player)
     _note_progress(state, current_time, total)
     lead = addon_get_int(addon, "next_episode_lead_seconds", 45, minimum=10, maximum=300)
@@ -196,6 +202,10 @@ def _handle(
 
     hide = addon_get_bool(addon, "next_episode_hide_skip_dialogs", True)
     held = NextEpisodeTick(due=True, hide_skip_dialogs=hide)
+    if state.after_credits and not (state.started or state.failed) and total and current_time >= total - AFTER_CREDITS_LEAD_S:
+        # Watch credits was chosen and they have run: on to the next episode
+        log("Next episode: the credits have run - playing it")
+        return NextEpisodeTick(due=True, hide_skip_dialogs=hide, switched=_start_next(monitor, state, addon, autoplayed=True))
     if state.started or state.dismissed or state.failed:
         return held
 
@@ -261,6 +271,11 @@ def _handle(
         if switched and per_show and show_mode is None and not autoplay and not ask_still_watching:
             _queue_remember(monitor, state)
         return NextEpisodeTick(due=True, hide_skip_dialogs=hide, switched=switched)
+    if answer == AFTER_CREDITS:
+        state.answered = True
+        state.dismissed = True  # no more prompts for this episode
+        state.after_credits = True
+        log("Next episode: watching the credits first")
     if answer is False:
         state.answered = True
         state.dismissed = True
@@ -398,13 +413,27 @@ def _chain_for(monitor) -> WatchChain:
     return chain
 
 
+def _preload_popup(addon, next_item) -> None:
+    """In the background: the drawn popup's code, fonts and design, the episodes of a Queue, and its pictures
+    into Kodi's picture cache. Nothing here may hold up playback or fail loudly."""
+    def work():
+        try:
+            import next_canvas_dialog
+
+            next_canvas_dialog.preload(addon, next_item)
+        except Exception as exc:
+            log("Next episode: preparing the popup ahead failed: %s" % exc)
+
+    threading.Thread(target=work, name="skippy-next-preload", daemon=True).start()
+
+
 def _credits_start(monitor, addon, total, state=None):
     """Where the Credits segment starts, when the setting asks for it and there is one.
 
     Without a Credits segment of Skippy's own, the time the video add-on asked for is used.
     Playback Skippy ignores has no segments: whatever the monitor holds belongs to an earlier video.
     """
-    if not addon_get_bool(addon, "next_episode_start_at_credits", False):
+    if not addon_get_bool(addon, "next_episode_start_at_credits", True):
         return None
     remote = bool(getattr(state, "remote", False))
     found = (

@@ -23,8 +23,7 @@
       <top>0</top>
       <width>1280</width>
       <height>720</height>
-      <texture>white.png</texture>
-      <colordiffuse>99000000</colordiffuse>
+      <texture border="0">ms_fgf_dim.png</texture>
     </control>
 
     <control type="group" id="7000">
@@ -38,8 +37,7 @@
         <top>0</top>
         <width>560</width>
         <height>634</height>
-        <texture>white.png</texture>
-        <colordiffuse>F2101418</colordiffuse>
+        <texture border="28">ms_fgf_panel.png</texture>
       </control>
 
       <control type="label" id="7002">
@@ -49,8 +47,8 @@
         <height>34</height>
         <label></label>
         <font>font12</font>
-        <textcolor>FFB0D4E8</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>left</align>
@@ -64,7 +62,7 @@
         <height>24</height>
         <label></label>
         <font>font10</font>
-        <textcolor>99FFFFFF</textcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
         <align>left</align>
         <aligny>center</aligny>
       </control>
@@ -76,8 +74,8 @@
         <height>96</height>
         <label></label>
         <font>font12</font>
-        <textcolor>FFFFFFFF</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>left</align>
@@ -102,7 +100,7 @@
             <top>0</top>
             <width>520</width>
             <height>40</height>
-            <texture border="0" colordiffuse="22FFFFFF">white.png</texture>
+            <texture border="14">ms_fgf_row.png</texture>
             <visible>!String.IsEqual(ListItem.Property(header),true)</visible>
           </control>
           <control type="label">
@@ -112,8 +110,8 @@
             <height>40</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
@@ -127,8 +125,8 @@
             <height>40</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
@@ -142,8 +140,8 @@
             <height>40</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>right</align>
@@ -156,8 +154,8 @@
             <height>32</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFB0D4E8</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
@@ -171,7 +169,7 @@
             <top>0</top>
             <width>520</width>
             <height>40</height>
-            <texture border="0" colordiffuse="22FFFFFF">white.png</texture>
+            <texture border="14">ms_fgf_row.png</texture>
             <visible>!String.IsEqual(ListItem.Property(header),true)</visible>
           </control>
           <control type="image">
@@ -179,7 +177,7 @@
             <top>0</top>
             <width>520</width>
             <height>40</height>
-            <texture border="12,12,12,12">button_focus_flat_teal.png</texture>
+            <texture border="14">ms_fgf_focus.png</texture>
             <visible>!String.IsEqual(ListItem.Property(header),true) + Control.HasFocus(7050)</visible>
           </control>
           <control type="label">
@@ -189,14 +187,29 @@
             <height>40</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
             <aligny>center</aligny>
             <scroll>true</scroll>
-            <visible>!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+            <visible>!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true) + !Control.HasFocus(7050)</visible>
+          </control>          <control type="label">
+            <left>14</left>
+            <top>0</top>
+            <width>340</width>
+            <height>40</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(ms_text_focus)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <scroll>true</scroll>
+            <visible>!String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true) + Control.HasFocus(7050)</visible>
           </control>
           <control type="label">
             <left>14</left>
@@ -205,14 +218,29 @@
             <height>40</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
             <aligny>center</aligny>
             <scroll>true</scroll>
-            <visible>String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true)</visible>
+            <visible>String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true) + !Control.HasFocus(7050)</visible>
+          </control>          <control type="label">
+            <left>14</left>
+            <top>0</top>
+            <width>492</width>
+            <height>40</height>
+            <label>$INFO[ListItem.Label]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(ms_text_focus)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <align>left</align>
+            <aligny>center</aligny>
+            <scroll>true</scroll>
+            <visible>String.IsEmpty(ListItem.Label2) + !String.IsEqual(ListItem.Property(header),true) + Control.HasFocus(7050)</visible>
           </control>
           <control type="label">
             <left>364</left>
@@ -221,12 +249,27 @@
             <height>40</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>right</align>
             <aligny>center</aligny>
+            <visible>!Control.HasFocus(7050)</visible>
+          </control>          <control type="label">
+            <left>364</left>
+            <top>0</top>
+            <width>142</width>
+            <height>40</height>
+            <label>$INFO[ListItem.Label2]</label>
+            <font>font12</font>
+            <textcolor>$INFO[Window.Property(ms_text_focus)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
+            <shadowoffsetx>1</shadowoffsetx>
+            <shadowoffsety>1</shadowoffsety>
+            <align>right</align>
+            <aligny>center</aligny>
+            <visible>Control.HasFocus(7050)</visible>
           </control>
           <control type="label">
             <left>2</left>
@@ -235,8 +278,8 @@
             <height>32</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font12</font>
-            <textcolor>FFB0D4E8</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <align>left</align>
@@ -267,7 +310,7 @@
         <height>26</height>
         <label></label>
         <font>font10</font>
-        <textcolor>99FFFFFF</textcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
         <align>left</align>
         <aligny>center</aligny>
       </control>
@@ -279,11 +322,11 @@
         <height>40</height>
         <label></label>
         <font>font12</font>
-        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
-        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <focusedcolor>FFFFFFFF</focusedcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>center</align>
@@ -300,11 +343,11 @@
         <height>40</height>
         <label></label>
         <font>font12</font>
-        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
-        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <focusedcolor>FFFFFFFF</focusedcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>center</align>
@@ -321,11 +364,11 @@
         <height>40</height>
         <label></label>
         <font>font12</font>
-        <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
-        <texturenofocus border="0" colordiffuse="22FFFFFF">white.png</texturenofocus>
-        <textcolor>FFFFFFFF</textcolor>
-        <focusedcolor>FFFFFFFF</focusedcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>center</align>

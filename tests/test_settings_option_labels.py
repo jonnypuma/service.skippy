@@ -25,6 +25,12 @@ NAME_SETTINGS = {
     "next_episode_popup_text_color",
     "next_episode_popup_heading_color",
     "online_upload_default_target",
+    "modal_style",
+    "skip_card_style",
+    "skip_dialog_layout",
+    "skip_layout_look",
+    "next_episode_popup_layout",
+    "next_episode_popup_layout_look",
 }
 
 

@@ -136,7 +136,7 @@ class ViewPlacementTests(unittest.TestCase):
     def test_every_control_of_a_full_popup_is_placed_once(self):
         placed = [p[0] for p in view.popup_placements(self.layout(), MOCK)]
         self.assertEqual(len(placed), len(set(placed)))
-        self.assertEqual(len(placed), 18)  # all but the panel group
+        self.assertEqual(len(placed), 19)  # all but the panel group
 
     def test_a_hidden_row_has_no_placement(self):
         no_thumb = [p[0] for p in view.popup_placements(self.layout(thumbnail=False), MOCK)]
@@ -566,6 +566,20 @@ class MockSkinTests(unittest.TestCase):
         self.assertEqual(x + _num(toast, "width") + 20, cust._STAGE_W)
         self.assertEqual(y, 20)
         self.assertLessEqual(y + _num(toast, "height"), cust._STAGE_H)
+
+
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
 
 
 if __name__ == "__main__":

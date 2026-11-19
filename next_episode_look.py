@@ -15,21 +15,38 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from typing import Optional
 
+import skip_dialog_card
+
 KEY_LOOK = "next_episode_popup_look"
 
 LOOK_DEFAULT = "Default"
 LOOK_SKIP_DIALOG = "SkipDialog"
 
 # The Full and Compact Full presets of the skip dialog, in its order. The Minimal ones only
-# choose a corner chip, which the popup has no use for. A test keeps this list in step with
-# skip_dialog_presets.
-PRESET_NAMES = (
+# choose a corner chip, which the popup has no use for. A test keeps these lists in step with
+# skip_dialog_presets. The looks of the skin Aeon Fuse come first; the presets of the versions
+# before 8.2.0 follow and are shown with "(legacy)" (their stored values stay as they were).
+FUSE_PRESET_NAMES = (
+    "Fused Glass Dark", "Fused Glass Frost", "Fused Glass Clear", "Fused Glass style", "Aeon",
+    "Aeon Glass", "Aeon Glass Fill", "Fused Glass Bare", "Aeon Bare", "Fused Glass Compact",
+    "Fused Glass style Compact", "Aeon Compact", "Aeon Glass Compact",
+)
+LEGACY_PRESET_NAMES = (
     "Classic", "Modern", "Stylish", "Colorful", "Vibrant", "Glass", "Outline", "Subtle",
     "Sleek", "Clean", "Mono", "Slate", "Gold", "Neon", "Neon Pink", "Frosted", "Steel",
     "Retro", "Segments", "Stripes", "Sunset", "Big & Bold", "Ghost", "Accessible", "Arcade",
     "Terminal", "Blueprint", "Lava", "Deep Sea", "Candy", "Noir", "Aurora", "Pill",
     "Underline",
 )
+PRESET_NAMES = FUSE_PRESET_NAMES + LEGACY_PRESET_NAMES
+LEGACY_SUFFIX = " (legacy)"
+
+
+def preset_label(name) -> str:
+    """The name the settings and the Customize screen show for a preset."""
+    # Every look of the popup of earlier versions is legacy, the Fuse ones too: they set only its options
+    # (the user, about the same names of the skip dialog: "they use legacy options only").
+    return (name + LEGACY_SUFFIX) if name in PRESET_NAMES else name
 
 
 def preset_token(name) -> str:
@@ -40,7 +57,7 @@ def preset_token(name) -> str:
 PRESET_TOKENS = {preset_token(name): name for name in PRESET_NAMES}
 LOOK_CHOICES = (LOOK_DEFAULT, LOOK_SKIP_DIALOG) + tuple(PRESET_TOKENS)
 LOOK_LABELS = {LOOK_DEFAULT: "Default", LOOK_SKIP_DIALOG: "Same as skip dialog"}
-LOOK_LABELS.update({token: name for token, name in PRESET_TOKENS.items()})
+LOOK_LABELS.update({token: preset_label(name) for token, name in PRESET_TOKENS.items()})
 
 BORDER_ALL = "all"  # nine-slice with a 12 px border all round
 BORDER_SIDES = "sides"  # 12 px on the left and right only (the 3D textures)
@@ -135,6 +152,9 @@ FOCUS_PAIRS = (
     ("Bracket White", "button_focus_bracket_white.png"),
     ("Bracket Cyan", "button_focus_bracket_cyan.png"),
     ("Bracket Green", "button_focus_bracket_green.png"),
+    ("Fuse Square", "button_focus_fuse_square.png"),
+    ("Fuse Glass", "button_focus_fuse_glass.png"),
+    ("Fuse Bar", "button_focus_fuse_bar.png"),
 )
 
 # The skip dialog"s progress bar styles (PROGRESS_STYLES).
@@ -175,6 +195,8 @@ BAR_PAIRS = (
     ("Striped Blue", "progress_mid_striped_blue.png"),
     ("Striped Orange", "progress_mid_striped_orange.png"),
     ("Gradient Gold", "progress_mid_grad_gold.png"),
+    ("Fuse Gold", "progress_mid_fuse_gold.png"),
+    ("Fuse White", "progress_mid_fuse_white.png"),
 )
 
 CAPS_PAIRS = ((CAPS_ON, CAPS_ON), (CAPS_OFF, CAPS_OFF))
@@ -221,13 +243,15 @@ def normalize_override(key, value) -> str:
 
 @dataclass(frozen=True)
 class PopupLook:
-    card_color: str  # AARRGGBB of the card behind the popup (alpha 00 means no card)
+    card_color: str  # AARRGGBB the card picture is drawn with (alpha 00 means no card)
     heading_color: str  # AARRGGBB of the "Play next episode?" line
     text_color: Optional[str]  # AARRGGBB, or None to follow the skip dialog font colour setting
     all_caps: bool
     focus_texture: str  # media file drawn behind the focused button
     focus_border: str  # BORDER_ALL / BORDER_SIDES / BORDER_NONE
     bar_texture: str  # progress_mid_*.png
+    card_style: str = skip_dialog_card.STYLE_FLAT  # the shape of the card (skip_dialog_card)
+    focus_text_color: Optional[str] = None  # AARRGGBB on the focused button; None = like the text
 
 
 # What the popup has always looked like.
@@ -251,15 +275,24 @@ def normalize_look(value) -> str:
     return LOOK_DEFAULT
 
 
-def card_color(enabled, opacity) -> str:
-    """AARRGGBB black for the card; no card at all when it is switched off."""
+def card_color(enabled, opacity, style=skip_dialog_card.STYLE_FLAT) -> str:
+    """AARRGGBB the card is drawn with: black on the flat card, plain fading on a card picture;
+    no card at all when it is switched off."""
     if not enabled:
         return "00000000"
+    return skip_dialog_card.diffuse(style, opacity)
+
+
+def is_dark(argb) -> bool:
+    """True for a colour too dark to read on the card (it is then meant for a white focus picture)."""
+    text = str(argb or "").strip()
+    if len(text) != 8:
+        return False
     try:
-        pct = max(0, min(100, int(opacity)))
-    except (TypeError, ValueError):
-        pct = 95
-    return "%02X000000" % int(round(pct * 255 / 100.0))
+        red, green, blue = int(text[2:4], 16), int(text[4:6], 16), int(text[6:8], 16)
+    except ValueError:
+        return False
+    return 0.299 * red + 0.587 * green + 0.114 * blue < 96
 
 
 def focus_border(filename) -> str:
@@ -281,10 +314,18 @@ def look_from_values(values) -> PopupLook:
     values = values or {}
     text = resolve_font_color_argb(values.get("skip_dialog_font_color"), fallback="FFFFFFFF")
     focus = (values.get("button_focus_style") or "").strip() or "button_focus.png"
+    style = skip_dialog_card.normalize(values.get(skip_dialog_card.SETTING_KEY))
+    # The skip dialog only has text on its button. A dark font colour is therefore the colour of
+    # the text on a white focus picture; on the card the popup keeps white text.
+    focus_text = text if is_dark(text) else None
+    if focus_text:
+        text = "FFFFFFFF"
     return PopupLook(
         card_color=card_color(
-            values.get("skip_card_enabled", True), values.get("skip_card_opacity", 95)
+            values.get("skip_card_enabled", True), values.get("skip_card_opacity", 95), style
         ),
+        card_style=style,
+        focus_text_color=focus_text,
         heading_color=text,
         text_color=text,
         all_caps=bool(values.get("skip_dialog_all_caps", False)),
@@ -317,6 +358,9 @@ def skip_dialog_values(addon) -> dict:
         ),
         "skip_card_opacity": addon_get_int(
             addon, "skip_card_opacity", BASE_LOOK["skip_card_opacity"], minimum=0, maximum=100
+        ),
+        "skip_card_style": addon_get_setting_text(
+            addon, "skip_card_style", BASE_LOOK["skip_card_style"]
         ),
     }
 
@@ -356,6 +400,7 @@ def look_with_overrides(look, values) -> PopupLook:
     focus = normalize_override(KEY_FOCUS_STYLE, values.get(KEY_FOCUS_STYLE))
     if focus != FOLLOW_LOOK:
         changes["focus_texture"] = focus
+        changes["focus_text_color"] = None  # the look's own focus text belongs to its own picture
         try:
             changes["focus_border"] = focus_border(focus)
         except Exception:
@@ -365,7 +410,7 @@ def look_with_overrides(look, values) -> PopupLook:
         changes["bar_texture"] = bar
     opacity = normalize_override(KEY_CARD_OPACITY, values.get(KEY_CARD_OPACITY))
     if opacity != FOLLOW_LOOK:
-        changes["card_color"] = card_color(True, int(opacity))
+        changes["card_color"] = card_color(True, int(opacity), look.card_style)
     return replace(look, **changes) if changes else look
 
 

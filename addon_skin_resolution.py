@@ -361,11 +361,15 @@ def _control_reported_width(ctrl) -> int | None:
 
 # Images (not groups): Full backdrop 3081, Minimal plate 3021. Editor list 5000.
 FULL_SKIP_PROBE_ID = 3081
+# The layout files (skip_layouts.py) carry an unseen image as wide as the card: 430 vs 645.
+SKIP_LAYOUT_PROBE_ID = 3290
 MINIMAL_SKIP_PROBE_ID = 3021
 EDITOR_LIST_PROBE_ID = 5000
 SEGMENT_TYPES_LIST_PROBE_ID = 5210
 # Next episode popup backdrop and Customize modal panel (widths 520/560 vs 780/840).
 NEXT_EPISODE_PROBE_ID = 5001
+# The popup layout files (next_layouts.py) carry an unseen image as wide as the popup: 520 vs 780.
+NEXT_LAYOUT_PROBE_ID = 5290
 NEXT_EPISODE_CUSTOMIZE_PROBE_ID = 6001
 SKIPPY_PANEL_PROBE_ID = 7001
 
@@ -377,12 +381,18 @@ def probe_control_ids_for_xml(xml_filename) -> tuple:
         return (MINIMAL_SKIP_PROBE_ID,)
     if name.startswith("skipdialog"):
         return (FULL_SKIP_PROBE_ID,)
+    if name.startswith("skipcanvas"):
+        return (3390,)
+    if name.startswith("skiplayout"):
+        return (SKIP_LAYOUT_PROBE_ID,)
     if name.startswith("segmenteditor"):
         return (EDITOR_LIST_PROBE_ID,)
     if name.startswith("segmenttypeseditor"):
         return (SEGMENT_TYPES_LIST_PROBE_ID,)
     if name.startswith("nextepisodedialog"):
         return (NEXT_EPISODE_PROBE_ID,)
+    if name.startswith("nextlayout"):
+        return (NEXT_LAYOUT_PROBE_ID,)
     if name.startswith("nextepisodecustomize"):
         return (NEXT_EPISODE_CUSTOMIZE_PROBE_ID,)
     if name.startswith("skippypanel"):

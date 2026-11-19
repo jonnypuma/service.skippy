@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Open the segment editor dialog (integrated in Skippy)."""
+import segment_editor_layout
+import skippy_modal_style
 import copy
 import json
 import os
@@ -247,23 +249,36 @@ def open_segment_editor(video_path=None):
         except Exception:
             pass
 
-        addon = get_addon()
-        dialog = SegmentEditorDialog(
-            "SegmentEditorDialog.xml",
-            addon.getAddonInfo("path"),
-            "default",
-            video_path=video_path,
-            segments=segments or [],
-            current_time=current_time,
-        )
-        try:
-            dialog.doModal()
-        except Exception as dialog_err:
-            log_error(f"Error creating/showing dialog: {dialog_err}")
-            import traceback
+        # The editor opens again when its panels are given another look (the Look row): a window takes its
+        # pictures from its file, so another look is another file. The work in hand goes with it.
+        carried = None
+        while True:
+            addon = get_addon()
+            layout = segment_editor_layout.current_layout(addon)
+            style = segment_editor_layout.style_for(layout, addon)
+            dialog = SegmentEditorDialog(
+                skippy_modal_style.xml_name(segment_editor_layout.xml_base(layout), style=style, addon=addon),
+                addon.getAddonInfo("path"),
+                "default",
+                video_path=video_path,
+                segments=(carried or {}).get("segments", segments or []),
+                current_time=current_time,
+                layout=layout,
+                style=style,
+                carried=carried,
+            )
+            try:
+                dialog.doModal()
+            except Exception as dialog_err:
+                log_error(f"Error creating/showing dialog: {dialog_err}")
+                import traceback
 
-            log_error(f"Traceback: {traceback.format_exc()}")
-            raise
+                log_error(f"Traceback: {traceback.format_exc()}")
+                raise
+            carried = getattr(dialog, "_reopen_with", None)
+            if not carried:
+                break
+            del dialog
 
         if dialog.segments_modified:
             log("Segments were modified, saving...")

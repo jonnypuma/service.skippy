@@ -71,12 +71,12 @@ class BuiltinTests(PresetTestCase):
         self.assertIsNone(sp.detect_preset(draft))
 
     def test_cycle_wraps(self):
-        names = [n for n, _ in sp.builtin_presets()]
+        listed = sp.list_presets()  # the drawn designs lead, the classic card's presets close the list
         draft = {}
-        sp.apply_preset(draft, dict(sp.builtin_presets())[names[-1]])
-        self.assertEqual(sp.cycle_preset(draft, 1)[0], names[0])
-        sp.apply_preset(draft, dict(sp.builtin_presets())[names[0]])
-        self.assertEqual(sp.cycle_preset(draft, -1)[0], names[-1])
+        sp.apply_preset(draft, listed[-1][1])
+        self.assertEqual(sp.cycle_preset(draft, 1)[0], listed[0][0])
+        sp.apply_preset(draft, listed[0][1])
+        self.assertEqual(sp.cycle_preset(draft, -1)[0], listed[-1][0])
 
 
 class UserPresetTests(PresetTestCase):

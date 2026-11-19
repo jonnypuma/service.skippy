@@ -168,6 +168,14 @@ def _parse_segments_with_deferred_probe(ctx: ServiceLoopBindings, video, current
         ctx.parse_and_process_segments(video, current_time, playback_type) or []
     )
     parse_elapsed_ms = int((time.time() - parse_started) * 1000)
+    if ctx.monitor.current_segments:
+        # Have the drawn skip dialog ready before its first segment comes: its code loaded, the skin's fonts read.
+        try:
+            import skip_canvas_dialog
+
+            skip_canvas_dialog.warm()
+        except Exception as exc:
+            log("⚠️ Skip dialog warm-up failed: %s" % exc)
     ctx.log_if_changed(
         "parsed_segments",
         "📦 Parsed %d segments for playback_type: %s"

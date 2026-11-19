@@ -128,7 +128,7 @@ class SkinStyleTests(unittest.TestCase):
         for res, _resolution, _factor in FACTORS:
             _root, ne = load("NextEpisodeCustomize.xml", res)
             expected = style(ne[str(ne_ui.ROW_IDS[ne_ui.KEY_STYLE])])
-            self.assertEqual(expected["focus"][0], "button_focus_flat_teal.png")
+            self.assertEqual(expected["focus"][0], "ms_fgf_focus.png")
             _root, _found, rows, _footers = skip_pane(res)
             self.assertEqual(len(rows), 25)
             for ctrl in rows:
@@ -258,7 +258,7 @@ class WindowTests(unittest.TestCase):
         win._draft["skip_card_opacity"] = 95
         win._draft["skip_card_enabled"] = True
         win._refresh_row_labels()
-        self.assertEqual((recs[ui.ID_CARD].label, recs[ui.ID_CARD].label2), ("Show card background", "Yes"))
+        self.assertEqual((recs[ui.ID_CARD].label, recs[ui.ID_CARD].label2), ("Card style", "Flat"))
         self.assertEqual((recs[ui.ID_OPACITY].label, recs[ui.ID_OPACITY].label2), ("Card opacity (%)", "95"))
         self.assertEqual((recs[ui.ID_PRESET].label, recs[ui.ID_PRESET].label2), ("Preset", "Custom"))
         self.assertEqual(

@@ -68,10 +68,13 @@ class ValueTests(unittest.TestCase):
         self.assertEqual(set(sl.LOOK_KEYS), {look_mod.KEY_LOOK, *look_mod.OVERRIDE_KEYS})
         self.assertEqual(len(sl.LOOK_KEYS), 7)
 
-    def test_the_snapshot_leaves_out_placement_and_behaviour(self):
+    def test_the_snapshot_leaves_out_placement_and_focus(self):
         shot = sl.snapshot(glass(**{app.KEY_POSITION: "TopLeft", app.KEY_THUMBNAIL: False,
                                     app.KEY_FOCUS: app.FOCUS_CLOSE}))
-        self.assertEqual(set(shot), set(sl.LOOK_KEYS))
+        # the design travels (layout, its look, the picture); where it sits and the focus do not
+        self.assertEqual(set(shot), set(sl.LOOK_KEYS + sl.DESIGN_KEYS) | {app.KEY_THUMBNAIL})
+        self.assertNotIn(app.KEY_POSITION, shot)
+        self.assertNotIn(app.KEY_FOCUS, shot)
         self.assertEqual(shot[look_mod.KEY_LOOK], "Glass")
         self.assertEqual(shot[look_mod.KEY_TEXT_COLOR], TEXT)
         self.assertEqual(shot[look_mod.KEY_BAR_STYLE], look_mod.FOLLOW_LOOK)
@@ -101,7 +104,7 @@ class ValueTests(unittest.TestCase):
             sl.builtin_look_name(sl.snapshot(draft(**{look_mod.KEY_LOOK: look_mod.LOOK_SKIP_DIALOG}))),
             "Same as skip dialog",
         )
-        self.assertEqual(sl.builtin_look_name(sl.snapshot(draft(**{look_mod.KEY_LOOK: "Glass"}))), "Glass")
+        self.assertEqual(sl.builtin_look_name(sl.snapshot(draft(**{look_mod.KEY_LOOK: "Glass"}))), "Glass (legacy)")
         self.assertIsNone(sl.builtin_look_name(sl.snapshot(glass())))
         self.assertIsNone(sl.builtin_look_name({}))
         self.assertIsNone(sl.builtin_look_name(None))
@@ -110,8 +113,12 @@ class ValueTests(unittest.TestCase):
         taken = sl.builtin_names()
         self.assertIn("default", taken)
         self.assertIn("same as skip dialog", taken)
+        # a legacy look is taken under its own name and under the name it is shown with
         self.assertIn("big & bold", taken)
-        self.assertEqual(len(taken), len(look_mod.LOOK_LABELS))
+        self.assertIn("big & bold (legacy)", taken)
+        self.assertIn("fused glass frost", taken)
+        self.assertIn("fused glass frost (legacy)", taken)
+        self.assertEqual(len(taken), len(look_mod.LOOK_LABELS) + len(look_mod.PRESET_NAMES))
 
     def test_applying_changes_the_look_parts_and_nothing_else(self):
         target = draft(**{app.KEY_POSITION: "TopLeft", app.KEY_PROGRESS: False,
@@ -136,12 +143,12 @@ class StoreTests(_ProfileTempDir):
         self.assertEqual(sl.save_user_look("Evening", glass()), (True, sl.SAVED))
         self.assertEqual(sl.load_user_looks(), {"Evening": sl.snapshot(glass())})
 
-    def test_the_file_holds_the_schema_and_only_the_look_parts(self):
+    def test_the_file_holds_the_schema_and_the_design(self):
         sl.save_user_look("Evening", glass(**{app.KEY_POSITION: "TopLeft"}))
         with open(self.path(), encoding="utf-8") as fh:
             data = json.load(fh)
         self.assertEqual(data["schema"], sl.USER_LOOKS_SCHEMA)
-        self.assertEqual(set(data["looks"]["Evening"]["values"]), set(sl.LOOK_KEYS))
+        self.assertEqual(set(data["looks"]["Evening"]["values"]), set(sl.LOOK_KEYS + sl.DESIGN_KEYS) | {app.KEY_THUMBNAIL})
 
     def test_the_file_is_written_with_a_backup_of_the_previous_one(self):
         with patch.object(sl, "write_json", return_value=True) as write:
@@ -440,7 +447,7 @@ class SaveFlowTests(_MenuBase):
     def test_a_look_that_is_a_built_in_one_is_not_saved_and_is_named(self):
         self.run_menu(draft(**{look_mod.KEY_LOOK: "Glass"}), select=(self.SAVE,))
         self.dialog.input.assert_not_called()
-        self.assertEqual(self.saved_ok(), ["This is the built-in look Glass."])
+        self.assertEqual(self.saved_ok(), ["This is the built-in look Glass (legacy)."])
         self.assertEqual(sl.load_user_looks(), {})
 
     def test_a_look_already_saved_is_not_saved_again_and_the_old_name_is_shown(self):
@@ -690,6 +697,20 @@ class StringsTests(unittest.TestCase):
             self.assertEqual(english[sid][1], default, sid)
         self.assertEqual(set(ui._DEFAULT_TEXT), set(self.IDS))
         self.assertEqual(english[47128][1], "Looks…")
+
+
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
 
 
 if __name__ == "__main__":

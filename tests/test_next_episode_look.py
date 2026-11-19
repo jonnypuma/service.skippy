@@ -48,7 +48,7 @@ class LookChoiceTests(unittest.TestCase):
         for token in look_mod.LOOK_CHOICES:
             self.assertEqual(look_mod.normalize_look(token), token)
         self.assertEqual(look_mod.preset_token("Big & Bold"), "BigBold")
-        self.assertEqual(look_mod.LOOK_LABELS["BigBold"], "Big & Bold")
+        self.assertEqual(look_mod.LOOK_LABELS["BigBold"], "Big & Bold (legacy)")
 
     def test_default_comes_first_and_is_the_default(self):
         self.assertEqual(look_mod.LOOK_CHOICES[0], look_mod.LOOK_DEFAULT)
@@ -267,11 +267,11 @@ class CustomizeLookTests(unittest.TestCase):
         draft = dict(app.DEFAULT_DRAFT)
         self.assertEqual(cust.value_text(None, draft, app.KEY_LOOK), "Default")
         draft[app.KEY_LOOK] = "NeonPink"
-        self.assertEqual(cust.value_text(None, draft, app.KEY_LOOK), "Neon Pink")
+        self.assertEqual(cust.value_text(None, draft, app.KEY_LOOK), "Neon Pink (legacy)")
 
     def test_the_look_row_sits_right_under_the_style_row(self):
         rows = app.customize_rows(app.DEFAULT_DRAFT)
-        self.assertEqual(rows[:2], [app.KEY_STYLE, app.KEY_LOOK])
+        self.assertEqual(rows[:3], [app.KEY_STYLE, app.KEY_LAYOUT, app.KEY_LOOK])
         self.assertNotIn(app.KEY_LOOK, app.customize_rows({app.KEY_STYLE: "Native"}))
 
     def test_nudging_walks_through_every_look_and_wraps(self):
@@ -487,11 +487,12 @@ class OverrideDialogTests(unittest.TestCase):
 
 
 class CustomizeOverrideTests(unittest.TestCase):
-    def test_the_custom_style_lists_fourteen_rows_in_the_skip_dialog_order(self):
+    def test_the_custom_style_lists_fifteen_rows_in_the_skip_dialog_order(self):
         self.assertEqual(
             app.customize_rows(app.DEFAULT_DRAFT),
             [
                 app.KEY_STYLE,
+                app.KEY_LAYOUT,
                 app.KEY_LOOK,
                 look_mod.KEY_TEXT_COLOR,
                 look_mod.KEY_HEADING_COLOR,
@@ -512,7 +513,7 @@ class CustomizeOverrideTests(unittest.TestCase):
         draft = dict(app.DEFAULT_DRAFT, **{app.KEY_PROGRESS: False})
         rows = app.customize_rows(draft)
         self.assertNotIn(look_mod.KEY_BAR_STYLE, rows)
-        self.assertEqual(len(rows), 13)
+        self.assertEqual(len(rows), 14)
         self.assertIn(look_mod.KEY_FOCUS_STYLE, rows)
 
     def test_the_toast_style_hides_every_override_row(self):
@@ -732,6 +733,20 @@ class OverrideSettingsTests(unittest.TestCase):
             text = open(os.path.join(langs, pack, "strings.po"), encoding="utf-8").read()
             for sid in range(47105, 47118):
                 self.assertIn('msgctxt "#%d"' % sid, text, (pack, sid))
+
+
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
 
 
 if __name__ == "__main__":

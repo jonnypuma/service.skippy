@@ -144,8 +144,8 @@ class DraftTests(unittest.TestCase):
         )
         custom = app.customize_rows(app.DEFAULT_DRAFT)
         self.assertEqual(custom[0], app.KEY_STYLE)
-        self.assertEqual(custom[1], app.KEY_LOOK)
-        self.assertEqual(len(custom), 14)
+        self.assertEqual(custom[1:3], [app.KEY_LAYOUT, app.KEY_LOOK])
+        self.assertEqual(len(custom), 15)
 
     def test_every_default_is_a_known_option(self):
         for key, options in app.CHOICE_KEYS.items():
@@ -378,9 +378,13 @@ class PopupSettingsTests(unittest.TestCase):
 
     def test_defaults_match_the_draft_defaults(self):
         found = self.settings()
+        import next_layouts
+
         for key, default in app.DEFAULT_DRAFT.items():
             stored = found[key].findtext("default")
             want = ("true" if default else "false") if key in app.BOOL_KEYS else default
+            # (this module pins the popup of earlier versions: the shipped default is the drawn Card)
+            want = {app.KEY_LAYOUT: next_layouts.DEFAULT_LAYOUT, app.KEY_LAYOUT_LOOK: next_layouts.DEFAULT_LOOK}.get(key, want)
             self.assertEqual(stored, want, key)
 
     def test_options_match_the_choice_lists(self):
@@ -569,7 +573,12 @@ class CustomizeHelperTests(unittest.TestCase):
 
     def test_value_text(self):
         with patch.object(cust, "get_localized", lambda a, i, d, *r: d):
-            self.assertEqual(cust.value_text(None, app.DEFAULT_DRAFT, app.KEY_THUMBNAIL), "Yes")
+            # the picture row says which picture, and No when it is off
+            self.assertEqual(cust.value_text(None, app.DEFAULT_DRAFT, app.KEY_THUMBNAIL), "Episode picture")
+            poster = dict(app.DEFAULT_DRAFT, **{app.KEY_PICTURE: app.PICTURE_POSTER})
+            self.assertEqual(cust.value_text(None, poster, app.KEY_THUMBNAIL), "Poster")
+            off = dict(poster, **{app.KEY_THUMBNAIL: False})
+            self.assertEqual(cust.value_text(None, off, app.KEY_THUMBNAIL), "No")
             self.assertEqual(cust.value_text(None, {app.KEY_COUNTDOWN: False}, app.KEY_COUNTDOWN), "No")
             self.assertEqual(cust.value_text(None, {app.KEY_STYLE: "Native"}, app.KEY_STYLE), "Native toast")
             self.assertEqual(cust.value_text(None, {app.KEY_POSITION: "TopLeft"}, app.KEY_POSITION), "Top Left")
@@ -765,6 +774,20 @@ class DialogBehaviourTests(unittest.TestCase):
         self.assertEqual((episode["season"], episode["episode"]), (1, 2))
         self.assertEqual(episode["title"], "Episode title")
         self.assertTrue(episode["thumb"].endswith("fanart.png"))
+
+
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
 
 
 if __name__ == "__main__":

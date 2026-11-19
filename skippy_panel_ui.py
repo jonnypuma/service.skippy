@@ -10,6 +10,7 @@ grey editor dialogs (``skippy_editor_modal_skin``) are the fallback, then Kodi's
 
 from __future__ import annotations
 
+import skippy_modal_style
 from dataclasses import dataclass
 
 import xbmcgui
@@ -171,6 +172,7 @@ def first_selectable(rows, start=0) -> int:
 
 class SkippyPanel(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skippy_modal_style.apply(self)  # before the window shows
         self._skin_resolution = init_window_xml_dialog(super(SkippyPanel, self), args)
         self._xml_layout = args[0] if args else XML_NAME
         self.addon = kwargs.get("addon") or get_addon()
@@ -227,6 +229,7 @@ class SkippyPanel(xbmcgui.WindowXMLDialog):
 
     def onInit(self):
         self.opened = True
+        skippy_modal_style.apply(self)
         asked = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
             self, asked, control_ids=probe_control_ids_for_xml(self._xml_layout)
@@ -419,7 +422,7 @@ def show_panel(
     if not addon:
         raise RuntimeError("no add-on")
     dialog = SkippyPanel(
-        XML_NAME,
+        skippy_modal_style.xml_name(XML_NAME, addon=addon),
         addon.getAddonInfo("path"),
         "default",
         addon=addon,

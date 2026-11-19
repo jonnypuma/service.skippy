@@ -1,0 +1,3133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>4140</defaultcontrol>
+  <animation type="WindowOpen">
+    <effect type="fade" start="0" end="100" time="200" />
+  </animation>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="200" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left><top>0</top>
+      <width>1280</width><height>720</height>
+      <texture border="0">ms_agl_dim.png</texture>
+    </control>
+
+    <control type="group" id="4080">
+      <left>16</left><top>16</top>
+      <width>500</width><height>688</height>
+      <control type="image" id="4081">
+        <left>0</left><top>0</top>
+        <width>500</width><height>688</height>
+        <texture border="28">ms_agl_panel.png</texture>
+      </control>
+      <control type="label" id="4090">
+        <left>16</left><top>12</top>
+        <width>230</width><height>32</height>
+        <label>Customize skip dialog</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <!-- onup/ondown/onleft/onright self-bound: Python owns navigation (avoids double-jump). -->
+      <control type="button" id="4100">
+        <left>16</left><top>52</top><width>468</width><height>30</height>
+        <label>Skip dialog mode</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4100</onup><ondown>4100</ondown><onleft>4100</onleft><onright>4100</onright>
+      </control>
+      <control type="button" id="4140">
+        <left>16</left><top>52</top><width>468</width><height>30</height>
+        <label>Preset</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4140</onup><ondown>4140</ondown><onleft>4140</onleft><onright>4140</onright>
+      </control>
+      <control type="button" id="4143">
+        <left>250</left><top>12</top><width>234</width><height>30</height>
+        <label>Preview type</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4143</onup><ondown>4143</ondown><onleft>4143</onleft><onright>4143</onright>
+      </control>
+      <control type="button" id="4141">
+        <left>16</left><top>52</top><width>468</width><height>30</height>
+        <label>Card style</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4141</onup><ondown>4141</ondown><onleft>4141</onleft><onright>4141</onright>
+      </control>
+      <control type="button" id="4142">
+        <left>16</left><top>52</top><width>468</width><height>30</height>
+        <label>Card opacity (%)</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4142</onup><ondown>4142</ondown><onleft>4142</onleft><onright>4142</onright>
+      </control>
+      <control type="button" id="4101">
+        <left>16</left><top>86</top><width>468</width><height>30</height>
+        <label>Hide ending text</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4101</onup><ondown>4101</ondown><onleft>4101</onleft><onright>4101</onright>
+      </control>
+      <control type="button" id="4102">
+        <left>16</left><top>120</top><width>468</width><height>30</height>
+        <label>Font color</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4102</onup><ondown>4102</ondown><onleft>4102</onleft><onright>4102</onright>
+      </control>
+      <control type="button" id="4104">
+        <left>16</left><top>154</top><width>468</width><height>30</height>
+        <label>Skip dialog text in ALL CAPS</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4104</onup><ondown>4104</ondown><onleft>4104</onleft><onright>4104</onright>
+      </control>
+
+      <control type="button" id="4103">
+        <left>16</left><top>154</top><width>468</width><height>30</height>
+        <label>Ignore overlapping</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4103</onup><ondown>4103</ondown><onleft>4103</onleft><onright>4103</onright>
+      </control>
+      <control type="label" id="4110">
+        <left>16</left><top>194</top><width>468</width><height>24</height>
+        <label>Full mode</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+      </control>
+      <control type="button" id="4111">
+        <left>16</left><top>218</top><width>468</width><height>30</height>
+        <label>Show progress bar</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4111</onup><ondown>4111</ondown><onleft>4111</onleft><onright>4111</onright>
+      </control>
+      <control type="button" id="4112">
+        <left>16</left><top>252</top><width>468</width><height>30</height>
+        <label>Progress countdown</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4112</onup><ondown>4112</ondown><onleft>4112</onleft><onright>4112</onright>
+      </control>
+      <control type="button" id="4114">
+        <left>16</left><top>286</top><width>468</width><height>30</height>
+        <label>Progress bar style</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4114</onup><ondown>4114</ondown><onleft>4114</onleft><onright>4114</onright>
+      </control>
+      <control type="button" id="4113">
+        <left>16</left><top>320</top><width>468</width><height>30</height>
+        <label>Progress bar height</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4113</onup><ondown>4113</ondown><onleft>4113</onleft><onright>4113</onright>
+      </control>
+      <control type="button" id="4115">
+        <left>16</left><top>354</top><width>468</width><height>30</height>
+        <label>Skip dialog position</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4115</onup><ondown>4115</ondown><onleft>4115</onleft><onright>4115</onright>
+      </control>
+      <control type="button" id="4116">
+        <left>16</left><top>388</top><width>468</width><height>30</height>
+        <label>Button focus style</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4116</onup><ondown>4116</ondown><onleft>4116</onleft><onright>4116</onright>
+      </control>
+      <control type="button" id="4117">
+        <left>16</left><top>422</top><width>468</width><height>30</height>
+        <label>Skip button format</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4117</onup><ondown>4117</ondown><onleft>4117</onleft><onright>4117</onright>
+      </control>
+      <control type="button" id="4121">
+        <left>16</left><top>456</top><width>468</width><height>30</height>
+        <label>Combined skip and progress</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4121</onup><ondown>4121</ondown><onleft>4121</onleft><onright>4121</onright>
+      </control>
+      <control type="button" id="4122">
+        <left>16</left><top>456</top><width>468</width><height>30</height>
+        <label>Skip duration format</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
+        <onup>4122</onup><ondown>4122</ondown><onleft>4122</onleft><onright>4122</onright>
+      </control>
+      <control type="button" id="4123">
+        <left>16</left><top>456</top><width>468</width><height>30</height>
+        <label>Skip duration content</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_duration),true)</visible>
+        <onup>4123</onup><ondown>4123</ondown><onleft>4123</onleft><onright>4123</onright>
+      </control>
+      <control type="button" id="4118">
+        <left>16</left><top>456</top><width>468</width><height>30</height>
+        <label>Hide close button</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4118</onup><ondown>4118</ondown><onleft>4118</onleft><onright>4118</onright>
+      </control>
+      <control type="button" id="4120">
+        <left>16</left><top>490</top><width>468</width><height>30</height>
+        <label>Hide Skip and Close Icons</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Full)</visible>
+        <onup>4120</onup><ondown>4120</ondown><onleft>4120</onleft><onright>4120</onright>
+      </control>
+      <control type="button" id="4119">
+        <left>16</left><top>524</top><width>468</width><height>30</height>
+        <label>Show skip button focus frame</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal) + String.IsEqual(Window.Property(skippy_customize_hide_close),true) + !String.IsEqual(Window.Property(skippy_combined),true)</visible>
+        <onup>4119</onup><ondown>4119</ondown><onleft>4119</onleft><onright>4119</onright>
+      </control>
+      <control type="label" id="4130">
+        <left>16</left><top>194</top><width>468</width><height>24</height>
+        <label>Minimal mode</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+      </control>
+      <control type="button" id="4131">
+        <left>16</left><top>218</top><width>468</width><height>30</height>
+        <label>Minimal plate style</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4131</onup><ondown>4131</ondown><onleft>4131</onleft><onright>4131</onright>
+      </control>
+      <control type="button" id="4132">
+        <left>16</left><top>252</top><width>468</width><height>30</height>
+        <label>Minimal skip label format</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4132</onup><ondown>4132</ondown><onleft>4132</onleft><onright>4132</onright>
+      </control>
+      <control type="button" id="4133">
+        <left>16</left><top>286</top><width>468</width><height>30</height>
+        <label>Minimal skip dialog position</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <onup>4133</onup><ondown>4133</ondown><onleft>4133</onleft><onright>4133</onright>
+      </control>
+      <control type="button" id="4190">
+        <left>16</left><top>632</top><width>229</width><height>40</height>
+        <label>Save</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>4190</onup><ondown>4190</ondown><onleft>4190</onleft><onright>4190</onright>
+      </control>
+      <control type="button" id="4191">
+        <left>255</left><top>632</top><width>229</width><height>40</height>
+        <label>Cancel</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <shadowoffsetx>1</shadowoffsetx>
+        <shadowoffsety>1</shadowoffsety>
+        <align>center</align>
+        <aligny>center</aligny>
+        <onup>4191</onup><ondown>4191</ondown><onleft>4191</onleft><onright>4191</onright>
+      </control>
+    </control>
+
+    <control type="group" id="4072">
+      <left>528</left><top>16</top>
+      <width>736</width><height>688</height>
+      <control type="image" id="4071">
+        <left>0</left><top>0</top>
+        <width>736</width><height>552</height>
+        <texture>white.png</texture>
+        <colordiffuse>FF202020</colordiffuse>
+        <aspectratio>scale</aspectratio>
+      </control>
+
+      <control type="group" id="3080">
+        <posx>298</posx>
+        <posy>444</posy>
+        <width>430</width>
+        <height>100</height>
+        <visible>!String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <control type="image" id="3081">
+          <left>0</left><top>0</top>
+          <width>430</width><height>100</height>
+          <texture>white.png</texture>
+          <colordiffuse>F0000000</colordiffuse>
+        </control>
+        <control type="image" id="3084">
+          <left>0</left><top>0</top>
+          <width>430</width><height>100</height>
+          <texture border="20">$INFO[Window.Property(skip_card_texture)]</texture>
+          <colordiffuse>FFFFFFFF</colordiffuse>
+          <visible>!String.IsEmpty(Window.Property(skip_card_texture))</visible>
+        </control>
+        <control type="image" id="3040">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_narrow),true) + !String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3042">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_narrow),true) + String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3041">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_wide),true) + !String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3043">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_mock_focus)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_mock_focus_wide),true) + String.IsEqual(Window.Property(skippy_mock_focus_slice),true)</visible>
+        </control>
+        <control type="image" id="3050">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <colordiffuse>66FFFFFF</colordiffuse>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3053">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <colordiffuse>66FFFFFF</colordiffuse>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3051">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture>$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + !String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="image" id="3052">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <texture border="12,0,12,0">$INFO[Window.Property(skippy_combined_fill)]</texture>
+          <visible>String.IsEqual(Window.Property(skippy_combined),true) + String.IsEqual(Window.Property(skippy_combined_slice),true)</visible>
+        </control>
+        <control type="label" id="3012">
+          <left>35</left><top>10</top>
+          <width>290</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+        </control>
+        <control type="label" id="3015">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="label" id="3016">
+          <left>5</left><top>10</top>
+          <width>420</width><height>25</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>String.IsEqual(Window.Property(hide_close_button),true) + String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="label" id="3013">
+          <left>345</left><top>10</top>
+          <width>80</width><height>25</height>
+          <label>Close</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true)</visible>
+        </control>
+        <control type="image">
+          <left>10</left><top>13</top>
+          <width>20</width><height>20</height>
+          <texture>icon_skip.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="image" id="3083">
+          <left>325</left><top>13</top>
+          <width>20</width><height>20</height>
+          <texture>icon_close.png</texture>
+          <visible>!String.IsEqual(Window.Property(hide_close_button),true) + !String.IsEqual(Window.Property(hide_skip_icon),true)</visible>
+        </control>
+        <control type="label" id="3011">
+          <left>5</left><top>41</top>
+          <width>420</width><height>20</height>
+          <label>$INFO[Window.Property(next_jump_label)]</label>
+          <font>font11</font>
+          <textcolor>FFB0D4E8</textcolor>
+          <shadowcolor>FF000000</shadowcolor>
+          <align>left</align>
+          <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+        </control>
+        <control type="label" id="2">
+          <left>5</left><top>66</top>
+          <width>420</width><height>20</height>
+          <label>$INFO[Window.Property(ending_text)] $INFO[Window.Property(countdown)]</label>
+          <font>font10</font>
+          <textcolor>FFFFFFFF</textcolor>
+          <align>left</align>
+          <visible>!String.IsEqual(Window.Property(hide_ending_text),true)</visible>
+        </control>
+        <control type="progress" id="3014">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <reveal>true</reveal>
+          <texturebg>progress_background.png</texturebg>
+          <midtexture>$INFO[Window.Property(skippy_progress_mid)]</midtexture>
+          <orientation>horizontal</orientation>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + !String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        </control>
+        <control type="image" id="3030">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <texture>progress_background.png</texture>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true)</visible>
+        </control>
+        <control type="image" id="3031">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <texture>$INFO[Window.Property(skippy_progress_mid)]</texture>
+          <aspectratio>stretch</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true) + !String.IsEqual(Window.Property(skippy_bar_tiled),true)</visible>
+        </control>
+        <control type="image" id="3032">
+          <left>5</left><top>90</top>
+          <width>420</width><height>16</height>
+          <texture>$INFO[Window.Property(skippy_progress_mid_tiled)]</texture>
+          <aspectratio align="left" aligny="center">scale</aspectratio>
+          <visible>String.IsEqual(Window.Property(skippy_progress_ready),true) + String.IsEqual(Window.Property(skippy_smooth_bar),true) + String.IsEqual(Window.Property(skippy_bar_tiled),true)</visible>
+        </control>
+      </control>
+
+      <control type="group" id="5090">
+        <posx>608</posx>
+        <posy>498</posy>
+        <width>120</width>
+        <height>46</height>
+        <visible>String.IsEqual(Window.Property(skippy_customize_mode),Minimal)</visible>
+        <control type="image" id="5021">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <texture>$INFO[Window.Property(skippy_minimal_plate)]</texture>
+          <aspectratio>stretch</aspectratio>
+        </control>
+        <control type="image" id="5040">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <texture>$INFO[Window.Property(skippy_minimal_plate)]</texture>
+          <aspectratio>stretch</aspectratio>
+        </control>
+        <control type="label" id="5012">
+          <left>0</left><top>0</top>
+          <width>120</width><height>46</height>
+          <label>Skip</label>
+          <font>font16</font>
+          <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
+          <align>center</align>
+          <aligny>center</aligny>
+        </control>
+      </control>
+      <!-- SKIP-LAYOUT-PREVIEW-BEGIN (tools/gen_skip_layouts.py) -->
+      <control type="button" id="4145">
+        <left>0</left>
+        <top>566</top>
+        <width>356</width>
+        <height>30</height>
+        <label>Skip dialog layout</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4145</onup>
+        <ondown>4145</ondown>
+        <onleft>4145</onleft>
+        <onright>4145</onright>
+      </control>
+      <control type="button" id="4146">
+        <left>364</left>
+        <top>566</top>
+        <width>356</width>
+        <height>30</height>
+        <label>Layout look</label>
+        <font>font12</font>
+        <texturefocus border="14">ms_agl_focus.png</texturefocus>
+        <texturenofocus border="14">ms_agl_row.png</texturenofocus>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <shadowcolor>00000000</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <textoffsetx>14</textoffsetx>
+        <onup>4146</onup>
+        <ondown>4146</ondown>
+        <onleft>4146</onleft>
+        <onright>4146</onright>
+      </control>
+      <control type="group" id="20990">
+        <left>0</left>
+        <top>68</top>
+        <width>1280</width>
+        <height>720</height>
+        <animation effect="zoom" start="56" end="56" center="0,68" time="0" condition="true">Conditional</animation>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>720</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>16FFFFFF</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(skl_mock))</visible>
+      </control>
+      <control type="image" id="20991">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture border="24">$INFO[Window.Property(skl_overlay9)]</texture>
+        <visible>!String.IsEmpty(Window.Property(skl_mock)) + !String.IsEmpty(Window.Property(skl_overlay9))</visible>
+      </control>
+      <control type="image" id="20992">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(skl_overlay)]</texture>
+        <visible>!String.IsEmpty(Window.Property(skl_mock)) + !String.IsEmpty(Window.Property(skl_overlay))</visible>
+      </control>
+      <control type="image" id="23370">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_back_p)]</texture>
+        <aspectratio>scale</aspectratio>
+        <visible>!String.IsEmpty(Window.Property(cv_back_p))</visible>
+      </control>
+      <control type="image" id="23371">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_back_shade_p)]</texture>
+        <visible>!String.IsEmpty(Window.Property(cv_back_shade_p))</visible>
+      </control>
+      <control type="image" id="23301">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture border="30">$INFO[Window.Property(cv_overlay9_p)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_overlay9_p_c)]</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(cv_overlay9_p))</visible>
+      </control>
+      <control type="image" id="23302">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_overlay_p)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_overlay_p_c)]</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(cv_overlay_p))</visible>
+      </control>
+      <control type="group" id="23391">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>720</height>
+        <control type="image" id="23303">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_p))</visible>
+        </control>
+        <control type="image" id="23320">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow_2_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_2_p))</visible>
+        </control>
+        <control type="image" id="23321">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow_3_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_3_p))</visible>
+        </control>
+        <control type="image" id="23322">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s_p))</visible>
+        </control>
+        <control type="image" id="23323">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s2_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s2_p))</visible>
+        </control>
+        <control type="image" id="23324">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s3_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s3_p))</visible>
+        </control>
+        <control type="image" id="23304">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30">$INFO[Window.Property(cv_plate_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_p))</visible>
+        </control>
+        <control type="image" id="23305">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30">$INFO[Window.Property(cv_plate2_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate2_p))</visible>
+        </control>
+        <control type="image" id="23312">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="28">$INFO[Window.Property(cv_plate_c_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_c_p))</visible>
+        </control>
+        <control type="image" id="23313">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="24">$INFO[Window.Property(cv_plate_m_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_m_p))</visible>
+        </control>
+        <control type="image" id="23319">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="5">$INFO[Window.Property(cv_plate_h_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_h_p))</visible>
+        </control>
+        <control type="image" id="23384">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30,30,0,30">$INFO[Window.Property(cv_fill_c_p)]</texture>
+          <colordiffuse>$INFO[Window.Property(cv_fill_c_p_c)]</colordiffuse>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_c_p))</visible>
+        </control>
+        <control type="image" id="23385">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_c.png">$INFO[Window.Property(cv_pic_card_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_card_p))</visible>
+        </control>
+        <control type="image" id="23386">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_ch.png">$INFO[Window.Property(cv_pic_card_h_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_card_h_p))</visible>
+        </control>
+        <control type="image" id="23306">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box_p))</visible>
+        </control>
+        <control type="image" id="23307">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="9">$INFO[Window.Property(cv_chip_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_chip_p))</visible>
+        </control>
+        <control type="image" id="23314">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box2_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box2_p))</visible>
+        </control>
+        <control type="image" id="23315">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box3_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box3_p))</visible>
+        </control>
+        <control type="image" id="23316">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_outline_p)]</texture>
+          <colordiffuse>$INFO[Window.Property(cv_outline_p_c)]</colordiffuse>
+          <visible>!String.IsEmpty(Window.Property(cv_outline_p))</visible>
+        </control>
+        <control type="image" id="23372">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_p))</visible>
+        </control>
+        <control type="image" id="23373">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_s.png">$INFO[Window.Property(cv_pic_s_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_s_p))</visible>
+        </control>
+        <control type="image" id="23374">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic_h_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_h_p))</visible>
+        </control>
+        <control type="image" id="23376">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic2_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic2_p))</visible>
+        </control>
+        <control type="image" id="23377">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic3_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic3_p))</visible>
+        </control>
+        <control type="image" id="23380">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic2_h_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic2_h_p))</visible>
+        </control>
+        <control type="image" id="23381">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic3_h_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic3_h_p))</visible>
+        </control>
+        <control type="image" id="23382">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_p.png">$INFO[Window.Property(cv_pic_po_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_po_p))</visible>
+        </control>
+        <control type="image" id="23383">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic_po_h_p)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_po_h_p))</visible>
+        </control>
+        <control type="image" id="23375">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_logo_p)]</texture>
+          <aspectratio align="left" aligny="bottom">keep</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_logo_p))</visible>
+        </control>
+        <control type="image" id="23309">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_skip_on_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_skip_on_p))</visible>
+        </control>
+        <control type="image" id="23310">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_close_off_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_close_off_p))</visible>
+        </control>
+        <control type="image" id="23378">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_more_off_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_more_off_p))</visible>
+        </control>
+        <control type="image" id="23317">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="19,0,19,19">$INFO[Window.Property(cv_fill_v_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_v_p))</visible>
+        </control>
+        <control type="image" id="23318">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="25,0,0,0">$INFO[Window.Property(cv_fill_h_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_h_p))</visible>
+        </control>
+        <control type="image" id="23325">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="11,0,0,0">$INFO[Window.Property(cv_fill_b_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_b_p))</visible>
+        </control>
+        <control type="image" id="23326">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20,0,0,0">$INFO[Window.Property(cv_fill_p_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_p_p))</visible>
+        </control>
+      </control>
+      <control type="group" id="21000">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>122</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Slab)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>122</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21031">
+        <left>0</left>
+        <top>0</top>
+        <width>0</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>14</top>
+        <width>300</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>320</left>
+        <top>14</top>
+        <width>180</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>32</top>
+        <width>480</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>58</top>
+        <width>480</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>12</left>
+        <top>84</top>
+        <width>340</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>84</top>
+        <width>340</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>360</left>
+        <top>84</top>
+        <width>148</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>360</left>
+        <top>84</top>
+        <width>148</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="21100">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>44</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_SlabCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21131">
+        <left>0</left>
+        <top>0</top>
+        <width>0</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>12</top>
+        <width>250</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>276</left>
+        <top>10</top>
+        <width>180</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>276</left>
+        <top>10</top>
+        <width>180</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>464</left>
+        <top>10</top>
+        <width>44</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>464</left>
+        <top>10</top>
+        <width>44</width>
+        <height>28</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="21200">
+        <left>0</left>
+        <top>0</top>
+        <width>470</width>
+        <height>166</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Dial)</visible>
+      <control type="image">
+        <left>-18</left>
+        <top>-18</top>
+        <width>506</width>
+        <height>202</height>
+        <texture border="40">sl_shade.png</texture>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>14</top>
+        <width>92</width>
+        <height>92</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21240">
+        <left>16</left>
+        <top>14</top>
+        <width>92</width>
+        <height>92</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>44</top>
+        <width>92</width>
+        <height>32</height>
+        <label>[B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>124</left>
+        <top>20</top>
+        <width>330</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]  $INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>124</left>
+        <top>40</top>
+        <width>330</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>124</left>
+        <top>68</top>
+        <width>330</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>122</top>
+        <width>300</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>122</top>
+        <width>300</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>324</left>
+        <top>122</top>
+        <width>130</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>324</left>
+        <top>122</top>
+        <width>130</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="21300">
+        <left>0</left>
+        <top>0</top>
+        <width>312</width>
+        <height>64</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_DialCompact)</visible>
+      <control type="image">
+        <left>-18</left>
+        <top>-18</top>
+        <width>348</width>
+        <height>100</height>
+        <texture border="40">sl_shade.png</texture>
+      </control>
+      <control type="image">
+        <left>10</left>
+        <top>8</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21340">
+        <left>10</left>
+        <top>8</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>10</left>
+        <top>22</top>
+        <width>48</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_seconds)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>70</left>
+        <top>18</top>
+        <width>180</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>70</left>
+        <top>18</top>
+        <width>180</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>258</left>
+        <top>18</top>
+        <width>44</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>258</left>
+        <top>18</top>
+        <width>44</width>
+        <height>28</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="21400">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>150</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Band)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>150</height>
+        <texture>sl_band.png</texture>
+        <visible>!String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>150</height>
+        <texture>sl_band_top.png</texture>
+        <visible>String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>54</top>
+        <width>700</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]  $INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>72</top>
+        <width>700</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font16</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>100</top>
+        <width>700</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>794</left>
+        <top>84</top>
+        <width>300</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>794</left>
+        <top>84</top>
+        <width>300</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>1102</left>
+        <top>84</top>
+        <width>130</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>1102</left>
+        <top>84</top>
+        <width>130</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>48</left>
+        <top>126</top>
+        <width>1184</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21431">
+        <left>48</left>
+        <top>126</top>
+        <width>0</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="21500">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>96</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_BandCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>96</height>
+        <texture>sl_band.png</texture>
+        <visible>!String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>96</height>
+        <texture>sl_band_top.png</texture>
+        <visible>String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>28</top>
+        <width>700</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>52</top>
+        <width>700</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>934</left>
+        <top>38</top>
+        <width>250</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>934</left>
+        <top>38</top>
+        <width>250</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>1192</left>
+        <top>38</top>
+        <width>40</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>1192</left>
+        <top>38</top>
+        <width>40</width>
+        <height>28</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>48</left>
+        <top>76</top>
+        <width>1184</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21531">
+        <left>48</left>
+        <top>76</top>
+        <width>0</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="21600">
+        <left>0</left>
+        <top>0</top>
+        <width>470</width>
+        <height>150</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Float)</visible>
+      <control type="label">
+        <left>0</left>
+        <top>4</top>
+        <width>470</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]  $INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>0</left>
+        <top>24</top>
+        <width>470</width>
+        <height>40</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font30</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>0</left>
+        <top>70</top>
+        <width>470</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>150</left>
+        <top>110</top>
+        <width>112</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>150</left>
+        <top>110</top>
+        <width>112</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>270</left>
+        <top>110</top>
+        <width>200</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>270</left>
+        <top>110</top>
+        <width>200</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>280</left>
+        <top>113</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21640">
+        <left>280</left>
+        <top>113</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_text)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="21700">
+        <left>0</left>
+        <top>0</top>
+        <width>330</width>
+        <height>40</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_FloatCompact)</visible>
+      <control type="label">
+        <left>0</left>
+        <top>4</top>
+        <width>120</width>
+        <height>32</height>
+        <label>[B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font16</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>130</left>
+        <top>6</top>
+        <width>200</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>130</left>
+        <top>6</top>
+        <width>200</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>140</left>
+        <top>9</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_track)]</colordiffuse>
+      </control>
+      <control type="image" id="21740">
+        <left>140</left>
+        <top>9</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_text)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="21800">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>104</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Split)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>308</width>
+        <height>104</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>14</top>
+        <width>276</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]  $INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>36</top>
+        <width>276</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>66</top>
+        <width>276</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>316</left>
+        <top>0</top>
+        <width>140</width>
+        <height>104</height>
+        <texture border="20">$INFO[Window.Property(skl_tile)]</texture>
+      </control>
+      <control type="image" id="21831">
+        <left>324</left>
+        <top>8</top>
+        <width>0</width>
+        <height>0</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_tile_fill)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>316</left>
+        <top>0</top>
+        <width>140</width>
+        <height>104</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font16</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>464</left>
+        <top>0</top>
+        <width>56</width>
+        <height>104</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>464</left>
+        <top>0</top>
+        <width>56</width>
+        <height>104</height>
+        <label>X</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="21900">
+        <left>0</left>
+        <top>0</top>
+        <width>420</width>
+        <height>44</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_SplitCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>188</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>10</top>
+        <width>164</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_kicker)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>196</left>
+        <top>0</top>
+        <width>172</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_tile)]</texture>
+      </control>
+      <control type="image" id="21931">
+        <left>204</left>
+        <top>8</top>
+        <width>0</width>
+        <height>0</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_tile_fill)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>196</left>
+        <top>0</top>
+        <width>172</width>
+        <height>44</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>376</left>
+        <top>0</top>
+        <width>44</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>376</left>
+        <top>0</top>
+        <width>44</width>
+        <height>44</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22000">
+        <left>0</left>
+        <top>0</top>
+        <width>640</width>
+        <height>150</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Timeline)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>640</width>
+        <height>150</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>14</top>
+        <width>330</width>
+        <height>24</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>350</left>
+        <top>16</top>
+        <width>270</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>42</top>
+        <width>300</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]  $INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>20</left>
+        <top>62</top>
+        <width>600</width>
+        <height>22</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22031">
+        <left>20</left>
+        <top>62</top>
+        <width>0</width>
+        <height>22</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="image" id="22051">
+        <left>20</left>
+        <top>62</top>
+        <width>0</width>
+        <height>22</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_nested)]</colordiffuse>
+      </control>
+      <control type="image" id="22052">
+        <left>20</left>
+        <top>58</top>
+        <width>2</width>
+        <height>30</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_text)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>88</top>
+        <width>120</width>
+        <height>14</height>
+        <label>$INFO[Window.Property(skl_t0)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>500</left>
+        <top>88</top>
+        <width>120</width>
+        <height>14</height>
+        <label>$INFO[Window.Property(skl_t1)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>20</left>
+        <top>110</top>
+        <width>420</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>20</left>
+        <top>110</top>
+        <width>420</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>448</left>
+        <top>110</top>
+        <width>172</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>448</left>
+        <top>110</top>
+        <width>172</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22100">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>52</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_TimelineCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>52</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="image">
+        <left>12</left>
+        <top>12</top>
+        <width>140</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>12</top>
+        <width>140</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>160</left>
+        <top>8</top>
+        <width>300</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>160</left>
+        <top>30</top>
+        <width>300</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22131">
+        <left>160</left>
+        <top>30</top>
+        <width>0</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="image" id="22151">
+        <left>160</left>
+        <top>30</top>
+        <width>0</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_nested)]</colordiffuse>
+      </control>
+      <control type="image" id="22152">
+        <left>160</left>
+        <top>26</top>
+        <width>2</width>
+        <height>16</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_text)]</colordiffuse>
+      </control>
+      <control type="image">
+        <left>468</left>
+        <top>12</top>
+        <width>40</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>468</left>
+        <top>12</top>
+        <width>40</width>
+        <height>28</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22200">
+        <left>0</left>
+        <top>0</top>
+        <width>184</width>
+        <height>268</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Rail)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>184</width>
+        <height>268</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>50</left>
+        <top>18</top>
+        <width>84</width>
+        <height>84</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22240">
+        <left>50</left>
+        <top>18</top>
+        <width>84</width>
+        <height>84</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>50</left>
+        <top>46</top>
+        <width>84</width>
+        <height>28</height>
+        <label>[B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>108</top>
+        <width>160</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>126</top>
+        <width>160</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_heading)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>12</left>
+        <top>148</top>
+        <width>160</width>
+        <height>44</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+        <wrapmultiline>true</wrapmultiline>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>200</top>
+        <width>152</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>200</top>
+        <width>152</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>232</top>
+        <width>152</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>232</top>
+        <width>152</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22300">
+        <left>0</left>
+        <top>0</top>
+        <width>184</width>
+        <height>116</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_RailCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>184</width>
+        <height>116</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>14</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22340">
+        <left>16</left>
+        <top>14</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>28</top>
+        <width>48</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_seconds)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>16</top>
+        <width>100</width>
+        <height>18</height>
+        <label>$INFO[Window.Property(skl_kicker)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>72</left>
+        <top>36</top>
+        <width>100</width>
+        <height>16</height>
+        <label>[B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>16</left>
+        <top>76</top>
+        <width>152</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>16</left>
+        <top>76</top>
+        <width>152</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22400">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>150</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_Poster)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>520</width>
+        <height>150</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="image">
+        <left>12</left>
+        <top>12</top>
+        <width>84</width>
+        <height>126</height>
+        <texture>$INFO[Window.Property(skl_poster)]</texture>
+        <aspectratio>scale</aspectratio>
+      </control>
+      <control type="label">
+        <left>116</left>
+        <top>14</top>
+        <width>250</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_kicker)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>366</left>
+        <top>14</top>
+        <width>138</width>
+        <height>16</height>
+        <label>$INFO[Window.Property(skl_range)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>right</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>116</left>
+        <top>34</top>
+        <width>388</width>
+        <height>26</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="label">
+        <left>116</left>
+        <top>64</top>
+        <width>388</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(next_jump_label)]</label>
+        <font>font11</font>
+        <textcolor>$INFO[Window.Property(skl_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+        <visible>String.IsEqual(Window.Property(show_next_jump),true)</visible>
+      </control>
+      <control type="image">
+        <left>116</left>
+        <top>100</top>
+        <width>388</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22431">
+        <left>116</left>
+        <top>100</top>
+        <width>0</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="image">
+        <left>116</left>
+        <top>112</top>
+        <width>250</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>116</left>
+        <top>112</top>
+        <width>250</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>374</left>
+        <top>112</top>
+        <width>130</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>374</left>
+        <top>112</top>
+        <width>130</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_close)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22500">
+        <left>0</left>
+        <top>0</top>
+        <width>380</width>
+        <height>72</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_PosterCompact)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>380</width>
+        <height>72</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="image">
+        <left>10</left>
+        <top>9</top>
+        <width>36</width>
+        <height>54</height>
+        <texture>$INFO[Window.Property(skl_poster)]</texture>
+        <aspectratio>scale</aspectratio>
+      </control>
+      <control type="label">
+        <left>62</left>
+        <top>6</top>
+        <width>306</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_kicker)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>62</left>
+        <top>28</top>
+        <width>258</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>62</left>
+        <top>28</top>
+        <width>258</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>328</left>
+        <top>28</top>
+        <width>40</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_button)]</texture>
+      </control>
+      <control type="label">
+        <left>328</left>
+        <top>28</top>
+        <width>40</width>
+        <height>28</height>
+        <label>X</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_button_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>62</left>
+        <top>62</top>
+        <width>306</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22531">
+        <left>62</left>
+        <top>62</top>
+        <width>0</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="22600">
+        <left>0</left>
+        <top>0</top>
+        <width>230</width>
+        <height>44</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_SlabMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>230</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>230</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22631">
+        <left>0</left>
+        <top>0</top>
+        <width>0</width>
+        <height>4</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="image">
+        <left>8</left>
+        <top>10</top>
+        <width>214</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>8</left>
+        <top>10</top>
+        <width>214</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22700">
+        <left>0</left>
+        <top>0</top>
+        <width>216</width>
+        <height>60</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_DialMinimal)</visible>
+      <control type="image">
+        <left>-18</left>
+        <top>-18</top>
+        <width>252</width>
+        <height>96</height>
+        <texture border="40">sl_shade.png</texture>
+      </control>
+      <control type="image">
+        <left>8</left>
+        <top>6</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22740">
+        <left>8</left>
+        <top>6</top>
+        <width>48</width>
+        <height>48</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>8</left>
+        <top>20</top>
+        <width>48</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_seconds)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>64</left>
+        <top>16</top>
+        <width>144</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>64</left>
+        <top>16</top>
+        <width>144</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="22800">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>64</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_BandMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>64</height>
+        <texture>sl_band.png</texture>
+        <visible>!String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>64</height>
+        <texture>sl_band_top.png</texture>
+        <visible>String.IsEqual(Window.Property(skl_top),true)</visible>
+      </control>
+      <control type="label">
+        <left>48</left>
+        <top>16</top>
+        <width>700</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_heading)] [B]$INFO[Window.Property(countdown)][/B]</label>
+        <font>font13</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>left</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>1032</left>
+        <top>16</top>
+        <width>200</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>1032</left>
+        <top>16</top>
+        <width>200</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>48</left>
+        <top>58</top>
+        <width>1184</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22831">
+        <left>48</left>
+        <top>58</top>
+        <width>0</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="22900">
+        <left>0</left>
+        <top>0</top>
+        <width>200</width>
+        <height>40</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_FloatMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>6</top>
+        <width>200</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>0</left>
+        <top>6</top>
+        <width>200</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>10</left>
+        <top>9</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_track)]</colordiffuse>
+      </control>
+      <control type="image" id="22940">
+        <left>10</left>
+        <top>9</top>
+        <width>22</width>
+        <height>22</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_focus_text)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="23000">
+        <left>0</left>
+        <top>0</top>
+        <width>170</width>
+        <height>44</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_SplitMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>170</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_tile)]</texture>
+      </control>
+      <control type="image" id="23031">
+        <left>8</left>
+        <top>8</top>
+        <width>0</width>
+        <height>0</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_tile_fill)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>0</left>
+        <top>0</top>
+        <width>170</width>
+        <height>44</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="23100">
+        <left>0</left>
+        <top>0</top>
+        <width>340</width>
+        <height>44</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_TimelineMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>340</width>
+        <height>44</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="image">
+        <left>8</left>
+        <top>8</top>
+        <width>144</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>8</left>
+        <top>8</top>
+        <width>144</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>164</left>
+        <top>18</top>
+        <width>164</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="23131">
+        <left>164</left>
+        <top>18</top>
+        <width>0</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="image" id="23151">
+        <left>164</left>
+        <top>18</top>
+        <width>0</width>
+        <height>8</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_nested)]</colordiffuse>
+      </control>
+      <control type="image" id="23152">
+        <left>164</left>
+        <top>14</top>
+        <width>2</width>
+        <height>16</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_text)]</colordiffuse>
+      </control>
+      </control>
+      <control type="group" id="23200">
+        <left>0</left>
+        <top>0</top>
+        <width>84</width>
+        <height>92</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_RailMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>84</width>
+        <height>92</height>
+        <texture border="20">$INFO[Window.Property(skl_slab)]</texture>
+      </control>
+      <control type="image">
+        <left>22</left>
+        <top>8</top>
+        <width>40</width>
+        <height>40</height>
+        <texture>sl_ring_50.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="23240">
+        <left>22</left>
+        <top>8</top>
+        <width>40</width>
+        <height>40</height>
+        <texture>$INFO[Window.Property(skl_ring)]</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      <control type="label">
+        <left>22</left>
+        <top>18</top>
+        <width>40</width>
+        <height>20</height>
+        <label>$INFO[Window.Property(skl_seconds)]</label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(skl_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(skl_shadow)]</shadowcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>8</left>
+        <top>56</top>
+        <width>68</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>8</left>
+        <top>56</top>
+        <width>68</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_word)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      </control>
+      <control type="group" id="23300">
+        <left>0</left>
+        <top>0</top>
+        <width>250</width>
+        <height>54</height>
+        <visible>String.IsEqual(Window.Property(skl_mock),SkipLayout_PosterMinimal)</visible>
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>250</width>
+        <height>54</height>
+        <texture border="20">$INFO[Window.Property(skl_plate)]</texture>
+      </control>
+      <control type="image">
+        <left>10</left>
+        <top>7</top>
+        <width>28</width>
+        <height>40</height>
+        <texture>$INFO[Window.Property(skl_poster)]</texture>
+        <aspectratio>scale</aspectratio>
+      </control>
+      <control type="image">
+        <left>50</left>
+        <top>10</top>
+        <width>192</width>
+        <height>28</height>
+        <texture border="14">$INFO[Window.Property(skl_focus)]</texture>
+      </control>
+      <control type="label">
+        <left>50</left>
+        <top>10</top>
+        <width>192</width>
+        <height>28</height>
+        <label>$INFO[Window.Property(skl_skip_short)]</label>
+        <font>font12</font>
+        <textcolor>$INFO[Window.Property(skl_focus_text)]</textcolor>
+        <align>center</align>
+        <aligny>center</aligny>
+      </control>
+      <control type="image">
+        <left>50</left>
+        <top>46</top>
+        <width>192</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_track)]</colordiffuse>
+      </control>
+      <control type="image" id="23331">
+        <left>50</left>
+        <top>46</top>
+        <width>0</width>
+        <height>3</height>
+        <texture>sl_white.png</texture>
+        <colordiffuse>$INFO[Window.Property(skl_accent)]</colordiffuse>
+      </control>
+      </control>
+      </control>
+      <!-- SKIP-LAYOUT-PREVIEW-END -->
+    </control>
+  </controls>
+</window>

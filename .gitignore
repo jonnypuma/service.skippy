@@ -17,3 +17,6 @@ tools/_*.py
 
 # Empty template left at the root; the real file lives in the profile folder
 /online_upload_submissions.json
+
+# Test screenshots kept on disk
+/_shots/

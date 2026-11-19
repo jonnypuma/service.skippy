@@ -243,6 +243,10 @@ class FindLibrarySuccessorTests(unittest.TestCase):
                 "episode": 3,
                 "file": "/tv/s01e03.mkv",
                 "thumb": "",
+                "poster": "",
+                "fanart": "",
+                "logo": "",
+                "tvshowid": 4,
                 "plot": "",
             },
         )
@@ -1465,7 +1469,7 @@ class SettingsDefinitionTests(unittest.TestCase):
             "next_episode_lead_seconds": ("45", "0"),
             "next_episode_still_watching": ("true", "1"),
             "next_episode_still_watching_after": ("3", "1"),
-            "next_episode_start_at_credits": ("false", "0"),
+            "next_episode_start_at_credits": ("true", "0"),
             "next_episode_popup_duration": ("0", "1"),
             "next_episode_popup_end_action": ("Close", "1"),
             "next_episode_hide_skip_dialogs": ("true", "1"),
@@ -1485,7 +1489,44 @@ class SettingsDefinitionTests(unittest.TestCase):
             "next_episode_popup_card_opacity": ("Look", "2"),
             "next_episode_popup_position": ("BottomRight", "1"),
             "next_episode_popup_size": ("Normal", "1"),
+            "next_episode_popup_layout": ("CardA", "1"),
+            "next_episode_popup_layout_look": ("fgd", "1"),
+            # the options of a drawn popup design (next_canvas.OPTION_KEYS)
+            "next_canvas_form": ("Full", "1"),
+            "next_canvas_corners": ("Skin", "3"),
+            "next_canvas_close": ("true", "3"),
+            "next_canvas_icons": ("true", "3"),
+            "next_canvas_plot": ("true", "3"),
+            "next_canvas_picture": ("Episode", "3"),
+            "next_canvas_progress": ("Auto", "3"),
+            "next_canvas_accent": ("Auto", "3"),
+            "next_canvas_zoom": ("100", "1"),
+            "next_canvas_place": ("", "3"),
+            "next_canvas_distance": ("64", "3"),
+            "next_canvas_overlay": ("Auto", "3"),
+            "next_canvas_overlay_gradient": ("false", "3"),
+            "next_canvas_gradient": ("Auto", "3"),
+            "next_canvas_appear": ("Fade", "3"),
+            "next_canvas_leave": ("Fade", "3"),
+            "next_canvas_pulse": ("false", "3"),
+            "next_canvas_text_shadow": ("Mild", "3"),
+            "next_canvas_outline": ("Medium", "3"),
+            "next_canvas_text_size": ("100", "3"),
+            "next_canvas_kicker": ("true", "3"),
+            "next_canvas_logo": ("true", "3"),
+            "next_canvas_same_look": ("false", "3"),
+            "next_canvas_fill_on": ("Button", "3"),
+            "next_canvas_caps": ("Look", "3"),
+            "next_canvas_fallback": ("Fanart", "3"),
+            "next_canvas_time": ("true", "3"),
+            "next_canvas_credits": ("false", "3"),
+            "next_canvas_bar": ("Smooth", "3"),
+            "next_canvas_speed": ("0", "3"),
+            "next_canvas_follow_skin": ("false", "3"),
+            "next_canvas_subtitles": ("false", "3"),
+            "next_canvas_focus_style": ("Look", "3"),
             "next_episode_popup_thumbnail": ("true", "1"),
+            "next_episode_popup_picture": ("Episode", "1"),
             "next_episode_popup_countdown": ("true", "1"),
             "next_episode_popup_progress": ("true", "1"),
             "next_episode_popup_focus": ("Play", "2"),
@@ -1569,6 +1610,20 @@ class SettingsDefinitionTests(unittest.TestCase):
             wanted.update((setting.get("label"), setting.get("help")))
         wanted.update({"47020", "47021", "47022", "47070", "47071", "47072", "47073"})
         self.assertEqual(sorted(w for w in wanted if w not in ids), [])
+
+
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
 
 
 if __name__ == "__main__":

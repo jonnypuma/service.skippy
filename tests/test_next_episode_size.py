@@ -397,5 +397,19 @@ class StringsAndSettingTests(unittest.TestCase):
         self.assertEqual(ids.index(app.KEY_SIZE), ids.index(app.KEY_POSITION) + 1)
 
 
+
+# these tests are about the popup of earlier versions: a draft starts with it while they run
+def setUpModule():
+    from tests import legacy_card
+
+    legacy_card.use_legacy_card()
+
+
+def tearDownModule():
+    from tests import legacy_card
+
+    legacy_card.restore_default()
+
+
 if __name__ == "__main__":
     unittest.main()

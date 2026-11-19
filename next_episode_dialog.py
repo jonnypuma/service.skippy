@@ -23,7 +23,7 @@ from next_episode_appearance import (
     KEY_FOCUS,
     KEY_POSITION,
     KEY_PROGRESS,
-    KEY_THUMBNAIL,
+    picture_plan,
     popup_layout,
     popup_origin,
     seconds_left,
@@ -159,9 +159,11 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
             self._skin_resolution = locked
         addon = self.addon
         draft = self.draft
-        show_thumb = bool(draft.get(KEY_THUMBNAIL)) and bool(self.next_episode.get("thumb"))
+        plan = picture_plan(draft, self.next_episode)
+        show_thumb = bool(plan["thumb"])
         layout = popup_layout(
-            thumbnail=show_thumb,
+            thumbnail=bool(plan["picture"]),
+            picture=plan["picture"],
             countdown=bool(draft.get(KEY_COUNTDOWN)),
             progress=bool(draft.get(KEY_PROGRESS)),
         )
@@ -173,7 +175,10 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
         try:
             self.setProperty("next_ep_heading", texts["heading"])
             self.setProperty("next_ep_label", texts["label"])
-            self.setProperty("next_ep_thumb", self.next_episode.get("thumb") or "")
+            self.setProperty("next_ep_thumb", plan["thumb"])
+            self.setProperty("next_ep_pair_poster", plan["pair_poster"])
+            self.setProperty("next_ep_pair_thumb", plan["pair_thumb"])
+            self.setProperty("next_ep_fanart", plan["fanart"])
             self.setProperty("next_ep_has_thumb", "true" if show_thumb else "false")
         except Exception as exc:
             log("Next episode popup: setting texts failed: %s" % exc)
@@ -392,16 +397,21 @@ class NextEpisodeDialog(xbmcgui.WindowXMLDialog):
 
 def mock_episode(addon) -> dict:
     """The example episode shown by the Customize preview."""
-    thumb = ""
+    thumb = poster = ""
     if addon:
         candidate = os.path.join(addon.getAddonInfo("path") or "", "fanart.png")
         if os.path.exists(candidate):
             thumb = candidate
+        candidate = os.path.join(addon.getAddonInfo("path") or "", "icon.png")
+        if os.path.exists(candidate):
+            poster = candidate
     return {
         "season": 1,
         "episode": 2,
         "title": get_localized(addon, 47053, "Episode title"),
         "thumb": thumb,
+        "poster": poster,
+        "fanart": thumb,
     }
 
 
@@ -428,11 +438,37 @@ def show_next_episode_dialog(
     timed popup, or out of one whose end action is Play) or None (it closed by itself:
     playback stopped, the file ended, or the playhead left the window).
     """
-    dialog = NextEpisodeDialog(
-        XML_NAME,
+    # Any layout but the classic card is a skin file and a dialog class of its own.
+    dialog_class, xml_name, extra = NextEpisodeDialog, XML_NAME, {}
+    try:
+        from next_episode_appearance import load_popup_draft
+        from next_layout_dialog import NextLayoutDialog, layout_for
+
+        import next_layouts
+
+        found = draft if draft is not None else load_popup_draft(addon)
+        if next_layouts.is_drawn(found.get(next_layouts.KEY_LAYOUT)):
+            # a design Skippy draws itself: the window file of the drawn skip dialog
+            import next_canvas
+            import skip_canvas
+            from next_canvas_dialog import NextCanvasDialog
+
+            draft = found
+            dialog_class, xml_name = NextCanvasDialog, skip_canvas.XML
+            extra = {"design": next_canvas.design_for(found.get(next_layouts.KEY_LAYOUT))}
+        else:
+            layout = layout_for(found)
+            if layout is not None:
+                draft = found
+                dialog_class, xml_name, extra = NextLayoutDialog, layout.xml, {"layout": layout}
+    except Exception as exc:
+        log("Next episode popup: layout not usable, showing the card: %s" % exc)
+    dialog = dialog_class(
+        xml_name,
         addon.getAddonInfo("path"),
         "default",
         addon=addon,
+        **extra,
         draft=draft,
         next_episode=next_episode,
         player=player,

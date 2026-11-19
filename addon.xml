@@ -1,6 +1,6 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="7.15.2"
+       version="8.32.4"
        provider-name="Skippy-McSkipface">
        
     <requires>
@@ -44,16 +44,59 @@
         <platform>all</platform>
         <license>MIT</license>
         <source>https://github.com/jonnypuma/service.skippy</source>
-        <news>v7.15.2: The next episode popup's look, colours, button highlight, bar and card opacity, and the default upload target, can be changed again: Kodi refused every choice but the default.
+        <news>v8.32.4: The Studios open much faster on a slow box (they filled in row by row over several seconds).
+v8.32.3: Dialogs no longer use up Kodi's window numbers: after about a hundred dialogs none opened until Kodi was restarted.
+v8.32.2: The skip dialog and the Up Next popup no longer flash before they appear: all parts come together.
+v8.32.1: Up Next, Takeover: the small window with what is playing is gone. Kodi cannot show the video small there; the window only showed a piece of the picture.
+v8.32.0: Up Next and the skip dialog open faster and never show half drawn: the popup is made ready when playback starts, its pictures are cached ahead, and it stays unseen until it is complete. The last three Studio rows work: Follow the skin style, Keep clear of subtitles, Focus style.
+v8.31.0: Up Next: progress as a line, a circle or a fill (on the button, the card or the picture), fanart behind the card, a Watch credits button, the credits in a small window in Takeover, the Poster card drawn like the others, and seven more Studio rows at work.
+v8.30.0: Up Next: Picture is a choice for the drawn designs: the episode picture, the poster, the poster set into the episode picture, or none.
+v8.29.0: Up Next has its Studio, as in the mockup: Look, Layout, Picture, Buttons, Motion and Autoplay, a live preview that plays the popup, what the row in focus does, presets with your saved ones, Save as preset and Reset.
+v8.28.0: Up Next: the drawn Card in Fused Glass Dark is the default, and the popup comes at the start of the Credits segment by default. Customize Up Next has Preset (every drawn design in every look, the twelve own looks among them), Size (Full, Compact, Minimal) and Size on screen (Small, Medium, Large); a saved look keeps both. The looks of the earlier popup are named (legacy). A segment type of your own gets a colour of its own.
+v8.27.0: Up Next: the Queue is drawn by Skippy as in the mockup, with three cards to pick from, Play a later one, and Full, Compact and Minimal forms. What is written on a button now changes colour with the focus in every drawn dialog.
+v8.26.0: Up Next: seven designs drawn by Skippy, as in the mockups (Card, Poster slab, Play ring, Lower third, Float, Takeover, Side rail), each Full, Compact and Minimal, in every look of the drawn skip dialog. The popup of earlier versions is now Card (legacy) and stays the default.
+v8.25.2: Segment editor: a segment just created is the highlighted one, in the list and on the timeline; the focus stays on the button that made it.
+v8.25.1: Segment editor: the label picker opens in the editor's own panel look (Dark, Frost or Clear).
+v8.25.0: Segment editor, List and drawer: a Look row over the nine actions, with Dark overlay (on / off) and Panels (Fused Glass Dark, Frost, Clear). The panels reach closer to the edges of the screen, and the list rows use the width for long type names and the source.
+v8.24.2: Segment editor: the text of a list row is at the mockup's sizes, so the source is no longer cut off and a NESTED flag fits beside it.
+v8.24.1: Segment editor, List and drawer: always in the Fused Glass Dark look, like the Studio. The small labels (headers, tags, the words in the timeline's blocks, the times, the NESTED flag) are drawn at the mockup's size.
+v8.24.0: Segment editor: the timeline zooms on the highlighted segment and the ones connected to it, its blocks have round corners, the highlighted one has handles and its times under it, the playhead a marker. The NESTED flag and the tags are flat rounded chips. Sources are written in words (Local EDL, Chapters).
+v8.23.1: Segment editor: long type names and film-length times fit their row, the NESTED flag fits its chip, and a timeline block shows its word only when it fits whole.
+v8.23.0: Segment editor, List and drawer: rebuilt to its mockup. A header with the number of segments and the video's title, one-line rows (from - to, length, source, a NESTED flag), a timeline that shows the stretch around the highlighted segment with a word in every block and the times under it. Float: the words before the countdown stand still.
+v8.22.0: The drawn skip dialogs move: Appears (Fade, Rise, Pop, Slide in), Leaves (Fade, Drop, Shrink) and the pulse of the last five seconds. The Studio's live preview plays it: the dialog comes, its countdown and bar run, and it leaves.
+v8.21.2: The presets are listed with the drawn designs first, then your own, then the classic card's (legacy).
+v8.21.1: Studio: wider choices in the switch rows (Compact, Rounded and Medium fit their pill). The presets of the classic card are named (legacy).
+v8.21.0: The Stack card in Fused Glass Dark is the default skip dialog. From a look of your own, the Preset row goes back to the design's own preset and resets its options. Studio: Preview segment type on the Look tab steps through all types; the time on the Skip button has its own switch and the preview shows its format and content.
+v8.20.0: Studio: every tab shows all its options (those that do not apply to the design in use are dimmed and say why), Design is back on the Look tab, long tabs scroll. Text outline has a strength (Off, Light, Medium, Strong) and the text shadow falls to the lower right.
+v8.19.0: The skip dialog Studio is rebuilt to its mockup: six tabs (Look, Layout, Text, Buttons, Motion, Behaviour), rows with switch groups, toggles, colour dots, sliders and the nine places, an About this setting panel under the preview, and Intro / Credits / Nested previews. New: Distance from the edge, Button the focus starts on, nine positions for drawn designs.
+v8.18.0: Drawn skip dialogs appear much faster on slow boxes. New in the Studio: Size on screen (Small, Medium, Large), Accent colour, Progress style, Overlay gradient and its direction. Lighter text shadows, a shade under every panel, and the segment editor's list goes Left to the segment tools and Right to the timeline.
+v8.17.1: Drawn skip dialogs: the duration on the Skip button was shown as :00, times lose their leading zero (0:27), and the Timeline's playhead time now runs.
+v8.17.0: Cinema band, Float, Split, Timeline and Side rail are now drawn to their mockups too. New in the Studio: Text shadow (Off to Heavy) and Text size. The Skip button says the segment type only when nothing else in the dialog does.
+v8.16.0: Corner slab and Dial are now drawn to their mockups like the Stack card, in Full, Compact and Minimal. Background overlay has a new default, The design's own: a chosen overlay takes the place of a design's shade instead of lying on top of it.
+v8.15.0: New skip dialog layout Stack card, drawn by Skippy itself to the mockup: type and range with the accent dot, the nested line in its own box, icons on the buttons, the time at the right of Skip. Options: corners, Close button (Skip takes its room without it), icons, the two lines. In the segment editor Right from the list reaches the segment actions.
+v8.14.0: A saved skip dialog preset of a new layout now stores the whole dialog (size, overlay, motion). Customize next episode popup has Popup layout and Layout look rows, and a saved look stores the layout, its look and the picture.
+v8.13.0: Two more layouts for the next episode popup: Takeover (the next episode takes the whole screen) and Queue (the next three episodes side by side; Left and Right pick one).
+v8.12.0: Every new skip dialog layout now has a Minimal form of its own; Minimal mode uses it instead of the old chip.
+v8.11.0: Skip dialog layouts: six background overlays (square, rounded, band, corner glow), a choice of how the dialog appears and leaves, and a pulse in the last five seconds.
+v8.10.0: Next episode popup pictures: Poster and episode now stand side by side at one height with round corners, and there are two new choices, Fanart and poster and Fanart and episode.
+v8.9.0: Twelve looks of their own for the skip dialog layouts and the next episode popup layouts: Neon, Paper, Sunset, Ocean, Brutal, Terminal, Wireframe, Luxe, Pastel, Gloss, Mono and VHS. Each is a preset with every layout.
+v8.8.0: Every skip dialog layout in every look is now a preset by name (48 of them), and OK on Preset in the Studio opens a wall with a picture of every preset.
+v8.7.0: Six new layouts for the next episode popup next to the classic card: Poster card, Picture slab, Play ring, Lower third, Float and Side rail, in six looks.
+v8.6.0: The next episode popup can show the poster, the poster with the episode picture, or the fanart behind it. New skip dialog layouts colour their bar by the kind of segment, and there is a Poster card layout.
+v8.5.0: Customize Skip Dialog is now the Studio: settings in five tabs, a live preview of the whole screen and a strip of presets, in the Fused Glass Dark look.
+v8.4.0: Customize Skip Dialog picks the skip dialog layout and its look, with a live preview of every layout.
+v8.3.0: Seven new layouts for the skip dialog next to the classic card (Playback &amp; Dialog &gt; Skip dialog layout): Corner slab, Dial, Cinema band, Float, Split, Timeline and Side rail, each in a large and a small form and in six looks (Layout look).
+v8.2.0: The looks of the skin Aeon Fuse as presets for the skip dialog and the next episode popup: Fused Glass Dark, Frost and Clear, Fused Glass style, Aeon and Aeon Glass, each as Full, Compact and Minimal. A new Card style gives the card round corners or one of these looks. The presets of earlier versions are still there, at the end of the list, marked (legacy).
+v8.1.0: Two new layouts for the segment editor that leave the picture visible: List and drawer (the default) and Drawer, next to the Classic panel (Segment Editor > Editor layout). Every button is there in all three. New: a timeline with a coloured block per segment, the playhead and a mark under the highlighted segment.
+v8.0.0: A new look for Skippy's own windows, in five styles to choose from under Segment Settings > Window style: Fused Glass Dark, Frost (the default) and Clear, Aeon and Aeon Glass. The segment editor, the type picker, the segment types editor, the source picker, statistics and lists and both Customize screens follow it. The skip dialog and the next episode popup keep their own looks.
+v7.15.2: The next episode popup's look, colours, button highlight, bar and card opacity, and the default upload target, can be changed again: Kodi refused every choice but the default.
 v7.15.1: What you save in Customize next episode popup and Customize skip dialog is kept when you leave the settings with Back or Cancel.
 v7.15.0: Progress bars move with every video frame instead of jumping a percent at a time, in the skip dialog, the next episode popup and in skins that ask Skippy to drive their own bar. Smooth progress is on by default.
 v7.14.0: Skins can draw their own next episode popup, the way they can draw their own skip button: Skippy fills Home window properties and the skin's buttons answer it.
 v7.13.1: Customize next episode popup and Customize skip dialog show what you saved when opened again from the settings.
 v7.13.0: Skins can show the segment playing, the time left, the next segment and the next episode from Home window properties, and draw their own skip button with RunScript(service.skippy,skip_current), which also works from a key.
 v7.12.0: Binge mode: the intro plays on the first episode of a sitting and is skipped from the second on, optionally the recap too. Statistics show time saved per show or film. A new Current video window shows where the segments came from, what each one will do and why, and the last error.
-v7.11.6: Merge and Update online sidecar saves no longer stop a video's segments from loading. "Still watching?" counts episodes Kodi starts by itself. A new video starts without the previous video's segments. Code defaults match the settings. A failed save to an NFS share no longer lands in the share's root folder. Unknown RunScript commands no longer mark a segment. Online lookups check the year, so remakes get their own segments. Hide OSD display during skip is on by default. More screens are translated.
-v7.11.5: The native next episode toast no longer blocks every later toast after it is closed early.
-v7.11.4: Statistics, Manage saved auto-skips and Manage autoplay by show use the Customize panel look.</news>
+v7.11.6: Merge and Update online sidecar saves no longer stop a video's segments from loading. "Still watching?" counts episodes Kodi starts by itself. A new video starts without the previous video's segments. Code defaults match the settings. A failed save to an NFS share no longer lands in the share's root folder. Unknown RunScript commands no longer mark a segment. Online lookups check the year, so remakes get their own segments. Hide OSD display during skip is on by default. More screens are translated.</news>
         <assets>
             <icon>icon.png</icon>
             <fanart>fanart.png</fanart>

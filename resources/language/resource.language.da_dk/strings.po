@@ -3462,3 +3462,1139 @@ msgstr "TheIntroDB.org"
 msgctxt "#48334"
 msgid "IntroDB.app"
 msgstr "IntroDB.app"
+
+msgctxt "#49000"
+msgid "Skippy's windows"
+msgstr "Skippys vinduer"
+
+msgctxt "#49001"
+msgid "Window style"
+msgstr "Vinduesstil"
+
+msgctxt "#49002"
+msgid "The look of Skippy's own windows: the segment editor, the type picker, the segment types editor, the source picker, statistics and lists, and the two Customize screens. The skip dialog and the next episode popup have their own looks. Takes effect the next time a window opens."
+msgstr "Udseendet af Skippys egne vinduer: segmenteditoren, typevælgeren, editoren til segmenttyper, kildevælgeren, statistik og lister samt de to Tilpas-skærme. Spring over-dialogen og pop op-vinduet for næste afsnit har deres eget udseende. Træder i kraft, næste gang et vindue åbnes."
+
+msgctxt "#49003"
+msgid "Editor layout"
+msgstr "Editorlayout"
+
+msgctxt "#49004"
+msgid "How the segment editor sits over the video. List and drawer: the segments in a list at the left, everything else in a drawer along the bottom. Drawer: everything in one drawer along the bottom, the segments as a row of chips. Classic: the large panel of earlier versions. Every button is there in all three."
+msgstr "Hvordan segmenteditoren ligger oven på videoen. Liste og skuffe: segmenterne i en liste til venstre, alt andet i en skuffe langs bunden. Skuffe: alt i én skuffe langs bunden med segmenterne som en række mærker. Klassisk: det store panel fra tidligere versioner. Alle knapper findes i alle tre."
+
+msgctxt "#49005"
+msgid "List and drawer"
+msgstr "Liste og skuffe"
+
+msgctxt "#49006"
+msgid "Drawer"
+msgstr "Skuffe"
+
+msgctxt "#49007"
+msgid "Classic"
+msgstr "Klassisk"
+
+msgctxt "#49008"
+msgid "Card style"
+msgstr "Kortstil"
+
+msgctxt "#49009"
+msgid "The shape of the card behind the Full skip dialog and the next episode popup. Flat is the plain black card. Rounded has round corners. The others are the looks of the skin Aeon Fuse; they keep their own colours and the card opacity only fades them."
+msgstr "Formen på kortet bag den fulde spring over-dialog og pop op-vinduet for næste afsnit. Flat er det enkle sorte kort. Rounded har runde hjørner. De andre er udseenderne fra skinnet Aeon Fuse; de beholder deres egne farver, og kortets gennemsigtighed toner dem kun ned."
+
+msgctxt "#48335"
+msgid "Fused Glass Dark"
+msgstr "Fused Glass Dark"
+
+msgctxt "#48336"
+msgid "Fused Glass Frost"
+msgstr "Fused Glass Frost"
+
+msgctxt "#48337"
+msgid "Fused Glass Clear"
+msgstr "Fused Glass Clear"
+
+msgctxt "#48338"
+msgid "Fused Glass style"
+msgstr "Fused Glass style"
+
+msgctxt "#48339"
+msgid "Aeon"
+msgstr "Aeon"
+
+msgctxt "#48340"
+msgid "Aeon Glass"
+msgstr "Aeon Glass"
+
+msgctxt "#48341"
+msgid "Aeon Glass Fill"
+msgstr "Aeon Glass Fill"
+
+msgctxt "#48342"
+msgid "Fused Glass Bare"
+msgstr "Fused Glass Bare"
+
+msgctxt "#48343"
+msgid "Aeon Bare"
+msgstr "Aeon Bare"
+
+msgctxt "#48344"
+msgid "Fused Glass Compact"
+msgstr "Fused Glass Compact"
+
+msgctxt "#48345"
+msgid "Fused Glass style Compact"
+msgstr "Fused Glass style Compact"
+
+msgctxt "#48346"
+msgid "Aeon Compact"
+msgstr "Aeon Compact"
+
+msgctxt "#48347"
+msgid "Aeon Glass Compact"
+msgstr "Aeon Glass Compact"
+
+msgctxt "#48348"
+msgid "Classic (legacy)"
+msgstr "Classic (legacy)"
+
+msgctxt "#48349"
+msgid "Modern (legacy)"
+msgstr "Modern (legacy)"
+
+msgctxt "#48350"
+msgid "Stylish (legacy)"
+msgstr "Stylish (legacy)"
+
+msgctxt "#48351"
+msgid "Colorful (legacy)"
+msgstr "Colorful (legacy)"
+
+msgctxt "#48352"
+msgid "Vibrant (legacy)"
+msgstr "Vibrant (legacy)"
+
+msgctxt "#48353"
+msgid "Glass (legacy)"
+msgstr "Glass (legacy)"
+
+msgctxt "#48354"
+msgid "Outline (legacy)"
+msgstr "Outline (legacy)"
+
+msgctxt "#48355"
+msgid "Subtle (legacy)"
+msgstr "Subtle (legacy)"
+
+msgctxt "#48356"
+msgid "Sleek (legacy)"
+msgstr "Sleek (legacy)"
+
+msgctxt "#48357"
+msgid "Clean (legacy)"
+msgstr "Clean (legacy)"
+
+msgctxt "#48358"
+msgid "Mono (legacy)"
+msgstr "Mono (legacy)"
+
+msgctxt "#48359"
+msgid "Slate (legacy)"
+msgstr "Slate (legacy)"
+
+msgctxt "#48360"
+msgid "Gold (legacy)"
+msgstr "Gold (legacy)"
+
+msgctxt "#48361"
+msgid "Neon (legacy)"
+msgstr "Neon (legacy)"
+
+msgctxt "#48362"
+msgid "Neon Pink (legacy)"
+msgstr "Neon Pink (legacy)"
+
+msgctxt "#48363"
+msgid "Frosted (legacy)"
+msgstr "Frosted (legacy)"
+
+msgctxt "#48364"
+msgid "Steel (legacy)"
+msgstr "Steel (legacy)"
+
+msgctxt "#48365"
+msgid "Retro (legacy)"
+msgstr "Retro (legacy)"
+
+msgctxt "#48366"
+msgid "Segments (legacy)"
+msgstr "Segments (legacy)"
+
+msgctxt "#48367"
+msgid "Stripes (legacy)"
+msgstr "Stripes (legacy)"
+
+msgctxt "#48368"
+msgid "Sunset (legacy)"
+msgstr "Sunset (legacy)"
+
+msgctxt "#48369"
+msgid "Big & Bold (legacy)"
+msgstr "Big & Bold (legacy)"
+
+msgctxt "#48370"
+msgid "Ghost (legacy)"
+msgstr "Ghost (legacy)"
+
+msgctxt "#48371"
+msgid "Accessible (legacy)"
+msgstr "Accessible (legacy)"
+
+msgctxt "#48372"
+msgid "Arcade (legacy)"
+msgstr "Arcade (legacy)"
+
+msgctxt "#48373"
+msgid "Terminal (legacy)"
+msgstr "Terminal (legacy)"
+
+msgctxt "#48374"
+msgid "Blueprint (legacy)"
+msgstr "Blueprint (legacy)"
+
+msgctxt "#48375"
+msgid "Lava (legacy)"
+msgstr "Lava (legacy)"
+
+msgctxt "#48376"
+msgid "Deep Sea (legacy)"
+msgstr "Deep Sea (legacy)"
+
+msgctxt "#48377"
+msgid "Candy (legacy)"
+msgstr "Candy (legacy)"
+
+msgctxt "#48378"
+msgid "Noir (legacy)"
+msgstr "Noir (legacy)"
+
+msgctxt "#48379"
+msgid "Aurora (legacy)"
+msgstr "Aurora (legacy)"
+
+msgctxt "#48380"
+msgid "Pill (legacy)"
+msgstr "Pill (legacy)"
+
+msgctxt "#48381"
+msgid "Underline (legacy)"
+msgstr "Underline (legacy)"
+
+msgctxt "#48382"
+msgid "Fuse Square"
+msgstr "Fuse Square"
+
+msgctxt "#48383"
+msgid "Fuse Glass"
+msgstr "Fuse Glass"
+
+msgctxt "#48384"
+msgid "Fuse Bar"
+msgstr "Fuse Bar"
+
+msgctxt "#48385"
+msgid "Fuse Gold"
+msgstr "Fuse Gold"
+
+msgctxt "#48386"
+msgid "Fuse White"
+msgstr "Fuse White"
+
+msgctxt "#49010"
+msgid "Skip dialog layout"
+msgstr "Layout for spring over-dialog"
+
+msgctxt "#49011"
+msgid "How the skip dialog is built. Card is the dialog of earlier versions, with its presets and every option below. The others are new: Corner slab (a slab in the corner with the bar along its top), Dial (the time left as a ring), Cinema band (a band across the screen), Float (large text straight on the picture), Split (a big Skip tile that fills up), Timeline (where you are in the segment and where Skip lands) and Side rail (a tab on the side of the screen). Full mode shows the large form of a layout, Compact Full the small one; Minimal keeps its chip. The new layouts take their colours from Layout look and use Skip Dialog Position and Skip Button Format; the card's own options do not apply to them."
+msgstr "Hvordan spring over-dialogen er bygget. Card er dialogen fra tidligere versioner med sine forudindstillinger og alle indstillinger nedenfor. De andre er nye: Corner slab (en plade i hjørnet med bjælken langs toppen), Dial (resterende tid som en ring), Cinema band (et bånd tværs over skærmen), Float (stor tekst direkte på billedet), Split (en stor Spring over-flise der fyldes), Timeline (hvor du er i segmentet, og hvor Spring over lander) og Side rail (en fane i siden af skærmen). Fuld tilstand viser den store form af et layout, Kompakt fuld den lille; Minimal beholder sin brik. De nye layouts får farverne fra Layoutudseende og bruger dialogens placering og knapformat; kortets egne indstillinger gælder ikke for dem."
+
+msgctxt "#49012"
+msgid "Layout look"
+msgstr "Layoutudseende"
+
+msgctxt "#49013"
+msgid "The look of the new skip dialog layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has its presets."
+msgstr "Udseendet på de nye layouts til spring over-dialogen, efter skinnet Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon eller Aeon Glass. Layoutet Card bruger det ikke; det har sine forudindstillinger."
+
+msgctxt "#49020"
+msgid "Look"
+msgstr "Udseende"
+
+msgctxt "#49021"
+msgid "Layout"
+msgstr "Layout"
+
+msgctxt "#49022"
+msgid "Text"
+msgstr "Tekst"
+
+msgctxt "#49023"
+msgid "Buttons"
+msgstr "Knapper"
+
+msgctxt "#49024"
+msgid "Bar"
+msgstr "Bjælke"
+
+msgctxt "#49025"
+msgid "Save as preset"
+msgstr "Gem som forudindstilling"
+
+msgctxt "#49026"
+msgid "Reset"
+msgstr "Nulstil"
+
+msgctxt "#49027"
+msgid "LIVE PREVIEW"
+msgstr "DIREKTE FORHÅNDSVISNING"
+
+msgctxt "#49028"
+msgid "PRESETS"
+msgstr "FORUDINDSTILLINGER"
+
+msgctxt "#49029"
+msgid "LOOKS"
+msgstr "UDSEENDER"
+
+msgctxt "#49030"
+msgid "Up / Down: choose a row     Left / Right: change it     OK: next choice     Back: close without saving"
+msgstr "Op / Ned: vælg en række     Venstre / Højre: skift     OK: næste valg     Tilbage: luk uden at gemme"
+
+msgctxt "#49031"
+msgid "Bar colour"
+msgstr "Bjælkefarve"
+
+msgctxt "#49032"
+msgid "Segment type"
+msgstr "Segmenttype"
+
+msgctxt "#49034"
+msgid "What colours the progress of a new skip dialog layout (bar, ring, fill or timeline). Segment type: the colour of the kind of segment, the same as in the segment editor (gold for an intro, blue for a recap and so on). Look: the colour of the layout look. The Card layout has its own Progress bar style."
+msgstr "Hvad der farver forløbet i et nyt layout for spring over-dialogen (bjælke, ring, fyld eller tidslinje). Segmenttype: farven for segmentets slags, den samme som i segmenteditoren (guld for en intro, blå for et resumé osv.). Udseende: farven fra layoutudseendet. Layoutet Card har sin egen stil for statuslinjen."
+
+msgctxt "#49035"
+msgid "Picture"
+msgstr "Billede"
+
+msgctxt "#49036"
+msgid "Episode picture"
+msgstr "Afsnitsbillede"
+
+msgctxt "#49037"
+msgid "Poster"
+msgstr "Plakat"
+
+msgctxt "#49038"
+msgid "Poster and episode"
+msgstr "Plakat og afsnit"
+
+msgctxt "#49039"
+msgid "Fanart"
+msgstr "Fanart"
+
+msgctxt "#49040"
+msgid "Which picture the next episode popup shows while Show episode picture is on. Episode picture: the wide picture of the next episode. Poster: the poster of the show, useful when episode pictures give too much away or are missing. Poster and episode: the poster and the episode picture side by side, at the same height. Fanart: the fanart behind the whole popup. Fanart and poster, Fanart and episode: the fanart behind the popup with the poster or the episode picture in front of it. A choice whose picture is missing falls back to the nearest one that can be shown."
+msgstr "Hvilket billede pop op-vinduet for næste afsnit viser, mens Vis afsnitsbillede er slået til. Afsnitsbillede: det brede billede af næste afsnit. Plakat: seriens plakat, nyttig når afsnitsbilleder afslører for meget eller mangler. Plakat og afsnit: plakaten og afsnitsbilledet side om side i samme højde. Fanart: fanart bag hele pop op-vinduet. Fanart og plakat, Fanart og afsnit: fanart bag pop op-vinduet med plakaten eller afsnitsbilledet foran. Mangler billedet til et valg, vises det nærmeste, der kan vises."
+
+msgctxt "#49041"
+msgid "Popup layout"
+msgstr "Pop op-layout"
+
+msgctxt "#49042"
+msgid "How the next episode popup is built. Card is the popup of earlier versions, with its looks and every option of this page. The others are new: Poster card (the poster at the left), Picture slab (a slab in the corner with the picture across it), Play ring (the countdown as a ring on the picture), Lower third (a band across the screen), Float (large text straight on the video) and Side rail (a tab on the side of the screen). The new layouts take their colours from Layout look and use Popup position and Default button; Popup look, the colour rows, Popup size and the picture rows are for the Card."
+msgstr "Hvordan pop op-vinduet for næste afsnit er bygget. Card er vinduet fra tidligere versioner med sine udseender og alle indstillinger på denne side. De andre er nye: Poster card (plakaten til venstre), Picture slab (en plade i hjørnet med billedet tværs over), Play ring (nedtællingen som en ring på billedet), Lower third (et bånd tværs over skærmen), Float (stor tekst direkte på videoen) og Side rail (en fane i siden af skærmen). De nye layouts får farverne fra Layoutudseende og bruger placeringen og standardknappen; udseende, farverækkerne, størrelsen og billedrækkerne gælder for Card."
+
+msgctxt "#49043"
+msgid "The look of the new popup layouts, after the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. The Card layout does not use it; it has Popup look."
+msgstr "Udseendet på de nye pop op-layouts, efter skinnet Aeon Fuse: Fused Glass Dark, Fused Glass Frost, Fused Glass Clear, Fused Glass style, Aeon eller Aeon Glass. Layoutet Card bruger det ikke; det har sit eget udseende."
+
+msgctxt "#49045"
+msgid "Presets"
+msgstr "Forudindstillinger"
+
+msgctxt "#49046"
+msgid "Save, delete, export…"
+msgstr "Gem, slet, eksportér…"
+
+msgctxt "#49047"
+msgid "Arrows: choose     OK: use this preset     Back: keep the current one"
+msgstr "Piletaster: vælg     OK: brug denne forudindstilling     Tilbage: behold den nuværende"
+
+msgctxt "#49048"
+msgid "Fanart and poster"
+msgstr "Fanart og plakat"
+
+msgctxt "#49049"
+msgid "Fanart and episode"
+msgstr "Fanart og afsnit"
+
+msgctxt "#49050"
+msgid "Background overlay"
+msgstr "Baggrundsskygge"
+
+msgctxt "#49051"
+msgid "A shade behind the new skip dialog layouts, so they read on a bright picture. Square: a hard rectangle out of the screen corner. Square, fading: the same, fading out towards the picture. Rounded: a rounded shade around the dialog. Rounded, fading: light at the top left, full at the bottom right. Band: across the whole screen. Corner glow: a round shade from the corner with no edge. Cinema band has its own band and takes none."
+msgstr "En skygge bag de nye layouts for spring over-dialogen, så de kan læses på et lyst billede. Firkantet: et hårdt rektangel ud fra skærmens hjørne. Firkantet, udtonet: det samme, tonet ud mod billedet. Afrundet: en afrundet skygge omkring dialogen. Afrundet, udtonet: lys øverst til venstre, fuld nederst til højre. Bånd: på tværs af hele skærmen. Hjørneskær: en rund skygge fra hjørnet uden kant. Biografbånd har sit eget bånd og får ingen."
+
+msgctxt "#49052"
+msgid "None"
+msgstr "Ingen"
+
+msgctxt "#49053"
+msgid "Square"
+msgstr "Firkantet"
+
+msgctxt "#49054"
+msgid "Square, fading"
+msgstr "Firkantet, udtonet"
+
+msgctxt "#49055"
+msgid "Rounded"
+msgstr "Afrundet"
+
+msgctxt "#49056"
+msgid "Rounded, fading"
+msgstr "Afrundet, udtonet"
+
+msgctxt "#49057"
+msgid "Band"
+msgstr "Bånd"
+
+msgctxt "#49058"
+msgid "Corner glow"
+msgstr "Hjørneskær"
+
+msgctxt "#49059"
+msgid "Appears"
+msgstr "Kommer"
+
+msgctxt "#49060"
+msgid "How a new skip dialog layout comes on screen. Fade: as before. Rise: a short move up. Pop: it grows a little. Slide in: from the side of the screen it sits at."
+msgstr "Hvordan et nyt layout for spring over-dialogen kommer frem. Ton: som før. Stig: en kort bevægelse opad. Pop: den vokser lidt. Glid ind: fra den side af skærmen, den sidder ved."
+
+msgctxt "#49061"
+msgid "Fade"
+msgstr "Ton"
+
+msgctxt "#49062"
+msgid "Rise"
+msgstr "Stig"
+
+msgctxt "#49063"
+msgid "Pop"
+msgstr "Pop"
+
+msgctxt "#49064"
+msgid "Slide in"
+msgstr "Glid ind"
+
+msgctxt "#49065"
+msgid "Leaves"
+msgstr "Forsvinder"
+
+msgctxt "#49066"
+msgid "How a new skip dialog layout goes away. Fade: as before. Drop: a short move down. Shrink: it gets a little smaller."
+msgstr "Hvordan et nyt layout for spring over-dialogen forsvinder. Ton: som før. Fald: en kort bevægelse nedad. Skrump: den bliver lidt mindre."
+
+msgctxt "#49067"
+msgid "Drop"
+msgstr "Fald"
+
+msgctxt "#49068"
+msgid "Shrink"
+msgstr "Skrump"
+
+msgctxt "#49069"
+msgid "Pulse in the last five seconds"
+msgstr "Puls i de sidste fem sekunder"
+
+msgctxt "#49070"
+msgid "The dialog beats once a second during the last five seconds of the segment, so the eye finds it without sound."
+msgstr "Dialogen slår én gang i sekundet i segmentets sidste fem sekunder, så øjet finder den uden lyd."
+
+msgctxt "#49071"
+msgid "Press Preview to see this layout on the whole screen"
+msgstr "Tryk på Forhåndsvisning for at se dette layout på hele skærmen"
+
+msgctxt "#49072"
+msgid "Corners"
+msgstr "Hjørner"
+
+msgctxt "#49073"
+msgid "The corners of a drawn skip dialog design (Stack card). The look's own: rounded in the round looks, square in Aeon and Fused Glass style. Hard and Rounded force one shape whatever the look."
+msgstr "Hjørnerne på et tegnet layout for spring over-dialogen (Stablet kort). Udseendets egne: runde i de runde udseender, firkantede i Aeon og Fused Glass-stil. Hårde og Afrundede gennemtvinger én form uanset udseende."
+
+msgctxt "#49074"
+msgid "The look's own"
+msgstr "Udseendets egne"
+
+msgctxt "#49075"
+msgid "Hard"
+msgstr "Hårde"
+
+msgctxt "#49076"
+msgid "Rounded"
+msgstr "Afrundede"
+
+msgctxt "#49077"
+msgid "Close button"
+msgstr "Luk-knap"
+
+msgctxt "#49078"
+msgid "Show the Close button on a drawn design. Without it the Skip button takes the whole row."
+msgstr "Vis Luk-knappen på et tegnet layout. Uden den fylder Spring over-knappen hele rækken."
+
+msgctxt "#49079"
+msgid "Icons on the buttons"
+msgstr "Ikoner på knapperne"
+
+msgctxt "#49080"
+msgid "Show the icons on Skip and Close of a drawn design."
+msgstr "Vis ikonerne på Spring over og Luk på et tegnet layout."
+
+msgctxt "#49081"
+msgid "Type and range line"
+msgstr "Linje med type og interval"
+
+msgctxt "#49082"
+msgid "Show the line with the segment type and its start and end on a drawn design."
+msgstr "Vis linjen med segmentets type samt start og slut på et tegnet layout."
+
+msgctxt "#49083"
+msgid "Nested line"
+msgstr "Indlejret linje"
+
+msgctxt "#49084"
+msgid "Show the line that says where Skip lands when a segment lies inside another."
+msgstr "Vis linjen, der fortæller hvor Spring over lander, når et segment ligger inde i et andet."
+
+msgctxt "#49085"
+msgid "The design's own"
+msgstr "Designets egen"
+
+msgctxt "#49086"
+msgid "Text shadow"
+msgstr "Tekstskygge"
+
+msgctxt "#49087"
+msgid "The shadow under texts that lie straight on the video (Dial, Cinema band, Float). Heavy is the mockup's: readable on any picture."
+msgstr "Skyggen under tekster, der ligger direkte på videoen (Urskive, Biografbånd, Svævende). Kraftig kan læses på ethvert billede."
+
+msgctxt "#49088"
+msgid "Off"
+msgstr "Fra"
+
+msgctxt "#49089"
+msgid "Mild"
+msgstr "Mild"
+
+msgctxt "#49090"
+msgid "Medium"
+msgstr "Middel"
+
+msgctxt "#49091"
+msgid "Strong"
+msgstr "Stærk"
+
+msgctxt "#49092"
+msgid "Heavy"
+msgstr "Kraftig"
+
+msgctxt "#49093"
+msgid "Text size"
+msgstr "Tekststørrelse"
+
+msgctxt "#49094"
+msgid "The size of the texts in a drawn skip dialog design. Buttons grow with their text."
+msgstr "Størrelsen på teksterne i et tegnet layout for spring over-dialogen. Knapperne vokser med teksten."
+
+msgctxt "#49095"
+msgid "Small"
+msgstr "Lille"
+
+msgctxt "#49096"
+msgid "Standard"
+msgstr "Standard"
+
+msgctxt "#49097"
+msgid "Large"
+msgstr "Stor"
+
+msgctxt "#49098"
+msgid "Larger"
+msgstr "Større"
+
+msgctxt "#49099"
+msgid "Size on screen"
+msgstr "Størrelse på skærmen"
+
+msgctxt "#49100"
+msgid "How large a drawn skip dialog is: Small, Medium or Large. Large is the size of the designs as drawn; smaller takes less of the picture."
+msgstr "Hvor stor en tegnet spring over-dialog er: Lille, Middel eller Stor. Stor er layoutenes tegnede størrelse; mindre dækker mindre af billedet."
+
+msgctxt "#49101"
+msgid "Accent colour"
+msgstr "Accentfarve"
+
+msgctxt "#49102"
+msgid "The colour of the bar, the dot and the arrow of a drawn design. The bar colour setting follows Progress colour: the segment type's colour or the look's accent."
+msgstr "Farven på bjælken, prikken og pilen i et tegnet layout. Bjælkefarve-indstillingen følger Fremdriftsfarve: segmenttypens farve eller udseendets accent."
+
+msgctxt "#49103"
+msgid "The bar colour setting"
+msgstr "Bjælkefarve-indstillingen"
+
+msgctxt "#49104"
+msgid "Gold"
+msgstr "Guld"
+
+msgctxt "#49105"
+msgid "Blue"
+msgstr "Blå"
+
+msgctxt "#49106"
+msgid "Red"
+msgstr "Rød"
+
+msgctxt "#49107"
+msgid "Green"
+msgstr "Grøn"
+
+msgctxt "#49108"
+msgid "Teal"
+msgstr "Blågrøn"
+
+msgctxt "#49109"
+msgid "Purple"
+msgstr "Lilla"
+
+msgctxt "#49110"
+msgid "White"
+msgstr "Hvid"
+
+msgctxt "#49111"
+msgid "Progress style"
+msgstr "Fremdriftsstil"
+
+msgctxt "#49112"
+msgid "How the time left is shown. The design's own: a line, a ring, a tile or a timeline, as drawn. Circle and Fill move the line of Stack card, Corner slab and Cinema band into the Skip button."
+msgstr "Hvordan resttiden vises. Layoutets egen: en linje, en ring, en flise eller en tidslinje, som tegnet. Cirkel og Fyld flytter linjen i Stablet kort, Hjørneplade og Biografbånd ind i Spring over-knappen."
+
+msgctxt "#49113"
+msgid "Line"
+msgstr "Linje"
+
+msgctxt "#49114"
+msgid "Circle"
+msgstr "Cirkel"
+
+msgctxt "#49115"
+msgid "Fill"
+msgstr "Fyld"
+
+msgctxt "#49116"
+msgid "Overlay gradient"
+msgstr "Overlay-gradient"
+
+msgctxt "#49117"
+msgid "Let a Square or Rounded background overlay fade out towards the picture instead of ending in an edge."
+msgstr "Lad et firkantet eller afrundet baggrundsoverlay tone ud mod billedet i stedet for at ende i en kant."
+
+msgctxt "#49118"
+msgid "Gradient direction"
+msgstr "Gradientretning"
+
+msgctxt "#49119"
+msgid "Which way the overlay fades. Away from the dialog picks the direction from where the dialog stands."
+msgstr "Hvilken vej overlayet toner ud. Væk fra dialogen vælger retningen ud fra, hvor dialogen står."
+
+msgctxt "#49120"
+msgid "Away from the dialog"
+msgstr "Væk fra dialogen"
+
+msgctxt "#49121"
+msgid "Top to bottom"
+msgstr "Top til bund"
+
+msgctxt "#49122"
+msgid "Side to side"
+msgstr "Side til side"
+
+msgctxt "#49123"
+msgid "Round"
+msgstr "Rund"
+
+msgctxt "#49124"
+msgid "Text outline"
+msgstr "Tekstkontur"
+
+msgctxt "#49125"
+msgid "Draw a dark line around the letters of texts that lie straight on the video (Float, Cinema band). With a mild shadow this stays readable on any picture. A design with an overlay behind it needs none and gets none."
+msgstr "Tegn en mørk linje rundt om bogstaverne i tekster, der ligger direkte på videoen. Med en mild skygge kan det læses på ethvert billede. Et layout med et overlay bag sig får ingen."
+
+msgctxt "#49126"
+msgid "Motion"
+msgstr "Bevægelse"
+
+msgctxt "#49127"
+msgid "Behaviour"
+msgstr "Adfærd"
+
+msgctxt "#49128"
+msgid "ABOUT THIS SETTING"
+msgstr "OM DENNE INDSTILLING"
+
+msgctxt "#49129"
+msgid "Distance from the edge"
+msgstr "Afstand fra kanten"
+
+msgctxt "#49130"
+msgid "Button the focus starts on"
+msgstr "Knap fokus starter på"
+
+msgctxt "#49131"
+msgid "How far a drawn skip dialog stands from the edge of the screen it sits at, in pixels of a 1080 screen. A design that lies against the edge (Corner slab, Side rail) keeps to the edge."
+msgstr "Hvor langt en tegnet spring over-dialog står fra den skærmkant, den sidder ved, i pixel på en 1080-skærm. Et layout, der ligger mod kanten, bliver ved kanten."
+
+msgctxt "#49132"
+msgid "Which button has the focus when the dialog opens. With Close, OK closes the dialog and one press of Left reaches Skip."
+msgstr "Hvilken knap der har fokus, når dialogen åbner. Med Luk lukker OK dialogen, og ét tryk på Venstre når Spring over."
+
+msgctxt "#49133"
+msgid "[B]Up / Down[/B]  choose a row      [B]Left / Right[/B]  pick      [B]OK[/B]  next choice      [B]Back[/B]  close without saving"
+msgstr "[B]Op / Ned[/B]  vælg en række      [B]Venstre / Højre[/B]  vælg      [B]OK[/B]  næste valg      [B]Tilbage[/B]  luk uden at gemme"
+
+msgctxt "#49134"
+msgid "Intro"
+msgstr "Intro"
+
+msgctxt "#49135"
+msgid "Credits"
+msgstr "Rulletekster"
+
+msgctxt "#49136"
+msgid "Nested"
+msgstr "Indlejret"
+
+msgctxt "#49137"
+msgid "Place on the screen"
+msgstr "Plads på skærmen"
+
+msgctxt "#49138"
+msgid "Top left"
+msgstr "Øverst til venstre"
+
+msgctxt "#49139"
+msgid "Top"
+msgstr "Øverst"
+
+msgctxt "#49140"
+msgid "Top right"
+msgstr "Øverst til højre"
+
+msgctxt "#49141"
+msgid "Left"
+msgstr "Venstre"
+
+msgctxt "#49142"
+msgid "Centre"
+msgstr "Midten"
+
+msgctxt "#49143"
+msgid "Right"
+msgstr "Højre"
+
+msgctxt "#49144"
+msgid "Bottom left"
+msgstr "Nederst til venstre"
+
+msgctxt "#49145"
+msgid "Bottom"
+msgstr "Nederst"
+
+msgctxt "#49146"
+msgid "Bottom right"
+msgstr "Nederst til højre"
+
+msgctxt "#49147"
+msgid "Skip dialog"
+msgstr "Spring over-dialog"
+
+msgctxt "#49148"
+msgid "A preset sets the design, its look and its colours in one step. Left and Right step through the presets; OK opens the wall with all of them, yours included."
+msgstr "En forudindstilling sætter layout, udseende og farver i ét trin. Venstre og Højre går gennem forudindstillingerne; OK åbner væggen med dem alle, også dine egne."
+
+msgctxt "#49149"
+msgid "Skin"
+msgstr "Skin"
+
+msgctxt "#49150"
+msgid "Design"
+msgstr "Design"
+
+msgctxt "#49151"
+msgid "Position"
+msgstr "Placering"
+
+msgctxt "#49152"
+msgid "Size"
+msgstr "Størrelse"
+
+msgctxt "#49153"
+msgid "Minimal position"
+msgstr "Minimal placering"
+
+msgctxt "#49154"
+msgid "Progress"
+msgstr "Fremdrift"
+
+msgctxt "#49155"
+msgid "The corner or edge the dialog sits in; the nine dots are the nine places of a drawn design. The classic card knows the four corners."
+msgstr "Hjørnet eller kanten dialogen sidder i; de ni prikker er de ni pladser i et tegnet layout. Det klassiske kort kender de fire hjørner."
+
+msgctxt "#49156"
+msgid "The corner the Minimal form sits in: it has a position of its own."
+msgstr "Hjørnet Minimal-formen sidder i: den har sin egen placering."
+
+msgctxt "#49157"
+msgid "Which segment the live preview shows: an intro, the credits, or a segment that lies inside another, which adds the line that says where Skip lands."
+msgstr "Hvilket segment forhåndsvisningen viser: en intro, rulleteksterne eller et segment inde i et andet, som tilføjer linjen der siger hvor Spring over lander."
+
+msgctxt "#49158"
+msgid "For the drawn designs: choose a Design other than Card to use it."
+msgstr "Til de tegnede layouts: vælg et andet design end Kort for at bruge den."
+
+msgctxt "#49159"
+msgid "For the classic Card only; the design in use does not have it."
+msgstr "Kun til det klassiske kort; det valgte design har den ikke."
+
+msgctxt "#49160"
+msgid "Not built for the drawn designs yet."
+msgstr "Ikke bygget til de tegnede layouts endnu."
+
+msgctxt "#49161"
+msgid "Light"
+msgstr "Let"
+
+msgctxt "#49162"
+msgid "A dark line around the letters of texts that lie straight on the video (Float, Cinema band), so they stay readable on any picture: Off, Light, Medium or Strong. A design with an overlay behind it gets none."
+msgstr "En mørk linje rundt om bogstaverne i tekster, der ligger direkte på videoen, så de kan læses på ethvert billede: Fra, Let, Middel eller Stærk. Et layout med et overlay bag sig får ingen."
+
+msgctxt "#49163"
+msgid "Not used with the choices made on this screen."
+msgstr "Bruges ikke med de valg, der er truffet på denne skærm."
+
+msgctxt "#49164"
+msgid "Preview segment type"
+msgstr "Segmenttype i forhåndsvisning"
+
+msgctxt "#49165"
+msgid "Time on the Skip button"
+msgstr "Tid på Spring over-knappen"
+
+msgctxt "#49166"
+msgid "Show the time on the Skip button of a drawn design. Skip Duration Format and Skip Duration Content say how it is written and whether it is the segment's length or the time left."
+msgstr "Vis tiden på Spring over-knappen i et tegnet layout. Varighedsformat og Varighedsindhold bestemmer, hvordan den skrives, og om det er segmentets længde eller resttiden."
+
+msgctxt "#49167"
+msgid "The segment type the live preview shows: step through all your types to see each in its own colour and wording. It is for the preview only and is not saved."
+msgstr "Segmenttypen forhåndsvisningen viser: gå gennem alle dine typer for at se hver i sin egen farve og ordlyd. Kun til forhåndsvisningen; gemmes ikke."
+
+msgctxt "#49168"
+msgid "Progress countdown"
+msgstr "Fremdrift tæller ned"
+
+msgctxt "#49169"
+msgid "%d segments"
+msgstr "%d segmenter"
+
+msgctxt "#49170"
+msgid "1 segment"
+msgstr "1 segment"
+
+msgctxt "#49171"
+msgid "HIGHLIGHTED SEGMENT · %s"
+msgstr "FREMHÆVET SEGMENT · %s"
+
+msgctxt "#49172"
+msgid "TIMELINE"
+msgstr "TIDSLINJE"
+
+msgctxt "#49173"
+msgid "SHOWING %s – %s"
+msgstr "VISER %s – %s"
+
+msgctxt "#49174"
+msgid "SEEK"
+msgstr "SØG"
+
+msgctxt "#49175"
+msgid "MARK"
+msgstr "MARKER"
+
+msgctxt "#49176"
+msgid "SEGMENTS AND FILE"
+msgstr "SEGMENTER OG FIL"
+
+msgctxt "#49177"
+msgid "LIVE VIDEO"
+msgstr "LIVE VIDEO"
+
+msgctxt "#49178"
+msgid "DARK OVERLAY: ON"
+msgstr "MØRKT OVERLAY: TIL"
+
+msgctxt "#49179"
+msgid "DARK OVERLAY: OFF"
+msgstr "MØRKT OVERLAY: FRA"
+
+msgctxt "#49180"
+msgid "[B]OK on a segment[/B]  jumps to its start      [B]Left[/B]  its nine actions      [B]Right[/B]  the timeline      [B]Back[/B]  asks to save"
+msgstr "[B]OK på et segment[/B]  hopper til starten      [B]Venstre[/B]  dets ni handlinger      [B]Højre[/B]  tidslinjen      [B]Tilbage[/B]  spørger om at gemme"
+
+msgctxt "#49181"
+msgid "NESTED"
+msgstr "INDLEJRET"
+
+msgctxt "#49182"
+msgid "OVERLAP"
+msgstr "OVERLAP"
+
+msgctxt "#49183"
+msgid "LOOK"
+msgstr "UDSEENDE"
+
+msgctxt "#49184"
+msgid "Dark overlay: on"
+msgstr "Mørkt overlay: til"
+
+msgctxt "#49185"
+msgid "Dark overlay: off"
+msgstr "Mørkt overlay: fra"
+
+msgctxt "#49186"
+msgid "Panels: %s"
+msgstr "Paneler: %s"
+
+msgctxt "#49187"
+msgid "Dark"
+msgstr "Mørk"
+
+msgctxt "#49188"
+msgid "Frost"
+msgstr "Frost"
+
+msgctxt "#49189"
+msgid "Clear"
+msgstr "Klar"
+
+msgctxt "#49190"
+msgid "Editor panels"
+msgstr "Editorens paneler"
+
+msgctxt "#49191"
+msgid "The look of the panels of the List and drawer editor: Fused Glass Dark, Frost or Clear. The Panels button in the editor's Look row steps through the same three."
+msgstr "Udseendet på panelerne i editoren Liste og skuffe: Fused Glass Dark, Frost eller Clear. Knappen Paneler i editorens række Udseende skifter mellem de samme tre."
+
+msgctxt "#49192"
+msgid "Up next"
+msgstr "Næste"
+
+msgctxt "#49193"
+msgid "Starts in %s"
+msgstr "Starter om %s"
+
+msgctxt "#49194"
+msgid "Up next in %s"
+msgstr "Næste om %s"
+
+msgctxt "#49195"
+msgid "Next"
+msgstr "Næste"
+
+msgctxt "#49196"
+msgid "%d min"
+msgstr "%d min"
+
+msgctxt "#49197"
+msgid "Play a later one"
+msgstr "Afspil en senere"
+
+msgctxt "#49198"
+msgid "Play %s"
+msgstr "Afspil %s"
+
+msgctxt "#49199"
+msgid "Compact"
+msgstr "Kompakt"
+
+msgctxt "#48387"
+msgid "Fused Glass Dark (legacy)"
+msgstr "Fused Glass Dark (legacy)"
+
+msgctxt "#48388"
+msgid "Fused Glass Frost (legacy)"
+msgstr "Fused Glass Frost (legacy)"
+
+msgctxt "#48389"
+msgid "Fused Glass Clear (legacy)"
+msgstr "Fused Glass Clear (legacy)"
+
+msgctxt "#48390"
+msgid "Fused Glass style (legacy)"
+msgstr "Fused Glass style (legacy)"
+
+msgctxt "#48391"
+msgid "Aeon (legacy)"
+msgstr "Aeon (legacy)"
+
+msgctxt "#48392"
+msgid "Aeon Glass (legacy)"
+msgstr "Aeon Glass (legacy)"
+
+msgctxt "#48393"
+msgid "Aeon Glass Fill (legacy)"
+msgstr "Aeon Glass Fill (legacy)"
+
+msgctxt "#48394"
+msgid "Fused Glass Bare (legacy)"
+msgstr "Fused Glass Bare (legacy)"
+
+msgctxt "#48395"
+msgid "Aeon Bare (legacy)"
+msgstr "Aeon Bare (legacy)"
+
+msgctxt "#48396"
+msgid "Fused Glass Compact (legacy)"
+msgstr "Fused Glass Compact (legacy)"
+
+msgctxt "#48397"
+msgid "Fused Glass style Compact (legacy)"
+msgstr "Fused Glass style Compact (legacy)"
+
+msgctxt "#48398"
+msgid "Aeon Compact (legacy)"
+msgstr "Aeon Compact (legacy)"
+
+msgctxt "#48399"
+msgid "Aeon Glass Compact (legacy)"
+msgstr "Aeon Glass Compact (legacy)"
+
+msgctxt "#49200"
+msgid "Autoplay"
+msgstr "Autoafspilning"
+
+msgctxt "#49201"
+msgid "Plot"
+msgstr "Handling"
+
+msgctxt "#49202"
+msgid "Episode line"
+msgstr "Episodelinje"
+
+msgctxt "#49203"
+msgid "Show logo"
+msgstr "Vis logo"
+
+msgctxt "#49204"
+msgid "Cancel button"
+msgstr "Annuller-knap"
+
+msgctxt "#49205"
+msgid "Options of Card (legacy)…"
+msgstr "Indstillinger for Kort (legacy)…"
+
+msgctxt "#49206"
+msgid "Same look as the skip dialog"
+msgstr "Samme udseende som spring over-dialogen"
+
+msgctxt "#49207"
+msgid "Fill shows on"
+msgstr "Fyld vises på"
+
+msgctxt "#49208"
+msgid "Follow the skin style"
+msgstr "Følg skinnets stil"
+
+msgctxt "#49209"
+msgid "Keep clear of subtitles"
+msgstr "Hold fri af undertekster"
+
+msgctxt "#49210"
+msgid "When there is no episode picture"
+msgstr "Når der ikke er et episodebillede"
+
+msgctxt "#49211"
+msgid "Time left"
+msgstr "Tid tilbage"
+
+msgctxt "#49212"
+msgid "All capitals"
+msgstr "Kun store bogstaver"
+
+msgctxt "#49213"
+msgid "Watch credits button"
+msgstr "Knappen Se rulletekster"
+
+msgctxt "#49214"
+msgid "Focus style"
+msgstr "Fokusstil"
+
+msgctxt "#49215"
+msgid "Bar"
+msgstr "Bjælke"
+
+msgctxt "#49216"
+msgid "Speed"
+msgstr "Hastighed"
+
+msgctxt "#49217"
+msgid "A preset is a design in a look. Left and Right step through all of them, your saved ones included; OK opens the list that loads, saves and deletes them."
+msgstr "En forudindstilling er et design i et udseende. Venstre og Højre går gennem dem alle, også dine gemte; OK åbner listen, der indlæser, gemmer og sletter dem."
+
+msgctxt "#49218"
+msgid "Watch credits"
+msgstr "Se rulletekster"
+
+msgctxt "#49219"
+msgid "Smooth"
+msgstr "Jævn"
+
+msgctxt "#49220"
+msgid "Steps"
+msgstr "Trin"
+
+msgctxt "#49221"
+msgid "Button"
+msgstr "Knap"
+
+msgctxt "#49222"
+msgid "Card"
+msgstr "Kort"
+
+msgctxt "#49223"
+msgid "Nothing"
+msgstr "Intet"
+
+msgctxt "#49224"
+msgid "Auto"
+msgstr "Automatisk"
+
+msgctxt "#49225"
+msgid "Accent"
+msgstr "Accent"
+
+msgctxt "#49226"
+msgid "Outline"
+msgstr "Kontur"

@@ -9,6 +9,7 @@ Flow:
 
 State is stored in Window(10000) properties to persist across invocations.
 """
+import skippy_modal_style
 import os
 import stat
 import time
@@ -387,6 +388,9 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
     CONTROL_FOOTER = 9103
 
     def __init__(self, *args, **kwargs):
+        # the look: the add-on's window style, or the one the caller names (the segment editor's own look)
+        self._style = kwargs.get("style")
+        skippy_modal_style.apply(self, style=self._style)  # before the window shows
         try:
             self._skin_resolution = init_window_xml_dialog(
                 super(SegmentTypePickerDialog, self), args
@@ -417,6 +421,7 @@ class SegmentTypePickerDialog(xbmcgui.WindowXMLDialog):
         self.list_control = None
 
     def onInit(self):
+        skippy_modal_style.apply(self, style=getattr(self, "_style", None))
         try:
             self.getControl(self.CONTROL_TITLE).setLabel(self.title)
         except Exception:
@@ -546,7 +551,7 @@ def pick_marker_option(addon, title, subtitle, options, footer=None):
     cancelled_result = True
     try:
         dialog = SegmentTypePickerDialog(
-            "SegmentMarkerTypePicker.xml",
+            skippy_modal_style.xml_name("SegmentMarkerTypePicker.xml", addon=addon),
             addon.getAddonInfo("path"),
             "default",
             title=title,

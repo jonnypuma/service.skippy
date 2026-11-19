@@ -740,7 +740,7 @@ class CompactFullLayoutTests(unittest.TestCase):
 
         window.getControl.side_effect = _get_control
         panel = _get_control(3080)
-        panel.getPosition.return_value = [1260, 930]
+        panel.getPosition.return_value = [1260, 620]
         settings = DictSettingsReader(
             {
                 "skip_dialog_mode": "Full",
@@ -751,9 +751,10 @@ class CompactFullLayoutTests(unittest.TestCase):
         )
         seg = build_customize_mock_segment(True)
         apply_full_skip_layout(window, settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value)
-        # Right corners are re-anchored for the label-sized width, keeping the Y.
+        # Right corners are re-anchored for the label-sized width, keeping the Y (the dialog fits
+        # above the bottom margin of the 720p canvas this test scales to).
         m = _expected_metrics(settings, seg, False, False, False)
-        controls[3080].setPosition.assert_called_with(1270 - m["panel_w"], 930)
+        controls[3080].setPosition.assert_called_with(1270 - m["panel_w"], 620)
         controls[3080].setWidth.assert_called_with(m["panel_w"])
         controls[3080].setHeight.assert_called()
         probed = [call.args[0] for call in window.getControl.call_args_list]
@@ -790,7 +791,7 @@ class CompactFullLayoutTests(unittest.TestCase):
             window, left_settings, MOCK_PLAYHEAD, seg, scale_fn=lambda value: value
         )
         # Left corners keep the 10px screen inset.
-        controls[3080].setPosition.assert_called_with(10, 930)
+        controls[3080].setPosition.assert_called_with(10, 620)
         # The preview window positions the panel itself, so it is never moved here.
         controls[3080].setPosition.reset_mock()
         apply_full_skip_layout(

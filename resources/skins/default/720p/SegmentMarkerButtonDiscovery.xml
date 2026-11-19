@@ -23,8 +23,7 @@
       <top>0</top>
       <width>1280</width>
       <height>720</height>
-      <texture>white.png</texture>
-      <colordiffuse>80000000</colordiffuse>
+      <texture border="0">ms_fgf_dim.png</texture>
     </control>
 
     <control type="group">
@@ -38,8 +37,7 @@
         <top>0</top>
         <width>780</width>
         <height>280</height>
-        <texture>white.png</texture>
-        <colordiffuse>F0202020</colordiffuse>
+        <texture border="28">ms_fgf_panel.png</texture>
       </control>
 
       <control type="label">
@@ -49,8 +47,8 @@
         <height>45</height>
         <label>Skippy Remote Button Discovery</label>
         <font>font30</font>
-        <textcolor>FFFFFFFF</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
       </control>
@@ -62,8 +60,8 @@
         <height>35</height>
         <label>Press the remote button to use for Segment Marker.</label>
         <font>font14</font>
-        <textcolor>FFB0D4E8</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>
@@ -75,8 +73,8 @@
         <height>35</height>
         <label>Plain keyboard character input is ignored.</label>
         <font>font14</font>
-        <textcolor>FFFFFFFF</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>
@@ -88,8 +86,8 @@
         <height>35</height>
         <label>Skippy stores accepted raw codes as key:&lt;code&gt; and closes automatically.</label>
         <font>font14</font>
-        <textcolor>FFFFFFFF</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>
@@ -101,8 +99,8 @@
         <height>30</height>
         <label>Back/Esc cancels.</label>
         <font>font12</font>
-        <textcolor>FFB0B0B0</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>

@@ -37,8 +37,7 @@
       <top>0</top>
       <width>1280</width>
       <height>720</height>
-      <texture>white.png</texture>
-      <colordiffuse>80000000</colordiffuse>
+      <texture border="0">ms_fgf_dim.png</texture>
     </control>
 
     <control type="group">
@@ -52,19 +51,11 @@
         <top>0</top>
         <width>640</width>
         <height>500</height>
-        <texture>white.png</texture>
-        <colordiffuse>F0202020</colordiffuse>
+        <texture border="28">ms_fgf_panel.png</texture>
       </control>
 
       <!-- Heading stripe (matches Segment Editor button-row darkening) -->
-      <control type="image">
-        <left>0</left>
-        <top>0</top>
-        <width>640</width>
-        <height>52</height>
-        <texture>white.png</texture>
-        <colordiffuse>E0000000</colordiffuse>
-      </control>
+
 
       <control type="label" id="9101">
         <left>30</left>
@@ -73,8 +64,8 @@
         <height>40</height>
         <label>Choose segment type</label>
         <font>font30</font>
-        <textcolor>FFFFFFFF</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
       </control>
@@ -86,8 +77,8 @@
         <height>30</height>
         <label>Choose the label for the marked segment.</label>
         <font>font14</font>
-        <textcolor>FFB0D4E8</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>
@@ -105,8 +96,8 @@
             <height>32</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font14</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+            <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <aligny>center</aligny>
@@ -118,7 +109,7 @@
             <top>0</top>
             <width>580</width>
             <height>44</height>
-            <texture>button_focus.png</texture>
+            <texture border="14">ms_fgf_focus.png</texture>
           </control>
           <control type="label">
             <left>16</left>
@@ -127,8 +118,8 @@
             <height>32</height>
             <label>$INFO[ListItem.Label]</label>
             <font>font14</font>
-            <textcolor>FFFFFFFF</textcolor>
-            <shadowcolor>FF000000</shadowcolor>
+            <textcolor>$INFO[Window.Property(ms_text_focus)]</textcolor>
+            <shadowcolor>00000000</shadowcolor>
             <shadowoffsetx>1</shadowoffsetx>
             <shadowoffsety>1</shadowoffsety>
             <aligny>center</aligny>
@@ -137,14 +128,7 @@
       </control>
 
       <!-- Footer stripe -->
-      <control type="image">
-        <left>0</left>
-        <top>424</top>
-        <width>640</width>
-        <height>76</height>
-        <texture>white.png</texture>
-        <colordiffuse>E0000000</colordiffuse>
-      </control>
+
 
       <control type="label" id="9103">
         <left>30</left>
@@ -153,8 +137,8 @@
         <height>36</height>
         <label>Enter/OK selects. Back/Esc cancels.</label>
         <font>font12</font>
-        <textcolor>FFB0B0B0</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
       </control>

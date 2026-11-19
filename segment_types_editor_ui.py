@@ -2,6 +2,7 @@
 """WindowXML editor for the segment-types catalog (draft until Save)."""
 from __future__ import annotations
 
+import skippy_modal_style
 import xbmcgui
 
 from addon_skin_resolution import (
@@ -42,6 +43,7 @@ _CANCEL_ACTIONS = (10, 92, 216)
 
 class SegmentTypesEditor(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skippy_modal_style.apply(self)  # before the window shows
         self._skin_resolution = init_window_xml_dialog(
             super(SegmentTypesEditor, self), args
         )
@@ -110,6 +112,7 @@ class SegmentTypesEditor(xbmcgui.WindowXMLDialog):
                 pass
 
     def onInit(self):
+        skippy_modal_style.apply(self)
         asked = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
             self, asked, control_ids=(SEGMENT_TYPES_LIST_PROBE_ID,)
@@ -314,7 +317,7 @@ def show_segment_types_editor():
         return False
     path = addon.getAddonInfo("path")
     dialog = SegmentTypesEditor(
-        "SegmentTypesEditor.xml", path, "default", addon=addon
+        skippy_modal_style.xml_name("SegmentTypesEditor.xml", addon=addon), path, "default", addon=addon
     )
     dialog.doModal()
     saved = bool(getattr(dialog, "_saved", False))

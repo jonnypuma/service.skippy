@@ -439,12 +439,52 @@ Classic panel: optional skip/close icons, **Skip** and **Close** buttons, option
 
 Same SkipDialog XML and Full-mode styles (button focus, skip label format, corner) without the black card. Ending text and skip/close icons are always off. Skip and Close sit in a pill cluster sized to the label (Close can still be hidden). Optional next-jump line and a **4px** progress bar stay under the cluster. **Combined skip and progress** (Full and Compact Full) hides Close and draws the focus texture as a fill inside the Skip button instead of a separate bar. Compact Full is for a sleeker Full prompt, not a replacement for Minimal’s plate chip.
 
+### Skip dialog layouts
+
+**Skip dialog layout** (Playback & Dialog, Custom dialog type) chooses how the skip dialog is built:
+
+| Layout | What it is |
+| ------ | ---------- |
+| **Card** | The classic dialog (the default): the presets, **Customize Skip Dialog** and every card option belong to it. |
+| **Stack card** | Drawn by Skippy itself: type and range with an accent dot, the time left, the nested line in its own box, the bar, Skip (with the time at its right) and Close. Its own options: **Corners**, **Close button** (without it Skip takes the whole row), **Icons on the buttons**, **Type and range line**, **Nested line**. |
+| **Corner slab** | A slab in the corner of the screen with the bar along its top edge. |
+| **Dial** | The time left as a ring, on a soft shade. |
+| **Cinema band** | A band across the whole screen: words left, buttons right, one long bar. |
+| **Float** | No box: large text straight on the picture, the ring inside the Skip button. |
+| **Split** | What is playing, a big Skip tile that fills up, and close. |
+| **Timeline** | The segment as a track with the playhead and a mark where Skip lands. |
+| **Side rail** | A tab on the side of the screen with a ring and stacked buttons. |
+| **Poster card** | The poster of the show or film that is playing at the left, texts, bar and buttons beside it. |
+
+Every layout but Card has three forms: **Full** mode shows the large one, **Compact Full** the small one, and **Minimal** the smallest (the Skip button and how far the segment is, built like its family). Only the Card layout keeps the classic Minimal chip and its plate styles. **Layout look** gives them one of the looks of the skin Aeon Fuse: Fused Glass Dark, Fused Glass Frost (the default), Fused Glass Clear, Fused Glass style, Aeon or Aeon Glass. After those come twelve looks of their own: Neon, Paper, Sunset, Ocean, Brutal, Terminal, Wireframe, Luxe, Pastel, Gloss, Mono and VHS. Paper, Brutal and Pastel have a light card with dark text; in the layouts that sit straight on the video (Dial, Cinema band, Float) their text turns light. All looks use the font of the active skin.
+
+**Background overlay** puts a shade behind a new layout so it reads on a bright picture: None (the default), Square, Square fading, Rounded, Rounded fading, Band or Corner glow; the shade follows the corner the dialog sits in, and Cinema band (which has its own band) takes none. **Appears** (Fade, Rise, Pop, Slide in) and **Leaves** (Fade, Drop, Shrink) choose how a new layout comes and goes, and **Pulse in the last five seconds** makes it beat once a second at the end of a segment. In the Studio these four rows are on the Layout tab; its preview shows the overlay but does not play the motion. **Bar colour** colours their progress by the kind of segment (gold for an intro, blue for a recap, as in the segment editor) or by the look. They follow **Skip Dialog Position**, **Skip Button Format**, the duration settings and **Progress bar shows remaining**; the options of the card (font colour, card, bar style, focus style and so on) are for the Card layout only.
+
+**Text outline** (Off, Light, Medium, Strong) draws a dark line around the letters of texts that lie straight on the video, as in Cinema band and Float, and **Text shadow** (Off, Mild, Medium, Strong, Heavy) sets the shadow under them; the outline with a mild shadow is the default. A layout with an overlay behind it gets the mild shadow alone. **Text size** (Small, Standard, Large, Larger) scales the texts of a drawn layout, and its buttons grow with them. When a layout already names the segment type, its button says **Skip** alone; a Minimal form keeps the full label.
+
+**Size on screen** (Small, Medium, Large) scales a drawn layout as one piece. **Accent colour** sets the colour of its bar, dot and arrow; **Progress style** shows the time left as the layout's own, a line, a circle or a fill of the Skip button; **Overlay gradient** with **Gradient direction** lets a Square or Rounded overlay fade out towards the picture.
+
+**Distance from the edge** sets how far a drawn layout stands from the screen edge, **Button the focus starts on** chooses Skip or Close, and **Position** has nine places for a drawn layout (corners, edges, centre). In the Customize screen the choices stand in six tabs (Look, Layout, Text, Buttons, Motion, Behaviour); the panel under the live preview says what the row in focus does.
+
+**Appears**, **Leaves** and **Pulse in the last five seconds** move a drawn layout as one piece, and the live preview of the Customize screen plays them with a countdown that runs.
+
+A new installation shows the **Stack card in Fused Glass Dark**. A built-in preset of a drawn layout is the layout as drawn: choosing it sets the layout's own options back, and a preset you save keeps them. **Time on the Skip button** switches the time on a drawn layout's Skip button on or off, whatever Skip Button Format says.
+
+Every new layout in every look is also a **preset** with its own name, such as *Dial · Fused Glass Frost* or *Timeline · Neon* (144 in all); they lead the preset list, look by look. Choosing one sets the layout, its look and the bar colour (by segment kind for the looks of the skin, the look's own colour for the twelve others); choosing a card preset goes back to the Card layout. Presets you save remember the layout too.
+
+**Customize Skip Dialog** (the Studio) has both choices as rows on its Look tab and shows the chosen layout on a small screen in the look you picked; with a new layout its tabs keep only the rows that apply.
+
+The Studio is three panels in the Fused Glass Dark look: the settings in six tabs (Look, Layout, Text, Buttons, Motion, Behaviour) with Save, Save as preset and Reset; a live preview of the whole screen; and under it what the row in focus does, or a strip of presets while the Preset row has the focus. **OK** on the **Preset** row opens the **preset wall**: every preset as a picture, twelve to a page (arrows and Page up / Page down move, OK takes it, Back keeps the current one, a gold line marks the one in use); its last tile opens the list that saves, deletes, exports and imports presets. Up from the first row reaches the tabs; Left / Right changes a row or opens the next tab; Back closes without saving. The list screen of earlier versions opens with `RunScript(service.skippy,customize_skip_dialog_classic)`.
+
+The skin files (`SkipLayout_*.xml`) and their pictures (`sl_*.png`) are written by `tools/gen_skip_layouts.py`; `skip_layouts.py` holds the layouts and looks.
+
 ### Presets, card background and new textures (Custom mode)
 
 **Skip dialog look** (Playback & Dialog, and the **Preset** row at the top of **Customize Skip Dialog**) applies a ready-made look. From the settings action, the chosen preset opens in **Customize Skip Dialog** as a live preview; nothing is stored until you press **Save** (Cancel keeps your old look):
 
 | Style | Presets |
 | ----- | ------- |
+| Aeon Fuse | **Fused Glass Dark**, **Fused Glass Frost**, **Fused Glass Clear** (rounded glass card, white highlight with black text), **Fused Glass style** (square card with hairlines, highlight with a white bar at the left, all caps), **Aeon** (black card, hard white highlight, all caps), **Aeon Glass** (see-through card, glass highlight), **Aeon Glass Fill** (the button fills up as the bar), **Fused Glass Bare**, **Aeon Bare** (no card), **Fused Glass Compact**, **Fused Glass style Compact**, **Aeon Compact**, **Aeon Glass Compact**, and a Minimal chip per look: **Fused Glass Dark Minimal**, **Fused Glass Frost Minimal**, **Fused Glass Clear Minimal**, **Fused Glass style Minimal**, **Aeon Minimal**, **Aeon Glass Minimal** |
 | Glossy / 3D | **Classic** (the original look), **Stylish** (graphite, all caps), **Colorful** (violet 3D, pink→blue progress) |
 | Flat / matte | **Modern** (flat blue, thin bar, translucent card), **Vibrant** (flat violet, aurora gradient bar), **Mono** (slate, all caps, hairline white bar), **Slate** (muted grey-blue), **Sunset** (flat orange, sunset gradient bar), **Stripes** (flat orange, striped bar), **Segments** (flat teal, segmented bar) |
 | Metal / gold | **Steel** (brushed steel pill, all caps), **Gold** (gold-leaf pill and gold bar on a dim card, all caps) |
@@ -454,13 +494,15 @@ Same SkipDialog XML and Full-mode styles (button focus, skip label format, corne
 | Compact | **Sleek** (Compact Full, combined flat teal), **Clean** (Compact Full, underline focus), **Pill** (Compact Full, combined glass-blue capsule), **Underline** (Compact Full, cyan underline, teal bar) |
 | Minimal | **Minimalist** (flat white plate), **Minimal Dark**, **Minimal Glass**, **Minimal Color**, **Minimal Paper** (light grey plate, dark text), **Minimal Pastel** (mint plate, dark text), **Minimal Steel**, **Minimal Gold**, **Minimal Neon**, **Minimal Frosted**, **Minimal Sunset**, **Minimal Midnight** (pale-blue text), **Minimal Cyberpunk** (deep pink, all caps), **Minimal Coffee** (mustard plate, dark brown text) |
 
+The drawn layouts come first in the list and your saved presets follow. The presets of the classic card close it, the Aeon Fuse looks first and then those of earlier versions; all of them are shown with **(legacy)** after their name, and look as they always did.
+
 A preset only changes the *look* (mode, textures, font colour, all caps, card, label format, progress style/height, Close and icon toggles). Your corner placement, **Ignore overlapping segments**, countdown and duration settings are left alone. In the Customize screen the Preset row shows **Custom** as soon as you change anything; pressing **Save** on a Custom look asks for a name and stores it as your own preset (cancel the name box to save the settings only); use **left/right** to step through presets with a live preview, or **OK** to open the list.
 
 **Save your own:** in the preset list choose **Save current look as preset…**, type a name, and it appears in the list as *Name (saved)*. Saving over a saved name asks first; built-in names cannot be reused. **Delete a saved preset…** removes one. Saved presets live in `addon_data/service.skippy/skip_dialog_presets.json` and are included in **Backup profile data** (restore adds presets you do not already have).
 
-**Card background:** **Show card background** and **Card opacity (%)** (default 95, steps of 5) control the dark panel behind Full mode. Turn the card off for a floating button and bar, or lower the opacity for a see-through panel. Compact Full and Minimal never draw the card.
+**Card background:** **Show card background** and **Card opacity (%)** (default 95, steps of 5) control the dark panel behind Full mode. Turn the card off for a floating button and bar, or lower the opacity for a see-through panel. Compact Full and Minimal never draw the card. **Card style** chooses its shape: **Flat** (the plain black card, the default), **Rounded**, or one of the Aeon Fuse looks (**Fused Glass Dark**, **Fused Glass Frost**, **Fused Glass Clear**, **Fused Glass style**, **Aeon Glass**); a look keeps its own colours and the opacity only fades it. In **Customize Skip Dialog** the Card row is called **Card style** and starts with **Off**. The next episode popup draws the same card when its look uses one.
 
-**Textures:** the flat, glass, outline and underline button styles, the flat and gradient progress fills and the matte/glass/gradient minimal plates are generated by `tools/gen_preset_textures.py`. Flat button focus art is authored at 2x (128×50) and 9-sliced, so it stays crisp at 1080p. Underline styles have no side caps. *Combined skip and progress* uses the button texture as the fill, so solid or glass styles read best there.
+**Textures:** the card pictures, highlights, bars and plates of the Aeon Fuse presets are generated by `tools/gen_fuse_preset_textures.py`. The flat, glass, outline and underline button styles, the flat and gradient progress fills and the matte/glass/gradient minimal plates are generated by `tools/gen_preset_textures.py`. Flat button focus art is authored at 2x (128×50) and 9-sliced, so it stays crisp at 1080p. Underline styles have no side caps. *Combined skip and progress* uses the button texture as the fill, so solid or glass styles read best there.
 
 ### Next jump line (Full and Compact Full)
 
@@ -611,6 +653,14 @@ if True:  # triggers skip dialog
 
 ---
 
+## Segment editor layouts
+
+**Segment Editor > Editor layout** chooses how the editor sits over the video. **List and drawer** (the default) puts the segments in a list at the left and everything else in a drawer along the bottom. Its rows are one line each (from – to, length, source, and a flag when a segment lies inside or runs into another); its timeline shows the stretch of the file around the highlighted segment, with a thin bar over it for the whole file. **Drawer** puts everything in one drawer along the bottom, with the segments as a row of chips. **Classic** is the large panel. Every button is in all three. The two new layouts also show a timeline: a coloured block per segment, the playhead, and a mark under the highlighted segment.
+
+## Window style
+
+**Segment Settings > Window style** chooses the look of Skippy's own windows: the segment editor, the segment type picker, the segment types editor, the source picker, the statistics and list windows, and the two Customize screens. The choices are the looks of the Aeon Fuse skin: **Fused Glass - Dark**, **Fused Glass - Frost** (the default), **Fused Glass - Clear**, **Aeon** and **Aeon Glass**. The skip dialog and the next episode popup are not affected; they have their own presets and looks. A change takes effect the next time a window opens. Kodi cannot blur the video behind an add-on window, so Frost is a lighter panel rather than a blurred one.
+
 ## Settings
 
 Found under:  
@@ -704,6 +754,8 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | next_episode_use_provider_data | Advanced: use the next episode a video add-on announces with Up Next's `upnext_data` signal, also for add-on and stream videos (default on) |
 | next_episode_popup_style | Basic: **Custom** popup or **Native toast** (default Custom) |
 | settings_action_customize_next_episode_popup | Button: Customize next episode popup (style, position, picture, time left, progress bar, with Preview; Save commits, Cancel discards) |
+| next_episode_popup_layout | Standard, Custom style: Card (default), Poster card, Picture slab, Play ring, Lower third, Float, Side rail, Takeover (the next episode's fanart takes the whole screen, with the show's logo and a large title) or Queue (the next three library episodes side by side: Left / Right pick one, OK plays it, the countdown plays the first) |
+| next_episode_popup_layout_look | Standard, Custom style: the look of a new popup layout: Fused Glass Dark, Frost (default), Clear, Fused Glass style, Aeon, Aeon Glass, or one of the twelve own looks (Neon, Paper, Sunset, Ocean, Brutal, Terminal, Wireframe, Luxe, Pastel, Gloss, Mono, VHS) |
 | next_episode_popup_look | Standard, Custom style: Default, Same as skip dialog, or one of the skip dialog presets (default Default) |
 | next_episode_popup_text_color | Standard, Custom style: text colour of the episode line, the countdown and the buttons, or Same as look (default) |
 | next_episode_popup_heading_color | Advanced, Custom style: colour of the "Play next episode?" line, or Same as look (default) |
@@ -714,6 +766,7 @@ Skippy assigns each option a **visibility level** (Basic through Expert) for Kod
 | next_episode_popup_position | Standard, Custom style: BottomRight, TopRight, TopLeft or BottomLeft (default BottomRight) |
 | next_episode_popup_size | Standard, Custom style: Normal or Large, a quarter bigger popup for a TV you watch from far away (default Normal) |
 | next_episode_popup_thumbnail | Standard, Custom style: show the next episode's picture (default on) |
+| next_episode_popup_picture | Standard, Custom style: which picture: Episode picture (default), Poster, Poster and episode (side by side at one height, round corners), Fanart behind the popup, Fanart and poster, or Fanart and episode |
 | next_episode_popup_countdown | Standard, Custom style: show **Episode ends in …** (default on) |
 | next_episode_popup_progress | Standard, Custom style: show the progress bar (default on) |
 | next_episode_popup_focus | Advanced, Custom style: button focused first, **Play now** or **Close** (default Play now) |

@@ -37,6 +37,7 @@ from service_skip_seek_property import mark_skippy_skipping
 from skin_properties import active_segment, skin_draws_skip_button
 from skip_dialog_native import is_native_skip_dialog, show_native_skip_dialog
 from skipdialog import SkipDialog
+import skip_layouts
 
 
 # Max chained seeks in one tick (recap→intro→…); prevents runaway auto-skip loops.
@@ -609,6 +610,16 @@ def _handle_ask_skip(
             else:
                 layout_value = ctx.skip_dialog_layout_suffix(addon, "skip_dialog_position")
                 dialog_name = "SkipDialog_%s.xml" % layout_value
+            # Any layout but the classic card is a skin file and a dialog class of its own.
+            layout = None
+            try:
+                from skip_layout_dialog import SkipLayoutDialog, layout_for
+
+                layout = layout_for(addon)
+            except Exception as e:
+                log("⚠️ Skip dialog layout not usable, using the card: %s" % e)
+            if layout is not None:
+                dialog_name = layout.xml
             log("📐 Using skip dialog (%s): %s" % (dialog_mode, dialog_name))
 
             try:
@@ -617,9 +628,23 @@ def _handle_ask_skip(
                 log("⚠️ Failed to update skip dialog skin XML: %s" % e)
 
             try:
-                dialog = SkipDialog(
-                    dialog_name, addon.getAddonInfo("path"), "default", segment=segment
-                )
+                if layout is not None:
+                    dialog_class = SkipLayoutDialog
+                    if getattr(layout, "canvas", False):
+                        from skip_canvas_dialog import SkipCanvasDialog as dialog_class
+                    dialog = dialog_class(
+                        dialog_name,
+                        addon.getAddonInfo("path"),
+                        "default",
+                        segment=segment,
+                        layout=layout,
+                        look=addon_get_setting_text(addon, skip_layouts.KEY_LOOK, skip_layouts.DEFAULT_SKIP_LOOK),
+                        position=ctx.skip_dialog_layout_suffix(addon, "skip_dialog_position"),
+                    )
+                else:
+                    dialog = SkipDialog(
+                        dialog_name, addon.getAddonInfo("path"), "default", segment=segment
+                    )
             except Exception as e:
                 log("❌ Failed to create skip dialog: %s" % e)
                 monitor.prompted.add(seg_id)

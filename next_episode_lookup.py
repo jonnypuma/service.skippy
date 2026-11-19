@@ -46,6 +46,10 @@ _MOVIE_CURRENT_PROPERTIES = ["setid", "year", "file", "playcount"]
 _MOVIE_SET_PROPERTIES = ["title", "sorttitle", "year", "file", "playcount", "art", "setid", "plot"]
 # Wide pictures only: the popup's picture box is 16:9, a poster would be cropped.
 _THUMB_KEYS = ("thumb", "landscape", "fanart", "tvshow.landscape", "tvshow.fanart")
+# The poster and the fanart for the popup's picture choices.
+_POSTER_KEYS = ("tvshow.poster", "season.poster", "poster")
+_LOGO_KEYS = ("tvshow.clearlogo", "clearlogo")
+_FANART_KEYS = ("fanart", "tvshow.fanart", "landscape")
 # A movie's "thumb" is its poster, so only the wide pictures count.
 _MOVIE_THUMB_KEYS = ("landscape", "fanart")
 # Movies without a year go last in their collection.
@@ -227,6 +231,8 @@ def find_movie_successor(item, *, skip_watched=False, current=None) -> Optional[
         "year": parse_int(row.get("year")),
         "file": row.get("file") or "",
         "thumb": pick_thumb(row.get("art"), _MOVIE_THUMB_KEYS),
+        "poster": pick_thumb(row.get("art"), _POSTER_KEYS),
+        "fanart": pick_thumb(row.get("art"), _FANART_KEYS),
         "plot": row.get("plot") or "",
     }
 
@@ -297,8 +303,35 @@ def find_library_successor(item, *, skip_watched=False, current=None) -> Optiona
         "episode": parse_int(details.get("episode", row.get("episode"))),
         "file": details.get("file") or row.get("file") or "",
         "thumb": pick_thumb(details.get("art")),
+        "poster": pick_thumb(details.get("art"), _POSTER_KEYS),
+        "fanart": pick_thumb(details.get("art"), _FANART_KEYS),
+        "logo": pick_thumb(details.get("art"), _LOGO_KEYS),
+        "tvshowid": _positive_int(details.get("tvshowid")) or current["tvshowid"],
         "plot": details.get("plot") or "",
     }
+
+
+def find_queue(first, count=3, *, skip_watched=False) -> list:
+    """``first`` (the next episode) and the library episodes that follow it, ``count`` at most.
+    Anything that is not a library episode has no known successors and stands alone."""
+    out = [first] if first else []
+    current = first or {}
+    while out and len(out) < int(count):
+        if current.get("source") != SOURCE_LIBRARY or not current.get("tvshowid"):
+            break
+        try:
+            following = find_library_successor(None, skip_watched=skip_watched, current={
+                "id": current.get("episodeid"), "tvshowid": current.get("tvshowid"),
+                "season": current.get("season"), "episode": current.get("episode"),
+                "file": current.get("file") or "", "playcount": None,
+            })
+        except Exception:
+            following = None
+        if not following:
+            break
+        out.append(following)
+        current = following
+    return out
 
 
 def find_playlist_successor() -> Optional[dict]:
@@ -347,6 +380,8 @@ def find_playlist_successor() -> Optional[dict]:
         "episode": parse_int(nxt.get("episode")),
         "file": nxt.get("file") or "",
         "thumb": pick_thumb(nxt.get("art")),
+        "poster": pick_thumb(nxt.get("art"), _POSTER_KEYS),
+        "fanart": pick_thumb(nxt.get("art"), _FANART_KEYS),
     }
 
 

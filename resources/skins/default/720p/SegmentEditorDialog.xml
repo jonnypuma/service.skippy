@@ -47,8 +47,7 @@
         <top>0</top>
         <width>1170</width>
         <height>585</height>
-        <texture>white.png</texture>
-        <colordiffuse>F0202020</colordiffuse>
+        <texture border="28">ms_fgf_panel.png</texture>
       </control>
 
       <!-- Title banner (top-left, proportional — do not stretch full width) -->
@@ -69,8 +68,8 @@
         <height>30</height>
         <label>Current Time: --:--:--</label>
         <font>font16</font>
-        <textcolor>FFB0D4E8</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text2)]</textcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>left</align>
@@ -85,7 +84,7 @@
         <label></label>
         <font>font14</font>
         <textcolor>FFFFAA00</textcolor>
-        <shadowcolor>FF000000</shadowcolor>
+        <shadowcolor>$INFO[Window.Property(ms_shadow)]</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <align>left</align>
@@ -108,7 +107,7 @@
             <height>25</height>
             <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
             <align>left</align>
           </control>
           <control type="label">
@@ -118,7 +117,7 @@
             <height>20</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
-            <textcolor>FFB0B0B0</textcolor>
+            <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
             <align>left</align>
             <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
           </control>
@@ -151,7 +150,7 @@
             <top>0</top>
             <width>1140</width>
             <height>50</height>
-            <texture colordiffuse="40FFFFFF">white.png</texture>
+            <texture border="14">ms_fgf_row.png</texture>
           </control>
           <control type="label">
             <left>10</left>
@@ -160,7 +159,7 @@
             <height>25</height>
             <label>Segment $INFO[ListItem.Property(segment_num)] - $INFO[ListItem.Property(label)] - $INFO[ListItem.Property(start_hms)] to $INFO[ListItem.Property(end_hms)]</label>
             <font>font12</font>
-            <textcolor>FFFFFFFF</textcolor>
+            <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
             <align>left</align>
             <scroll>true</scroll>
           </control>
@@ -171,7 +170,7 @@
             <height>20</height>
             <label>$INFO[ListItem.Label2]</label>
             <font>font10</font>
-            <textcolor>FFB0B0B0</textcolor>
+            <textcolor>$INFO[Window.Property(ms_text3)]</textcolor>
             <align>left</align>
             <scroll>true</scroll>
             <visible>String.IsEqual(ListItem.Property(segment_type),normal)</visible>
@@ -211,11 +210,11 @@
         <height>30</height>
         <label>Start@Curr</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -233,11 +232,11 @@
         <height>30</height>
         <label>End@Curr</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -255,11 +254,11 @@
         <height>30</height>
         <label>Snap Start</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -277,11 +276,11 @@
         <height>30</height>
         <label>Snap End</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -299,11 +298,11 @@
         <height>30</height>
         <label>Merge</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -321,11 +320,11 @@
         <height>30</height>
         <label>Split</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -343,11 +342,11 @@
         <height>30</height>
         <label>Fix Ovl</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -365,11 +364,11 @@
         <height>30</height>
         <label>Edit</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -387,11 +386,11 @@
         <height>30</height>
         <label>Del</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -403,15 +402,6 @@
         <ondown>5000</ondown>
       </control>
 
-      <!-- Darkening overlay for bottom button rows (seek, mark, and action rows) -->
-      <control type="image">
-        <left>0</left>
-        <top>445</top>
-        <width>1170</width>
-        <height>140</height>
-        <texture>white.png</texture>
-        <colordiffuse>E0000000</colordiffuse>
-      </control>
 
       <!-- Row 1: Seek controls (-10m … Resume … +10m) -->
       <control type="button" id="5031">
@@ -421,11 +411,11 @@
         <height>30</height>
         <label>-10m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -443,11 +433,11 @@
         <height>30</height>
         <label>-5m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -466,11 +456,11 @@
         <height>30</height>
         <label>-1m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -489,11 +479,11 @@
         <height>30</height>
         <label>-30s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -512,11 +502,11 @@
         <height>30</height>
         <label>-10s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -535,11 +525,11 @@
         <height>30</height>
         <label>-5s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -558,11 +548,11 @@
         <height>30</height>
         <label>-1s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -581,11 +571,11 @@
         <height>30</height>
         <label>Pause</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -604,11 +594,11 @@
         <height>30</height>
         <label>+1s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -627,11 +617,11 @@
         <height>30</height>
         <label>+5s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -650,11 +640,11 @@
         <height>30</height>
         <label>+10s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -673,11 +663,11 @@
         <height>30</height>
         <label>+30s</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -696,11 +686,11 @@
         <height>30</height>
         <label>+1m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -719,11 +709,11 @@
         <height>30</height>
         <label>+5m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -742,11 +732,11 @@
         <height>30</height>
         <label>+10m</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -765,11 +755,11 @@
         <height>30</height>
         <label>Set as Start</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -787,11 +777,11 @@
         <height>30</height>
         <label>Set to Start of File</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -810,11 +800,11 @@
         <height>30</height>
         <label>Set as End</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -833,11 +823,11 @@
         <height>30</height>
         <label>Set to End of File</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -856,11 +846,11 @@
         <height>30</height>
         <label>Create</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -879,11 +869,11 @@
         <height>30</height>
         <label>Start at End of Segment</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -902,11 +892,11 @@
         <height>30</height>
         <label>End at Start of Segment</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -925,11 +915,11 @@
         <height>30</height>
         <label>Jump To</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -947,11 +937,11 @@
         <height>30</height>
         <label>Add Current + User Set Time</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -970,11 +960,11 @@
         <height>30</height>
         <label>Manual Start + End Times</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -993,11 +983,11 @@
         <height>30</height>
         <label>Delete All</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -1016,11 +1006,11 @@
         <height>30</height>
         <label>Undo</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -1039,11 +1029,11 @@
         <height>30</height>
         <label>Upload</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -1062,11 +1052,11 @@
         <height>30</height>
         <label>Save</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>
@@ -1085,11 +1075,11 @@
         <height>30</height>
         <label>Exit</label>
         <font>font10</font>
-        <textcolor>lightgrey</textcolor>
-        <textcolorfocus>FFFFFFFF</textcolorfocus>
-        <texturenofocus>-</texturenofocus>
-        <texturefocus>button_focus.png</texturefocus>
-        <shadowcolor>FF000000</shadowcolor>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgf_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgf_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>
         <aligny>center</aligny>

@@ -35,6 +35,10 @@ KEY_END_ACTION = "next_episode_popup_end_action"
 MAX_POPUP_DURATION_S = 120
 # What the prompt returns when its countdown ran out; True / False / None keep their meaning.
 TIMED_OUT = "timed_out"
+# Watch credits: the prompt goes away now and the next episode starts when this one has run to its end.
+AFTER_CREDITS = "after_credits"
+# How long before the end of the file that start is made (inside the prompt's window, which ends END_GUARD_S before it).
+AFTER_CREDITS_LEAD_S = 3.5
 
 
 @dataclass
@@ -47,6 +51,8 @@ class NextEpisodeState:
     # "episode" or "movie": what is playing, which decides how it is marked as watched.
     current_kind: str = "episode"
     dismissed: bool = False
+    after_credits: bool = False  # Watch credits was chosen: play the next one at the end
+    preloaded: bool = False  # what the popup needs was made ready ahead of time (once per episode)
     started: bool = False
     failed: bool = False
     last_prompt_mono: float = 0.0
@@ -139,6 +145,7 @@ def rearm_if_before_window(
         return False
     changed = state.dismissed or state.started or state.failed
     state.dismissed = False
+    state.after_credits = False
     state.started = False
     state.failed = False
     reset_guard(state)

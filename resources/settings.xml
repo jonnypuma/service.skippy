@@ -2,6 +2,23 @@
 <settings version="1">
     <section id="service.skippy">
         <category id="segments" label="30000">
+            <group id="g_windows" label="49000">
+                <setting id="modal_style" type="string" label="49001" help="49002">
+                    <level>0</level>
+                    <default>fg_frost</default>
+                    <constraints>
+                        <options>
+                            <option label="Fused Glass - Dark">fg_dark</option>
+                            <option label="Fused Glass - Frost">fg_frost</option>
+                            <option label="Fused Glass - Clear">fg_clear</option>
+                            <option label="Aeon">aeon</option>
+                            <option label="Aeon Glass">aeon_glass</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                </setting>
+            </group>
             <group id="g_seg_keywords" label="31010">
                 <setting id="settings_action_edit_segment_types" type="action" label="32106" help="32107">
                     <level>0</level>
@@ -335,6 +352,302 @@
                     </constraints>
                     <control type="spinner" format="string"></control>
                 <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_dialog_layout" type="string" label="49010" help="49011">
+                    <level>0</level>
+                    <default>Stack</default>
+                    <constraints>
+                        <options>
+                            <option label="Card">Card</option>
+                            <option label="Stack card">Stack</option>
+                            <option label="Corner slab">Slab</option>
+                            <option label="Dial">Dial</option>
+                            <option label="Cinema band">Band</option>
+                            <option label="Float">Float</option>
+                            <option label="Split">Split</option>
+                            <option label="Timeline">Timeline</option>
+                            <option label="Side rail">Rail</option>
+                            <option label="Poster card">Poster</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_look" type="string" label="49012" help="49013">
+                    <level>0</level>
+                    <default>fgd</default>
+                    <constraints>
+                        <options>
+                            <option label="Fused Glass Dark">fgd</option>
+                            <option label="Fused Glass Frost">fgf</option>
+                            <option label="Fused Glass Clear">fgc</option>
+                            <option label="Fused Glass style">fgs</option>
+                            <option label="Aeon">aeo</option>
+                            <option label="Aeon Glass">agl</option>
+                            <option label="Neon">neon</option>
+                            <option label="Paper">paper</option>
+                            <option label="Sunset">sunset</option>
+                            <option label="Ocean">ocean</option>
+                            <option label="Brutal">brutal</option>
+                            <option label="Terminal">term</option>
+                            <option label="Wireframe">line</option>
+                            <option label="Luxe">luxe</option>
+                            <option label="Pastel">pastel</option>
+                            <option label="Gloss">gloss</option>
+                            <option label="Mono">mono</option>
+                            <option label="VHS">vhs</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_bar_color" type="string" label="49031" help="49034">
+                    <level>1</level>
+                    <default>Type</default>
+                    <constraints>
+                        <options>
+                            <option label="49032">Type</option>
+                            <option label="49020">Look</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_overlay" type="string" label="49050" help="49051">
+                    <level>1</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <options>
+                            <option label="49085">Auto</option>
+                            <option label="49052">None</option>
+                            <option label="49053">Square</option>
+                            <option label="49054">SquareFade</option>
+                            <option label="49055">Round</option>
+                            <option label="49056">RoundFade</option>
+                            <option label="49057">Band</option>
+                            <option label="49058">Glow</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_appear" type="string" label="49059" help="49060">
+                    <level>1</level>
+                    <default>Fade</default>
+                    <constraints>
+                        <options>
+                            <option label="49061">Fade</option>
+                            <option label="49062">Rise</option>
+                            <option label="49063">Pop</option>
+                            <option label="49064">Slide</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_leave" type="string" label="49065" help="49066">
+                    <level>1</level>
+                    <default>Fade</default>
+                    <constraints>
+                        <options>
+                            <option label="49061">Fade</option>
+                            <option label="49067">Drop</option>
+                            <option label="49068">Shrink</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_layout_pulse" type="boolean" label="49069" help="49070">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible"><or><condition setting="skip_dialog_mode">Full</condition><condition setting="skip_dialog_mode">CompactFull</condition></or></dependency></dependencies></setting>
+                <setting id="skip_canvas_corners" type="string" label="49072" help="49073">
+                    <level>1</level>
+                    <default>Skin</default>
+                    <constraints>
+                        <options>
+                            <option label="49074">Skin</option>
+                            <option label="49075">Hard</option>
+                            <option label="49076">Rounded</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_close" type="boolean" label="49077" help="49078">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_icons" type="boolean" label="49079" help="49080">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_kicker" type="boolean" label="49081" help="49082">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_nested" type="boolean" label="49083" help="49084">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_time" type="boolean" label="49165" help="49166">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_outline" type="string" label="49124" help="49162">
+                    <level>1</level>
+                    <default>Medium</default>
+                    <constraints>
+                        <options>
+                            <option label="49088">Off</option>
+                            <option label="49161">Light</option>
+                            <option label="49090">Medium</option>
+                            <option label="49091">Strong</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_text_shadow" type="string" label="49086" help="49087">
+                    <level>1</level>
+                    <default>Mild</default>
+                    <constraints>
+                        <options>
+                            <option label="49088">Off</option>
+                            <option label="49089">Mild</option>
+                            <option label="49090">Medium</option>
+                            <option label="49091">Strong</option>
+                            <option label="49092">Heavy</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_text_size" type="string" label="49093" help="49094">
+                    <level>1</level>
+                    <default>100</default>
+                    <constraints>
+                        <options>
+                            <option label="49095">85</option>
+                            <option label="49096">100</option>
+                            <option label="49097">115</option>
+                            <option label="49098">130</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_zoom" type="string" label="49099" help="49100">
+                    <level>1</level>
+                    <default>100</default>
+                    <constraints>
+                        <options>
+                            <option label="49095">70</option>
+                            <option label="49090">85</option>
+                            <option label="49097">100</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_accent" type="string" label="49101" help="49102">
+                    <level>1</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <options>
+                            <option label="49103">Auto</option>
+                            <option label="49104">Gold</option>
+                            <option label="49105">Blue</option>
+                            <option label="49106">Red</option>
+                            <option label="49107">Green</option>
+                            <option label="49108">Teal</option>
+                            <option label="49109">Purple</option>
+                            <option label="49110">White</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_progress" type="string" label="49111" help="49112">
+                    <level>1</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <options>
+                            <option label="49085">Auto</option>
+                            <option label="49113">Line</option>
+                            <option label="49114">Circle</option>
+                            <option label="49115">Fill</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_overlay_gradient" type="boolean" label="49116" help="49117">
+                    <level>1</level>
+                    <default>false</default>
+                    <control type="toggle"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_focus" type="string" label="49130" help="49132">
+                    <level>1</level>
+                    <default>Skip</default>
+                    <constraints>
+                        <options>
+                            <option label="40000">Skip</option>
+                            <option label="40001">Close</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_distance" type="integer" label="49129" help="49131">
+                    <level>1</level>
+                    <default>64</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <maximum>160</maximum>
+                        <step>8</step>
+                    </constraints>
+                    <control type="spinner" format="integer"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_place" type="string" label="49137" help="49137">
+                    <level>3</level>
+                    <default></default>
+                    <constraints>
+                        <options>
+                            <option label="49138">TopLeft</option>
+                            <option label="49139">Top</option>
+                            <option label="49140">TopRight</option>
+                            <option label="49141">Left</option>
+                            <option label="49142">Center</option>
+                            <option label="49143">Right</option>
+                            <option label="49144">BottomLeft</option>
+                            <option label="49145">Bottom</option>
+                            <option label="49146">BottomRight</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_gradient" type="string" label="49118" help="49119">
+                    <level>1</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <options>
+                            <option label="49120">Auto</option>
+                            <option label="49121">Vertical</option>
+                            <option label="49122">Horizontal</option>
+                            <option label="49123">Radial</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
                 <setting id="compact_full_combined" type="boolean" label="32101" help="32101">
                     <level>1</level>
                     <default>true</default>
@@ -382,6 +695,26 @@
                     <default>true</default>
                     <control type="toggle"></control>
                 <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies></setting>
+                <setting id="skip_card_style" type="string" label="49008" help="49009">
+                    <level>1</level>
+                    <default>Flat</default>
+                    <constraints>
+                        <options>
+                            <option label="Flat">Flat</option>
+                            <option label="Rounded">Rounded</option>
+                            <option label="Fused Glass Dark">FusedDark</option>
+                            <option label="Fused Glass Frost">FusedFrost</option>
+                            <option label="Fused Glass Clear">FusedClear</option>
+                            <option label="Fused Glass style">FusedStyle</option>
+                            <option label="Aeon Glass">AeonGlass</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="enable" setting="skip_card_enabled">true</dependency>
+                    <dependency type="visible" setting="skip_dialog_type">Custom</dependency><dependency type="visible" setting="skip_dialog_mode">Full</dependency></dependencies>
+                </setting>
                 <setting id="skip_card_opacity" type="integer" label="46012" help="46012">
                     <level>1</level>
                     <default>95</default>
@@ -449,6 +782,8 @@
                             <option label="Striped Blue">progress_mid_striped_blue.png</option>
                             <option label="Striped Orange">progress_mid_striped_orange.png</option>
                             <option label="Gradient Gold">progress_mid_grad_gold.png</option>
+                            <option label="Fuse Gold">progress_mid_fuse_gold.png</option>
+                            <option label="Fuse White">progress_mid_fuse_white.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -542,6 +877,9 @@
                             <option label="Bracket White">button_focus_bracket_white.png</option>
                             <option label="Bracket Cyan">button_focus_bracket_cyan.png</option>
                             <option label="Bracket Green">button_focus_bracket_green.png</option>
+                            <option label="Fuse Square">button_focus_fuse_square.png</option>
+                            <option label="Fuse Glass">button_focus_fuse_glass.png</option>
+                            <option label="Fuse Bar">button_focus_fuse_bar.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -660,6 +998,12 @@
                             <option label="Frosted">minimal_frosted_640.png</option>
                             <option label="Gold Leaf">minimal_gold_640.png</option>
                             <option label="Neon Cyan">minimal_neon_cyan_640.png</option>
+                            <option label="Fuse Dark">minimal_fuse_dark_640.png</option>
+                            <option label="Fuse Frost">minimal_fuse_frost_640.png</option>
+                            <option label="Fuse Clear">minimal_fuse_clear_640.png</option>
+                            <option label="Fuse Square">minimal_fuse_square_640.png</option>
+                            <option label="Fuse Grid">minimal_fuse_grid_640.png</option>
+                            <option label="Fuse Glass">minimal_fuse_glass_640.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -772,7 +1116,7 @@
                 </setting>
                 <setting id="next_episode_start_at_credits" type="boolean" label="47064" help="47065">
                     <level>0</level>
-                    <default>false</default>
+                    <default>true</default>
                     <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
@@ -878,6 +1222,561 @@
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                     </dependencies>
                 </setting>
+                <setting id="next_episode_popup_layout" type="string" label="49041" help="49042">
+                    <level>1</level>
+                    <default>CardA</default>
+                    <constraints>
+                        <options>
+                            <option label="Card (legacy)">Card</option>
+                            <option label="Card">CardA</option>
+                            <option label="Poster slab">Slab</option>
+                            <option label="Play ring">Ring</option>
+                            <option label="Lower third">Band</option>
+                            <option label="Float">Float</option>
+                            <option label="Takeover">Takeover</option>
+                            <option label="Queue">Queue</option>
+                            <option label="Side rail">Rail</option>
+                            <option label="Poster card">Poster</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_form" type="string" label="49152" help="49042">
+                    <level>1</level>
+                    <default>Full</default>
+                    <constraints>
+                        <options>
+                            <option label="30116">Full</option>
+                            <option label="49199">Compact</option>
+                            <option label="30117">Minimal</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_corners" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Skin</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_close" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_icons" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_plot" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_picture" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Episode</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_progress" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_accent" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_zoom" type="string" label="49099" help="49100">
+                    <level>1</level>
+                    <default>100</default>
+                    <constraints>
+                        <options>
+                            <option label="49095">70</option>
+                            <option label="49090">85</option>
+                            <option label="49097">100</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_place" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default></default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_distance" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>64</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_overlay" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_overlay_gradient" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_gradient" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Auto</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_appear" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Fade</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_leave" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Fade</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_pulse" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_text_shadow" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Mild</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_outline" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Medium</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_text_size" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>100</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_kicker" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_logo" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_same_look" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_fill_on" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Button</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_caps" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Look</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_fallback" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Fanart</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_time" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>true</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_credits" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_bar" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Smooth</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_speed" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>0</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_follow_skin" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_subtitles" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>false</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_focus_style" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Look</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_layout_look" type="string" label="49012" help="49043">
+                    <level>1</level>
+                    <default>fgd</default>
+                    <constraints>
+                        <options>
+                            <option label="Fused Glass Dark">fgd</option>
+                            <option label="Fused Glass Frost">fgf</option>
+                            <option label="Fused Glass Clear">fgc</option>
+                            <option label="Fused Glass style">fgs</option>
+                            <option label="Aeon">aeo</option>
+                            <option label="Aeon Glass">agl</option>
+                            <option label="Neon">neon</option>
+                            <option label="Paper">paper</option>
+                            <option label="Sunset">sunset</option>
+                            <option label="Ocean">ocean</option>
+                            <option label="Brutal">brutal</option>
+                            <option label="Terminal">term</option>
+                            <option label="Wireframe">line</option>
+                            <option label="Luxe">luxe</option>
+                            <option label="Pastel">pastel</option>
+                            <option label="Gloss">gloss</option>
+                            <option label="Mono">mono</option>
+                            <option label="VHS">vhs</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
                 <setting id="next_episode_popup_look" type="string" label="47080" help="47081">
                     <level>1</level>
                     <default>Default</default>
@@ -885,40 +1784,53 @@
                         <options>
                             <option label="30127">Default</option>
                             <option label="30128">SkipDialog</option>
-                            <option label="48200">Classic</option>
-                            <option label="48201">Modern</option>
-                            <option label="48202">Stylish</option>
-                            <option label="48203">Colorful</option>
-                            <option label="48204">Vibrant</option>
-                            <option label="48205">Glass</option>
-                            <option label="48206">Outline</option>
-                            <option label="48207">Subtle</option>
-                            <option label="48208">Sleek</option>
-                            <option label="48209">Clean</option>
-                            <option label="48210">Mono</option>
-                            <option label="48211">Slate</option>
-                            <option label="48212">Gold</option>
-                            <option label="48213">Neon</option>
-                            <option label="48214">NeonPink</option>
-                            <option label="48215">Frosted</option>
-                            <option label="48216">Steel</option>
-                            <option label="48217">Retro</option>
-                            <option label="48218">Segments</option>
-                            <option label="48219">Stripes</option>
-                            <option label="48220">Sunset</option>
-                            <option label="48221">BigBold</option>
-                            <option label="48222">Ghost</option>
-                            <option label="48223">Accessible</option>
-                            <option label="48224">Arcade</option>
-                            <option label="48225">Terminal</option>
-                            <option label="48226">Blueprint</option>
-                            <option label="48227">Lava</option>
-                            <option label="48228">DeepSea</option>
-                            <option label="48229">Candy</option>
-                            <option label="48230">Noir</option>
-                            <option label="48231">Aurora</option>
-                            <option label="48232">Pill</option>
-                            <option label="48233">Underline</option>
+                            <option label="48387">FusedGlassDark</option>
+                            <option label="48388">FusedGlassFrost</option>
+                            <option label="48389">FusedGlassClear</option>
+                            <option label="48390">FusedGlassstyle</option>
+                            <option label="48391">Aeon</option>
+                            <option label="48392">AeonGlass</option>
+                            <option label="48393">AeonGlassFill</option>
+                            <option label="48394">FusedGlassBare</option>
+                            <option label="48395">AeonBare</option>
+                            <option label="48396">FusedGlassCompact</option>
+                            <option label="48397">FusedGlassstyleCompact</option>
+                            <option label="48398">AeonCompact</option>
+                            <option label="48399">AeonGlassCompact</option>
+                            <option label="48348">Classic</option>
+                            <option label="48349">Modern</option>
+                            <option label="48350">Stylish</option>
+                            <option label="48351">Colorful</option>
+                            <option label="48352">Vibrant</option>
+                            <option label="48353">Glass</option>
+                            <option label="48354">Outline</option>
+                            <option label="48355">Subtle</option>
+                            <option label="48356">Sleek</option>
+                            <option label="48357">Clean</option>
+                            <option label="48358">Mono</option>
+                            <option label="48359">Slate</option>
+                            <option label="48360">Gold</option>
+                            <option label="48361">Neon</option>
+                            <option label="48362">NeonPink</option>
+                            <option label="48363">Frosted</option>
+                            <option label="48364">Steel</option>
+                            <option label="48365">Retro</option>
+                            <option label="48366">Segments</option>
+                            <option label="48367">Stripes</option>
+                            <option label="48368">Sunset</option>
+                            <option label="48369">BigBold</option>
+                            <option label="48370">Ghost</option>
+                            <option label="48371">Accessible</option>
+                            <option label="48372">Arcade</option>
+                            <option label="48373">Terminal</option>
+                            <option label="48374">Blueprint</option>
+                            <option label="48375">Lava</option>
+                            <option label="48376">DeepSea</option>
+                            <option label="48377">Candy</option>
+                            <option label="48378">Noir</option>
+                            <option label="48379">Aurora</option>
+                            <option label="48380">Pill</option>
+                            <option label="48381">Underline</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1054,6 +1966,9 @@
                             <option label="48289">button_focus_bracket_white.png</option>
                             <option label="48290">button_focus_bracket_cyan.png</option>
                             <option label="48291">button_focus_bracket_green.png</option>
+                            <option label="48382">button_focus_fuse_square.png</option>
+                            <option label="48383">button_focus_fuse_glass.png</option>
+                            <option label="48384">button_focus_fuse_bar.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1105,6 +2020,8 @@
                             <option label="48309">progress_mid_striped_blue.png</option>
                             <option label="48310">progress_mid_striped_orange.png</option>
                             <option label="48311">progress_mid_grad_gold.png</option>
+                            <option label="48385">progress_mid_fuse_gold.png</option>
+                            <option label="48386">progress_mid_fuse_white.png</option>
                         </options>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -1189,6 +2106,26 @@
                     <level>1</level>
                     <default>true</default>
                     <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_episode_popup_picture" type="string" label="49035" help="49040">
+                    <level>1</level>
+                    <default>Episode</default>
+                    <constraints>
+                        <options>
+                            <option label="49036">Episode</option>
+                            <option label="49037">Poster</option>
+                            <option label="49038">Both</option>
+                            <option label="49039">Fanart</option>
+                            <option label="49048">FanartPoster</option>
+                            <option label="49049">FanartEpisode</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="next_episode_enabled">true</dependency>
                         <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
@@ -1588,6 +2525,38 @@
                     <level>1</level>
                     <default>false</default>
                     <control type="toggle"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_style" type="string" label="49190" help="49191">
+                    <level>1</level>
+                    <default>fg_dark</default>
+                    <constraints>
+                        <options>
+                            <option label="49187">fg_dark</option>
+                            <option label="49188">fg_frost</option>
+                            <option label="49189">fg_clear</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_layout" type="string" label="49003" help="49004">
+                    <level>1</level>
+                    <default>side</default>
+                    <constraints>
+                        <options>
+                            <option label="49005">side</option>
+                            <option label="49006">drawer</option>
+                            <option label="49007">classic</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>

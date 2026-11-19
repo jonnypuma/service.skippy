@@ -85,8 +85,8 @@ class SkinTests(unittest.TestCase):
         focused = sp[str(panel.ID_LIST)].find("focusedlayout")
         images = {img.findtext("texture"): img.find("texture") for img in focused.findall("control")
                   if img.get("type") == "image"}
-        self.assertEqual(images["button_focus_flat_teal.png"].get("border"), row["focus"][1])
-        self.assertEqual(images["white.png"].get("colordiffuse"), row["nofocus"][2])
+        self.assertEqual(images["ms_fgf_focus.png"].get("border"), row["focus"][1])
+        self.assertEqual(images["ms_fgf_row.png"].get("border"), row["nofocus"][1])
         label = [c for c in focused.findall("control") if c.get("type") == "label"][0]
         self.assertEqual(label.findtext("font"), row["font"])
         self.assertEqual(label.findtext("textcolor"), row["textcolor"])

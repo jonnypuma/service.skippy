@@ -2,6 +2,9 @@
 """Lazy-loaded Skip Dialog Customize modal (draft settings + frozen mockup)."""
 from __future__ import annotations
 
+import skip_dialog_card
+import skip_layouts
+import skippy_modal_style
 import os
 
 import xbmcgui
@@ -70,6 +73,59 @@ ID_PANEL_BG = 4081
 ID_MODE = 4100
 ID_PRESET = 4140
 ID_PREVIEW_TYPE = 4143
+# The two pickers under the preview: the layout of the dialog and the look of a new layout.
+ID_LAYOUT = skip_layouts.ID_PICK_LAYOUT
+ID_LOOK = skip_layouts.ID_PICK_LOOK
+# Only the Studio has a row for it (the classic screen has no room left): the colour of the progress.
+ID_BAR_COLOR = 4147
+# rows of the Studio only (the list screen has no room for them)
+ID_OVERLAY = 4148
+ID_APPEAR = 4149
+ID_LEAVE = 4150
+ID_PULSE = 4151
+# rows of a drawn design (skip_canvas)
+ID_CORNERS = 4152
+ID_CV_CLOSE = 4153
+ID_CV_ICONS = 4154
+ID_CV_KICKER = 4155
+ID_CV_NESTED = 4156
+ID_CV_SHADOW = 4157
+ID_CV_TEXT_SIZE = 4158
+ID_CV_ZOOM = 4159
+ID_CV_ACCENT = 4160
+ID_CV_PROGRESS = 4161
+ID_CV_GRADIENT = 4162
+ID_CV_GRADIENT_TYPE = 4163
+ID_CV_OUTLINE = 4164
+ID_CV_DISTANCE = 4165
+ID_CV_FOCUS = 4166
+ID_CV_TIME = 4167
+CANVAS_ROW_IDS = (ID_CORNERS, ID_CV_CLOSE, ID_CV_ICONS, ID_CV_KICKER, ID_CV_NESTED, ID_CV_SHADOW, ID_CV_TEXT_SIZE,
+                  ID_CV_ZOOM, ID_CV_ACCENT, ID_CV_PROGRESS, ID_CV_GRADIENT, ID_CV_GRADIENT_TYPE, ID_CV_OUTLINE,
+                  ID_CV_DISTANCE, ID_CV_FOCUS, ID_CV_TIME)
+FOCUS_NAMES = (("Skip", 40000, "Skip"), ("Close", 40001, "Close"))
+OUTLINE_NAMES = (("Off", 49088, "Off"), ("Light", 49161, "Light"), ("Medium", 49090, "Medium"), ("Strong", 49091, "Strong"))
+DISTANCE_MAX, DISTANCE_STEP = 160, 8  # Distance from the edge, in pixels of a 1080 screen
+ZOOM_NAMES = (("70", 49095, "Small"), ("85", 49090, "Medium"), ("100", 49097, "Large"))
+ACCENT_NAMES = (("Auto", 49103, "The bar colour setting"), ("Gold", 49104, "Gold"), ("Blue", 49105, "Blue"),
+                ("Red", 49106, "Red"), ("Green", 49107, "Green"), ("Teal", 49108, "Teal"), ("Purple", 49109, "Purple"),
+                ("White", 49110, "White"))
+PROGRESS_NAMES = (("Auto", 49085, "The design's own"), ("Line", 49113, "Line"), ("Circle", 49114, "Circle"),
+                  ("Fill", 49115, "Fill"))
+GRADIENT_NAMES = (("Auto", 49120, "Away from the dialog"), ("Vertical", 49121, "Top to bottom"),
+                  ("Horizontal", 49122, "Side to side"), ("Radial", 49123, "Round"))
+# rows that pick one of a list: row id -> (draft key, names, default, label string id, label)
+CANVAS_CHOICES = {
+    ID_CV_ZOOM: ("skip_canvas_zoom", ZOOM_NAMES, "100", 49099, "Size on screen"),
+    ID_CV_ACCENT: ("skip_canvas_accent", ACCENT_NAMES, "Auto", 49101, "Accent colour"),
+    ID_CV_PROGRESS: ("skip_canvas_progress", PROGRESS_NAMES, "Auto", 49111, "Progress style"),
+    ID_CV_GRADIENT_TYPE: ("skip_canvas_gradient", GRADIENT_NAMES, "Auto", 49118, "Gradient direction"),
+    ID_CV_FOCUS: ("skip_canvas_focus", FOCUS_NAMES, "Skip", 49130, "Button the focus starts on"),
+    ID_CV_OUTLINE: ("skip_canvas_outline", OUTLINE_NAMES, "Medium", 49124, "Text outline"),
+}
+TEXT_SHADOW_NAMES = (("Off", 49088, "Off"), ("Mild", 49089, "Mild"), ("Medium", 49090, "Medium"),
+                     ("Strong", 49091, "Strong"), ("Heavy", 49092, "Heavy"))
+TEXT_SIZE_NAMES = (("85", 49095, "Small"), ("100", 49096, "Standard"), ("115", 49097, "Large"), ("130", 49098, "Larger"))
 ID_CARD = 4141
 ID_OPACITY = 4142
 ID_HIDE_ENDING = 4101
@@ -190,6 +246,9 @@ BUTTON_FOCUS = (
     ("Bracket White", "button_focus_bracket_white.png"),
     ("Bracket Cyan", "button_focus_bracket_cyan.png"),
     ("Bracket Green", "button_focus_bracket_green.png"),
+    ("Fuse Square", "button_focus_fuse_square.png"),
+    ("Fuse Glass", "button_focus_fuse_glass.png"),
+    ("Fuse Bar", "button_focus_fuse_bar.png"),
 )
 MINIMAL_PLATES = (
     ("Rounded Gray", "minimal_rounded_gray_640.png"),
@@ -243,6 +302,12 @@ MINIMAL_PLATES = (
     ("Frosted", "minimal_frosted_640.png"),
     ("Gold Leaf", "minimal_gold_640.png"),
     ("Neon Cyan", "minimal_neon_cyan_640.png"),
+    ("Fuse Dark", "minimal_fuse_dark_640.png"),
+    ("Fuse Frost", "minimal_fuse_frost_640.png"),
+    ("Fuse Clear", "minimal_fuse_clear_640.png"),
+    ("Fuse Square", "minimal_fuse_square_640.png"),
+    ("Fuse Grid", "minimal_fuse_grid_640.png"),
+    ("Fuse Glass", "minimal_fuse_glass_640.png"),
 )
 PROGRESS_STYLES = (
     ("Green (Default)", "progress_mid.png"),
@@ -281,7 +346,28 @@ PROGRESS_STYLES = (
     ("Striped Blue", "progress_mid_striped_blue.png"),
     ("Striped Orange", "progress_mid_striped_orange.png"),
     ("Gradient Gold", "progress_mid_grad_gold.png"),
+    ("Fuse Gold", "progress_mid_fuse_gold.png"),
+    ("Fuse White", "progress_mid_fuse_white.png"),
 )
+# The Card row: no card, or one of the shapes of the card (skip_dialog_card.STYLES).
+CARD_OFF = "Off"
+CARD_CHOICES = (CARD_OFF,) + tuple(stored for _name, stored in skip_dialog_card.options())
+
+
+def card_choice(draft) -> str:
+    """What the Card row shows: ``Off``, or the stored card style."""
+    if not draft.get("skip_card_enabled", True):
+        return CARD_OFF
+    return skip_dialog_card.normalize(draft.get("skip_card_style"))
+
+
+def set_card_choice(draft, choice) -> None:
+    """Store a choice of the Card row. Switching the card off keeps the style for next time."""
+    if choice == CARD_OFF:
+        draft["skip_card_enabled"] = False
+        return
+    draft["skip_card_enabled"] = True
+    draft["skip_card_style"] = skip_dialog_card.normalize(choice)
 
 DRAFT_BOOL_KEYS = (
     "hide_ending_text",
@@ -295,6 +381,13 @@ DRAFT_BOOL_KEYS = (
     "smooth_progress_bar",
     "compact_full_combined",
     "skip_card_enabled",
+    skip_layouts.KEY_PULSE,
+    "skip_canvas_close",
+    "skip_canvas_icons",
+    "skip_canvas_kicker",
+    "skip_canvas_nested",
+    "skip_canvas_overlay_gradient",
+    "skip_canvas_time",
 )
 DRAFT_TEXT_KEYS = (
     "skip_dialog_mode",
@@ -308,8 +401,26 @@ DRAFT_TEXT_KEYS = (
     "minimal_skip_button_format",
     "minimal_skip_dialog_position",
     "progress_bar_style",
+    "skip_card_style",
+    skip_layouts.KEY_LAYOUT,
+    skip_layouts.KEY_LOOK,
+    skip_layouts.KEY_BAR_COLOR,
+    skip_layouts.KEY_OVERLAY,
+    skip_layouts.KEY_APPEAR,
+    skip_layouts.KEY_LEAVE,
+    "skip_canvas_corners",
+    "skip_canvas_text_shadow",
+    "skip_canvas_text_size",
+    "skip_canvas_zoom",
+    "skip_canvas_accent",
+    "skip_canvas_progress",
+    "skip_canvas_gradient",
+    "skip_canvas_focus",
+    "skip_canvas_outline",
+    "skip_canvas_place",
 )
 DRAFT_INT_KEYS = (
+    ("skip_canvas_distance", 64, 0, 160),
     ("progress_bar_height", 16, 5, 32),
     ("skip_card_opacity", 95, 0, 100),
 )
@@ -326,6 +437,23 @@ _TEXT_DEFAULTS = {
     "minimal_skip_button_format": "Skip + Type",
     "minimal_skip_dialog_position": "BottomRight",
     "progress_bar_style": "progress_mid.png",
+    "skip_card_style": skip_dialog_card.STYLE_FLAT,
+    skip_layouts.KEY_LAYOUT: skip_layouts.DEFAULT_LAYOUT,
+    skip_layouts.KEY_LOOK: skip_layouts.DEFAULT_SKIP_LOOK,
+    skip_layouts.KEY_BAR_COLOR: skip_layouts.BAR_TYPE,
+    skip_layouts.KEY_OVERLAY: skip_layouts.OVERLAY_AUTO,
+    skip_layouts.KEY_APPEAR: skip_layouts.APPEARS[0],
+    skip_layouts.KEY_LEAVE: skip_layouts.LEAVES[0],
+    "skip_canvas_corners": "Skin",
+    "skip_canvas_text_shadow": "Mild",
+    "skip_canvas_text_size": "100",
+    "skip_canvas_zoom": "100",
+    "skip_canvas_accent": "Auto",
+    "skip_canvas_progress": "Auto",
+    "skip_canvas_gradient": "Auto",
+    "skip_canvas_focus": "Skip",
+    "skip_canvas_outline": "Medium",
+    "skip_canvas_place": "",
 }
 _BOOL_DEFAULTS = {
     "hide_ending_text": False,
@@ -339,6 +467,13 @@ _BOOL_DEFAULTS = {
     "smooth_progress_bar": True,
     "compact_full_combined": True,
     "skip_card_enabled": True,
+    skip_layouts.KEY_PULSE: False,
+    "skip_canvas_close": True,
+    "skip_canvas_icons": True,
+    "skip_canvas_kicker": True,
+    "skip_canvas_nested": True,
+    "skip_canvas_overlay_gradient": False,
+    "skip_canvas_time": True,
 }
 
 
@@ -387,6 +522,14 @@ def _pair_label(pairs, stored):
     return stored
 
 
+def canvas_distance(value) -> int:
+    """Distance from the edge as stored (a text), in pixels of a 1080 screen."""
+    try:
+        return max(0, min(DISTANCE_MAX, int(float(value))))
+    except (TypeError, ValueError):
+        return 64
+
+
 def preview_type_ids():
     """Segment type ids the preview can show, in catalog order (Commercial always first-class)."""
     ids = []
@@ -404,8 +547,32 @@ def preview_type_ids():
     return ids
 
 
+def draft_layout(draft: dict):
+    """The layout file the draft asks for, or None for the classic card."""
+    mode = draft.get("skip_dialog_mode") or "Full"
+    name = skip_layouts.normalize_layout(draft.get(skip_layouts.KEY_LAYOUT))
+    if skip_layouts.is_card(name):
+        return None
+    return skip_layouts.get(name, skip_layouts.size_for_mode(mode))
+
+
+def customize_picker_ids(draft: dict):
+    """The pickers outside the row list, in focus order: preview type, layout, and the look of a
+    new layout."""
+    ids = [ID_PREVIEW_TYPE, ID_LAYOUT]
+    if draft_layout(draft) is not None:
+        ids.append(ID_LOOK)
+    return ids
+
+
 def customize_nav_ids(draft: dict):
     """Visible left-pane control order. XML onup/ondown are self-bound so this is the only mover."""
+    if draft_layout(draft) is not None:
+        # A new layout has its look; the card's own rows (and the presets) do not apply to it.
+        ids = [ID_PRESET, ID_MODE, ID_OVERLAP, ID_COUNTDOWN, ID_POSITION, ID_SKIP_FORMAT]
+        if skip_format_includes_duration(draft.get("skip_button_format") or "Skip + Type + Duration"):
+            ids.extend([ID_DURATION_FORMAT, ID_DURATION_CONTENT])
+        return ids + [ID_SAVE, ID_CANCEL]
     ids = [ID_PRESET, ID_MODE]
     mode = draft.get("skip_dialog_mode") or "Full"
     minimal = is_minimal_skip_mode(mode)
@@ -534,6 +701,7 @@ def _yes_no(addon, flag):
 
 class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skippy_modal_style.apply(self)  # before the window shows
         self._skin_resolution = init_window_xml_dialog(super(SkipDialogCustomize, self), args)
         self.addon = kwargs.get("addon") or with_pending(get_addon())
         self._draft = kwargs.get("draft") or load_skip_dialog_draft(self.addon)
@@ -541,6 +709,21 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._saved = False
         self._closing = False
         self._preview_type = MOCK_SEGMENT_LABEL
+
+    def _mock_lock(self):
+        """One drawing of the preview at a time (the Studio also draws it from the thread that plays it)."""
+        import threading
+
+        lock = getattr(self, "_mock_guard", None)
+        if lock is None:
+            lock = self._mock_guard = threading.RLock()
+        return lock
+
+    def _mock_nested(self, settings) -> bool:
+        """Whether the preview shows a segment inside another: the Studio can ask for it (its Nested
+        preview); otherwise it follows the overlap setting."""
+        asked = getattr(self, "_preview_nested", None)
+        return settings.get_bool("skip_overlapping_segments", True) if asked is None else bool(asked)
 
     def _sc(self, value):
         return scale_skin_coord(value, getattr(self, "_skin_resolution", None))
@@ -569,6 +752,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
                 pass
 
     def onInit(self):
+        skippy_modal_style.apply(self)
         asked = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
             self, asked, control_ids=(FULL_SKIP_PROBE_ID,)
@@ -583,7 +767,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._load_fanart()
         self.refresh_mockup()
         try:
-            self.setFocusId(ID_PRESET)
+            self.setFocusId(ID_PRESET if ID_PRESET in self._nav_ids() else ID_MODE)
         except Exception:
             pass
 
@@ -609,7 +793,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 
     def _move_focus(self, delta):
         # The preview-type picker sits in the header, one step above the Preset row.
-        ids = [ID_PREVIEW_TYPE] + list(self._nav_ids())
+        ids = customize_picker_ids(self._draft) + list(self._nav_ids())
         current = self._focus_id()
         if current not in ids:
             current = ids[0]
@@ -622,6 +806,43 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
     def refresh_mockup(self):
         settings = DictSettingsReader(self._draft)
         addon = self.addon
+        layout = draft_layout(self._draft)
+        self.setProperty("skl_mock", layout.xml[:-4] if layout is not None else "")
+        card_group = self._ctrl(FULL_SKIP_PANEL_GROUP_ID)
+        if card_group:
+            try:
+                card_group.setVisible(layout is None)
+            except Exception:
+                pass
+        pickers = customize_picker_ids(self._draft)
+        for cid in (ID_LAYOUT, ID_LOOK):
+            picker = self._ctrl(cid)
+            if picker:
+                try:
+                    picker.setVisible(cid in pickers)
+                except Exception:
+                    pass
+        if layout is not None:
+            try:
+                self._refresh_layout_mock(settings, layout)
+            except Exception:
+                pass
+            # The Minimal form of a layout is a preview copy like the others: the chip of the classic
+            # Minimal mode (shown while this property says Minimal) stays away.
+            mode_text = settings.get_text("skip_dialog_mode", "Full").strip() or "Full"
+            self.setProperty("skippy_customize_mode", "Full" if layout.size == skip_layouts.SIZE_MINIMAL else mode_text)
+            self._set_label(
+                ID_FULL_HEADER,
+                get_localized(addon, 32100, "Compact Full")
+                if layout.size == skip_layouts.SIZE_COMPACT
+                else get_localized(addon, 32022, "Minimal mode")
+                if layout.size == skip_layouts.SIZE_MINIMAL
+                else get_localized(addon, 32021, "Full mode"),
+            )
+            self.setProperty(DIALOG_READY_PROP, "true")
+            self._layout_left_pane()
+            self._refresh_row_labels()
+            return
         mode = settings.get_text("skip_dialog_mode", "Full").strip() or "Full"
         minimal = is_minimal_skip_mode(mode)
         compact = is_compact_full_mode(mode)
@@ -647,7 +868,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             self._set_label(ID_FULL_HEADER, get_localized(addon, 32021, "Full mode"))
 
         segment = build_customize_mock_segment(
-            settings.get_bool("skip_overlapping_segments", True),
+            self._mock_nested(settings),
             getattr(self, "_preview_type", MOCK_SEGMENT_LABEL),
         )
         color = font_color_argb_from_settings(settings)
@@ -747,6 +968,118 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         self._layout_left_pane()
         self._refresh_row_labels()
 
+    def _mock_stage(self):
+        """Where the small screen of the preview sits on this window and how small it is drawn:
+        ``(left, top, zoom percent)`` in the units of the skin folder in use."""
+        return (self._sc(skip_layouts.STAGE_LEFT + skip_layouts.MOCK_LEFT),
+                self._sc(skip_layouts.STAGE_TOP + skip_layouts.MOCK_TOP), skip_layouts.MOCK_ZOOM)
+
+    def _refresh_canvas_mock(self, settings, layout):
+        """The preview of a drawn design: the same drawing as the real dialog, small, on the stage."""
+        import skip_canvas as cv
+        import skip_canvas_dialog as cvd
+        import skip_canvas_draw as cvdraw
+        from skip_layout_dialog import layout_accent, texts as layout_texts
+        from smooth_progress import segment_percent
+
+        addon = self.addon
+        code = skip_layouts.normalize_look(self._draft.get(skip_layouts.KEY_LOOK))
+        position = settings.get_text("skip_dialog_position", "BottomRight")
+        segment = build_customize_mock_segment(
+            self._mock_nested(settings),
+            getattr(self, "_preview_type", MOCK_SEGMENT_LABEL),
+        )
+        found = layout_texts(addon, segment, MOCK_PLAYHEAD, False, settings=settings)
+        nested = apply_jump_properties(self, addon, segment, all_caps=False)
+        countdown = settings.get_bool("progress_bar_countdown", False)
+        percent = segment_percent(MOCK_PLAYHEAD, segment.start_seconds, segment.end_seconds, countdown)
+        duration = ""
+        if settings.get_bool("skip_canvas_time", True):
+            duration = cvd.short_clock(skip_duration_for_playhead(MOCK_PLAYHEAD, segment, settings) or "")
+        options = cvd.options_from(settings.get_text, settings.get_bool, layout, code, position,
+                                   layout_accent(addon, code, segment, settings=settings))
+        texts = cvd.texts_from(found, countdown_mmss(MOCK_INTRO_END - MOCK_PLAYHEAD), nested, duration, percent or 0.0)
+        if getattr(self, "_mock_canvas", None) is None:
+            resolution = getattr(self, "_skin_resolution", None) or "1080i"
+            folder = "720" if str(resolution).startswith("720") else "1080"
+            media = os.path.join(addon.getAddonInfo("path") or "", "resources", "skins", "default", "media")
+            self._mock_canvas = cvdraw.Canvas(self, folder, media, offset=cv.MOCK_OFFSET, stage=self._mock_stage(),
+                                              prefix="cv_mock")
+        # what the preview is showing, for a screen that plays it (the Studio): the drawing can be made again
+        self._mock_show = (options, texts, found.get("skl_heading", ""), found.get("skl_kicker", ""))
+        if getattr(self, "_opening", False):
+            return  # the Studio, as it opens: its preview thread draws this at once (see SkipStudio.onInit)
+        with self._mock_lock():
+            self._mock_canvas.draw(options, texts, animate=False)
+
+    def _refresh_layout_mock(self, settings, layout):
+        """Fill and place the preview copy of a layout (the small screen under ``skl_mock``)."""
+        from skip_layout_dialog import layout_accent, texts as layout_texts
+        from smooth_progress import segment_percent
+
+        if getattr(layout, "canvas", False):
+            self._refresh_canvas_mock(settings, layout)
+            return
+        if getattr(self, "_mock_canvas", None) is not None:
+            self._mock_canvas.clear()
+
+        addon = self.addon
+        code = skip_layouts.normalize_look(self._draft.get(skip_layouts.KEY_LOOK))
+        look = skip_layouts.look(code)
+        offset = skip_layouts.mock_offset(skip_layouts.all_layouts().index(layout))
+        position = settings.get_text("skip_dialog_position", "BottomRight")
+        segment = build_customize_mock_segment(
+            self._mock_nested(settings),
+            getattr(self, "_preview_type", MOCK_SEGMENT_LABEL),
+        )
+        bare = skip_layouts.is_bare(layout.name)
+        resolution = getattr(self, "_skin_resolution", None) or "1080i"
+        for name, value in skip_layouts.properties(code, resolution, bare).items():
+            self.setProperty(name, value)
+        self.setProperty("skl_accent", layout_accent(addon, code, segment, settings=settings, bare=bare))
+        self.setProperty("skl_poster", os.path.join(addon.getAddonInfo("path") or "", "icon.png") if addon else "")
+        self.setProperty("skl_top", "true" if skip_layouts.is_top(position) else "false")
+        for name, value in layout_texts(addon, segment, MOCK_PLAYHEAD, look.caps, settings=settings).items():
+            self.setProperty(name, value)
+        remaining = countdown_mmss(MOCK_INTRO_END - MOCK_PLAYHEAD)
+        self.setProperty("countdown", remaining)
+        self.setProperty("skl_seconds", skip_layouts.seconds_left(remaining))
+        apply_jump_properties(self, addon, segment, all_caps=look.caps)
+
+        from skip_layout_dialog import apply_overlay
+
+        apply_overlay(self, self._ctrl, self._sc, layout, position, self._draft.get(skip_layouts.KEY_OVERLAY),
+                      ids=(skip_layouts.ID_MOCK_OVERLAY, skip_layouts.ID_MOCK_OVERLAY_PLAIN))
+        left, top = skip_layouts.origin(layout, position)
+        root = self._ctrl(skip_layouts.ID_ROOT + offset)
+        if root:
+            root.setPosition(self._sc(left), self._sc(top))
+        countdown = settings.get_bool("progress_bar_countdown", False)
+        timeline = layout.progress == skip_layouts.PROGRESS_TIMELINE
+        percent = segment_percent(MOCK_PLAYHEAD, segment.start_seconds, segment.end_seconds, countdown and not timeline)
+        if layout.progress == skip_layouts.PROGRESS_RING:
+            self.setProperty("skl_ring", skip_layouts.ring_frame(percent))
+            return
+        box = [int(self._sc(v)) for v in skip_layouts.fill_size(layout, percent)]
+        fill = self._ctrl(skip_layouts.ID_BAR_FILL + offset)
+        if fill:
+            fill.setPosition(box[0], box[1])
+            fill.setWidth(box[2])
+            fill.setHeight(box[3])
+        if timeline:
+            parts = skip_layouts.timeline_parts(
+                layout, segment.start_seconds, segment.end_seconds, MOCK_PLAYHEAD,
+                getattr(segment, "next_segment_start", None),
+            )
+            track_top = int(self._sc(layout.track[1]))
+            head = self._ctrl(skip_layouts.ID_PLAYHEAD + offset)
+            if head:
+                head.setPosition(int(self._sc(parts["playhead"])) - 1, track_top - int(self._sc(4)))
+            mark = self._ctrl(skip_layouts.ID_NESTED + offset)
+            if mark:
+                mark.setPosition(int(self._sc(parts["jump_left"])), track_top)
+                mark.setWidth(int(self._sc(parts["jump_width"])))
+
     def _layout_left_pane(self):
         """Pack visible setting rows so Minimal does not leave holes for Full-only options."""
         metrics = customize_left_pane_layout(self._nav_ids(), self._sc)
@@ -813,6 +1146,9 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             except Exception:
                 pass
         for cid in (
+            ID_PRESET,
+            ID_FONT,
+            ID_ALL_CAPS,
             ID_HIDE_ENDING,
             ID_CARD,
             ID_OPACITY,
@@ -847,14 +1183,73 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         d = self._draft
         self._set_row(ID_PRESET, *preset_row_parts(addon, d))
         self._set_row(
+            ID_LAYOUT,
+            get_localized(addon, 49010, "Skip dialog layout"),
+            dict(skip_layouts.LAYOUT_NAMES)[skip_layouts.normalize_layout(d.get(skip_layouts.KEY_LAYOUT))],
+        )
+        def named(rows, stored):
+            for value, string_id, english in rows:
+                if value == stored:
+                    return get_localized(addon, string_id, english)
+            return stored
+
+        corner_names = {"Skin": (49074, "The look's own"), "Hard": (49075, "Hard"), "Rounded": (49076, "Rounded")}
+        corner = skip_layouts.normalize_choice(d.get("skip_canvas_corners"), ("Skin", "Hard", "Rounded"), "Skin")
+        self._set_row(ID_CORNERS, get_localized(addon, 49072, "Corners"), get_localized(addon, *corner_names[corner]))
+        self._set_row(ID_CV_CLOSE, get_localized(addon, 49077, "Close button"), _yes_no(addon, d.get("skip_canvas_close", True)))
+        self._set_row(ID_CV_ICONS, get_localized(addon, 49079, "Icons on the buttons"),
+                      _yes_no(addon, d.get("skip_canvas_icons", True)))
+        self._set_row(ID_CV_KICKER, get_localized(addon, 49081, "Type and range line"),
+                      _yes_no(addon, d.get("skip_canvas_kicker", True)))
+        self._set_row(ID_CV_NESTED, get_localized(addon, 49083, "Nested line"),
+                      _yes_no(addon, d.get("skip_canvas_nested", True)))
+        for row_id, (key, names, default, label_id, label) in CANVAS_CHOICES.items():
+            stored = skip_layouts.normalize_choice(d.get(key), [row[0] for row in names], default)
+            shown = next(english if not sid else get_localized(addon, sid, english)
+                         for value, sid, english in names if value == stored)
+            self._set_row(row_id, get_localized(addon, label_id, label), shown)
+        self._set_row(ID_CV_TIME, get_localized(addon, 49165, "Time on the Skip button"),
+                      _yes_no(addon, d.get("skip_canvas_time", True)))
+        self._set_row(ID_CV_DISTANCE, get_localized(addon, 49129, "Distance from the edge"),
+                      "%d px" % canvas_distance(d.get("skip_canvas_distance")))
+        self._set_row(ID_CV_GRADIENT, get_localized(addon, 49116, "Overlay gradient"),
+                      _yes_no(addon, d.get("skip_canvas_overlay_gradient", False)))
+        self._set_row(ID_CV_SHADOW, get_localized(addon, 49086, "Text shadow"), named(
+            TEXT_SHADOW_NAMES, skip_layouts.normalize_choice(d.get("skip_canvas_text_shadow"),
+                                                             [row[0] for row in TEXT_SHADOW_NAMES], "Mild")))
+        self._set_row(ID_CV_TEXT_SIZE, get_localized(addon, 49093, "Text size"), named(
+            TEXT_SIZE_NAMES, skip_layouts.normalize_choice(d.get("skip_canvas_text_size"),
+                                                           [row[0] for row in TEXT_SIZE_NAMES], "100")))
+        self._set_row(ID_OVERLAY, get_localized(addon, 49050, "Background overlay"),
+                      named(skip_layouts.OVERLAY_NAMES, skip_layouts.normalize_overlay(d.get(skip_layouts.KEY_OVERLAY))))
+        self._set_row(ID_APPEAR, get_localized(addon, 49059, "Appears"),
+                      named(skip_layouts.APPEAR_NAMES, skip_layouts.normalize_appear(d.get(skip_layouts.KEY_APPEAR))))
+        self._set_row(ID_LEAVE, get_localized(addon, 49065, "Leaves"),
+                      named(skip_layouts.LEAVE_NAMES, skip_layouts.normalize_leave(d.get(skip_layouts.KEY_LEAVE))))
+        self._set_row(ID_PULSE, get_localized(addon, 49069, "Pulse in the last five seconds"),
+                      _yes_no(addon, d.get(skip_layouts.KEY_PULSE)))
+        self._set_row(
+            ID_BAR_COLOR,
+            get_localized(addon, 49031, "Bar colour"),
+            get_localized(addon, 49032, "Segment type")
+            if skip_layouts.normalize_bar_color(d.get(skip_layouts.KEY_BAR_COLOR)) == skip_layouts.BAR_TYPE
+            else get_localized(addon, 49020, "Look"),
+        )
+        self._set_row(
+            ID_LOOK,
+            get_localized(addon, 49012, "Layout look"),
+            dict(skip_layouts.LOOK_NAMES)[skip_layouts.normalize_look(d.get(skip_layouts.KEY_LOOK))],
+        )
+        self._set_row(
             ID_PREVIEW_TYPE,
             get_localized(addon, 46034, "Preview type"),
             display_segment_label(getattr(self, "_preview_type", MOCK_SEGMENT_LABEL)),
         )
+        card = card_choice(d)
         self._set_row(
             ID_CARD,
-            get_localized(addon, 46011, "Show card background"),
-            _yes_no(addon, d.get("skip_card_enabled", True)),
+            get_localized(addon, 49008, "Card style"),
+            get_localized(addon, 35030, "Off") if card == CARD_OFF else skip_dialog_card.name(card),
         )
         self._set_row(
             ID_OPACITY,
@@ -973,13 +1368,62 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             self._preview_type = _cycle(
                 preview_type_ids(), getattr(self, "_preview_type", MOCK_SEGMENT_LABEL), delta
             )
+        elif control_id == ID_LAYOUT:
+            d[skip_layouts.KEY_LAYOUT] = _cycle(
+                skip_layouts.LAYOUTS, skip_layouts.normalize_layout(d.get(skip_layouts.KEY_LAYOUT)), delta
+            )
+        elif control_id == ID_CORNERS:
+            d["skip_canvas_corners"] = _cycle(
+                ("Skin", "Hard", "Rounded"),
+                skip_layouts.normalize_choice(d.get("skip_canvas_corners"), ("Skin", "Hard", "Rounded"), "Skin"), delta)
+        elif control_id in CANVAS_CHOICES:
+            key, names, default = CANVAS_CHOICES[control_id][:3]
+            values = tuple(row[0] for row in names)
+            d[key] = _cycle(values, skip_layouts.normalize_choice(d.get(key), values, default), delta)
+        elif control_id == ID_CV_TIME:
+            d["skip_canvas_time"] = not d.get("skip_canvas_time", True)
+        elif control_id == ID_CV_DISTANCE:
+            value = canvas_distance(d.get("skip_canvas_distance")) + DISTANCE_STEP * delta
+            d["skip_canvas_distance"] = max(0, min(DISTANCE_MAX, value))
+        elif control_id == ID_CV_GRADIENT:
+            d["skip_canvas_overlay_gradient"] = not d.get("skip_canvas_overlay_gradient", False)
+        elif control_id in (ID_CV_SHADOW, ID_CV_TEXT_SIZE):
+            key, names, default = (("skip_canvas_text_shadow", TEXT_SHADOW_NAMES, "Mild") if control_id == ID_CV_SHADOW
+                                   else ("skip_canvas_text_size", TEXT_SIZE_NAMES, "100"))
+            values = tuple(row[0] for row in names)
+            d[key] = _cycle(values, skip_layouts.normalize_choice(d.get(key), values, default), delta)
+        elif control_id in (ID_CV_CLOSE, ID_CV_ICONS, ID_CV_KICKER, ID_CV_NESTED):
+            key = {ID_CV_CLOSE: "skip_canvas_close", ID_CV_ICONS: "skip_canvas_icons",
+                   ID_CV_KICKER: "skip_canvas_kicker", ID_CV_NESTED: "skip_canvas_nested"}[control_id]
+            d[key] = not d.get(key, True)
+        elif control_id == ID_OVERLAY:
+            d[skip_layouts.KEY_OVERLAY] = _cycle(
+                skip_layouts.OVERLAYS, skip_layouts.normalize_overlay(d.get(skip_layouts.KEY_OVERLAY)), delta)
+        elif control_id == ID_APPEAR:
+            d[skip_layouts.KEY_APPEAR] = _cycle(
+                skip_layouts.APPEARS, skip_layouts.normalize_appear(d.get(skip_layouts.KEY_APPEAR)), delta)
+        elif control_id == ID_LEAVE:
+            d[skip_layouts.KEY_LEAVE] = _cycle(
+                skip_layouts.LEAVES, skip_layouts.normalize_leave(d.get(skip_layouts.KEY_LEAVE)), delta)
+        elif control_id == ID_PULSE:
+            d[skip_layouts.KEY_PULSE] = not d.get(skip_layouts.KEY_PULSE)
+        elif control_id == ID_BAR_COLOR:
+            d[skip_layouts.KEY_BAR_COLOR] = _cycle(
+                (skip_layouts.BAR_TYPE, skip_layouts.BAR_LOOK),
+                skip_layouts.normalize_bar_color(d.get(skip_layouts.KEY_BAR_COLOR)),
+                delta,
+            )
+        elif control_id == ID_LOOK:
+            d[skip_layouts.KEY_LOOK] = _cycle(
+                skip_layouts.LOOKS, skip_layouts.normalize_look(d.get(skip_layouts.KEY_LOOK)), delta
+            )
         elif control_id == ID_PRESET:
             picked = sp.cycle_preset(d, delta)
             if not picked:
                 return
             sp.apply_preset(d, picked[1])
         elif control_id == ID_CARD:
-            d["skip_card_enabled"] = not d.get("skip_card_enabled", True)
+            set_card_choice(d, _cycle(CARD_CHOICES, card_choice(d), delta))
         elif control_id == ID_OPACITY:
             val = int(d.get("skip_card_opacity", 95)) + 5 * delta
             d["skip_card_opacity"] = 0 if val > 100 else 100 if val < 0 else val
@@ -1068,7 +1512,7 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         present_preset_menu(self.addon, self._draft)
         self.refresh_mockup()
         try:
-            self.setFocusId(ID_PRESET)
+            self.setFocusId(ID_PRESET if ID_PRESET in self._nav_ids() else ID_MODE)
         except Exception:
             pass
 
@@ -1115,6 +1559,8 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
             return
         if cid in (
             ID_PREVIEW_TYPE,
+            ID_LAYOUT,
+            ID_LOOK,
             ID_MODE,
             ID_CARD,
             ID_OPACITY,
@@ -1161,8 +1607,18 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
 
 
 def show_skip_dialog_customize(draft=None, original=None):
-    """Open the Customize modal. ``draft`` previews unsaved values (e.g. a preset);
-    ``original`` is what is currently stored, so Save writes only real changes."""
+    """Open Customize Skip Dialog: the Studio (skip_studio_ui.py), or this classic screen should
+    the Studio fail to open. ``draft`` previews unsaved values (e.g. a preset); ``original`` is
+    what is currently stored, so Save writes only real changes."""
+    try:
+        from skip_studio_ui import show_skip_studio
+    except Exception:
+        return show_skip_dialog_customize_classic(draft=draft, original=original)
+    return show_skip_studio(draft=draft, original=original)
+
+
+def show_skip_dialog_customize_classic(draft=None, original=None):
+    """The Customize screen of the versions before the Studio (one list of rows)."""
     # Opened from the settings window, it must see what an earlier Save handed to that window.
     addon = with_pending(get_addon())
     if not addon:
@@ -1173,7 +1629,7 @@ def show_skip_dialog_customize(draft=None, original=None):
         kwargs["draft"] = draft
         kwargs["original"] = original or load_skip_dialog_draft(addon)
     dialog = SkipDialogCustomize(
-        "SkipDialogCustomize.xml", path, "default", **kwargs
+        skippy_modal_style.xml_name("SkipDialogCustomize.xml", addon=addon), path, "default", **kwargs
     )
     dialog.doModal()
     saved = bool(getattr(dialog, "_saved", False))

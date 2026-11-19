@@ -1,5 +1,754 @@
 # Changelog
 
+## [8.32.4] - 2026-11-19
+
+### Fixed
+
+- **Both Studios filled in slowly on a slow box**, row after row from top to bottom over several seconds. A screen of rows is a few hundred window properties and each one was written on its own, every call waiting for Kodi to draw a frame. Properties that are empty anyway are no longer written (most of them), and the rest are written side by side.
+
+## [8.32.3] - 2026-11-19
+
+### Fixed
+
+- **Every drawn dialog used up one of Kodi's hundred window numbers for good.** Kodi gives a window's number (13000 to 13099) back only when the add-on's window object is gone, and a drawn dialog and the part that draws it held on to each other, which Python never cleared. After a hundred skip dialogs and Up Next popups Kodi said "maximum number of windows reached" and no dialog opened until Kodi was restarted. The drawing part now holds its window loosely, so the number comes back when the dialog closes and the next dialog gets the same one.
+
+- **Both Studios: the preview blinked as the Studio opened.** It was drawn standing still and at once again by the part that plays it (the card, the card without its texts, nothing, the card again). It is now drawn once and comes the way Appears says.
+- **Segment editor: a large text could show for a frame at the wrong size** (the same cause as the flash fixed in 8.32.2); such a text now waits below the screen until it has its size.
+
+## [8.32.2] - 2026-11-19
+
+### Fixed
+
+- **The skip dialog and the Up Next popup flashed before they appeared.** Each text and bar showed for a frame or two, large and at full strength, between being put on the window and getting the animations that size it and hide it until the dialog shows (seen in frame grabs: Kodi takes no animation before a control is on the window). They are now made below the screen and moved to their place once they have their animations, and the dialog is shown only after the focus is set. All parts come together, the way Appears says; Takeover's picture behind fades in with them.
+
+### Changed
+
+- **A drawn dialog is put together quicker on a slow box**: the calls that place and size its parts run side by side (each call into Kodi waits for a frame), and the Up Next popup is made ready shortly before it is due.
+
+## [8.32.1] - 2026-11-19
+
+### Removed
+
+- **Up Next, Takeover: the small window with what is playing** (added in 8.31.0). Under a dialog Kodi keeps the video at full size, so the window did not show the picture small: it showed the piece of the picture that lies behind it. Takeover is again the next episode's fanart over the whole screen.
+
+## [8.32.0] - 2026-11-19
+
+### Added
+
+- **Up Next Studio: the last three rows work.** Every row of the mockup now does something.
+  - **Follow the skin style** (Look): in Aeon Fuse the popup takes the look that goes with what the skin is showing: Aeon, Aeon Glass, or Fused Glass Dark, Clear, Frost or Fused Glass style. Another skin has no style to follow and the popup keeps its own look.
+  - **Keep clear of subtitles** (Layout): while subtitles are shown, a popup at the bottom of the screen stands 150 pixels higher. The preview shows the raised place.
+  - **Focus style** (Buttons): the button in focus as the look draws it, in the accent colour, or as a line around the button.
+
+### Changed
+
+- **A drawn dialog never shows half drawn.** The texts Skippy adds were on screen at their font's own size for a moment, before each had its place and size; on a box that is playing video that moment could last a second. The dialog (Up Next and the skip dialog) is now unseen until all of it is there.
+- **A drawn dialog opens faster.** Every call that places a part waits until Kodi has drawn its frame, and a dialog needs forty to a hundred of them. They are now made side by side. Measured on a CoreELEC box at the end of an episode: the Card 1.8 s before, 0.8 s now; Takeover 2.4 s and 1.2 s; the Queue 3.4 s and 1.7 s.
+- **The Up Next popup is made ready when playback starts**, as soon as the next episode is known: its code and the skin's fonts are loaded, its design is built once, the episodes of a Queue are looked up, and its pictures (episode picture, fanart, poster, logo) are put into Kodi's picture cache, so they do not load from a network share while the popup is already on screen.
+
+## [8.31.0] - 2026-11-19
+
+### Added
+
+- **Up Next, Progress: Line, Circle, Fill or Off** (the Look tab of the Studio). A circle stands in front of Play now. **Fill shows on** says where a fill shows:
+  - **Button**: Play now fills from the left.
+  - **Card**: the card itself fills from the left.
+  - **Picture**: the picture comes out from under a dark veil as the time runs (Kodi cannot turn a picture grey, so the part still to come is darkened).
+- **Picture: Fanart.** The Card lays the show's fanart behind its words, clear at the left where they stand and showing towards the right; it has no picture of its own then. The other designs show the fanart as their picture.
+- **Watch credits button** (Buttons tab): a third button beside Play now and Cancel. The popup goes away and the next episode starts when the credits have run to the end of the file.
+- **Takeover shows what is playing in a small window** at the top right, so the credits go on while the next episode has the screen.
+- **More rows of the Studio work:** When there is no episode picture (Fanart, Poster, Nothing), Time left (the time on Play now), All capitals (Same as look, Yes, No), Bar (Smooth, or Steps: once a second) and Speed (how long the popup takes to come; Auto is what Appears has of its own).
+
+### Changed
+
+- **The Poster card is drawn by Skippy** like every other design: it is the Card with the show's poster for its picture, in three sizes and every look. Its skin file is no longer used.
+- Three rows of the Studio are still listed as not built: Follow the skin style, Keep clear of subtitles and Focus style.
+
+## [8.30.0] - 2026-11-19
+
+### Added
+
+- **Up Next, drawn designs: Picture is a choice** (the Picture tab of the Studio), as on the options board:
+  - **Episode picture**: as before (the fanart, then the poster, when the episode has none).
+  - **Poster**: the show's poster instead. The Card shows it upright and gives the words the room; the other designs show it in the picture's place.
+  - **Poster and episode**: the poster and the episode picture side by side, at one height. The Card grows by the poster's width so the words keep their room. Nothing is laid over a picture.
+  - **Off**: no picture.
+- A setup that had the picture switched off keeps it off.
+
+## [8.29.0] - 2026-11-19
+
+### Added
+
+- **The Studio of the Up Next popup**, as the mockup draws it, on the frame of the skip dialog's Studio. Customize next episode popup in the settings opens it.
+  - **Six tabs:** Look (Popup style, Preset, Layout look, Size, Corners, Background overlay and its gradient, Progress, Accent colour, Same look as the skip dialog), Layout (Design, Position with the nine places, Distance from the edge, Size on screen), Picture (Picture, Plot, Episode line, Show logo), Buttons (the button the focus starts on, Cancel button, Icons), Motion (Appears, Leaves, Pulse in the last five seconds) and Autoplay (when the countdown ends, seconds before the end, start at the credits, remember per show, the still watching question and after how many episodes, resume a partly watched next episode).
+  - **Live preview:** the popup itself, drawn small where it will sit, and played: it comes, counts down, beats in its last seconds when Pulse is on, leaves and comes again. Every choice shows at once.
+  - **About this setting** under the preview says what the row in focus does, or why a row is dimmed. While the Preset row has the focus the presets stand there as tiles in their look.
+  - **Preset** steps through every drawn design in every look, then the looks you saved, then Card (legacy). OK on it opens the list that loads, saves and deletes saved looks; **Save as preset** saves the design on screen under a name; **Reset** puts every row back to its default.
+  - Nothing is hidden: a row that does not apply to the choices made is dimmed and says why. The rows of the mockup that have no function yet are listed dimmed too (Fill shows on, Follow the skin style, Keep clear of subtitles, When there is no episode picture, Time left, All capitals, Watch credits button, Focus style, Bar, Speed).
+- New choices of a drawn design: **Episode line**, **Show logo** and **Same look as the skip dialog** (the popup takes whatever look the skip dialog has).
+- **Options of Card (legacy)** on the Look tab opens the list screen of earlier versions for the earlier popup.
+
+## [8.28.0] - 2026-11-19
+
+### Added
+
+- **Customize Up Next, for a drawn design:**
+  - **Preset** steps through every drawn design in every look: eight designs in eighteen looks, the twelve own looks (Neon, Paper, Sunset, Ocean, Brutal, Terminal, Wireframe, Luxe, Pastel, Gloss, Mono, VHS) among them, and Card (legacy) at the end. It sets Popup layout and Layout look, which stay as rows of their own.
+  - **Size**: Full, Compact or Minimal.
+  - **Size on screen**: Small, Medium or Large, as for the skip dialog.
+- Size and Size on screen are settings too (Up Next in the add-on's settings), and **a look saved under a name keeps them** with the layout, its look and the picture.
+- **A segment type of your own has a colour of its own.** A type added to Segment keywords had the grey of "other", like every other added type. It now gets one of eight spare colours, chosen by its name: the same name has the same colour after every restart and on every device, and nobody has to pick one. It shows in the editor's list, on its timeline and as the bar colour of the skip dialog.
+
+### Changed
+
+- **The default Up Next popup is the drawn Card in Fused Glass Dark.** An installation that never chose a layout shows it from now on; one that did keeps its choice, and Card (legacy) is still there.
+- **Show the popup at the start of the Credits segment is on by default.**
+- **The looks of the popup of earlier versions are all named "(legacy)"**, the Fuse ones too (Fused Glass Dark (legacy) ...), as in the skip dialog: they set only that popup's options.
+- The drawn Up Next popup is made ready at the start of playback together with the drawn skip dialog (its code loaded, the skin's fonts read), so the first one does not pay for that when it opens.
+
+## [8.27.0] - 2026-11-19
+
+### Added
+
+- **Up Next, Queue: drawn by Skippy, as in the mockup.** The next three episodes are cards side by side, with the show's name and when the first starts above them, the bar under them, and three buttons: Play (it names the chosen episode), Play a later one and Cancel.
+  - Up from the buttons goes to the cards; Left and Right pick another one. A frame in the accent stands around the chosen card and the others are dimmed. OK on a card plays it; Play plays the chosen one; Play a later one moves on to the next card.
+  - **Compact** shows three small cards with Play now beside them, **Minimal** one pill with the picture, the title, when it starts and how many follow.
+  - With one episode left there is one card and no Play a later one.
+- The drawn engine has a third button and places that only take the focus, both unseen until a design uses them.
+
+### Fixed
+
+- **Drawn dialogs: what is written on a button did not change colour when the focus moved.** A label keeps the colour it was made with, so on a button that lost the focus the dark text stayed, on a dark button. The colour is now written into the text. This holds for the drawn skip dialog as well (Skip and Close).
+
+## [8.26.0] - 2026-11-19
+
+### Added
+
+- **Up Next: seven designs drawn by Skippy**, on the engine of the drawn skip dialog, in the measures of the mockups. Layout in Customize Up Next offers them:
+  - **Card**: the picture, the episode, its title and plot in one card, the bar under them, Play now with the time left and Cancel.
+  - **Poster slab**: a square slab out of the screen corner, the picture full width with the title set on it.
+  - **Play ring**: the countdown is a ring on the picture itself, over a soft rounded shade.
+  - **Lower third**: across the whole picture, picture and plot at the left, the buttons at the right, one long bar.
+  - **Float**: no box and no shade, light type and a small picture straight on the video.
+  - **Takeover**: the next episode takes the screen, with its fanart, the show's logo, the title and the plot.
+  - **Side rail**: a tab on the screen edge with the picture on top, the countdown as a ring and the buttons stacked.
+- Each design has three forms, **Full, Compact and Minimal** (setting `next_canvas_form`; the Studio for Up Next, which will set it on screen, is not built yet), and takes the look chosen for the popup: the six skin looks and the twelve own looks of the drawn skip dialog.
+- The drawn popup has the choices of the drawn skip dialog under names of its own (`next_canvas_...`): corners, Cancel button, icons, plot, picture, progress, accent, size on screen, place and distance, overlay and its gradient, how it appears and leaves, the beat of the last five seconds, text shadow, outline and text size.
+- The episode's plot and the show's logo are shown where a design has a place for them.
+
+### Changed
+
+- **The popup of earlier versions is now called Card (legacy)** and stays the default; nothing changes for a setup that uses it. Picture slab, Play ring, Lower third, Float, Takeover and Side rail were skin files of their own and are now the drawn designs of the same name. Poster card and Queue are as before.
+- The drawn engine can show a picture of the library (cut to rounded corners by the skin file) and a text of several lines.
+
+## [8.25.2] - 2026-11-19
+
+### Fixed
+
+- **Segment editor: a new segment was not highlighted.** After Create, Add current + typed time or Type start + end, the list and the timeline stayed on the segment that was highlighted before. The new segment is now the highlighted one in both. The focus stays on the button that made it, so Save is a few steps away.
+
+## [8.25.1] - 2026-11-19
+
+### Fixed
+
+- **Segment editor, List and drawer: the label picker (Create, Edit) opened in the add-on's window style**, frosted over a dark editor. It now opens in the editor's own panel look: Dark, Frost or Clear.
+
+## [8.25.0] - 2026-11-19
+
+### Added
+
+- **Segment editor, List and drawer: a Look row** over the nine actions of the highlighted segment, with two buttons.
+  - **Dark overlay: on / off** darkens the picture behind the editor. It is the Full-screen dark overlay setting, which could only be reached in the add-on's settings.
+  - **Panels: Dark / Frost / Clear** steps the editor's panels through the three Fused Glass looks. A window takes its pictures from its file, so the editor closes and opens again in the new look; the segments, unsaved changes, the marked start and end, Undo and the highlighted segment come along. The choice is kept (Segment Editor > Editor panels in the settings is the same choice). Fused Glass Dark is the default.
+- From a segment, Down goes to the Look row and from there to the nine actions; Left and Right are as before.
+
+### Changed
+
+- **The editor's panels stand 16 units from the left and right edges of the screen** (they stood 35 and 29, as in the mockup). The 32 units go to the list: the type name and the source have more room, and a flagged row shows flag and source without cutting either. The list shows eight rows, one fewer, to make room for the Look row.
+
+## [8.24.2] - 2026-11-19
+
+### Fixed
+
+- **Segment editor, List and drawer: the list rows were set in type that is too large**, so the source was cut off and a flagged segment had no room for its source at all. The two panels fill the width of the screen, so there is no room to add; the mockup fits because its rows are set smaller. A row now has the mockup's sizes (21 pixels for the name and the times, 17 for the length, 16 for the source, 14 for the flag), and shows the NESTED or OVERLAP flag after the length with the source at the right end of the same row. A long name or source scrolls while its row has the focus.
+
+## [8.24.1] - 2026-11-19
+
+### Changed
+
+- **Segment editor, List and drawer is always in the Fused Glass Dark look**, like the Studio, whatever Window style is set: the layout was drawn in it, and the colours of its blocks, its white frame and its flag are tuned to a dark panel. The Drawer and Classic layouts still follow Window style.
+- **Segment editor, List and drawer: small labels at the mockup's size.** The headers (TIMELINE, SEEK, MARK, SEGMENTS AND FILE, the line over the nine actions), the tags over the picture, the words in the timeline's blocks, the times under the track and the NESTED flag were written in the skin's smallest font, which is larger than the mockup's small capitals (21 pixels against 15 in Aeon Fuse). The editor reads the size of that font from the skin and scales these labels to 15 pixels, in bold. A skin whose font is already that small is left alone. More of a word fits a narrow block this way.
+
+## [8.24.0] - 2026-11-19
+
+The segment editor's List and drawer layout, brought closer to its mockup.
+
+### Changed
+
+- **What the timeline zooms on.** The track shows the highlighted segment together with the segments connected to it (an intro right after a recap, a preview inside the credits), and about a third more for room. It used to show at least three minutes around the highlighted segment, which was far more than a short group needs. The thin bar over the track still stands for the whole file, with a frame round the stretch that is shown.
+- **Blocks with round corners** on the track, and a rounder frame round the highlighted one. That one has a handle at each end and its start and end time under it; the playhead has a marker on top, and its time gives way where a segment's time already stands.
+- **The NESTED / OVERLAP flag is a flat rounded chip** with bold dark letters. It was drawn with a picture that carries a gradient, as were the LIVE VIDEO tag and the dark overlay tag, which are flat now too.
+- **Sources in words**: Local EDL, Chapters, TheIntroDB, where the row showed the stored key (edl).
+
+## [8.23.1] - 2026-11-19
+
+Seen on the CoreELEC box, the first time the rebuilt editor ran there.
+
+### Fixed
+
+- **Segment editor rows**: a long type name (Commercial, Featurette) was cut off, and so was the word in the NESTED flag. The name and the from – to column are wider (a film's 1:47:40 – 1:51:12 fits), and the flag stands at the right end of the row, where an unflagged segment shows its source.
+- **Timeline**: a block that is too narrow for its word showed a cut-off one ("REC…"). A block now shows its type and length when both fit, its type alone when only that fits, and nothing otherwise.
+
+## [8.23.0] - 2026-11-19
+
+### Changed
+
+- **Segment editor, List and drawer, rebuilt to its mockup.**
+  - **Header**: SKIPPY · SEGMENT EDITOR, the number of segments in large type, the title of what is playing, then the current time and the pending start and end.
+  - **Rows on one line**: the type's colour and name, from – to as m:ss, the length, a NESTED or OVERLAP flag, and the source at the right. They were two lines with times to the millisecond.
+  - **Timeline**: the track shows the stretch of the file around the highlighted segment (three minutes at least), so a segment of a long film is wide enough to read; the header says which stretch is shown. Every block that has room carries its type, the highlighted one also its length and a white frame. The start and end of the stretch stand under the track and the time of the playhead moves with it. A thin bar over the track stands for the whole file, with a frame round the stretch that is shown.
+  - **Buttons** as in the mockup: Mark is one row of seven, the labels are shorter (Start of file, End of file, Type start + end, Add current + typed time), and the headers are small capitals. The line over the nine actions names the highlighted segment.
+  - Over the picture: LIVE VIDEO and whether the dark overlay is on; under the panels: what OK, Left, Right and Back do.
+- The Drawer and Classic layouts are as they were.
+
+### Fixed
+
+- **Float**: the words before the countdown ("Intro ending in") moved as the seconds changed, because the line is right-aligned and the figures differ in width. The time has a place of its own at the end of the line now, and the words stand still.
+
+## [8.22.0] - 2026-11-19
+
+### Added
+
+- **Motion for the drawn designs.** Appears (Fade, Rise, Pop, Slide in), Leaves (Fade, Drop, Shrink) and Pulse in the last five seconds now work for every drawn design; they only worked for the Poster card. The whole dialog moves as one: the card, the buttons and the texts on them. The shade behind a dialog only fades. Slide in comes from the side of the screen the dialog stands at.
+- **The Studio's live preview plays.** With a drawn design the preview shows the dialog the way it will be seen: it appears, its countdown and its bar run for nine seconds, it beats in the last five if Pulse is on, it leaves, and after a short rest it comes again. A change on the left shows at once, standing still, and plays from the next round.
+
+### Changed
+
+- The **Motion** tab of the Studio applies to a drawn design (its rows were dimmed).
+- Closing a drawn dialog takes the time of its Leaves (160 to 200 milliseconds) before the skip or the close happens.
+
+## [8.21.2] - 2026-11-19
+
+### Changed
+
+- **Preset order**: the drawn designs come first (Stack card · Fused Glass Dark, the default, leads), then the presets you saved, then the presets of the classic card, which are all marked (legacy). The card's presets used to lead, so one step Left from the first drawn design landed on a legacy card. The order is the same in the Preset row, the preset wall and the preset list.
+
+## [8.21.1] - 2026-11-19
+
+### Changed
+
+- **The presets of the classic card are named (legacy)**: Fused Glass Dark (legacy), Aeon (legacy) and so on, like the older ones already were. The card has the earlier options only, and without the suffix a card preset read like the drawn design of the same look. Stored names do not change, and the looks of the next episode popup keep their plain names.
+
+### Fixed
+
+- **Studio**: a choice in a switch row is wider where fewer stand side by side, so Compact, Rounded and Medium no longer touch the ends of their pill. A switch that is off kept only its knob on the white row in focus; its track shows there now. About this setting was empty for Time on the Skip button.
+
+## [8.21.0] - 2026-11-19
+
+### Changed
+
+- **The default skip dialog is the Stack card in Fused Glass Dark** (it was the classic Card in Fused Glass Frost). This is what a new installation shows. An installation that never chose a layout follows the default and changes with it; a layout that was chosen stays.
+- **Studio, Look tab: Preview segment type** steps through all your segment types again (it had become Intro / Credits / Nested on the Behaviour tab). Beside LIVE PREVIEW the screen writes the type that is shown, as plain words. The preview of a drawn design always has a segment inside another, so the Nested line switch on the Layout tab shows what it does.
+- **Progress countdown** is the name of the row that was cut off as "Progress bar shows remaining (…".
+- **Time on the Skip button** is a switch of its own for a drawn design (Text tab). It used to depend on the Skip Button Format containing a duration, which says nothing about a design that has its own place for the time. Skip Duration Format and Skip Duration Content go with the switch.
+
+### Fixed
+
+- **Stepping back to a preset from a look of your own switched to the classic card.** With Custom on the Preset row, Left or Right went to the first preset of the list, the classic card that is also called Fused Glass Dark, and the options of the drawn design went away. The first step now goes to the preset the look came from: the design in use in its look.
+- **A built-in preset of a drawn design did not reset its options**, and changing one (the corners, the accent, the size on screen) did not show as Custom. A built-in preset is the design as drawn: choosing it sets the design's options back, and any change to them shows as Custom.
+- **A saved preset lost the options of the drawn design** (corners, size, text outline, accent, distance and the rest). It stores and brings back all of them now.
+- **The Studio preview ignored Skip Duration Format and Skip Duration Content** for a drawn design; it always wrote the segment's length as m:ss. It writes the time the way the real dialog does.
+
+## [8.20.0] - 2026-11-19
+
+### Fixed
+
+- **The Studio's tabs looked emptied out.** A row that did not apply to the design in use was hidden, and Design had moved to the Layout tab, so with the classic Card the Look tab showed two rows. Every tab now shows all its rows whatever the design: a row that does not apply is dimmed, and About this setting says why (for the drawn designs, for the classic Card only, not built yet, or not used with the choices made). Design is the second row of the Look tab again. A tab with more than ten rows scrolls, and shows which rows are on screen.
+
+### Changed
+
+- **Text outline** is a strength now: Off, Light, Medium, Strong. Medium is what the switch drew before; Light is fainter and one pixel wide at every size; Strong adds the four straight directions to the four corners.
+- **The text shadow falls to the lower right** (it fell straight down).
+
+## [8.19.0] - 2026-11-19
+
+The skip dialog Studio, rebuilt to the round-3 mockup and compared with it on the CoreELEC box.
+
+### Changed
+
+- **Six tabs**: Look, Layout, Text, Buttons, Motion, Behaviour (it had five). The large title names the open tab ("Skip dialog look"); the open tab keeps a grey pill, the one in focus a white one.
+- **Rows as in the mockup**: no plate of their own, a white pill while in focus, and the control that suits the row: a group of choices side by side (Size, Corners, Progress, Size on screen, Focus starts on, Preview), a toggle, colour dots (Accent colour), a slider (Distance from the edge, Card opacity, Bar height), the nine dots of a position, or a value between two arrows to step through.
+- **About this setting**: the panel under the preview says what the row in focus does, from the setting's own help text. On the Preset row it shows the presets around the one in use instead.
+- **Preview tags**: Intro, Credits and Nested stand over the live preview; Preview on the Behaviour tab picks one. Nested shows a segment inside another, with the line that says where Skip lands.
+- Rows moved to where the mockup has them: Design and Position on Layout, Background overlay and Progress on Look, the bar's own rows on Behaviour. Progress is one row with four choices (Line, Circle, Fill, Off) for a drawn design.
+- Save carries a tick and stands left; the hint line under the panels is left-aligned with its keys in bold.
+
+### Added
+
+- **Distance from the edge**: how far a drawn dialog stands from the screen edge, 0 to 160 pixels (64 as drawn).
+- **Button the focus starts on**: Skip or Close.
+- **Nine positions for drawn designs**: Position steps through the four corners, the four edges and the centre. The classic card keeps the four corners.
+
+### Not in this version
+
+- The Motion tab is empty for a drawn design (greyed out): Appears, Leaves and the pulse are not wired to the drawn designs yet. The preview does not animate.
+- Rows of the mockup that have nothing behind them yet are left out rather than shown dead: Follow the skin style, Keep clear of subtitles, Nested line wording, Text colour as dots, Bar smooth or steps, Focus moves, Speed, After a skip, Show for episodes, Show for films, Close when the segment ends, Hide the seek bar during a skip.
+- The Up Next Studio is unchanged.
+- Fonts are the skin's own at their nearest sizes (only the title is drawn at the mockup's size), so letter weights differ a little from the mockup.
+
+## [8.18.0] - 2026-11-19
+
+From a test on the CoreELEC box.
+
+### Changed
+
+- **Drawn skip dialogs appear at once on a slow box.** Every part used to be handed to Kodi on its own, and each hand-over waited for a frame, so a dialog with many texts built up piece by piece over more than a second. All parts now go to Kodi in one call: on the CoreELEC box a drawing takes about a tenth of a second. The skin's fonts are read once and kept, and at the start of playback of a video with segments Skippy loads the dialog's code and reads the fonts ahead of time.
+- **Texts with no background get a dark outline and a mild shadow** by default, in place of the heavy shadow, which did not look right. **Text outline** is a new switch on the Studio's Text tab; Text shadow now starts at Mild and its heavier levels cost fewer parts (Heavy is two dark copies and a softer patch, it was eight). A design that has an overlay behind it gets the mild shadow whatever the setting, and the time inside a ring has none.
+- **Every panel casts its shade**: Split's Skip and Close tiles and its pills had none, only the text card had. A low card, a pill and a tile take a small shade of their own; the large one was squeezed there and showed as an odd outline.
+- **Presets are listed look by look** (all eight designs in Fused Glass Dark, then in Fused Glass Frost, and so on), so stepping through them shows another design at every step instead of one design in eighteen looks.
+- **Segment editor, List and drawer:** from a segment in the list, Left goes to the segment's tools under the list and Right to the seek and jump controls of the timeline.
+
+### Added
+
+- **Size on screen** (Studio, Layout tab): Small, Medium, Large. The finished dialog is scaled as one piece, so corners, shadows and spacing keep their proportions. Large is the size of the designs as drawn.
+- **Accent colour** (Look tab): the bar colour setting, or Gold, Blue, Red, Green, Teal, Purple, White.
+- **Progress style** (Look tab): The design's own, Line, Circle, Fill. Circle and Fill move the line of Stack card, Corner slab and Cinema band into the Skip button; a design with a ring, a tile or a timeline keeps its own.
+- **Overlay gradient** and **Gradient direction** (Layout tab): lets a Square or Rounded overlay fade out towards the picture; Away from the dialog, Top to bottom, Side to side or Round.
+
+### Not in this version
+
+- The Studio is still five tabs with its earlier frame; the six-tab screen of the mockup, its About panel and the animated preview are not built. The Up Next Studio is unchanged.
+- Appears, Leaves and the pulse are not wired to the drawn designs.
+- Seen on the PC's Kodi and timed on the CoreELEC box; the new rows were not opened in the Studio on the box.
+
+## [8.17.1] - 2026-11-18
+
+Found on the CoreELEC box, the first time the drawn designs ran during playback.
+
+### Fixed
+
+- **The duration on the Skip button read ":00"** on every drawn design: the duration text was formatted a second time as if it were a number of seconds. It is now shown in the chosen duration format.
+- Times on a drawn design lose their leading zero, as in the mockups: "Intro ending in 0:27", "0:05 – 0:40", "Skip to Recap at 0:15", and the duration on the button ("0:07 / 0:35").
+- In a look that writes in capitals (Aeon) the headline fell back to small letters at the first tick of the countdown; the small forms of Timeline, Side rail and Dial did not count down at all. Both run now.
+- A low card in a square look was drawn a few pixels taller than its content, and type chips were taller than in the mockup.
+- **Timeline**: the time under the playhead stood still at the moment the dialog opened; it now runs with the playhead. The second block carries the name of the segment Skip lands in.
+
+## [8.17.0] - 2026-11-18
+
+Five more designs on the drawn engine, each checked side by side against its mockup.
+
+### Changed
+
+- **Cinema band** (D), **Float** (E), **Split** (F), **Timeline** (G) and **Side rail** (H) are drawn by Skippy now, in Full, Compact and Minimal, in every look. Split has its Skip tile that fills up from the foot and pills that fill from the left; Timeline has the three blocks on a line, the playhead, the dashed arc to where Skip lands and the times under it; Side rail is a tab on the screen edge with the ring on top and the buttons stacked.
+- Every Background overlay now works on a drawn design (Square, Square fading, Rounded, Rounded fading, Band, Corner glow), still one at a time.
+- A design grows with a long headline instead of cutting it off (Aeon writes in capitals); the Side rail puts the time of the nested line on a line of its own.
+
+### Added
+
+- **Text shadow** (Studio, Text tab): Off, Mild, Medium, Strong, Heavy. It is the shadow under texts that lie straight on the video (Dial, Cinema band, Float). Heavy is the default and is what the mockups show: dark copies under the letters and a soft dark patch behind the line.
+- **Text size** (Studio, Text tab): Small, Standard, Large, Larger. Buttons grow with their text.
+
+### Fixed
+
+- **The type was said twice** ("Intro" above and "Skip intro" on the button). When the dialog names the segment type anywhere else, the button says Skip alone; a Minimal form, which has nothing else, keeps the full label.
+
+### Not in this version
+
+- Poster card is still the earlier fixed file. The third Timeline block has no dashed edge, the letter-spaced labels of the mockups are drawn without the extra spacing, and the VHS colour fringe is not built.
+- Appears, Leaves and the pulse are not wired to the drawn designs. The Studio is still five tabs; its preview does not animate yet.
+- Checked on the PC's Kodi against the mockup boards in Fused Glass Dark (all three sizes) and Aeon (Full). The other looks and the small sizes outside Fused Glass Dark were not compared; nothing was seen during playback or on the CoreELEC box.
+
+## [8.16.0] - 2026-11-18
+
+Two more designs on the drawn engine, each checked side by side against its mockup.
+
+### Changed
+
+- **Corner slab** (design B) is drawn by Skippy now: a square slab flush in the screen corner in every look, the bar along its top edge, the type and range line, the headline at 40 pixels, the nested line under a rule with the jump arrow and the type chip, and Skip and Close edge to edge at 68 pixels. Compact is the ending line over the time left with Skip and a square Close; Minimal is the Skip button alone on the screen edge, 120 pixels above the bottom.
+- **Dial** (design C) is drawn by Skippy now: the ring with the time and "left" inside it, the type and range, the headline and the nested line beside it, and pill buttons under both, in every look (the Dial is a rounded design, also in Aeon). Compact is a small ring with the seconds, Skip and a small Close; Minimal is the label and a round Skip button with the ring around it.
+- Both take the options of the Stack card: Close button (without it Skip takes the row), Icons on the buttons, Type and range line, Nested line.
+
+### Fixed
+
+- **Overlays were doubled**: the Dial had its shade built in, and a chosen Background overlay was drawn on top of it. Background overlay now has the default **The design's own**: the Dial's rounded shade, nothing for a card. Any other choice takes the place of that shade; None removes it. There is only ever one.
+- Texts that lie on the video (the Dial) have a soft dark copy under them, as in the mockup, and a look with dark ink on a light card (Paper, Brutal, Pastel) writes light there.
+
+### Not in this version
+
+- Cinema band, Float, Split, Timeline, Side rail and Poster card are still the earlier fixed files and do not match their mockups yet. For the drawn designs only the rounded overlays are built; Square, Band and Corner glow fall back to the design's own.
+- Appears, Leaves and the pulse are not wired to the drawn designs. The Studio is still five tabs with its earlier rows.
+- Checked on the PC's Kodi against the mockup boards in Fused Glass Dark, Aeon and Aeon Glass; not seen during playback and not on the CoreELEC box.
+
+## [8.15.0] - 2026-11-18
+
+A new way to draw the skip dialog, and the first design built with it.
+
+### Added
+
+- **Stack card** (Skip dialog layout): the first design that Skippy draws itself instead of loading a fixed skin file, measured against the mockup (design A) in Full, Compact and Minimal. It has what the earlier layouts lacked: the accent dot before the segment type, the range at the right, the headline at the mockup's size and weight, the nested line in its own inset box with the jump arrow, icons on Skip and Close, and the time at the right of the Skip button. Compact and Minimal are pills in the round looks, with a Close button that has no plate until it has the focus.
+- Because nothing is fixed in a file, options change the build. New for this design (Playback & Dialog, and rows in the Studio): **Corners** (the look's own, Hard, Rounded), **Close button** (without it Skip takes the whole row), **Icons on the buttons**, **Type and range line**, **Nested line**. Show Progress Bar switches its bar.
+- All eighteen looks draw it from the mockups' own values: Aeon and Fused Glass style have no padding and no gap, so their buttons sit flush with the edges of the card; Neon has its glow around the card, Brutal its hard offset shadow.
+- Texts are set to the mockup's pixel sizes in any skin: the nearest font of the active skin is zoomed the rest of the way, and bold texts use the skin's bold or semi-bold file.
+- Eighteen presets "Stack card · <look>" with miniatures on the preset wall. The Studio's live preview draws the design with the same code as the real dialog.
+
+### Fixed
+
+- **Segment editor, List and drawer**: Right from the segment list went to the timeline drawer, so the nine actions of a segment could only be reached from the last row. Right now goes to the actions, Right again to the drawer, Left back to the list.
+
+### Not in this version
+
+- Only the Stack card is drawn this way. The other designs (Corner slab, Dial, Cinema band, Float, Split, Timeline, Side rail, Poster card) are still the fixed files and do not match their mockups yet; background overlay, Appears, Leaves and the pulse are not wired to the Stack card.
+- The Studio itself still has five tabs and its old rows; the six-tab screen of the mockup, its About panel and a preview that plays the motion are not built.
+- The real Stack card dialog has not been seen during playback, and nothing of this version is on the CoreELEC box.
+
+### Developer
+
+- `skip_canvas_looks.py` (the looks, value for value from the mockup stylesheet), `skip_canvas.py` (designs as drawing lists, options, nine places), `skip_canvas_draw.py` (puts a list on a window: slots for nine-slice pictures, controls made in Python for texts, icons and bars; `stage` draws it small in the Studio), `skip_canvas_dialog.py`, `tools/gen_skip_canvas.py` (`SkipCanvas.xml`, `cv_*.png`). Settings `skip_canvas_*`, strings 49072-49084.
+
+## [8.14.0] - 2026-11-18
+
+### Fixed
+
+- A custom skip dialog with a new layout, saved as a preset, came back incomplete: only the layout, its look and the bar colour were stored. A saved preset now also stores the size (Full, Compact, Minimal), the background overlay, Appears, Leaves and the pulse. Built-in layout presets still leave those alone.
+- A custom next episode popup could not store its layout at all, and a design with a new layout was refused as "a built-in look". A saved look now stores the popup layout, its look and the picture; where the popup sits and the default button stay out of it. Looks saved before still load and leave the layout alone.
+
+### Added
+
+- **Customize next episode popup**: rows **Popup layout** and **Layout look**. With a new layout the screen shows only the rows that apply to it; the stage says to press Preview.
+
+## [8.13.0] - 2026-11-18
+
+Fourteenth step of the rebuild: the popup layouts Takeover and Queue.
+
+### Added
+
+- **Takeover** (Next Episode, Popup layout): the next episode takes the whole screen. Its fanart (else its picture, else the poster) lies under a veil, with the show's logo when the library has one, the title large, the time left, a bar, Play now and Close.
+- **Queue**: the next three episodes of the show side by side, each with its picture and number. Left and Right pick one, OK plays it; the countdown plays the first. Down goes to Close. An episode that does not come from the library (a playlist item, an add-on's announcement) stands alone, as does a film.
+- Both take the look of **Layout look**, like the other popup layouts.
+
+### Not in this version
+
+- In the mockup of Takeover the credits shrink into a small window. That needs the video drawn inside the dialog, which I could not test during playback, so the video stays behind the picture.
+- The Compact and Minimal forms of the popup layouts are not built.
+
+### Developer
+
+- `next_layouts.py`: layouts `Takeover` and `Queue`, `PICTURE_BACKDROP`, `QUEUE_IDS` / `QUEUE_SIZE` / `queue_left()`; `next_episode_lookup.find_queue()` and `logo` / `tvshowid` in a library successor; `NextLayoutDialog._fill_queue()`: a later card replaces the contents of the episode the service will play. `tests/test_takeover_queue.py`.
+
+## [8.12.0] - 2026-11-18
+
+Thirteenth step of the rebuild: a Minimal form for every skip dialog layout.
+
+### Added
+
+- **Minimal forms**: each new layout has a third, smallest file with the Skip button and how far the segment is, built like its family: Corner slab (a small slab with the line on top), Dial (the ring with the seconds beside the button), Cinema band (a thin band with the time and Skip), Float (the button with its ring), Split (one tile that fills), Timeline (Skip and a short timeline), Side rail (a small tab with the ring) and Poster card (the poster beside the button). They take the look, the bar colour, the overlay and the motion like the other forms.
+
+### Changed
+
+- **Minimal mode with a new layout** now shows that layout's Minimal form. Before, Minimal mode always showed the chip of the classic card. With the Card layout nothing changes: the chip and its plate styles are as they were.
+- A Minimal form sits where **Skip Dialog Position** says; the classic chip keeps its own Minimal position setting.
+- Customize: the layout and look pickers stay available in Minimal mode.
+
+## [8.11.0] - 2026-11-18
+
+Twelfth step of the rebuild: background overlays and motion for the skip dialog layouts.
+
+### Added
+
+- **Background overlay** (Playback & Dialog, and the Layout tab of the Studio): a shade behind a new skip dialog layout so it reads on a bright picture. **None** (the default), **Square**, **Square, fading**, **Rounded**, **Rounded, fading**, **Band** and **Corner glow**. The shade follows the corner the dialog sits in. Cinema band has its own band and takes none. The Studio preview shows the choice.
+- **Appears**: Fade (as before, the default), Rise, Pop or Slide in (from the side of the screen the dialog sits at).
+- **Leaves**: Fade (as before, the default), Drop or Shrink.
+- **Pulse in the last five seconds** (off by default): the dialog beats once a second while five seconds or less are left.
+
+### Not in this version
+
+- The eighth overlay of the mockups, a patch of blurred picture, cannot be made: an add-on window cannot blur the video.
+- Of the animation board: the button that unrolls from the dial, the label that turns dark as the fill passes, the flash on OK, and the Up Next picture wipe and hand-off are not built. The slow drift was left out on purpose.
+- The Studio preview does not play Appears, Leaves or the pulse; they show on the real dialog. The popup layouts have no overlay or motion choice yet.
+
+### Developer
+
+- `skip_layouts.py`: `KEY_OVERLAY` / `KEY_APPEAR` / `KEY_LEAVE` / `KEY_PULSE`, `overlay_box()`, `appear_value()`, `pulses()`, `HEAD_PROPERTIES`; controls 3295 / 3296 (20991 / 20992 in the preview) and conditional animations in every layout file; pictures `ov_*.png`; `skip_layout_dialog.apply_overlay()`; Studio rows 4148-4151; strings 49050-49070; `tests/test_overlays_and_motion.py`.
+
+## [8.10.0] - 2026-11-18
+
+Eleventh step of the rebuild: the pictures of the next episode popup, as asked for.
+
+### Changed
+
+- **Poster and episode** (Picture, classic popup card): the poster stands at the left and the episode picture to the right of it, both at the same height, on one line, with round corners and no outline. Before, the poster was set into a corner of the episode picture.
+
+### Added
+
+- **Fanart and poster**: the fanart behind the popup with the show's poster at the left.
+- **Fanart and episode**: the fanart behind the popup with the episode picture at the left.
+- Both need real fanart. Without it Fanart and poster shows the poster alone and Fanart and episode the episode picture alone.
+
+### Developer
+
+- `next_episode_appearance.py`: `PICTURE_FANART_POSTER`, `PICTURE_FANART_EPISODE`, `PAIR_*`, `PopupLayout.fanart` / `.pair` / `.picture_y`; the plan gives `pair_poster` / `pair_thumb` (the `inset` is gone). Controls 5020 and 5023 (7020 / 7023 in the Customize preview) with the masks `nx_mask_poster.png` / `nx_mask_wide.png` from `tools/gen_next_layouts.py`. Strings 49048, 49049; 49040 rewritten.
+
+## [8.9.0] - 2026-11-18
+
+Tenth step of the rebuild: twelve looks of their own.
+
+### Added
+
+- **Twelve more looks** for **Layout look** (skip dialog) and the popup's **Layout look**, after the six of the skin Aeon Fuse:
+  - **Neon**: a cyan tube outline with a glow, magenta buttons and bar.
+  - **Paper**: a warm paper card with dark ink and a red bar; reads in a bright room.
+  - **Sunset**: an orange to violet card, white focus.
+  - **Ocean**: a teal to indigo card, mint bar.
+  - **Brutal**: a yellow block with heavy black rules.
+  - **Terminal**: green phosphor, square.
+  - **Wireframe**: no fill at all, white outlines on the picture.
+  - **Luxe**: black lacquer with a gold hairline frame.
+  - **Pastel**: a lavender card, violet focus, pink bar.
+  - **Gloss**: a bevelled card and a raised blue button.
+  - **Mono**: pure black and white, heavy rules.
+  - **VHS**: the on-screen display of a tape deck: a blue block, white and green.
+- Each of them is a **preset** with every skip dialog layout (96 more, 144 layout presets in all), with a picture on the preset wall. These presets keep the bar in the colour of the look.
+- Paper, Brutal and Pastel have a light card and dark text. In the layouts that sit straight on the video (Dial, Cinema band, Float; Play ring, Lower third and Float of the popup) they turn their text light and their buttons to match.
+
+### Changed
+
+- The pictures on the preset wall are cut from the real pictures of a look, so the looks of the skin show their own edges too.
+- Picture slab (popup): the heading and title on the episode picture stay light in every look.
+
+### Not in this version
+
+- The mockups set Paper and Luxe in a serif, Terminal in a monospace, Mono in a condensed and VHS in a pixel typeface, and gave VHS a colour fringe. An add-on window can only use the fonts of the active skin, so the looks use the skin's font.
+- The outer glow of Neon and the hard shadow of Brutal reach outside the dialog and are left out.
+
+### Developer
+
+- `skip_layouts.py`: `FUSE_LOOKS`, `OWN_LOOKS`, `BARE_LAYOUTS`, `variant()`, `look(code, bare)`, `properties(code, resolution, bare)` with `skl_pic_text` / `skl_pic_text2`; `tools/gen_skip_layouts.py`: `rich()` (gradients, inner glow, bevel, second frame) and the `OWN` table; `tools/gen_preset_thumbs.py` nine-slices the real pictures; new `tests/test_own_looks.py`.
+
+## [8.8.0] - 2026-11-18
+
+Ninth step of the rebuild: presets by name for the new layouts, and a wall to pick them from.
+
+### Added
+
+- **Layout presets**: every new skip dialog layout (Corner slab, Dial, Cinema band, Float, Split, Timeline, Side rail, Poster card) in every look (Fused Glass Dark, Frost, Clear, Fused Glass style, Aeon, Aeon Glass) is a preset with its own name, for example "Dial · Fused Glass Frost": 48 presets, listed after the Fuse card presets and before your own and the legacy ones. They colour the bar by the kind of segment.
+- **Preset wall**: OK on the Preset row of the Studio opens a wall of every preset, twelve to a page, each with a picture of what it looks like. Arrows and Page up / Page down move, OK takes the preset, Back keeps the current one; a gold line marks the preset in use. The last tile opens the list that saves, deletes, exports and imports presets.
+- The preset strip of the Studio shows the same pictures, also while a new layout is chosen.
+- Presets you save now remember the layout, its look and the bar colour.
+
+### Changed
+
+- The Preset row is also there while a new layout is chosen; Left / Right step through all presets.
+- Choosing a card preset goes back to the Card layout.
+
+### Developer
+
+- `tools/gen_preset_thumbs.py` draws the 48 miniatures (`pt_<Layout>_<look>.png`) from the layout files; `tools/gen_skip_studio.py` writes `SkipPresetWall.xml`; new `skip_preset_wall.py`, `tests/test_preset_wall.py`.
+
+## [8.7.0] - 2026-11-18
+
+Eighth step of the rebuild: layouts for the next episode popup.
+
+### Added
+
+- **Popup layout** (Next Episode, Custom style): **Card** (the popup of earlier versions, and the default) and six new layouts:
+  - **Poster card**: the show's poster at the left, the texts, a bar and the buttons beside it.
+  - **Picture slab**: a slab in the corner of the screen with the episode picture across it and the title set on it.
+  - **Play ring**: the countdown as a ring on the episode picture, on a soft shade.
+  - **Lower third**: a band across the screen with the picture and texts left, the buttons right and one long bar.
+  - **Float**: no box, large text straight on the video, the ring inside the Play now button.
+  - **Side rail**: a tab on the side of the screen with the picture on top and the buttons stacked.
+- **Layout look** for them: the six looks of the skin Aeon Fuse (Fused Glass Dark, Frost, Clear, Fused Glass style, Aeon, Aeon Glass), the same pictures and colours as the skip dialog layouts.
+- The new layouts follow **Popup position** and **Default button**, show the countdown line of the prompt settings, and their bar or ring runs down with the countdown. **Preview** in Customize next episode popup shows the chosen layout.
+- `next_layouts.py`, `next_layout_dialog.py` (the class of the classic popup with its own drawing, so the answer, the countdown and when it closes by itself are the same code), `tools/gen_next_layouts.py` (six skin files for both folders) and 13 tests (`tests/test_next_layouts.py`).
+
+### Not in this release
+
+- The new popup layouts are chosen in the add-on settings; Customize next episode popup still draws the card in its own preview pane (its Preview button shows the real layout).
+- Popup look, the colour rows, Popup size and the picture rows are for the Card; each new layout has its own picture.
+- The Takeover and the Queue of the mockups are not built: they need the video in a window and a list of coming episodes.
+- Seen in Kodi on CoreELEC at 1080i through Preview: all six layouts, each in one or two looks, bottom right, top left and bottom left. Not seen: a real episode ending with a real poster and picture, the 720p files.
+
+## [8.6.0] - 2026-11-18
+
+Seventh step of the rebuild: pictures and coloured segments.
+
+### Added
+
+- **Next episode popup: a choice of picture.** The **Show episode picture** row of Customize next episode popup now steps through **Episode picture** (as before), **Poster** (the show's poster, upright at the left), **Poster and episode** (the episode picture with the poster set into its corner), **Fanart** (the fanart behind the whole popup, dimmed so the text stays readable) and **No**. In the add-on settings it is the new **Picture** list under Show episode picture. A choice whose picture is missing falls back to the episode picture.
+- The popup's look-up also brings the poster and the fanart of the next episode (library, playlist and film sets).
+- **Bars in the colour of the segment type** for the new skip dialog layouts: gold for an intro, blue for a recap, red for a commercial and so on, the colours of the segment editor. It colours the bar, the ring, the tile fill and the timeline. **Bar colour** (Playback & Dialog; a row on the Studio's Look tab) chooses **Segment type** (the default) or **Look**.
+- **Poster card**, a ninth skip dialog layout: the poster of the show (or film) that is playing at the left, the texts, the bar and the buttons beside it; a small form for Compact Full.
+- 16 tests (`tests/test_pictures_and_type_colours.py`).
+
+### Changed
+
+- The poster shown by Poster card comes from what is playing: the show's poster for an episode, else the item's own poster, else its picture.
+
+### Not in this release
+
+- The classic Card dialog keeps its picture-less layout and its bar styles; pictures and type colours are for the new layouts and the popup.
+- The popup has no new layouts yet (ring, takeover, queue), and no Studio of its own.
+- The Poster and the Poster and episode choices crop the poster to their frame.
+- Seen in Kodi on CoreELEC at 1080i: the four picture choices in the popup's Customize preview (with Skippy's own pictures standing in), and during playback the type colour on Poster card, Dial, Timeline, Split and Corner slab. Not seen: the real next episode popup with a real poster and fanart, Poster card with real art (the test clip has none, its frame stayed empty), the 720p files.
+
+## [8.5.0] - 2026-11-18
+
+Sixth step of the rebuild: the Studio.
+
+### Added
+
+- **Customize Skip Dialog is now the Studio**: three panels in the Fused Glass Dark look, each with a shadow, whatever Window style is chosen.
+  - **Left: the settings in five tabs**, Look, Layout, Text, Buttons and Bar, with the three buttons Save, Save as preset and Reset under them. A tab shows the rows that apply to the mode and layout in use; a tab with nothing to show is greyed and passed over.
+  - **Top right: the live preview**, the whole screen drawn small with the dialog where it will sit: the card, the Minimal chip or one of the new layouts.
+  - **Bottom right: a strip of presets** as tiles (card, highlight and bar of each), the current one in the middle with its neighbours; a look of your own shows as Custom. With a new layout the strip shows the six looks instead.
+- **Switch rows**: Skip dialog mode shows Full, Compact Full and Minimal side by side; every yes / no row is a toggle.
+- Up from the first row reaches the tabs, Left / Right there opens the next tab; Left / Right on a row changes it, OK steps to the next choice (on Preset it opens the preset list); Back closes without saving. When a choice adds or removes rows, the focus stays on the row you changed.
+- `skip_studio.py` (geometry and ids), `skip_studio_ui.py` (the screen: the classic Customize screen underneath, laid out anew), `tools/gen_skip_studio.py` (the skin file for both folders and ten pictures) and 21 tests (`tests/test_skip_studio.py`).
+
+### Changed
+
+- The list screen of earlier versions is still there: `RunScript(service.skippy,customize_skip_dialog_classic)` opens it, and it is the fallback should the Studio fail to open.
+- `tools/gen_skin_1080i.py` scales the centre of a zoom written as `<animation effect="zoom" center="x,y">`; the layout preview of 8.4.0 sat a little too high at 1080i because of that.
+
+### Not in this release
+
+- The rows are the settings that exist today. The rows of the mockup that need new features are not there: Corners, Background overlay and its gradient, Accent colour, the nine-place Position, Motion, and help text for the row in focus.
+- The preset tiles are drawn from each preset's pictures (card, highlight, bar); they are not small copies of the whole dialog.
+- The preview shows the add-on's picture, not the video that is playing.
+- Customize next episode popup is still the list screen.
+- Seen in Kodi on CoreELEC at 1080i: the Look tab in all three modes, a new layout with its looks strip, the Layout and Text tabs, the three buttons in focus. Not seen: Save and Save as preset from the Studio, Reset, the Buttons and Bar tabs with rows, the 720p file.
+
+## [8.4.0] - 2026-11-18
+
+Fifth step of the rebuild: the new layouts in Customize Skip Dialog.
+
+### Added
+
+- **Customize Skip Dialog picks the layout and its look.** Two pickers under the preview: **Skip dialog layout** (Card, Corner slab, Dial, Cinema band, Float, Split, Timeline, Side rail) and, for a new layout, **Layout look**. Up from the first row reaches them; Left / Right or OK step through the choices. Nothing is stored until Save.
+- **A live preview of every new layout**: the whole screen drawn small in the preview area, with the layout where it will sit (corner, band at the bottom or top, rail on the left or right), in the chosen look, with the texts of the chosen preview type, the bar, ring, tile or timeline at the preview's playhead, and the next segment line when overlapping segments are not ignored.
+- With a new layout the row list shows what applies to it: Skip dialog mode (Full is the large form, Compact Full the small one), Ignore overlapping segments, Progress bar shows remaining, Skip Dialog Position, Skip Button Format and the two duration rows. The Preset row and the card's own rows come back with the Card layout. Minimal mode keeps its chip and has no layout picker.
+
+### Changed
+
+- `tools/gen_skin_1080i.py` scales the nine-slice border of the pill pictures of the layouts, so the layout files are ordinary generated files again (no longer on its manual list); `tools/gen_skip_layouts.py` also writes the preview block into `SkipDialogCustomize.xml` (between two marker comments) in both folders.
+
+### Not in this release
+
+- The new layouts are not presets.
+- The preview shows Skip with the focus and Close without it; it does not move.
+- Seen in Kodi on CoreELEC at 1080i: the seven layouts in their small form, Side rail in two looks and in its large form, the switch to Minimal and back, in the Frost window style. Not seen: saving from the screen with a new layout chosen, the other window styles with the pickers, the 720p files.
+
+## [8.3.0] - 2026-11-18
+
+Fourth step of the rebuild: new layouts for the skip dialog.
+
+### Added
+
+- **Skip dialog layout** (Playback & Dialog): **Card** (the dialog of earlier versions, and the default) and seven new layouts:
+  - **Corner slab**: a slab in the corner of the screen, the bar along its top edge.
+  - **Dial**: the time left as a ring you can read from across the room, on a soft shade.
+  - **Cinema band**: a band across the whole screen, words left, buttons right, one long bar under both.
+  - **Float**: no box, large text straight on the picture, the ring inside the Skip button.
+  - **Split**: what is playing, a big Skip tile that fills up as the segment runs out, and close.
+  - **Timeline**: the segment as a track with the playhead on it and a mark where Skip lands when a segment lies inside this one.
+  - **Side rail**: a tab on the side of the screen, out of the way of subtitles, ring on top and the buttons stacked.
+- Each new layout has a large and a small form: **Full** mode draws the large one, **Compact Full** the small one. **Minimal** keeps its chip.
+- **Layout look**: the six looks of the skin Aeon Fuse for the new layouts: **Fused Glass Dark**, **Fused Glass Frost** (the default), **Fused Glass Clear**, **Fused Glass style**, **Aeon** and **Aeon Glass**. Fused Glass style and Aeon are in capitals.
+- The new layouts follow **Skip Dialog Position** (the band goes to the bottom or the top, the rail to the left or the right, the timeline to the bottom or top centre), **Skip Button Format**, the duration settings, **Progress bar shows remaining** and the next segment line.
+- `skip_layouts.py` (layouts, looks, placement and progress arithmetic; no Kodi needed), `skip_layout_dialog.py` (the dialog: the class of the classic dialog with its own drawing, so the answer, where Skip lands, the end of the segment, pause and the timeout are the same code) and `tools/gen_skip_layouts.py`, which writes the 14 skin files for both folders and 97 pictures (a ring in 51 steps among them).
+- 28 tests (`tests/test_skip_layouts.py`).
+
+### Not in this release
+
+- The new layouts are chosen in the add-on settings. They are not in the presets, and **Customize Skip Dialog** still previews the card only; the card's own options (font colour, card, bar style and height, focus style, combined skip and progress, hide close) do not apply to them.
+- Left corners move a layout to the left but do not mirror what is inside it.
+- The next episode popup has no new layouts yet.
+- Seen in Kodi on CoreELEC at 1080i, during playback: all seven layouts in Full and in Compact Full, each look at least twice, bottom right, top (band) and left (rail). Not seen: the 720p files, every layout in every look and corner, and a skin other than Aeon Fuse (the large text of Float uses the skin's `font30`).
+
+## [8.2.0] - 2026-11-18
+
+Third step of the rebuild: presets.
+
+### Added
+
+- **The looks of the skin Aeon Fuse as presets** for the skip dialog, first in the preset list: **Fused Glass Dark**, **Fused Glass Frost**, **Fused Glass Clear**, **Fused Glass style**, **Aeon** and **Aeon Glass** (Full), **Aeon Glass Fill** (the button fills up as the bar), **Fused Glass Bare** and **Aeon Bare** (no card), **Fused Glass Compact**, **Fused Glass style Compact**, **Aeon Compact** and **Aeon Glass Compact**, and a **Minimal** chip for each of the six looks. 19 presets in all.
+- **The same looks for the next episode popup**: every Full and Compact preset above is a **Popup look**, listed right after **Default** and **Same as skip dialog**.
+- **Card style** (Playback & Dialog, and the Card row of **Customize Skip Dialog**): **Flat** (the black card of every earlier version, and the default), **Rounded**, **Fused Glass Dark**, **Fused Glass Frost**, **Fused Glass Clear**, **Fused Glass style** and **Aeon Glass**. A card picture keeps its own colours and edge; **Card opacity** only fades it. In the Customize screen the row reads **Card style** and goes **Off**, Flat, Rounded and so on, so it also switches the card off; **Show card background** stays a setting of its own in the add-on settings.
+- New textures, drawn by `tools/gen_fuse_preset_textures.py`: six card pictures (`skip_card_*.png`), the focus pictures **Fuse Square**, **Fuse Glass** and **Fuse Bar**, the bars **Fuse Gold** and **Fuse White**, and the Minimal plates **Fuse Dark**, **Fuse Frost**, **Fuse Clear**, **Fuse Square**, **Fuse Grid** and **Fuse Glass** with their eight widths. All of them can be picked on their own as well.
+- `skip_dialog_card.py` (the card styles; no Kodi needed) and 39 tests (`tests/test_fuse_presets.py`).
+
+### Changed
+
+- **Today's 48 presets are still there, at the end of the list, marked (legacy)**, in the preset picker, on the Preset row and in the Popup look list. Only the name that is shown changed: what is stored (a saved look, the popup's look setting) still points at them, and none of them looks any different. A saved preset or look cannot take a built-in name, with or without the suffix.
+- The preset picker lists the new presets, then your saved ones, then the legacy ones.
+- In a look with a white highlight the text on the focused button is black, and the popup keeps white text on its card: a dark **Skip dialogue font colour** counts as the colour of the text on the highlight. Choosing another **Button highlight** for the popup goes back to one text colour.
+- A card with round corners leaves 10 units under the bar instead of 5, so the ends of the bar stay inside the curve.
+
+### Fixed
+
+- **The text on the skip button ignored the font colour in skins that give buttons a focused colour** (Aeon Fuse, and the Arctic Fuse 3 case in the README): the dialog files named that colour with a tag Kodi does not know. They now use `focusedcolor`, in the Full and Minimal dialogs. The two buttons of the next episode popup name it as well.
+- **A tall Full dialog at a bottom corner ran past the bottom of the screen** (next segment line, ending text and bar together), cutting off the bar. It now moves up to keep the usual margin.
+
+### Not in this release
+
+- The presets use the dialog as it is: one button row, the lines under it and a straight bar. The layouts of the mockups (ring progress, poster and picture cards, the takeover, side strips) need a new dialog and are not built, so those mockups are not presets yet.
+- Aeon's boxes are not flush: the button and the bar keep the 5 unit inset of the dialog.
+- 20 of the older bar textures are 32 pixels high while the track picture is 16; Kodi's progress control then draws the bar twice as high and a little low in the real dialog (Modern, for one). The two new bars are 16 pixels high. The older ones are left as they are.
+- Seen in Kodi on CoreELEC at 1080i: the real skip dialog during playback with twelve presets (the six looks, Fill, Bare, two Compact, a Minimal and the legacy Modern), all 19 presets in the Customize preview, and nine popup looks in the Customize preview. Not seen: the real next episode popup, the 720p files, the top corners.
+
+## [8.1.0] - 2026-11-18
+
+Second step of the rebuild: the segment editor.
+
+### Added
+
+- **Editor layout.** **Segment Editor > Editor layout** chooses how the editor sits over the video: **List and drawer** (the default: the segments in a list at the left, everything else in a drawer along the bottom), **Drawer** (everything in one drawer along the bottom, the segments as a row of chips) or **Classic** (the large panel of earlier versions, unchanged). All 39 buttons are in all three, with the same ids and the same actions; the two new layouts keep them on labelled rows (Selected segment, Seek, Mark, Segments and file) and leave most of the picture clear.
+- **Timeline** in the two new layouts: a track for the whole video with a coloured block per segment, the playhead, a mark under the highlighted segment and the length of the video. A segment is never drawn narrower than 6 units, so a short intro in a long film stays visible.
+- **A colour per segment type** (`seg_<type>.png`): intro, recap, commercial, prologue, preview, credits, epilogue, behind the scenes, featurette, main and segment each have their own; other types are grey. Used for the chip in the list and the block on the timeline. Prologue and epilogue no longer look like intro and credits.
+- `segment_editor_layout.py` (the setting, the file of each layout, the timeline arithmetic; no Kodi needed) and `tools/gen_segment_editor_layouts.py`, which writes `SegmentEditorDialogA.xml` and `SegmentEditorDialogB.xml` for 720p and, through `gen_skin_1080i.convert`, for 1080i (`--check` reports a stale file). Both take the window look like every other window.
+- The nine buttons for the highlighted segment are spelled out in the new layouts: Start = Now, End = Now, Snap Start, Snap End, Merge, Split, Fix Overlap, Edit, Delete.
+- 30 tests (`tests/test_segment_editor_layout.py`): the setting, the generated files (all 39 buttons once, every button reachable with the arrow keys, nothing off the screen or overlapping, the list width telling the resolution), the timeline arithmetic and the window (row buttons left in place in the new layouts, the drawer's chips followed with Left / Right, blocks, mark and playhead).
+
+### Changed
+
+- In the new layouts the nine row buttons stay where the skin file puts them; only the Classic layout moves them to the highlighted row.
+- With the drawer's row of chips, Left and Right on the list resync the selection the way Up and Down do in a vertical list.
+
+### Fixed
+
+- **Editor buttons could show white text on the white highlight** (8.0.0). The editor sets its button colours from Python, with the old light grey and white; they now come from the window look, so the text of the focused button is dark on a white highlight and white on the glass one.
+
+### Not in this release
+
+- The timeline shows; it cannot be used to jump yet (Jump To is still the way). Typing a time with the number pad on OK, and choosing where a start or end comes from in one list, are not built either.
+- The editor's own prompts (yes / no, messages, lists) are still the grey Python ones.
+- Seen in Kodi on CoreELEC at 1080i with five test segments: List and drawer in Frost and Aeon, Drawer in Frost and Fused Glass Dark. Not yet seen: the 720p files, the Clear and Aeon Glass looks in the editor, and a video with more than twenty segments (the timeline draws the first twenty).
+
+## [8.0.0] - 2026-11-18
+
+First step of the rebuild of Skippy's windows. This release changes how the windows look; their layouts, buttons and behaviour are as in 7.15.2.
+
+### Added
+
+- **Window style.** A new setting at the top of **Segment Settings** chooses the look of Skippy's own windows: **Fused Glass - Dark**, **Fused Glass - Frost** (the default), **Fused Glass - Clear**, **Aeon** or **Aeon Glass**, the looks of the Aeon Fuse skin. It applies to the segment editor, the segment type picker, the segment types editor, the source picker, the panel windows (statistics, the current video, saved auto-skips, autoplay by show and the choices and confirmations inside them) and both Customize screens. The skip dialog and the next episode popup are not affected: they keep their presets and looks. A change takes effect the next time a window opens.
+- `skippy_modal_style.py` holds the five looks. Each has four 9-slice textures (`ms_<code>_panel/inset/row/focus.png`, written by `tools/gen_modal_style_textures.py`) and a set of colours the windows read from window properties (`ms_text`, `ms_text2`, `ms_text3`, `ms_text_focus`, `ms_shadow`, `ms_dim`, `ms_accent`).
+- A button in Kodi cannot take its textures from a window property, so each styled window has one XML file per look: `Name.xml` is the Frost file and the one to edit, `Name_fgd.xml`, `Name_fgc.xml`, `Name_aeo.xml` and `Name_agl.xml` are copies with the other texture prefix, written by `tools/gen_modal_style_variants.py` (`--check` reports a stale copy). `tools/gen_skin_1080i.py` treats the copies of a manual file as manual.
+- 19 tests (`tests/test_modal_style.py`): the setting and its default, the file chosen for each look, the properties, the textures and their borders, the copies being up to date, and that no button takes a texture from a property.
+
+### Changed
+
+- The styled windows no longer draw their own grey or navy panel, heading and footer stripes and teal or blue highlight; panel, rows and highlight come from the chosen look. On a white highlight the text turns dark. The editor's buttons now show as buttons when they are not in focus.
+- In the panel windows the highlight of the selected row shows only while the list has the focus, and its text is dark only then.
+- The segment editor's buttons used `<textcolorfocus>`, a tag Kodi does not know; they use `<focusedcolor>` now.
+
+### Not in this release
+
+- The windows drawn in Python keep their grey look: the editor's own yes / no, message and list prompts (`skippy_editor_modal_skin.py`) and the two remote button prompts. Python cannot stretch a rounded picture without distorting its corners; they will move to XML.
+- Kodi cannot blur the video behind an add-on window, so **Frost** is a lighter, milky panel, not a blurred one.
+- Seen in Kodi on CoreELEC at 1080i: statistics (Frost, Aeon, Aeon Glass), the segment types editor (Frost, Aeon), Customize skip dialog (Frost), Customize next episode popup (Dark) and the segment editor (Frost). Not yet seen: the type picker, the source picker, the Clear look and the 720p files.
+- Aeon in the skin sets its labels in capitals; here the labels keep their case.
+- The new window layouts, the new skip dialog and next episode presets and the new Customize screens of the mock-ups are not built yet.
+
 ## [7.15.2] - 2026-11-15
 
 ### Fixed

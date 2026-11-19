@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import skippy_modal_style
 import xbmcgui
 
 from addon_skin_resolution import (
@@ -11,6 +12,8 @@ from addon_skin_resolution import (
     reconcile_window_xml_skin_resolution,
     scale_skin_coord,
 )
+import next_layouts
+import skip_layouts
 from next_episode_appearance import (
     BAR_H,
     BOOL_KEYS,
@@ -24,7 +27,11 @@ from next_episode_appearance import (
     KEY_SIZE,
     KEY_STYLE,
     KEY_THUMBNAIL,
+    PICTURE_LABEL_IDS,
     POSITION_LABELS,
+    cycle_picture,
+    picture_choice,
+    picture_plan,
     SIZE_LARGE,
     STYLE_LABELS,
     customize_rows,
@@ -37,6 +44,15 @@ from next_episode_appearance import (
     seconds_left,
     window_fraction_left,
     zoom_corner,
+    KEY_LAYOUT,
+    KEY_LAYOUT_LOOK,
+    KEY_FORM,
+    KEY_PRESET,
+    KEY_ZOOM,
+    cycle_preset,
+    normalize_choice,
+    preset_name,
+    preset_of,
 )
 from next_episode_dialog import mock_episode
 from next_episode_look import (
@@ -93,7 +109,13 @@ ROW_IDS = {
     KEY_FOCUS_STYLE: 6033,
     KEY_BAR_STYLE: 6034,
     KEY_CARD_OPACITY: 6035,
+    KEY_LAYOUT: 6037,
+    KEY_LAYOUT_LOOK: 6038,
+    KEY_PRESET: 6040,
+    KEY_FORM: 6041,
+    KEY_ZOOM: 6042,
 }
+ID_MOCK_HINT = 6039
 # Left to right; the order is the order of the buttons on screen.
 FOOTER_IDS = (ID_PREVIEW, ID_LOOKS, ID_SAVE, ID_CANCEL)
 
@@ -113,7 +135,14 @@ ROW_LABEL_IDS = {
     KEY_FOCUS_STYLE: (47108, "Button highlight"),
     KEY_BAR_STYLE: (47109, "Progress bar style"),
     KEY_CARD_OPACITY: (47110, "Card opacity"),
+    KEY_LAYOUT: (49041, "Popup layout"),
+    KEY_LAYOUT_LOOK: (49012, "Layout look"),
+    KEY_PRESET: (46015, "Preset"),
+    KEY_FORM: (49152, "Size"),
+    KEY_ZOOM: (49099, "Size on screen"),
 }
+FORM_LABELS = {"Full": (30116, "Full"), "Compact": (49199, "Compact"), "Minimal": (30117, "Minimal")}
+ZOOM_LABELS = {"70": (49095, "Small"), "85": (49090, "Medium"), "100": (49097, "Large")}
 
 _PANEL_X = 16
 _PANEL_Y = 41
@@ -147,7 +176,7 @@ _ROW_H = 40
 _ROW_STEP = 44
 # The rows never take more than this (720p units), so the panel always fits the screen:
 # with more rows than fit at the full step they sit closer together.
-_ROWS_MAX_H = 510
+_ROWS_MAX_H = 540
 _ROW_GAP = _ROW_STEP - _ROW_H
 _FOOTER_H = 40
 # Four buttons share the 520 px of a row: 122 px wide with 10 px between them.
@@ -188,10 +217,25 @@ def changed_payload(draft, original) -> dict:
 
 def value_text(addon, draft, key) -> str:
     value = draft.get(key)
+    if key == KEY_THUMBNAIL and value:
+        # this row also says which picture: Off, Episode picture, Poster, Poster and episode, Fanart
+        sid, text = PICTURE_LABEL_IDS[picture_choice(draft)]
+        return get_localized(addon, sid, text)
     if key in BOOL_KEYS:
         return get_localized(addon, 44105, "Yes") if value else get_localized(addon, 44106, "No")
     if key == KEY_STYLE:
         return STYLE_LABELS[value]
+    if key == KEY_PRESET:
+        found = preset_of(draft)
+        return preset_name(*found) if found else dict(next_layouts.LAYOUT_NAMES)[next_layouts.normalize_layout(draft.get(KEY_LAYOUT))]
+    if key == KEY_FORM:
+        return get_localized(addon, *FORM_LABELS[normalize_choice(KEY_FORM, value)])
+    if key == KEY_ZOOM:
+        return get_localized(addon, *ZOOM_LABELS[normalize_choice(KEY_ZOOM, value)])
+    if key == KEY_LAYOUT:
+        return dict(next_layouts.LAYOUT_NAMES)[next_layouts.normalize_layout(value)]
+    if key == KEY_LAYOUT_LOOK:
+        return dict(skip_layouts.LOOK_NAMES)[skip_layouts.normalize_look(value)]
     if key == KEY_LOOK:
         return LOOK_LABELS[value]
     if key in OVERRIDE_KEYS:
@@ -215,7 +259,9 @@ def value_text(addon, draft, key) -> str:
 
 def nudge(draft, key, delta) -> None:
     """Change one value in place: a toggle flips, a choice moves along its options."""
-    if key in BOOL_KEYS:
+    if key == KEY_PRESET:
+        cycle_preset(draft, delta)
+    elif key in BOOL_KEYS:
         draft[key] = not draft.get(key)
     elif key in CHOICE_KEYS:
         draft[key] = cycle_choice(key, draft.get(key), delta)
@@ -228,6 +274,7 @@ def nudge(draft, key, delta) -> None:
 
 class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        skippy_modal_style.apply(self)  # before the window shows
         self._skin_resolution = init_window_xml_dialog(super(NextEpisodeCustomize, self), args)
         self._xml_layout = args[0] if args else XML_NAME
         self.addon = kwargs.get("addon") or with_pending(get_addon())
@@ -272,6 +319,7 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
             pass
 
     def onInit(self):
+        skippy_modal_style.apply(self)
         asked = getattr(self, "_skin_resolution", None)
         locked = reconcile_window_xml_skin_resolution(
             self, asked, control_ids=probe_control_ids_for_xml(self._xml_layout)
@@ -341,6 +389,16 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         self._set_prop("next_ep_mock_backdrop", episode.get("thumb") or "")
         native = is_native_style(draft)
         self._set_prop("next_ep_mock_native", "true" if native else "false")
+        # A new layout is not drawn on the stage: Preview shows it on the whole screen.
+        layout_name = "" if native else next_layouts.normalize_layout(draft.get(KEY_LAYOUT))
+        if layout_name and not next_layouts.is_card(layout_name):
+            self._set_prop("next_ep_mock_ready", "false")
+            self._set_prop("next_ep_mock_hint", "%s[CR]%s" % (
+                "%s · %s" % (dict(next_layouts.LAYOUT_NAMES)[layout_name],
+                             dict(skip_layouts.LOOK_NAMES)[skip_layouts.normalize_look(draft.get(KEY_LAYOUT_LOOK))]),
+                get_localized(addon, 49071, "Press Preview to see this layout on the whole screen")))
+            return
+        self._set_prop("next_ep_mock_hint", "")
         if native:
             heading, body = build_toast_texts(addon, episode)
             self._set_prop("next_ep_mock_toast_heading", heading)
@@ -350,9 +408,11 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
             self._set_prop("next_ep_mock_ready", "true")
             return
         ids = MOCK_IDS
-        show_thumb = bool(draft.get(KEY_THUMBNAIL)) and bool(episode.get("thumb"))
+        plan = picture_plan(draft, episode)
+        show_thumb = bool(plan["thumb"])
         layout = popup_layout(
-            thumbnail=show_thumb,
+            thumbnail=bool(plan["picture"]),
+            picture=plan["picture"],
             countdown=bool(draft.get(KEY_COUNTDOWN)),
             progress=bool(draft.get(KEY_PROGRESS)),
         )
@@ -361,13 +421,21 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         )
         for name, value in props.items():
             self._set_prop(name, value)
-        self._set_prop("next_ep_mock_focus", "close" if focus_is_close(draft) else "play")
+        close_focused = focus_is_close(draft)
+        self._set_prop("next_ep_mock_focus", "close" if close_focused else "play")
+        # The mock buttons are disabled controls, so the one "in focus" gets the focus text colour here.
+        plain, focused = props["skip_dialog_text_color"], props["next_ep_focus_text_color"]
+        self._set_prop("next_ep_mock_play_color", plain if close_focused else focused)
+        self._set_prop("next_ep_mock_close_color", focused if close_focused else plain)
         # The size: the skin grows the mock popup from the corner it sits in.
         self._set_prop("next_ep_zoom", zoom_corner(draft))
         texts = popup_texts(addon, look.all_caps, episode)
         self._set_prop("next_ep_heading", texts["heading"])
         self._set_prop("next_ep_label", texts["label"])
-        self._set_prop("next_ep_thumb", episode.get("thumb") or "")
+        self._set_prop("next_ep_thumb", plan["thumb"])
+        self._set_prop("next_ep_pair_poster", plan["pair_poster"])
+        self._set_prop("next_ep_pair_thumb", plan["pair_thumb"])
+        self._set_prop("next_ep_fanart", plan["fanart"])
         self._set_prop("next_ep_has_thumb", "true" if show_thumb else "false")
         has_countdown = layout.countdown_y is not None
         has_bar = layout.bar_y is not None
@@ -445,7 +513,10 @@ class NextEpisodeCustomize(xbmcgui.WindowXMLDialog):
         key = self._key_for(cid)
         if key is None:
             return
-        nudge(self._draft, key, delta)
+        if key == KEY_THUMBNAIL:
+            cycle_picture(self._draft, delta)
+        else:
+            nudge(self._draft, key, delta)
         self._refresh()
         try:
             self.setFocusId(cid)
@@ -543,7 +614,9 @@ def show_next_episode_customize(draft=None, original=None):
     if draft is not None:
         kwargs["draft"] = draft
         kwargs["original"] = original or load_popup_draft(addon)
-    dialog = NextEpisodeCustomize(XML_NAME, addon.getAddonInfo("path"), "default", **kwargs)
+    dialog = NextEpisodeCustomize(
+        skippy_modal_style.xml_name(XML_NAME, addon=addon), addon.getAddonInfo("path"), "default", **kwargs
+    )
     dialog.doModal()
     saved = bool(getattr(dialog, "_saved", False))
     del dialog

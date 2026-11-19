@@ -16,6 +16,8 @@ Architectural notes:
   navigation actions (debounced timer so ``getSelectedPosition()`` matches Kodi's
   selection).
 """
+import segment_editor_layout
+import skippy_modal_style
 import copy
 import threading
 import time
@@ -55,7 +57,7 @@ from settings_utils import (
 )
 
 
-def _select_segment_label_from_list(options):
+def _select_segment_label_from_list(options, style=None):
     """
     Skinned list (same as Segment Marker) so every catalog type is shown.
     xbmcgui.Dialog().select() can omit or mishandle items on some platforms.
@@ -77,9 +79,10 @@ def _select_segment_label_from_list(options):
     try:
         path = addon.getAddonInfo("path")
         dialog = SegmentTypePickerDialog(
-            "SegmentMarkerTypePicker.xml",
+            skippy_modal_style.xml_name("SegmentMarkerTypePicker.xml", style=style, addon=addon),
             path,
             "default",
+            style=style,  # the editor's own look, when it has one
             title="Select Segment Label",
             subtitle="Choose a label from Segment keywords, or Custom to type your own.",
             footer="Enter/OK selects. Back/Esc cancels.",
@@ -140,6 +143,9 @@ class _EditorPlayerListener(xbmc.Player):
 
 class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
+        # the look: the List and drawer layout has its own (Fused Glass Dark), the others follow the setting
+        self._style = kwargs.get("style", segment_editor_layout.style_for(kwargs.get("layout")))
+        skippy_modal_style.apply(self, style=self._style)  # before the window shows
         skin_res = SKIN_RES_720P
         try:
             skin_res = init_window_xml_dialog(super(SegmentEditorDialog, self), args)
@@ -174,8 +180,23 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self._edit_delete_btn_height = sc(30)
         self._selection_sync_timer = None
         self._indicator_win_home = None
+        # Layout: only the classic file has row buttons that follow the highlighted row; the drawer's list is horizontal.
+        self._layout = segment_editor_layout.normalize(kwargs.get("layout"), segment_editor_layout.LAYOUT_CLASSIC)
+        self._row_buttons_follow = self._layout == segment_editor_layout.LAYOUT_CLASSIC
+        self._list_is_horizontal = self._layout == segment_editor_layout.LAYOUT_DRAWER
+        self._ms_colors = skippy_modal_style.colors(style=self._style)
         self._undo_stack = []
         self._undo_stack_max = 20
+        # opened again for another look of the panels: the work in hand comes along
+        self._reopen_with = None
+        carried = kwargs.get("carried") or {}
+        if carried:
+            self.segments_modified = bool(carried.get("modified"))
+            self.pending_start_time = carried.get("pending_start")
+            self.pending_end_time = carried.get("pending_end")
+            self._undo_stack = list(carried.get("undo") or [])
+            self._carried_selection = carried.get("selected", -1)
+            self._carried_focus = carried.get("focus")
         # font10 via setLabel — WindowXML ignores skin <font> on buttons; aspect is in XML.
         self._editor_btn_font = "font10"
 
@@ -198,6 +219,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def onInit(self):
         try:
             log_always("onInit called")
+            skippy_modal_style.apply(self, style=getattr(self, "_style", None))
 
             asked = getattr(self, "_skin_resolution", None)
             locked = reconcile_window_xml_skin_resolution(
@@ -294,6 +316,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 log_always("Set initial focus to Pause/Resume button (5018)")
             except Exception:
                 log_always("Could not set initial focus to Pause/Resume button")
+            # opened again for another look: back to the segment and the button the user was on. Last, after
+            # the list is filled and the first focus is set, or both would be undone.
+            self._restore_carried_place()
 
             threading.Thread(target=self._update_time_display, daemon=True).start()
 
@@ -367,13 +392,14 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if label is None:
             label = btn.getLabel() or ""
         try:
+            colors = getattr(self, "_ms_colors", None) or skippy_modal_style.colors()
             btn.setLabel(
                 label,
                 font,
-                "0xFFC0C0C0",
-                "0xFF808080",
-                "0xFF000000",
-                "0xFFFFFFFF",
+                "0x" + colors["ms_text"],
+                "0x" + colors["ms_text3"],
+                "0x00000000",
+                "0x" + colors["ms_text_focus"],
             )
         except TypeError:
             try:
@@ -437,6 +463,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 if self.player.isPlayingVideo():
                     current = self.player.getTime()
                     self.current_time = current
+                    self._update_playhead(current)
                     hms = seconds_to_hms(current)
 
                     try:
@@ -530,7 +557,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     # List rendering
     # ------------------------------------------------------------------
 
-    def refresh_list(self):
+    def refresh_list(self, highlight=None):
+        """Fill the list again. ``highlight``: the segment to highlight after it (one just created); the
+        focus stays on the button that was pressed."""
         try:
             if not hasattr(self, 'list_control') or not self.list_control:
                 log("List control not available, skipping refresh")
@@ -539,6 +568,8 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             prev_segment = None
             if 0 <= self.selected_index < len(self.segments):
                 prev_segment = self.segments[self.selected_index]
+            if highlight is not None:
+                prev_segment = highlight
 
             self.segments = segments_chronological(self.segments)
 
@@ -568,6 +599,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 item.setProperty("start", str(seg.start_seconds))
                 item.setProperty("end", str(seg.end_seconds))
                 item.setProperty("label", list_label)
+                item.setProperty("type_chip", segment_editor_layout.chip_texture(label))
                 item.setProperty("is_nested", "true" if is_nested else "false")
                 item.setProperty("is_overlapping", "true" if is_overlapping else "false")
                 if is_nested:
@@ -579,10 +611,18 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 item.setProperty("segment_num", str(segment_num))
                 item.setProperty("start_hms", start_hms)
                 item.setProperty("end_hms", end_hms)
+                # the one-line row of the List and drawer layout
+                item.setProperty("range", "%s – %s" % (segment_editor_layout.clock(seg.start_seconds),
+                                                       segment_editor_layout.clock(seg.end_seconds)))
+                item.setProperty("length", segment_editor_layout.clock(duration))
+                item.setProperty("source", segment_editor_layout.source_name(seg.source))
+                item.setProperty("flag", self._T(49181, "NESTED") if is_nested
+                                 else self._T(49182, "OVERLAP") if is_overlapping else "")
                 items.append(item)
 
             self.list_control.reset()
             self.list_control.addItems(items)
+            self._write_editor_words()
 
             try:
                 has_segments = len(self.segments) > 0
@@ -612,6 +652,10 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 self.selected_index = -1
 
             self._update_edit_delete_positions()
+            self._update_timeline()
+            if highlight is not None:
+                # Kodi moves the list on its next frame, and the timeline reads the list: once more, a moment later
+                threading.Timer(0.4, self._update_timeline).start()
 
             log(f"List refreshed with {len(items)} items")
         except Exception as e:
@@ -635,6 +679,8 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             5005: self.add_at_current_time,
             5006: self.save_current_segments,
             5007: self._on_exit_clicked,
+            5044: self.toggle_dark_overlay,  # the Look row of the List and drawer layout
+            5045: self.cycle_panel_style,
             5026: self.upload_segments_online,
             5009: lambda: self.seek_relative(-5),
             5010: lambda: self.seek_relative(-10),
@@ -694,6 +740,8 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
         # Don't let Left/Right seek from the list - let XML handle navigation.
         if action_id in (1, 2):
+            if getattr(self, "_list_is_horizontal", False) and focused == 5000:
+                self._schedule_sync_list_selection()  # the drawer's chips move with Left / Right
             return
 
         # List: selection changes without a new onFocus (same control id 5000).
@@ -780,6 +828,427 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         ideal_first = max(0, selected - rows + 1)
         max_first = n_items - rows
         return min(ideal_first, max_first)
+
+    # ------------------------------------------------------------------
+    # Timeline (layouts A and B; the classic file has none of these controls)
+    # ------------------------------------------------------------------
+
+    def _timeline_track(self):
+        """(left, top, width) of the track, or None when this layout has no timeline."""
+        try:
+            track = self.getControl(segment_editor_layout.TRACK_ID)
+            return track.getX(), track.getY(), track.getWidth()
+        except Exception:
+            return None
+
+    def _write_editor_words(self):
+        """The words of the List and drawer layout: the count, the headers, the tags and the hint line."""
+        try:
+            count = len(self.segments)
+            title = self._T(49170, "1 segment") if count == 1 else self._T(49169, "%d segments", count)
+            bold = "[B]%s[/B]"
+            self.setProperty("ed_kicker", bold % ("SKIPPY · %s" % self._T(41000, "Segment Editor").upper()))
+            self.setProperty("ed_timeline", bold % self._T(49172, "TIMELINE"))
+            self.setProperty("ed_seek", bold % self._T(49174, "SEEK"))
+            self.setProperty("ed_mark", bold % self._T(49175, "MARK"))
+            self.setProperty("ed_file", bold % self._T(49176, "SEGMENTS AND FILE"))
+            self.setProperty("ed_live", bold % self._T(49177, "LIVE VIDEO"))
+            dark = self.getProperty("EnableFullscreenOverlay") == "true"
+            self.setProperty("ed_overlay", bold % (self._T(49178, "DARK OVERLAY: ON") if dark
+                                                   else self._T(49179, "DARK OVERLAY: OFF")))
+            # the Look row: what its two buttons say now
+            self.setProperty("ed_look", bold % self._T(49183, "LOOK"))
+            names = {"fg_dark": self._T(49187, "Dark"), "fg_frost": self._T(49188, "Frost"), "fg_clear": self._T(49189, "Clear")}
+            words = (self._T(49184, "Dark overlay: on") if dark else self._T(49185, "Dark overlay: off"),
+                     self._T(49186, "Panels: %s", names.get(segment_editor_layout.editor_style(self._style), "")))
+            for cid, word in zip(segment_editor_layout.LOOK_BUTTON_IDS, words):
+                try:
+                    self._set_button_label_font(self.getControl(cid), word)
+                except Exception:
+                    pass
+            self._fit_small_labels()
+            self.setProperty("ed_hint", self._T(
+                49180, "[B]OK on a segment[/B]  jumps to its start      [B]Left[/B]  its nine actions      "
+                       "[B]Right[/B]  the timeline      [B]Back[/B]  asks to save"))
+            self._draw_editor_title(title)
+        except Exception:
+            pass
+
+    def _restore_carried_place(self):
+        """After the editor opened again for another look: the highlighted segment and the focus are where they were."""
+        selection = getattr(self, "_carried_selection", None)
+        if selection is None:
+            return
+        self._carried_selection = None
+        try:
+            if 0 <= selection < len(self.segments):
+                self.list_control.selectItem(selection)
+                self.selected_index = selection
+                # the timeline and the heading follow the highlighted segment. Kodi moves the list on its
+                # next frame, and they read the list: so a moment later, not now.
+                threading.Timer(0.4, self._update_timeline).start()
+            focus = getattr(self, "_carried_focus", None)
+            if focus:
+                self.setFocusId(int(focus))
+        except Exception:
+            pass
+
+    def toggle_dark_overlay(self):
+        """Look row: the dark overlay behind the editor, on or off. It is the setting of the same name."""
+        dark = self.getProperty("EnableFullscreenOverlay") != "true"
+        self.setProperty("EnableFullscreenOverlay", "true" if dark else "false")
+        try:
+            get_addon().setSetting("segment_editor_fullscreen_overlay", "true" if dark else "false")
+        except Exception as e:
+            log(f"Could not store the dark overlay setting: {e}")
+        self._write_editor_words()
+
+    def cycle_panel_style(self):
+        """Look row: the next look of the panels (Dark, Frost, Clear). A window takes its pictures from its
+        file, so the editor closes and opens again in the file of that look; nothing of the work is lost."""
+        style = segment_editor_layout.next_style(self._style)
+        try:
+            get_addon().setSetting(segment_editor_layout.STYLE_KEY, style)
+        except Exception as e:
+            log(f"Could not store the editor's panel look: {e}")
+            return
+        self._refresh_selected_index()
+        self._reopen_with = {
+            "segments": list(self.segments), "modified": self.segments_modified, "pending_start": self.pending_start_time,
+            "pending_end": self.pending_end_time, "undo": list(self._undo_stack), "selected": self.selected_index,
+            "focus": segment_editor_layout.LOOK_BUTTON_IDS[1],
+        }
+        # the session saves on close when this is set: it must not, the editor only changes its clothes
+        self.segments_modified = False
+        self.close()
+
+    def _fit_small_labels(self):
+        """Bring the small labels to the mockup's size: the skin's smallest font is larger than its small
+        capitals. A label that stays where it is, is zoomed around the end its text starts from; one the
+        editor moves about is zoomed around its own middle. Done once per window."""
+        if getattr(self, "_small_fitted", False):
+            return
+        self._small_fitted = True
+        self._small_zoom = 1.0
+        lay = segment_editor_layout
+        if not self._has_control(lay.TITLE_BOX_ID):
+            return  # not the List and drawer layout
+        try:
+            import skip_canvas_draw
+
+            size = skip_canvas_draw.read_fonts().get(lay.SMALL_FONT, (0, False))[0]
+            # font sizes are in pixels of a 1080 screen: so is the wanted size
+            zoom = lay.small_zoom(size)
+            if zoom >= 0.999:
+                return
+            self._small_zoom = zoom
+            percent = zoom * 100.0
+            for cid, align in lay.SMALL_LABELS:
+                try:
+                    control = self.getControl(cid)
+                    x, y, w, h = control.getX(), control.getY(), control.getWidth(), control.getHeight()
+                    cx = x if align == "l" else x + w if align == "r" else x + w / 2.0
+                    control.setAnimations([("conditional", "effect=zoom start=%.2f end=%.2f center=%.1f,%.1f time=0 condition=true"
+                                            % (percent, percent, cx, y + h / 2.0))])
+                except Exception:
+                    pass
+            for cid in lay.MOVING_LABELS:
+                try:
+                    self.getControl(cid).setAnimations([(
+                        "conditional", "effect=zoom start=%.2f end=%.2f center=auto time=0 condition=true" % (percent, percent))])
+                except Exception:
+                    pass
+        except Exception:
+            self._small_zoom = 1.0
+
+    def _draw_editor_title(self, text):
+        """The large count ("4 segments") at the mockup's size, where the layout keeps a place for it."""
+        if getattr(self, "_editor_title", (None, None))[1] == text:
+            return
+        try:
+            box = self.getControl(segment_editor_layout.TITLE_BOX_ID)
+        except Exception:
+            return  # this layout has no such place
+        try:
+            import skip_canvas_draw
+
+            old = getattr(self, "_editor_title", (None, None))[0]
+            if old is not None:
+                self.removeControl(old)
+            # the place is inside the list panel, whose corner is the panel's; a control made here counts from the window
+            scale = box.getWidth() / float(segment_editor_layout.TITLE_BOX[2])
+            left = (segment_editor_layout.PANEL_A[0] + segment_editor_layout.TITLE_BOX[0]) * scale
+            top = (segment_editor_layout.PANEL_A[1] + segment_editor_layout.TITLE_BOX[1]) * scale
+            colors = getattr(self, "_ms_colors", None) or skippy_modal_style.colors()
+            control = skip_canvas_draw.big_label(self, left, top, box.getWidth(), box.getHeight(), text,
+                                                 segment_editor_layout.TITLE_SIZE * scale, True, colors["ms_text"])
+            self._editor_title = (control, text)
+        except Exception:
+            self._editor_title = (None, None)
+
+    def _selected_position(self) -> int:
+        try:
+            return self.list_control.getSelectedPosition() if getattr(self, "list_control", None) else -1
+        except Exception:
+            return -1
+
+    def _timeline_window(self):
+        """The stretch of the file the track shows: around the highlighted segment (see timeline_window)."""
+        duration = self._get_playback_duration_seconds()
+        if not self._has_control(segment_editor_layout.TIME_START_ID):
+            return 0.0, duration  # a layout without the times under its track shows the whole file
+        # the highlighted segment and those connected to it, with a little room
+        group = segment_editor_layout.connected_span(
+            [(seg.start_seconds, seg.end_seconds) for seg in self.segments], self._selected_position())
+        return segment_editor_layout.timeline_window(group, duration)
+
+    def _update_timeline(self):
+        """Place one coloured block per segment on the track, with its word; write the times; draw the
+        thin bar of the whole file."""
+        geometry = self._timeline_track()
+        if not geometry:
+            return
+        left, top, width = geometry
+        lay = segment_editor_layout
+        try:
+            duration = self._get_playback_duration_seconds()
+            first, last = self._timeline_window()
+            self._timeline_span = (first, last)
+            parts = [(seg.start_seconds, seg.end_seconds, self._segment_display_label(seg)) for seg in self.segments]
+            blocks = lay.window_blocks(parts, first, last, width)
+            self._timeline_blocks = blocks
+            zoomed = self._has_control(lay.TIME_START_ID)
+            for slot, cid in enumerate(lay.BLOCK_IDS):
+                try:
+                    block_control = self.getControl(cid)
+                    if slot < len(blocks):
+                        block = blocks[slot]
+                        block_control.setPosition(left + block.left, top)
+                        block_control.setWidth(block.width)
+                        # the zoomed track has blocks with round corners
+                        texture = block.texture
+                        if zoomed:
+                            texture = lay.block_texture(self._segment_display_label(self.segments[block.index]))
+                        block_control.setImage(texture, False)
+                        block_control.setVisible(True)
+                    else:
+                        block_control.setVisible(False)
+                except Exception:
+                    pass
+            try:
+                if zoomed:
+                    self.getControl(lay.END_LABEL_ID).setLabel(
+                        self._T(49173, "SHOWING %s – %s", lay.clock(first), lay.clock(last)) if last > first else "")
+                    self.getControl(lay.TIME_START_ID).setLabel(lay.clock(first))
+                    self.getControl(lay.TIME_END_ID).setLabel(lay.clock(last))
+                else:
+                    self.getControl(lay.END_LABEL_ID).setLabel(lay.short_time(duration))
+            except Exception:
+                pass
+            self._draw_overview(parts, duration, first, last)
+        except Exception as e:
+            log_error(f"Error drawing the timeline: {e}")
+        self._place_selection()
+        self._update_playhead(getattr(self, "current_time", 0) or 0)
+
+    def _has_control(self, cid) -> bool:
+        try:
+            return self.getControl(cid) is not None
+        except Exception:
+            return False
+
+    def _draw_overview(self, parts, duration, first, last):
+        """The thin bar over the track: every segment of the whole file, and a frame round what the track shows."""
+        lay = segment_editor_layout
+        try:
+            bar = self.getControl(lay.OVERVIEW_ID)
+        except Exception:
+            return
+        try:
+            left, top, width = bar.getX(), bar.getY(), bar.getWidth()
+            blocks = lay.timeline_blocks(parts, duration, width, max_blocks=len(lay.OVERVIEW_BLOCK_IDS), min_width=2)
+            for slot, cid in enumerate(lay.OVERVIEW_BLOCK_IDS):
+                control = self.getControl(cid)
+                if slot < len(blocks):
+                    control.setPosition(left + blocks[slot].left, top)
+                    control.setWidth(blocks[slot].width)
+                    control.setImage(blocks[slot].texture, False)
+                    control.setVisible(True)
+                else:
+                    control.setVisible(False)
+            frame = self.getControl(lay.OVERVIEW_WINDOW_ID)
+            if duration > 0 and last > first and (last - first) < duration:
+                frame.setPosition(left + int(round(first / duration * width)), frame.getY())
+                frame.setWidth(max(8, int(round((last - first) / duration * width))))
+                frame.setVisible(True)
+            else:
+                frame.setVisible(False)
+        except Exception:
+            pass
+
+    def _place_selection(self):
+        """The frame round the block of the highlighted segment, the word in every block, and the line that
+        names the highlighted segment over its nine actions."""
+        geometry = self._timeline_track()
+        if not geometry:
+            return
+        left, top, width = geometry
+        lay = segment_editor_layout
+        selected = self._selected_position()
+        blocks = getattr(self, "_timeline_blocks", ())
+        scale = max(1.0, width / float(lay.TRACK_A_WIDTH))
+        # a word in every block that has room for one; the highlighted one adds its length
+        for slot, cid in enumerate(lay.BLOCK_LABEL_IDS):
+            try:
+                control = self.getControl(cid)
+            except Exception:
+                break
+            try:
+                word = ""
+                if slot < len(blocks):
+                    block = blocks[slot]
+                    seg = self.segments[block.index]
+                    # a word only where it fits whole: the highlighted segment adds its length when there is room
+                    # smaller letters: more of a word fits
+                    word = lay.block_word(_format_segment_label_list_display(self._segment_display_label(seg)),
+                                          lay.clock(seg.get_duration()) if block.index == selected else "",
+                                          (block.width / scale - (14 if block.index == selected else 0))
+                                          / (getattr(self, "_small_zoom", 1.0) or 1.0))
+                if word:
+                    # the highlighted block has a handle at its start: its word begins after it
+                    pad = int((16 if block.index == selected else 9) * scale)
+                    # the word is zoomed around the middle of its box: the box is made so much wider that the
+                    # zoomed box is the room in the block, and set back so that the word starts where it should
+                    zoom = getattr(self, "_small_zoom", 1.0) or 1.0
+                    room = max(10, block.width - pad - 4)
+                    box = int(room / zoom)
+                    control.setWidth(box)
+                    control.setPosition(int(left + block.left + pad - box * (1.0 - zoom) / 2.0), control.getY())
+                    control.setLabel("[B]%s[/B]" % word)
+                    control.setVisible(True)
+                else:
+                    control.setVisible(False)
+            except Exception:
+                pass
+        try:
+            name = ""
+            if 0 <= selected < len(self.segments):
+                name = _format_segment_label_list_display(self._segment_display_label(self.segments[selected]))
+            self.setProperty("ed_selected", self._T(49171, "HIGHLIGHTED SEGMENT · %s", name.upper()) if name else "")
+        except Exception:
+            pass
+        self._place_segment_marks(left, width, blocks, selected, scale)
+        for cid, whole in ((lay.OUTLINE_ID, True), (lay.SELECTED_MARK_ID, False)):
+            try:
+                mark = self.getControl(cid)
+            except Exception:
+                continue
+            try:
+                for block in blocks:
+                    if block.index == selected:
+                        grow = int(2 * scale) if whole else 0
+                        mark.setPosition(left + block.left - grow, mark.getY())
+                        mark.setWidth(block.width + 2 * grow)
+                        mark.setVisible(True)
+                        break
+                else:
+                    mark.setVisible(False)
+            except Exception:
+                pass
+
+    def _place_segment_marks(self, left, width, blocks, selected, scale):
+        """The two handles inside the highlighted block, and the times under its two ends."""
+        lay = segment_editor_layout
+        block = next((b for b in blocks if b.index == selected), None)
+        try:
+            handles = [self.getControl(cid) for cid in lay.HANDLE_IDS]
+            times = [self.getControl(lay.TIME_SEG_START_ID), self.getControl(lay.TIME_SEG_END_ID)]
+        except Exception:
+            return
+        try:
+            if block is None:
+                for control in handles + times:
+                    control.setVisible(False)
+                self._segment_ticks = ()
+                return
+            seg = self.segments[block.index]
+            inset = int(5 * scale)
+            wide = block.width >= int(30 * scale)
+            for control, x in zip(handles, (left + block.left + inset, left + block.left + block.width - inset - handles[1].getWidth())):
+                control.setPosition(x, control.getY())
+                control.setVisible(wide)
+            first, last = getattr(self, "_timeline_span", (0.0, 0.0))
+            # a time under an end of the segment, unless that end is the end of the track, which has its own
+            clear = int(46 * scale)
+            ticks = []
+            for control, seconds, x in zip(times, (seg.start_seconds, seg.end_seconds),
+                                           (left + block.left, left + block.left + block.width)):
+                shown = (first < seconds < last) and clear <= x - left <= width - clear \
+                    and all(abs(x - other) >= clear for other in ticks)
+                if shown:
+                    control.setPosition(x - control.getWidth() // 2, control.getY())
+                    control.setLabel(lay.clock(seconds))
+                    ticks.append(x)
+                control.setVisible(shown)
+            self._segment_ticks = tuple(ticks)
+        except Exception:
+            pass
+
+    def _update_timeline_selection(self):
+        """The highlighted segment changed: the track may have to show another stretch of the file."""
+        if not self._timeline_track():
+            return
+        try:
+            if self._timeline_window() != getattr(self, "_timeline_span", None):
+                self._update_timeline()
+                return
+        except Exception:
+            pass
+        self._place_selection()
+
+    def _update_playhead(self, current):
+        geometry = self._timeline_track()
+        if not geometry:
+            return
+        left, _top, width = geometry
+        lay = segment_editor_layout
+        try:
+            playhead = self.getControl(lay.PLAYHEAD_ID)
+            first, last = getattr(self, "_timeline_span", None) or (0.0, self._get_playback_duration_seconds())
+            offset = lay.window_offset(current, first, last, width)
+            try:
+                now = self.getControl(lay.TIME_NOW_ID)
+            except Exception:
+                now = None
+            try:
+                head = self.getControl(lay.PLAYHEAD_HEAD_ID)
+            except Exception:
+                head = None
+            if offset < 0:
+                playhead.setVisible(False)
+                for control in (now, head):
+                    if control is not None:
+                        control.setVisible(False)
+                return
+            playhead.setPosition(left + offset - 1, playhead.getY())
+            playhead.setVisible(True)
+            if head is not None:
+                head.setPosition(left + offset - head.getWidth() // 2, head.getY())
+                head.setVisible(True)
+            if now is not None:
+                # the time under the playhead; it gives way to the times of the segment's ends and of the track's
+                half = now.getWidth() // 2
+                x = left + offset
+                clear = int(width * 0.06)
+                taken = tuple(getattr(self, "_segment_ticks", ())) + (left, left + width)
+                if any(abs(x - other) < clear for other in taken):
+                    now.setVisible(False)
+                else:
+                    now.setPosition(x - half, now.getY())
+                    now.setLabel("[B]%s[/B]" % lay.clock(current))
+                    now.setVisible(True)
+        except Exception:
+            pass
 
     def _get_playback_duration_seconds(self) -> float:
         """Return total video duration when playing, or 0 if unavailable."""
@@ -1092,6 +1561,9 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
 
     def _update_edit_delete_positions(self):
         """Align list-row action buttons with the highlighted list row (matches skin layout)."""
+        self._update_timeline_selection()
+        if not getattr(self, "_row_buttons_follow", True):
+            return  # the new layouts keep these buttons where the skin file puts them
         try:
             if (
                 not hasattr(self, "list_control")
@@ -1185,7 +1657,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self._push_undo()
             self.segments.append(new_seg)
             self.segments_modified = True
-            self.refresh_list()
+            self.refresh_list(highlight=new_seg)
             log(f"Added segment at current time: {new_seg}")
         except ValueError:
             xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41036, "Invalid duration value."))
@@ -1246,7 +1718,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             self._push_undo()
             self.segments.append(new_seg)
             self.segments_modified = True
-            self.refresh_list()
+            self.refresh_list(highlight=new_seg)
             log(f"Added segment: {new_seg}")
         except ValueError as e:
             xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41041, "Invalid input: %s", e))
@@ -1774,7 +2246,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def get_label_from_user(self, default=""):
         predefined = self.get_predefined_labels()
         options = [self._T(41074, "Custom...")] + predefined
-        selected = _select_segment_label_from_list(options)
+        selected = _select_segment_label_from_list(options, style=getattr(self, "_style", None))
         if selected is None:
             selected = xbmcgui.Dialog().select(self._T(41075, "Select Segment Label"), options)
 
@@ -1823,7 +2295,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         self.pending_start_time = None
         self.pending_end_time = None
 
-        self.refresh_list()
+        self.refresh_list(highlight=new_seg)
         log(f"Added segment with marked times: {new_seg}")
         xbmcgui.Dialog().notification(
             self._T(41000, "Segment Editor"), self._T(41078, "Segment added successfully"),

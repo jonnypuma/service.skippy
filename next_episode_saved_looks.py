@@ -12,8 +12,9 @@ dialog's saved presets do, and travel with the profile data backup.
 
 from __future__ import annotations
 
-from next_episode_appearance import CHOICE_KEYS
-from next_episode_look import FOLLOW_LOOK, KEY_LOOK, LOOK_LABELS, OVERRIDE_KEYS
+from next_episode_appearance import (CHOICE_KEYS, KEY_FORM, KEY_LAYOUT, KEY_LAYOUT_LOOK, KEY_PICTURE, KEY_THUMBNAIL,
+                                     KEY_ZOOM)
+from next_episode_look import FOLLOW_LOOK, KEY_LOOK, LOOK_LABELS, OVERRIDE_KEYS, PRESET_NAMES
 from skippy_profile_store import profile_path, read_json, write_json
 
 USER_LOOKS_FILE = "next_episode_looks.json"
@@ -22,6 +23,9 @@ MAX_NAME_LEN = 40
 MAX_USER_LOOKS = 50
 
 LOOK_KEYS = (KEY_LOOK,) + tuple(OVERRIDE_KEYS)
+# Since the popup has layouts a saved look is the whole design: also the layout, the look of that
+# layout and the picture. A look saved before that has none of these and leaves them alone.
+DESIGN_KEYS = (KEY_LAYOUT, KEY_LAYOUT_LOOK, KEY_PICTURE, KEY_FORM, KEY_ZOOM)
 
 # Codes ``save_user_look`` answers with.
 SAVED = ""
@@ -38,7 +42,7 @@ def clean_name(name) -> str:
 
 def builtin_names() -> set:
     """The names of the built-in looks, which a saved look cannot use."""
-    return {label.lower() for label in LOOK_LABELS.values()}
+    return {label.lower() for label in LOOK_LABELS.values()} | {name.lower() for name in PRESET_NAMES}
 
 
 def _strict_choice(key, value):
@@ -61,12 +65,21 @@ def sanitize_values(raw) -> dict:
     values = {KEY_LOOK: look}
     for key in OVERRIDE_KEYS:
         values[key] = _strict_choice(key, raw.get(key)) or FOLLOW_LOOK
+    for key in DESIGN_KEYS:
+        choice = _strict_choice(key, raw.get(key)) if key in raw else None
+        if choice is not None:
+            values[key] = choice
+    if KEY_THUMBNAIL in raw and isinstance(raw[KEY_THUMBNAIL], bool):
+        values[KEY_THUMBNAIL] = raw[KEY_THUMBNAIL]
     return values
 
 
 def snapshot(draft) -> dict:
     """The look values of a Customize draft."""
-    return sanitize_values({key: (draft or {}).get(key) for key in LOOK_KEYS})
+    draft = draft or {}
+    raw = {key: draft.get(key) for key in LOOK_KEYS}
+    raw.update({key: draft[key] for key in DESIGN_KEYS + (KEY_THUMBNAIL,) if key in draft})
+    return sanitize_values(raw)
 
 
 def apply_look(draft, values) -> bool:
@@ -83,6 +96,11 @@ def builtin_look_name(values):
     """The name of the built-in look these values are exactly, else None."""
     clean = sanitize_values(values)
     if not clean or any(clean[key] != FOLLOW_LOOK for key in OVERRIDE_KEYS):
+        return None
+    # A design with a new layout, or with another picture than the episode's, is not a built-in look.
+    if clean.get(KEY_LAYOUT, "Card") != "Card" or clean.get(KEY_PICTURE, "Episode") != "Episode":
+        return None
+    if clean.get(KEY_THUMBNAIL, True) is not True:
         return None
     return LOOK_LABELS.get(clean[KEY_LOOK])
 
@@ -124,10 +142,13 @@ def find_saved_look(values, looks=None):
     clean = sanitize_values(values)
     if not clean:
         return None
+    # A look matches when everything it stores is what these values have; one saved before the
+    # layouts stores less. Of several matches the one that stores most wins.
+    best, best_size = None, -1
     for name, saved in (load_user_looks() if looks is None else looks).items():
-        if saved == clean:
-            return name
-    return None
+        if saved and all(clean.get(key) == value for key, value in saved.items()) and len(saved) > best_size:
+            best, best_size = name, len(saved)
+    return best
 
 
 def detect_saved_look(draft):

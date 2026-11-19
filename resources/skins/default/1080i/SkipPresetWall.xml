@@ -1,0 +1,1165 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Written by tools/gen_skip_studio.py: edit that, not this file. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1920</width>
+    <height>1080</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>4501</defaultcontrol>
+  <animation type="WindowOpen">
+    <effect type="fade" start="0" end="100" time="200" />
+  </animation>
+  <animation type="WindowClose">
+    <effect type="fade" start="100" end="0" time="200" />
+  </animation>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture>st_back.png</texture>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>39</top>
+      <width>1050</width>
+      <height>45</height>
+      <label>$INFO[Window.Property(pw_title)]</label>
+      <font>font16</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>left</align>
+      <aligny>center</aligny>
+    </control>
+    <control type="label">
+      <left>1119</left>
+      <top>39</top>
+      <width>732</width>
+      <height>45</height>
+      <label>$INFO[Window.Property(pw_page)]</label>
+      <font>font10</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>right</align>
+      <aligny>center</aligny>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_name)) + !!String.IsEmpty(Window.Property(pw_t0_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t0_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>213</left>
+      <top>240</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t0_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t0_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_plate))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>255</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t0_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_pill))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>309</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t0_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_bar))</visible>
+    </control>
+    <control type="button" id="4501">
+      <left>63</left>
+      <top>108</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4501</onup>
+      <ondown>4501</ondown>
+      <onleft>4501</onleft>
+      <onright>4501</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_name))</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t0_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4501)</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t0_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4501)</visible>
+    </control>
+    <control type="image">
+      <left>249</left>
+      <top>399</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t0_on))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_name)) + !!String.IsEmpty(Window.Property(pw_t1_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t1_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>666</left>
+      <top>240</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t1_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t1_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_plate))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>255</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t1_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_pill))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>309</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t1_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_bar))</visible>
+    </control>
+    <control type="button" id="4502">
+      <left>516</left>
+      <top>108</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4502</onup>
+      <ondown>4502</ondown>
+      <onleft>4502</onleft>
+      <onright>4502</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_name))</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t1_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4502)</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t1_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4502)</visible>
+    </control>
+    <control type="image">
+      <left>702</left>
+      <top>399</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t1_on))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_name)) + !!String.IsEmpty(Window.Property(pw_t2_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t2_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1119</left>
+      <top>240</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t2_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t2_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>255</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t2_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>309</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t2_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_bar))</visible>
+    </control>
+    <control type="button" id="4503">
+      <left>969</left>
+      <top>108</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4503</onup>
+      <ondown>4503</ondown>
+      <onleft>4503</onleft>
+      <onright>4503</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_name))</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t2_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4503)</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t2_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4503)</visible>
+    </control>
+    <control type="image">
+      <left>1155</left>
+      <top>399</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t2_on))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_name)) + !!String.IsEmpty(Window.Property(pw_t3_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>114</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t3_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1572</left>
+      <top>240</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t3_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t3_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>255</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t3_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>309</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t3_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_bar))</visible>
+    </control>
+    <control type="button" id="4504">
+      <left>1422</left>
+      <top>108</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4504</onup>
+      <ondown>4504</ondown>
+      <onleft>4504</onleft>
+      <onright>4504</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_name))</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t3_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4504)</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>363</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t3_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4504)</visible>
+    </control>
+    <control type="image">
+      <left>1608</left>
+      <top>399</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t3_on))</visible>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_name)) + !!String.IsEmpty(Window.Property(pw_t4_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t4_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>213</left>
+      <top>549</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t4_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t4_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_plate))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>564</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t4_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_pill))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>618</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t4_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_bar))</visible>
+    </control>
+    <control type="button" id="4505">
+      <left>63</left>
+      <top>417</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4505</onup>
+      <ondown>4505</ondown>
+      <onleft>4505</onleft>
+      <onright>4505</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_name))</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t4_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4505)</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t4_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4505)</visible>
+    </control>
+    <control type="image">
+      <left>249</left>
+      <top>708</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t4_on))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_name)) + !!String.IsEmpty(Window.Property(pw_t5_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t5_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>666</left>
+      <top>549</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t5_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t5_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_plate))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>564</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t5_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_pill))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>618</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t5_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_bar))</visible>
+    </control>
+    <control type="button" id="4506">
+      <left>516</left>
+      <top>417</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4506</onup>
+      <ondown>4506</ondown>
+      <onleft>4506</onleft>
+      <onright>4506</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_name))</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t5_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4506)</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t5_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4506)</visible>
+    </control>
+    <control type="image">
+      <left>702</left>
+      <top>708</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t5_on))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_name)) + !!String.IsEmpty(Window.Property(pw_t6_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t6_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1119</left>
+      <top>549</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t6_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t6_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>564</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t6_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>618</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t6_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_bar))</visible>
+    </control>
+    <control type="button" id="4507">
+      <left>969</left>
+      <top>417</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4507</onup>
+      <ondown>4507</ondown>
+      <onleft>4507</onleft>
+      <onright>4507</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_name))</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t6_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4507)</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t6_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4507)</visible>
+    </control>
+    <control type="image">
+      <left>1155</left>
+      <top>708</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t6_on))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_name)) + !!String.IsEmpty(Window.Property(pw_t7_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>423</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t7_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1572</left>
+      <top>549</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t7_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t7_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>564</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t7_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>618</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t7_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_bar))</visible>
+    </control>
+    <control type="button" id="4508">
+      <left>1422</left>
+      <top>417</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4508</onup>
+      <ondown>4508</ondown>
+      <onleft>4508</onleft>
+      <onright>4508</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_name))</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t7_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4508)</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>672</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t7_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4508)</visible>
+    </control>
+    <control type="image">
+      <left>1608</left>
+      <top>708</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t7_on))</visible>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_name)) + !!String.IsEmpty(Window.Property(pw_t8_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>69</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t8_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>213</left>
+      <top>858</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t8_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t8_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_plate))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>873</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t8_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_pill))</visible>
+    </control>
+    <control type="image">
+      <left>228</left>
+      <top>927</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t8_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_bar))</visible>
+    </control>
+    <control type="button" id="4509">
+      <left>63</left>
+      <top>726</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4509</onup>
+      <ondown>4509</ondown>
+      <onleft>4509</onleft>
+      <onright>4509</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_name))</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t8_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4509)</visible>
+    </control>
+    <control type="label">
+      <left>69</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t8_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4509)</visible>
+    </control>
+    <control type="image">
+      <left>249</left>
+      <top>1017</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t8_on))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_name)) + !!String.IsEmpty(Window.Property(pw_t9_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>522</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t9_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>666</left>
+      <top>858</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t9_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t9_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_plate))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>873</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t9_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_pill))</visible>
+    </control>
+    <control type="image">
+      <left>681</left>
+      <top>927</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t9_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_bar))</visible>
+    </control>
+    <control type="button" id="4510">
+      <left>516</left>
+      <top>726</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4510</onup>
+      <ondown>4510</ondown>
+      <onleft>4510</onleft>
+      <onright>4510</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_name))</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t9_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4510)</visible>
+    </control>
+    <control type="label">
+      <left>522</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t9_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4510)</visible>
+    </control>
+    <control type="image">
+      <left>702</left>
+      <top>1017</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t9_on))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_name)) + !!String.IsEmpty(Window.Property(pw_t10_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>975</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t10_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1119</left>
+      <top>858</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t10_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t10_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>873</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t10_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1134</left>
+      <top>927</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t10_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_bar))</visible>
+    </control>
+    <control type="button" id="4511">
+      <left>969</left>
+      <top>726</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4511</onup>
+      <ondown>4511</ondown>
+      <onleft>4511</onleft>
+      <onright>4511</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_name))</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t10_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4511)</visible>
+    </control>
+    <control type="label">
+      <left>975</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t10_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4511)</visible>
+    </control>
+    <control type="image">
+      <left>1155</left>
+      <top>1017</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t10_on))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>pt_back.png</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_name)) + !!String.IsEmpty(Window.Property(pw_t11_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1428</left>
+      <top>732</top>
+      <width>426</width>
+      <height>240</height>
+      <texture>$INFO[Window.Property(pw_t11_thumb)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_thumb))</visible>
+    </control>
+    <control type="image">
+      <left>1572</left>
+      <top>858</top>
+      <width>264</width>
+      <height>96</height>
+      <texture border="20">$INFO[Window.Property(pw_t11_plate)]</texture>
+      <colordiffuse>$INFO[Window.Property(pw_t11_tint)]</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_plate))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>873</top>
+      <width>234</width>
+      <height>30</height>
+      <texture>$INFO[Window.Property(pw_t11_pill)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_pill))</visible>
+    </control>
+    <control type="image">
+      <left>1587</left>
+      <top>927</top>
+      <width>150</width>
+      <height>8</height>
+      <texture>$INFO[Window.Property(pw_t11_bar)]</texture>
+      <aspectratio>stretch</aspectratio>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_bar))</visible>
+    </control>
+    <control type="button" id="4512">
+      <left>1422</left>
+      <top>726</top>
+      <width>438</width>
+      <height>252</height>
+      <texturefocus border="16">st_ring.png</texturefocus>
+      <texturenofocus>-</texturenofocus>
+      <label></label>
+      <onup>4512</onup>
+      <ondown>4512</ondown>
+      <onleft>4512</onleft>
+      <onright>4512</onright>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_name))</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t11_name)]</label>
+      <font>font12</font>
+      <textcolor>FFB9BEC8</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>!Control.HasFocus(4512)</visible>
+    </control>
+    <control type="label">
+      <left>1428</left>
+      <top>981</top>
+      <width>426</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_t11_name)]</label>
+      <font>font12</font>
+      <textcolor>FFFFFFFF</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+      <visible>Control.HasFocus(4512)</visible>
+    </control>
+    <control type="image">
+      <left>1608</left>
+      <top>1017</top>
+      <width>66</width>
+      <height>5</height>
+      <texture>sl_white.png</texture>
+      <colordiffuse>FFE8B84A</colordiffuse>
+      <visible>!String.IsEmpty(Window.Property(pw_t11_on))</visible>
+    </control>
+    <control type="label">
+      <left>60</left>
+      <top>1035</top>
+      <width>1800</width>
+      <height>30</height>
+      <label>$INFO[Window.Property(pw_hint)]</label>
+      <font>font10</font>
+      <textcolor>FF8A909C</textcolor>
+      <align>center</align>
+      <aligny>center</aligny>
+    </control>
+  </controls>
+</window>

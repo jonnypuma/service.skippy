@@ -54,7 +54,7 @@
         <texturefocus>-</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <focusedcolor>$INFO[Window.Property(skip_dialog_text_color)]</focusedcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>

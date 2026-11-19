@@ -22,8 +22,11 @@ from next_episode_appearance import (
     HEADING_H,
     KEY_FOCUS,
     PAD,
-    THUMB_H,
-    THUMB_W,
+    FANART_INSET,
+    PAIR_GAP,
+    PAIR_H,
+    PAIR_POSTER_W,
+    PAIR_THUMB_W,
     bar_fill_width,
 )
 from next_episode_look import resolve_popup_look
@@ -35,6 +38,7 @@ from next_episode_state import (
     MAX_POPUP_DURATION_S,
     normalize_end_action,
 )
+import skip_dialog_card
 from settings_utils import addon_get_int, addon_get_setting_text, get_localized
 from skip_dialog_appearance import (
     apply_skip_dialog_caps,
@@ -57,6 +61,11 @@ class PopupIds:
     zoom: int  # covers the whole screen (or the whole stage); the Large size zooms it
     panel: int
     backdrop: int
+    shaped: int  # the card as a picture with corners (skip_dialog_card)
+    fanart: int  # the fanart behind the popup, and the veil that keeps the text readable
+    veil: int
+    pair_poster: int  # Poster and episode: the poster, and the episode picture beside it
+    pair_thumb: int
     thumb: int
     heading: int
     episode: int
@@ -78,6 +87,11 @@ def popup_ids(offset=0) -> PopupIds:
         zoom=5099 + offset,
         panel=5000 + offset,
         backdrop=5001 + offset,
+        shaped=5019 + offset,
+        fanart=5021 + offset,
+        veil=5022 + offset,
+        pair_poster=5020 + offset,
+        pair_thumb=5023 + offset,
         thumb=5002 + offset,
         heading=5003 + offset,
         episode=5004 + offset,
@@ -99,9 +113,19 @@ def popup_placements(layout, ids):
 
     A hidden row (no picture, no time left, no bar) has no entry, so it leaves no gap.
     """
-    out = [(ids.backdrop, 0, 0, layout.panel_w, layout.panel_h)]
-    if layout.thumbnail:
-        out.append((ids.thumb, PAD, PAD, THUMB_W, THUMB_H))
+    out = [
+        (ids.backdrop, 0, 0, layout.panel_w, layout.panel_h),
+        (ids.shaped, 0, 0, layout.panel_w, layout.panel_h),
+    ]
+    if layout.fanart:
+        inner = (FANART_INSET, FANART_INSET, layout.panel_w - 2 * FANART_INSET, layout.panel_h - 2 * FANART_INSET)
+        out.append((ids.fanart,) + inner)
+        out.append((ids.veil,) + inner)
+    if layout.pair:
+        out.append((ids.pair_poster, PAD, layout.picture_y, PAIR_POSTER_W, PAIR_H))
+        out.append((ids.pair_thumb, PAD + PAIR_POSTER_W + PAIR_GAP, layout.picture_y, PAIR_THUMB_W, PAIR_H))
+    elif layout.thumbnail:
+        out.append((ids.thumb, PAD, layout.picture_y, layout.thumb_w, layout.thumb_h))
     out.append((ids.heading, layout.text_x, layout.heading_y, layout.text_w, HEADING_H))
     out.append((ids.episode, layout.text_x, layout.episode_y, layout.text_w, EPISODE_H))
     if layout.countdown_y is not None:
@@ -142,9 +166,20 @@ def look_properties(draft, addon, bar_h_px, fallback_text_color):
         if look.text_color
         else fallback_text_color
     )
+    focus_text = (
+        resolve_font_color_argb(look.focus_text_color, fallback=text) if look.focus_text_color else text
+    )
+    card_on = not look.card_color.startswith("00")
+    shaped = card_on and not skip_dialog_card.is_flat(look.card_style)
     props = {
         "skip_dialog_text_color": text,
-        "next_ep_card_color": look.card_color,
+        # A card picture replaces the flat card; the text on a white focus picture is dark and
+        # then has no shadow (the other button has its own plate behind it, so it needs none either).
+        "next_ep_card_color": "00000000" if shaped else look.card_color,
+        "next_ep_card_texture": skip_dialog_card.texture(look.card_style) if shaped else "",
+        "next_ep_card_tint": look.card_color if shaped else "00FFFFFF",
+        "next_ep_focus_text_color": focus_text,
+        "next_ep_button_shadow": "00000000" if look.focus_text_color else "FF000000",
         "next_ep_heading_color": look.heading_color,
         "next_ep_focus_texture": look.focus_texture,
         "next_ep_focus_border": look.focus_border,

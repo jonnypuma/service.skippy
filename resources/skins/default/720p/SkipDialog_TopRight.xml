@@ -32,6 +32,15 @@
         <texture>white.png</texture>
         <colordiffuse>F0000000</colordiffuse>
       </control>
+      <control type="image" id="3084">
+        <left>0</left>
+        <top>0</top>
+        <width>430</width>
+        <height>100</height>
+        <texture border="20">$INFO[Window.Property(skip_card_texture)]</texture>
+        <colordiffuse>FFFFFFFF</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(skip_card_texture))</visible>
+      </control>
       <control type="image" id="3050">
         <left>5</left>
         <top>10</top>
@@ -79,7 +88,7 @@
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <focusedcolor>$INFO[Window.Property(skip_dialog_text_color)]</focusedcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -99,7 +108,7 @@
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <focusedcolor>$INFO[Window.Property(skip_dialog_text_color)]</focusedcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -119,7 +128,7 @@
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <focusedcolor>$INFO[Window.Property(skip_dialog_text_color)]</focusedcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>2</shadowoffsetx>
         <shadowoffsety>2</shadowoffsety>
@@ -141,7 +150,7 @@
         <texturefocus border="12,12,12,12">button_focus_flat_teal.png</texturefocus>
         <texturenofocus>-</texturenofocus>
         <textcolor>$INFO[Window.Property(skip_dialog_text_color)]</textcolor>
-        <textcolorfocus>$INFO[Window.Property(skip_dialog_text_color)]</textcolorfocus>
+        <focusedcolor>$INFO[Window.Property(skip_dialog_text_color)]</focusedcolor>
         <shadowcolor>FF000000</shadowcolor>
         <shadowoffsetx>1</shadowoffsetx>
         <shadowoffsety>1</shadowoffsety>

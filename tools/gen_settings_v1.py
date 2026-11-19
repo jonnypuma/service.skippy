@@ -23,6 +23,11 @@ from next_episode_look import (  # noqa: E402
     override_pairs,
 )
 
+import skip_dialog_card  # noqa: E402
+import next_layouts  # noqa: E402
+import skip_layouts  # noqa: E402
+import skippy_modal_style  # noqa: E402
+
 ADDON_ID = "service.skippy"
 
 # --- helpers for legacy labelenum orientation ---
@@ -143,6 +148,9 @@ def _follow_pairs(key):
 # Option labels shown as translated strings (strings.po). Style, colour and texture names are
 # left in English on purpose: they are names, not words to translate.
 OPTION_LABEL_IDS = {
+    'List and drawer': '49005',
+    'Drawer': '49006',
+    'Classic': '49007',
     'EDL only': '30100',
     'Chapters XML only': '30101',
     'Skip if exists': '30102',
@@ -209,6 +217,12 @@ UNTRANSLATED_OPTION_SETTINGS = {
     "next_episode_popup_bar_style",
     "next_episode_popup_text_color",
     "next_episode_popup_heading_color",
+    "modal_style",
+    "skip_card_style",
+    "skip_dialog_layout",
+    "skip_layout_look",
+    "next_episode_popup_layout",
+    "next_episode_popup_layout_look",
 }
 
 
@@ -329,10 +343,35 @@ _MODE_VISIBILITY = {
     "settings_action_skip_presets": _ANY,
     "hide_ending_text": _FULL,
     "skip_dialog_mode": _ANY,
+    "skip_dialog_layout": _FULL_COMPACT,
+    "skip_layout_look": _FULL_COMPACT,
+    "skip_layout_bar_color": _FULL_COMPACT,
+    "skip_layout_overlay": _FULL_COMPACT,
+    "skip_layout_appear": _FULL_COMPACT,
+    "skip_layout_leave": _FULL_COMPACT,
+    "skip_layout_pulse": _FULL_COMPACT,
+    "skip_canvas_corners": _ANY,
+    "skip_canvas_text_shadow": _ANY,
+    "skip_canvas_outline": _ANY,
+    "skip_canvas_time": _ANY,
+    "skip_canvas_text_size": _ANY,
+    "skip_canvas_zoom": _ANY,
+    "skip_canvas_accent": _ANY,
+    "skip_canvas_progress": _ANY,
+    "skip_canvas_overlay_gradient": _ANY,
+    "skip_canvas_gradient": _ANY,
+    "skip_canvas_focus": _ANY,
+    "skip_canvas_distance": _ANY,
+    "skip_canvas_place": _ANY,
+    "skip_canvas_close": _ANY,
+    "skip_canvas_icons": _ANY,
+    "skip_canvas_kicker": _ANY,
+    "skip_canvas_nested": _ANY,
     "compact_full_combined": None,  # already limited to Full / Compact Full
     "skip_dialog_font_color": _ANY,
     "skip_dialog_all_caps": _ANY,
     "skip_card_enabled": _FULL,
+    "skip_card_style": _FULL,
     "skip_card_opacity": _FULL,
     # Full mode group (g_prog)
     "show_progress_bar": _FULL_COMPACT,
@@ -424,6 +463,18 @@ def main():
 
     # ---- 30000 segments ----
     cat = ET.SubElement(section, "category", id="segments", label="30000")
+
+    # The look of every Skippy window except the skip dialog and the next episode popup.
+    g = ET.SubElement(cat, "group", id="g_windows", label="49000")
+    assert skippy_modal_style.SETTING_KEY == "modal_style"
+    labelenum_setting(
+        g, "modal_style",
+        0,
+        "49001",
+        "49002",
+        skippy_modal_style.DEFAULT_STYLE,
+        [(skippy_modal_style.STYLE_NAMES[key], key) for key in skippy_modal_style.STYLE_CODES],
+    )
 
     g = ET.SubElement(cat, "group", id="g_seg_keywords", label="31010")
     action_setting(
@@ -705,6 +756,68 @@ def main():
         "CompactFull",
         enum_a("Full|Compact Full|Minimal", "Full|CompactFull|Minimal"),
     )
+    labelenum_setting(
+        g,
+        "skip_dialog_layout",
+        0,
+        "49010",
+        "49011",
+        skip_layouts.DEFAULT_LAYOUT,
+        skip_layouts.layout_options(),
+    )
+    labelenum_setting(
+        g,
+        "skip_layout_look",
+        0,
+        "49012",
+        "49013",
+        skip_layouts.DEFAULT_SKIP_LOOK,
+        skip_layouts.look_options(),
+    )
+    labelenum_setting(
+        g,
+        "skip_layout_bar_color",
+        1,
+        "49031",
+        "49034",
+        skip_layouts.BAR_TYPE,
+        [("49032", skip_layouts.BAR_TYPE), ("49020", skip_layouts.BAR_LOOK)],
+    )
+    labelenum_setting(g, "skip_layout_overlay", 1, "49050", "49051", skip_layouts.OVERLAY_AUTO,
+                      [(str(sid), value) for value, sid, _name in skip_layouts.OVERLAY_NAMES])
+    labelenum_setting(g, "skip_layout_appear", 1, "49059", "49060", skip_layouts.APPEARS[0],
+                      [(str(sid), value) for value, sid, _name in skip_layouts.APPEAR_NAMES])
+    labelenum_setting(g, "skip_layout_leave", 1, "49065", "49066", skip_layouts.LEAVES[0],
+                      [(str(sid), value) for value, sid, _name in skip_layouts.LEAVE_NAMES])
+    bool_setting(g, "skip_layout_pulse", 1, "49069", "49070", False)
+    labelenum_setting(g, "skip_canvas_corners", 1, "49072", "49073", "Skin",
+                      [("49074", "Skin"), ("49075", "Hard"), ("49076", "Rounded")])
+    bool_setting(g, "skip_canvas_close", 1, "49077", "49078", True)
+    bool_setting(g, "skip_canvas_icons", 1, "49079", "49080", True)
+    bool_setting(g, "skip_canvas_kicker", 1, "49081", "49082", True)
+    bool_setting(g, "skip_canvas_nested", 1, "49083", "49084", True)
+    bool_setting(g, "skip_canvas_time", 1, "49165", "49166", True)
+    labelenum_setting(g, "skip_canvas_outline", 1, "49124", "49162", "Medium",
+                      [("49088", "Off"), ("49161", "Light"), ("49090", "Medium"), ("49091", "Strong")])
+    labelenum_setting(g, "skip_canvas_text_shadow", 1, "49086", "49087", "Mild",
+                      [("49088", "Off"), ("49089", "Mild"), ("49090", "Medium"), ("49091", "Strong"), ("49092", "Heavy")])
+    labelenum_setting(g, "skip_canvas_text_size", 1, "49093", "49094", "100",
+                      [("49095", "85"), ("49096", "100"), ("49097", "115"), ("49098", "130")])
+    labelenum_setting(g, "skip_canvas_zoom", 1, "49099", "49100", "100",
+                      [("49095", "70"), ("49090", "85"), ("49097", "100")])
+    labelenum_setting(g, "skip_canvas_accent", 1, "49101", "49102", "Auto",
+                      [("49103", "Auto"), ("49104", "Gold"), ("49105", "Blue"), ("49106", "Red"), ("49107", "Green"),
+                       ("49108", "Teal"), ("49109", "Purple"), ("49110", "White")])
+    labelenum_setting(g, "skip_canvas_progress", 1, "49111", "49112", "Auto",
+                      [("49085", "Auto"), ("49113", "Line"), ("49114", "Circle"), ("49115", "Fill")])
+    bool_setting(g, "skip_canvas_overlay_gradient", 1, "49116", "49117", False)
+    labelenum_setting(g, "skip_canvas_focus", 1, "49130", "49132", "Skip", [("40000", "Skip"), ("40001", "Close")])
+    int_setting(g, "skip_canvas_distance", 1, "49129", "49131", 64, minimum=0, maximum=160, step=8, slider=True)
+    labelenum_setting(g, "skip_canvas_place", 3, "49137", "49137", "",
+                      [("49138", "TopLeft"), ("49139", "Top"), ("49140", "TopRight"), ("49141", "Left"), ("49142", "Center"),
+                       ("49143", "Right"), ("49144", "BottomLeft"), ("49145", "Bottom"), ("49146", "BottomRight")])
+    labelenum_setting(g, "skip_canvas_gradient", 1, "49118", "49119", "Auto",
+                      [("49120", "Auto"), ("49121", "Vertical"), ("49122", "Horizontal"), ("49123", "Radial")])
     bool_setting(
         g,
         "compact_full_combined",
@@ -728,6 +841,16 @@ def main():
     )
     bool_setting(g, "skip_dialog_all_caps", 1, "32099", "32099", True)
     bool_setting(g, "skip_card_enabled", 1, "46011", "46011", True)
+    labelenum_setting(
+        g,
+        "skip_card_style",
+        1,
+        "49008",
+        "49009",
+        skip_dialog_card.STYLE_FLAT,
+        skip_dialog_card.options(),
+        en=[("skip_card_enabled", "true")],
+    )
     int_setting(
         g,
         "skip_card_opacity",
@@ -765,8 +888,8 @@ def main():
         "32079",
         "progress_mid.png",
         enum_b(
-            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png|progress_mid_3d_cyan.png|progress_mid_3d_silver.png|progress_mid_3d_orange.png|progress_mid_3d_violet.png|progress_mid_3d_graphite.png|progress_mid_3d_ice.png|progress_mid_flat_blue.png|progress_mid_flat_teal.png|progress_mid_flat_green.png|progress_mid_flat_rose.png|progress_mid_flat_orange.png|progress_mid_flat_violet.png|progress_mid_flat_slate.png|progress_mid_flat_white.png|progress_mid_grad_ocean.png|progress_mid_grad_aurora.png|progress_mid_grad_sunset.png|progress_mid_segmented_white.png|progress_mid_segmented_teal.png|progress_mid_segmented_green.png|progress_mid_glow_cyan.png|progress_mid_glow_magenta.png|progress_mid_striped_blue.png|progress_mid_striped_orange.png|progress_mid_grad_gold.png",
-            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Gradient Ocean|Gradient Aurora|Gradient Sunset|Segmented White|Segmented Teal|Segmented Green|Glow Cyan|Glow Magenta|Striped Blue|Striped Orange|Gradient Gold",
+            "progress_mid.png|progress_mid_blue_purple.png|progress_mid_darkyellow.png|progress_mid_green_blue.png|progress_mid_lightblue.png|progress_mid_lightgreen.png|progress_mid_lightyellow.png|progress_mid_pink.png|progress_mid_pink_lightblue.png|progress_mid_purple.png|progress_mid_yellow_red.png|progress_mid_3d_cyan.png|progress_mid_3d_silver.png|progress_mid_3d_orange.png|progress_mid_3d_violet.png|progress_mid_3d_graphite.png|progress_mid_3d_ice.png|progress_mid_flat_blue.png|progress_mid_flat_teal.png|progress_mid_flat_green.png|progress_mid_flat_rose.png|progress_mid_flat_orange.png|progress_mid_flat_violet.png|progress_mid_flat_slate.png|progress_mid_flat_white.png|progress_mid_grad_ocean.png|progress_mid_grad_aurora.png|progress_mid_grad_sunset.png|progress_mid_segmented_white.png|progress_mid_segmented_teal.png|progress_mid_segmented_green.png|progress_mid_glow_cyan.png|progress_mid_glow_magenta.png|progress_mid_striped_blue.png|progress_mid_striped_orange.png|progress_mid_grad_gold.png|progress_mid_fuse_gold.png|progress_mid_fuse_white.png",
+            "Green (Default)|Blue/purple gradient|Dark yellow|Green/blue gradient|Light blue|Light green|Light yellow|Pink|Pink/light blue gradient|Purple|Yellow/red gradient|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Gradient Ocean|Gradient Aurora|Gradient Sunset|Segmented White|Segmented Teal|Segmented Green|Glow Cyan|Glow Magenta|Striped Blue|Striped Orange|Gradient Gold|Fuse Gold|Fuse White",
         ),
         en=[("show_progress_bar", "true")],
     )
@@ -812,8 +935,8 @@ def main():
         "32000",
         "button_focus_flat_teal.png",
         enum_b(
-            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png|button_focus_3d_cyan.png|button_focus_3d_silver.png|button_focus_3d_orange.png|button_focus_3d_violet.png|button_focus_3d_graphite.png|button_focus_3d_ice.png|button_focus_flat_blue.png|button_focus_flat_teal.png|button_focus_flat_green.png|button_focus_flat_rose.png|button_focus_flat_orange.png|button_focus_flat_violet.png|button_focus_flat_slate.png|button_focus_flat_white.png|button_focus_glass_white.png|button_focus_glass_blue.png|button_focus_glass_dark.png|button_focus_outline_white.png|button_focus_outline_cyan.png|button_focus_underline_white.png|button_focus_underline_cyan.png|button_focus_frosted_white.png|button_focus_steel.png|button_focus_neon_cyan.png|button_focus_neon_magenta.png|button_focus_gold.png|button_focus_pastel_mint.png|button_focus_pastel_peach.png|button_focus_pastel_lavender.png|button_focus_bracket_white.png|button_focus_bracket_cyan.png|button_focus_bracket_green.png",
-            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Glass White|Glass Blue|Glass Dark|Outline White|Outline Cyan|Underline White|Underline Cyan|Frosted White|Brushed Steel|Neon Cyan|Neon Magenta|Gold Leaf|Pastel Mint|Pastel Peach|Pastel Lavender|Bracket White|Bracket Cyan|Bracket Green",
+            "button_focus.png|button_focus_aqua.png|button_focus_aqua_bevel.png|button_focus_aqua_dark.png|button_focus_aqua_vignette.png|button_focus_aqua_rounded.png|button_focus_blue.png|button_focus_blue_rectangular_3d.png|button_focus_blue_rounded_3d.png|button_focus_gold_rectangular_3d.png|button_focus_3d_green.png|button_focus_3d_pink.png|button_focus_3d_light_pink.png|button_focus_3d_cyan.png|button_focus_3d_silver.png|button_focus_3d_orange.png|button_focus_3d_violet.png|button_focus_3d_graphite.png|button_focus_3d_ice.png|button_focus_flat_blue.png|button_focus_flat_teal.png|button_focus_flat_green.png|button_focus_flat_rose.png|button_focus_flat_orange.png|button_focus_flat_violet.png|button_focus_flat_slate.png|button_focus_flat_white.png|button_focus_glass_white.png|button_focus_glass_blue.png|button_focus_glass_dark.png|button_focus_outline_white.png|button_focus_outline_cyan.png|button_focus_underline_white.png|button_focus_underline_cyan.png|button_focus_frosted_white.png|button_focus_steel.png|button_focus_neon_cyan.png|button_focus_neon_magenta.png|button_focus_gold.png|button_focus_pastel_mint.png|button_focus_pastel_peach.png|button_focus_pastel_lavender.png|button_focus_bracket_white.png|button_focus_bracket_cyan.png|button_focus_bracket_green.png|button_focus_fuse_square.png|button_focus_fuse_glass.png|button_focus_fuse_bar.png",
+            "Default|Aqua|Aqua Bevel|Aqua Dark|Aqua Vignette|Aqua Rounded|Blue|Blue Rectangular 3D|Blue Rounded 3D|Gold Rectangular 3D|Green 3D|Pink 3D|Light Pink 3D|Cyan 3D|Silver 3D|Orange 3D|Violet 3D|Graphite 3D|Ice 3D|Flat Blue|Flat Teal|Flat Green|Flat Rose|Flat Orange|Flat Violet|Flat Slate|Flat White|Glass White|Glass Blue|Glass Dark|Outline White|Outline Cyan|Underline White|Underline Cyan|Frosted White|Brushed Steel|Neon Cyan|Neon Magenta|Gold Leaf|Pastel Mint|Pastel Peach|Pastel Lavender|Bracket White|Bracket Cyan|Bracket Green|Fuse Square|Fuse Glass|Fuse Bar",
         ),
     )
     labelenum_setting(
@@ -879,7 +1002,7 @@ def main():
         "minimal_rounded_pattens-blue_640.png|minimal_rounded_peach-orange_640.png|"
         "minimal_rounded_pink-daisy_640.png|minimal_rounded_pink-lemonade_640.png|"
         "minimal_rounded_pinkish-orange_640.png|minimal_rounded_sunset_640.png|"
-        "minimal_rounded_white_640.png|minimal_flat_black_640.png|minimal_flat_charcoal_640.png|minimal_flat_white_640.png|minimal_flat_blue_640.png|minimal_flat_teal_640.png|minimal_flat_rose_640.png|minimal_glass_dark_640.png|minimal_glass_light_640.png|minimal_outline_white_640.png|minimal_grad_midnight_640.png|minimal_grad_sunset_640.png|minimal_pastel_mint_640.png|minimal_pastel_peach_640.png|minimal_pastel_lavender_640.png|minimal_steel_640.png|minimal_frosted_640.png|minimal_gold_640.png|minimal_neon_cyan_640.png"
+        "minimal_rounded_white_640.png|minimal_flat_black_640.png|minimal_flat_charcoal_640.png|minimal_flat_white_640.png|minimal_flat_blue_640.png|minimal_flat_teal_640.png|minimal_flat_rose_640.png|minimal_glass_dark_640.png|minimal_glass_light_640.png|minimal_outline_white_640.png|minimal_grad_midnight_640.png|minimal_grad_sunset_640.png|minimal_pastel_mint_640.png|minimal_pastel_peach_640.png|minimal_pastel_lavender_640.png|minimal_steel_640.png|minimal_frosted_640.png|minimal_gold_640.png|minimal_neon_cyan_640.png|minimal_fuse_dark_640.png|minimal_fuse_frost_640.png|minimal_fuse_clear_640.png|minimal_fuse_square_640.png|minimal_fuse_grid_640.png|minimal_fuse_glass_640.png"
     )
     MINIMAL_LB = (
         "Rounded Gray|Rectangular Aquamarine Blue|Rectangular Blue|Rectangular Yellow|"
@@ -891,7 +1014,7 @@ def main():
         "Rounded Minty Green|Rounded Mustard Yellow|Rounded Pale Gold|"
         "Rounded Pale Sky Blue|Rounded Pastel Green|Rounded Pattens Blue|"
         "Rounded Peach Orange|Rounded Pink Daisy|Rounded Pink Lemonade|"
-        "Rounded Pinkish Orange|Rounded Sunset|Rounded White|Flat Black|Flat Charcoal|Flat White|Flat Blue|Flat Teal|Flat Rose|Glass Dark|Glass Light|Outline White|Gradient Midnight|Gradient Sunset|Pastel Mint|Pastel Peach|Pastel Lavender|Brushed Steel|Frosted|Gold Leaf|Neon Cyan"
+        "Rounded Pinkish Orange|Rounded Sunset|Rounded White|Flat Black|Flat Charcoal|Flat White|Flat Blue|Flat Teal|Flat Rose|Glass Dark|Glass Light|Outline White|Gradient Midnight|Gradient Sunset|Pastel Mint|Pastel Peach|Pastel Lavender|Brushed Steel|Frosted|Gold Leaf|Neon Cyan|Fuse Dark|Fuse Frost|Fuse Clear|Fuse Square|Fuse Grid|Fuse Glass"
     )
     labelenum_setting(
         g,
@@ -982,7 +1105,7 @@ def main():
         slider=True,
         vis=_ne_on,
     )
-    bool_setting(g, "next_episode_start_at_credits", 0, "47064", "47065", False, vis=_ne_on)
+    bool_setting(g, "next_episode_start_at_credits", 0, "47064", "47065", True, vis=_ne_on)
     int_setting(
         g,
         "next_episode_popup_duration",
@@ -1032,6 +1155,63 @@ def main():
     bool_setting(g, "next_episode_resume", 2, "47013", "47014", True, vis=_ne_on)
     bool_setting(g, "next_episode_use_provider_data", 2, "47126", "47127", True, vis=_ne_on)
     _ne_custom = _ne_on + [("next_episode_popup_style", "Custom")]
+    labelenum_setting(
+        g,
+        "next_episode_popup_layout",
+        1,
+        "49041",
+        "49042",
+        next_layouts.DEFAULT_LAYOUT,
+        next_layouts.layout_options(),
+        vis=_ne_custom,
+    )
+    # the options of a drawn popup design (next_canvas_dialog.OPTION_KEYS): set in the popup's Customize screen
+    # (one line each, as next_canvas.OPTION_KEYS has them: a test reads the ids from this file)
+    labelenum_setting(g, "next_canvas_form", 1, "49152", "49042", "Full",
+                      [("30116", "Full"), ("49199", "Compact"), ("30117", "Minimal")], vis=_ne_custom)
+    string_setting(g, "next_canvas_corners", 3, "49041", "49042", "Skin", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_close", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_icons", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_plot", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_picture", 3, "49041", "49042", "Episode", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_progress", 3, "49041", "49042", "Auto", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_accent", 3, "49041", "49042", "Auto", hidden=True, vis=_ne_custom)
+    labelenum_setting(g, "next_canvas_zoom", 1, "49099", "49100", "100",
+                      [("49095", "70"), ("49090", "85"), ("49097", "100")], vis=_ne_custom)
+    string_setting(g, "next_canvas_place", 3, "49041", "49042", "", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_distance", 3, "49041", "49042", "64", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_overlay", 3, "49041", "49042", "Auto", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_overlay_gradient", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_gradient", 3, "49041", "49042", "Auto", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_appear", 3, "49041", "49042", "Fade", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_leave", 3, "49041", "49042", "Fade", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_pulse", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_text_shadow", 3, "49041", "49042", "Mild", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_outline", 3, "49041", "49042", "Medium", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_text_size", 3, "49041", "49042", "100", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_kicker", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_logo", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_same_look", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_fill_on", 3, "49041", "49042", "Button", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_caps", 3, "49041", "49042", "Look", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_fallback", 3, "49041", "49042", "Fanart", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_time", 3, "49041", "49042", "true", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_credits", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_bar", 3, "49041", "49042", "Smooth", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_speed", 3, "49041", "49042", "0", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_follow_skin", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_subtitles", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_focus_style", 3, "49041", "49042", "Look", hidden=True, vis=_ne_custom)
+    labelenum_setting(
+        g,
+        "next_episode_popup_layout_look",
+        1,
+        "49012",
+        "49043",
+        next_layouts.DEFAULT_LOOK,
+        next_layouts.look_options(),
+        vis=_ne_custom,
+    )
     labelenum_setting(
         g,
         "next_episode_popup_look",
@@ -1127,6 +1307,17 @@ def main():
         vis=_ne_custom,
     )
     bool_setting(g, "next_episode_popup_thumbnail", 1, "47036", "47037", True, vis=_ne_custom)
+    labelenum_setting(
+        g,
+        "next_episode_popup_picture",
+        1,
+        "49035",
+        "49040",
+        "Episode",
+        [("49036", "Episode"), ("49037", "Poster"), ("49038", "Both"), ("49039", "Fanart"),
+         ("49048", "FanartPoster"), ("49049", "FanartEpisode")],
+        vis=_ne_custom,
+    )
     bool_setting(g, "next_episode_popup_countdown", 1, "47038", "47039", True, vis=_ne_custom)
     bool_setting(g, "next_episode_popup_progress", 1, "47040", "47041", True, vis=_ne_custom)
     labelenum_setting(
@@ -1414,6 +1605,17 @@ def main():
         "37010",
         "37011",
         False,
+        vis=v_ed,
+    )
+    labelenum_setting(g, "segment_editor_style", 1, "49190", "49191", "fg_dark",
+                      [("49187", "fg_dark"), ("49188", "fg_frost"), ("49189", "fg_clear")], vis=v_ed)
+    labelenum_setting(
+        g, "segment_editor_layout",
+        1,
+        "49003",
+        "49004",
+        "side",
+        enum_a("List and drawer|Drawer|Classic", "side|drawer|classic"),
         vis=v_ed,
     )
     string_setting(

@@ -1,0 +1,478 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Written by tools/gen_skip_canvas.py: edit that, not this file. -->
+<window>
+  <coordinates>
+    <system>1</system>
+    <posx>0</posx>
+    <posy>0</posy>
+    <width>1280</width>
+    <height>720</height>
+  </coordinates>
+  <zorder>1</zorder>
+  <defaultcontrol>3210</defaultcontrol>
+  <!-- Nothing of the dialog is seen while Skippy is putting it together: the texts it adds are on the window
+       itself, and would show at their font's own size until each has been given its place and size. The flag is
+       on the Home window (a window's own animation does not see its own properties) and only says "busy", so a
+       drawing that fails leaves the dialog seen. -->
+  <animation effect="fade" start="100" end="0" time="0" condition="String.IsEqual(Window(Home).Property(skippy_canvas_busy),true)">Conditional</animation>
+  <controls>
+    <control type="image" id="3390">
+      <left>0</left>
+      <top>0</top>
+      <width>520</width>
+      <height>1</height>
+      <texture>cv_clear.png</texture>
+    </control>
+    <control type="group" id="3300">
+      <left>0</left>
+      <top>0</top>
+      <width>1280</width>
+      <height>720</height>
+      <!-- always there, so a button in it can take the focus before the dialog is shown: what hides the
+           dialog until then is the flag above, and its parts come with the animations Skippy gives them -->
+      <!-- a still behind the dialog: only the test harness sets it (a control made in Python would cover the slots) -->
+      <control type="image">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>720</height>
+        <texture>$INFO[Window.Property(cv_test_backdrop)]</texture>
+        <aspectratio>scale</aspectratio>
+        <visible>!String.IsEmpty(Window.Property(cv_test_backdrop))</visible>
+      </control>
+      <control type="image" id="3370">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_back)]</texture>
+        <aspectratio>scale</aspectratio>
+        <visible>!String.IsEmpty(Window.Property(cv_back))</visible>
+      </control>
+      <control type="image" id="3371">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_back_shade)]</texture>
+        <visible>!String.IsEmpty(Window.Property(cv_back_shade))</visible>
+      </control>
+      <control type="image" id="3301">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture border="30">$INFO[Window.Property(cv_overlay9)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_overlay9_c)]</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(cv_overlay9))</visible>
+      </control>
+      <control type="image" id="3302">
+        <left>0</left>
+        <top>0</top>
+        <width>1</width>
+        <height>1</height>
+        <texture>$INFO[Window.Property(cv_overlay)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_overlay_c)]</colordiffuse>
+        <visible>!String.IsEmpty(Window.Property(cv_overlay))</visible>
+      </control>
+      <control type="group" id="3391">
+        <left>0</left>
+        <top>0</top>
+        <width>1280</width>
+        <height>720</height>
+        <control type="image" id="3303">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow))</visible>
+        </control>
+        <control type="image" id="3320">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow_2)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_2))</visible>
+        </control>
+        <control type="image" id="3321">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="62">$INFO[Window.Property(cv_shadow_3)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_3))</visible>
+        </control>
+        <control type="image" id="3322">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s))</visible>
+        </control>
+        <control type="image" id="3323">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s2)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s2))</visible>
+        </control>
+        <control type="image" id="3324">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="37">$INFO[Window.Property(cv_shadow_s3)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_shadow_s3))</visible>
+        </control>
+        <control type="image" id="3304">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30">$INFO[Window.Property(cv_plate)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate))</visible>
+        </control>
+        <control type="image" id="3305">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30">$INFO[Window.Property(cv_plate2)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate2))</visible>
+        </control>
+        <control type="image" id="3312">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="28">$INFO[Window.Property(cv_plate_c)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_c))</visible>
+        </control>
+        <control type="image" id="3313">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="24">$INFO[Window.Property(cv_plate_m)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_m))</visible>
+        </control>
+        <control type="image" id="3319">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="5">$INFO[Window.Property(cv_plate_h)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_plate_h))</visible>
+        </control>
+        <control type="image" id="3384">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="30,30,0,30">$INFO[Window.Property(cv_fill_c)]</texture>
+          <colordiffuse>$INFO[Window.Property(cv_fill_c_c)]</colordiffuse>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_c))</visible>
+        </control>
+        <control type="image" id="3385">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_c.png">$INFO[Window.Property(cv_pic_card)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_card))</visible>
+        </control>
+        <control type="image" id="3386">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_ch.png">$INFO[Window.Property(cv_pic_card_h)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_card_h))</visible>
+        </control>
+        <control type="image" id="3306">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box))</visible>
+        </control>
+        <control type="image" id="3307">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="9">$INFO[Window.Property(cv_chip)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_chip))</visible>
+        </control>
+        <control type="image" id="3314">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box2)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box2))</visible>
+        </control>
+        <control type="image" id="3315">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_box3)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_box3))</visible>
+        </control>
+        <control type="image" id="3316">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_outline)]</texture>
+          <colordiffuse>$INFO[Window.Property(cv_outline_c)]</colordiffuse>
+          <visible>!String.IsEmpty(Window.Property(cv_outline))</visible>
+        </control>
+        <control type="image" id="3372">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic))</visible>
+        </control>
+        <control type="image" id="3373">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_s.png">$INFO[Window.Property(cv_pic_s)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_s))</visible>
+        </control>
+        <control type="image" id="3374">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic_h)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_h))</visible>
+        </control>
+        <control type="image" id="3376">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic2)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic2))</visible>
+        </control>
+        <control type="image" id="3377">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_r.png">$INFO[Window.Property(cv_pic3)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic3))</visible>
+        </control>
+        <control type="image" id="3380">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic2_h)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic2_h))</visible>
+        </control>
+        <control type="image" id="3381">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic3_h)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic3_h))</visible>
+        </control>
+        <control type="image" id="3382">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture diffuse="cv_mask_p.png">$INFO[Window.Property(cv_pic_po)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_po))</visible>
+        </control>
+        <control type="image" id="3383">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_pic_po_h)]</texture>
+          <aspectratio>scale</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_pic_po_h))</visible>
+        </control>
+        <control type="image" id="3375">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture>$INFO[Window.Property(cv_logo)]</texture>
+          <aspectratio align="left" aligny="bottom">keep</aspectratio>
+          <visible>!String.IsEmpty(Window.Property(cv_logo))</visible>
+        </control>
+        <control type="image" id="3308">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_skip_off)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_skip_off)) + !Control.HasFocus(3210)</visible>
+        </control>
+        <control type="image" id="3309">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_skip_on)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_skip_on)) + Control.HasFocus(3210)</visible>
+        </control>
+        <control type="image" id="3310">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_close_off)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_close_off)) + !Control.HasFocus(3220)</visible>
+        </control>
+        <control type="image" id="3311">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_close_on)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_close_on)) + Control.HasFocus(3220)</visible>
+        </control>
+        <control type="image" id="3378">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_more_off)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_more_off)) + !Control.HasFocus(3230)</visible>
+        </control>
+        <control type="image" id="3379">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20">$INFO[Window.Property(cv_more_on)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_more_on)) + Control.HasFocus(3230)</visible>
+        </control>
+        <control type="image" id="3317">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="19,0,19,19">$INFO[Window.Property(cv_fill_v)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_v))</visible>
+        </control>
+        <control type="image" id="3318">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="25,0,0,0">$INFO[Window.Property(cv_fill_h)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_h))</visible>
+        </control>
+        <control type="image" id="3325">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="11,0,0,0">$INFO[Window.Property(cv_fill_b)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_b))</visible>
+        </control>
+        <control type="image" id="3326">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <texture border="20,0,0,0">$INFO[Window.Property(cv_fill_p)]</texture>
+          <visible>!String.IsEmpty(Window.Property(cv_fill_p))</visible>
+        </control>
+        <control type="button" id="3210">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <onleft>3220</onleft>
+          <onright>3220</onright>
+          <onup>3220</onup>
+          <ondown>3220</ondown>
+        </control>
+        <control type="button" id="3220">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <onleft>3210</onleft>
+          <onright>3210</onright>
+          <onup>3210</onup>
+          <ondown>3210</ondown>
+        </control>
+        <control type="button" id="3230">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <visible>!String.IsEmpty(Window.Property(cv_hot_more))</visible>
+        </control>
+        <control type="button" id="3251">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <visible>!String.IsEmpty(Window.Property(cv_hot_q1))</visible>
+        </control>
+        <control type="button" id="3252">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <visible>!String.IsEmpty(Window.Property(cv_hot_q2))</visible>
+        </control>
+        <control type="button" id="3253">
+          <left>0</left>
+          <top>0</top>
+          <width>1</width>
+          <height>1</height>
+          <label></label>
+          <texturefocus>-</texturefocus>
+          <texturenofocus>-</texturenofocus>
+          <visible>!String.IsEmpty(Window.Property(cv_hot_q3))</visible>
+        </control>
+      </control>
+    </control>
+  </controls>
+</window>

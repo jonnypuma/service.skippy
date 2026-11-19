@@ -24,6 +24,7 @@ from settings_utils import (
     compute_skip_seek_destination_seconds,
     get_localized,
 )
+import skip_dialog_card
 from skip_dialog_window_ui import _argb_to_kodi
 from time_format import format_jump_clock
 
@@ -31,6 +32,10 @@ FULL_SKIP_BUTTON_IDS = (3012, 3015, 3016)
 
 FULL_SKIP_PANEL_GROUP_ID = 3080
 FULL_SKIP_PANEL_BACKDROP_ID = 3081
+# The card as a picture with corners (skip_dialog_card); the skin shows it while the window
+# property skip_card_texture names a picture.
+FULL_SKIP_PANEL_SHAPED_ID = 3084
+SKIP_CARD_TEXTURE_PROP = "skip_card_texture"
 # 9-slice focus overlays — only in SkipDialogCustomize.xml, not live SkipDialog_*.xml
 CUSTOMIZE_SKIP_FOCUS_OVERLAY_IDS = (3040, 3042, 3041, 3043)
 FULL_SKIP_PANEL_W_720 = 430
@@ -61,6 +66,7 @@ SKIP_WIDTH_STEPS_720 = {
 SKIP_ROW_GLYPH_SCALE_720 = {"ending": 0.88, "jump": 1.18}
 SKIP_ROW_TEXT_PAD_720 = 10
 SKIP_DIALOG_CANVAS_W_720 = 1280
+SKIP_DIALOG_CANVAS_H_720 = 720
 SKIP_DIALOG_SCREEN_MARGIN_720 = 10
 SKIP_DIALOG_MODE_FULL = "Full"
 SKIP_DIALOG_MODE_COMPACT = "CompactFull"
@@ -142,6 +148,9 @@ BUTTON_FOCUS_NINE_SLICE_BORDERS = {
     "button_focus_bracket_white.png": "12,12,12,12",
     "button_focus_bracket_cyan.png": "12,12,12,12",
     "button_focus_bracket_green.png": "12,12,12,12",
+    "button_focus_fuse_square.png": "12,12,12,12",
+    "button_focus_fuse_glass.png": "12,12,12,12",
+    "button_focus_fuse_bar.png": "12,12,12,12",
 }
 
 
@@ -151,10 +160,23 @@ def button_focus_nine_slice_border(filename: str) -> Optional[str]:
     return BUTTON_FOCUS_NINE_SLICE_BORDERS.get(name)
 
 
+def card_style_name(settings) -> str:
+    """The stored card style (``Flat`` unless a card picture is chosen)."""
+    return skip_dialog_card.normalize(
+        settings.get_text(skip_dialog_card.SETTING_KEY, skip_dialog_card.STYLE_FLAT)
+    )
+
+
+def card_top_on_screen(top, height, canvas_h, margin) -> int:
+    """``top`` of a card of ``height``, moved up as far as needed to keep ``margin`` under it."""
+    return max(0, min(int(top), int(canvas_h) - int(margin) - int(height)))
+
+
 def card_color_diffuse(settings) -> str:
-    """AARRGGBB black for the Full-mode card; opacity setting is 0-100 percent."""
+    """AARRGGBB for the Full-mode card: black on the flat card, plain fading on a card picture;
+    the opacity setting is 0-100 percent."""
     pct = settings.get_int("skip_card_opacity", 95, minimum=0, maximum=100)
-    return "%02X000000" % int(round(max(0, min(100, pct)) * 255 / 100.0))
+    return skip_dialog_card.diffuse(card_style_name(settings), pct)
 
 
 def skip_dialog_mode_name(raw: Optional[str]) -> str:
@@ -509,19 +531,23 @@ def shadow_for_text(text_argb):
     return "0x66FFFFFF"
 
 
-def _set_control_label(control, label, text_argb, font):
+def _set_control_label(control, label, text_argb, font, button=False):
     """Apply text + colour on WindowXML buttons and labels.
 
     ControlLabel rejects ``focusedColor``; falling through to ``setLabel(text, font)``
     resets skin/$INFO colour to white. Try label-safe kwargs first.
+
+    A button gets its focused colour first: the skip button always has the focus, and without
+    ``focusedColor`` Kodi draws it in the default of its Python control, which is dark on
+    Kodi 22 whatever the font colour says.
     """
     if not control:
         return
     tc = _argb_to_kodi(text_argb)
     sc = shadow_for_text(text_argb)
-    kw_attempts = (
-        dict(font=font, textColor=tc, disabledColor=tc, shadowColor=sc),
-        dict(font=font, textColor=tc, disabledColor=tc, shadowColor=sc, focusedColor=tc),
+    with_focus = dict(font=font, textColor=tc, disabledColor=tc, shadowColor=sc, focusedColor=tc)
+    without_focus = dict(font=font, textColor=tc, disabledColor=tc, shadowColor=sc)
+    kw_attempts = ((with_focus, without_focus) if button else (without_focus, with_focus)) + (
         dict(font=font, textColor=tc, shadowColor=sc),
         dict(font=font, textColor=tc),
         dict(textColor=tc),
@@ -549,7 +575,7 @@ def _set_control_label(control, label, text_argb, font):
 
 def set_skip_button_label(control, label, text_argb, font="font16"):
     """WindowXML ignores skin <font>/textcolor; apply label + colours in Python."""
-    _set_control_label(control, label, text_argb, font)
+    _set_control_label(control, label, text_argb, font, button=True)
 
 
 def set_skip_info_label(control, label, text_argb, font="font10"):
@@ -1141,6 +1167,8 @@ def apply_full_skip_layout(
     GAP_AFTER_JUMP = sc(5)
     GAP_BEFORE_PROGRESS = sc(4) if not compact else sc(3)
     BOTTOM_MARGIN = sc(4) if compact else sc(5)
+    if (not compact) and settings.get_bool("skip_card_enabled", True):
+        BOTTOM_MARGIN = sc(skip_dialog_card.bottom_margin_720(card_style_name(settings), 5))
     META_LINE_H = sc(20)
     BTN_BOTTOM = sc(COMPACT_SKIP_BTN_TOP_720 + COMPACT_SKIP_BTN_H_720) if compact else sc(35)
     UNDER_BTNS_FALLBACK = sc(8) if compact else sc(14)
@@ -1181,6 +1209,9 @@ def apply_full_skip_layout(
     total_h = (bottom + BOTTOM_MARGIN) if has_meta else (BTN_BOTTOM + UNDER_BTNS_FALLBACK)
     total_h = max(total_h, BTN_BOTTOM + UNDER_BTNS_FALLBACK)
 
+    card_on = (not compact) and settings.get_bool("skip_card_enabled", True)
+    card_style = card_style_name(settings)
+    card_flat = skip_dialog_card.is_flat(card_style)
     try:
         panel = _safe_control(window, FULL_SKIP_PANEL_GROUP_ID)
         backdrop = _safe_control(window, FULL_SKIP_PANEL_BACKDROP_ID)
@@ -1203,7 +1234,17 @@ def apply_full_skip_layout(
                         else SKIP_DIALOG_SCREEN_MARGIN_720
                     )
                     x = sc(x720) - panel_w if align_right else sc(x720)
-                    panel.setPosition(int(x), int(panel.getPosition()[1]))
+                    y = getattr(window, "_skip_panel_skin_y", None)
+                    if not isinstance(y, int) or isinstance(y, bool):
+                        y = int(panel.getPosition()[1])
+                        window._skip_panel_skin_y = y  # where the corner file put the group
+                    # The whole dialog stays on the screen: a tall one (next segment line, ending
+                    # text and bar) at a bottom corner moves up instead of running past the bottom
+                    # edge, where the bar and the corners of the card were cut off.
+                    y = card_top_on_screen(
+                        y, total_h, sc(SKIP_DIALOG_CANVAS_H_720), sc(SKIP_DIALOG_SCREEN_MARGIN_720)
+                    )
+                    panel.setPosition(int(x), int(y))
                 except Exception as e:
                     _log("Full skip panel position: %s" % e)
         if backdrop:
@@ -1213,11 +1254,24 @@ def apply_full_skip_layout(
             except Exception:
                 pass
             try:
-                backdrop.setVisible(
-                    (not compact) and settings.get_bool("skip_card_enabled", True)
-                )
+                backdrop.setVisible(card_on and card_flat)
             except Exception:
                 pass
+        # A card picture (rounded, or one of the skin looks) takes the place of the flat card.
+        shaped = _safe_control(window, FULL_SKIP_PANEL_SHAPED_ID)
+        if shaped:
+            _place_ctrl(shaped, 0, 0, panel_w, total_h)
+            try:
+                shaped.setColorDiffuse(card_color_diffuse(settings))
+            except Exception:
+                pass
+        try:
+            window.setProperty(
+                SKIP_CARD_TEXTURE_PROP,
+                skip_dialog_card.texture(card_style) if (card_on and not card_flat) else "",
+            )
+        except Exception:
+            pass
     except Exception as e:
         _log("Full skip panel height: %s" % e)
 
