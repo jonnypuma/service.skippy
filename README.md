@@ -1,18 +1,60 @@
-<img width="1200" height="1200" alt="icon" src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" />
-# Skippy — Segment skip, mark, and edit
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/822f7386-ce10-48e7-bb6f-ee90bfdb0a02" alt="Skippy icon" width="200">
+</p>
+
+<h1 align="center">Skippy — Segment skip, mark, and edit</h1>
+
+<p align="center"><a href="https://jonnypuma.github.io/#/service.skippy"><b>Project page</b></a> · <a href="https://jonnypuma.github.io/">All add-ons and apps by jonnypuma</a> · <a href="https://jonnypuma.github.io/#install">Install from the Skippy Repo</a></p>
 
 Skippy is an all-in-one Kodi add-on for timed **video segments** (intros, recaps, credits, ads, and anything you define). 
 
 During playback it can **skip or ask** using sidecar **`.edl`** and **Matroska-style `chapters.xml`** data, **mark** new ranges with **Segment Marker**, and **edit** existing sidecars with the built-in **Segment Editor** — all driven by the same **segment types** catalog (skip mode, aliases, and EDL number).
-<img width="1610" height="983" alt="screenshot01" src="https://github.com/user-attachments/assets/8e0350e2-558c-407e-8b49-a5b5f011a01f" />
-<img width="858" height="313" alt="image" src="https://github.com/user-attachments/assets/019bc5ee-4b83-4a56-9098-2618db5c8d41" />
-<img width="374" height="147" alt="2026-06-15 22_29_21-Kodi" src="https://github.com/user-attachments/assets/471f4207-a66a-466c-9ac1-109aff0e622d" />
-<img width="1267" height="704" alt="screenshot06" src="https://github.com/user-attachments/assets/afe25b5d-cef2-4ea3-8a8b-ee4df9d8a8c9" />
-<img width="1259" height="709" alt="screenshot05" src="https://github.com/user-attachments/assets/d9978fc4-daf0-47e1-9d81-c80c4a7f5e9d" />
-<img width="1262" height="708" alt="screenshot04" src="https://github.com/user-attachments/assets/8527089e-0dcb-4bc1-8efe-5ccdff1bcef9" />
-<img width="1264" height="707" alt="screenshot03" src="https://github.com/user-attachments/assets/a5ced74c-5842-41ca-b0f1-2795244624c5" />
-<img width="1261" height="694" alt="screenshot02" src="https://github.com/user-attachments/assets/1f646129-b585-4f0f-b478-928e68ccf6a4" />
-<img width="1262" height="699" alt="screenshot01" src="https://github.com/user-attachments/assets/f6bed7d2-7f5c-4b3d-b714-13e84b189d6e" />
+
+<h3 align="center">Skip dialogs</h3>
+<table>
+  <tr>
+    <td colspan="2" width="100%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/skip-states.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/skip-states.webp" alt="Skip dialog during an intro: time left, next jump line, Skip and Close"></a><br><sub>Skip dialog during an intro: time left, next jump line, Skip and Close</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/skip-looks.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/skip-looks.webp" alt="Skip dialog layouts in six of the looks"></a><br><sub>Skip dialog layouts in six of the looks</sub></td>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/skip-minimal.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/skip-minimal.webp" alt="Minimal skip dialog forms"></a><br><sub>Minimal skip dialog forms</sub></td>
+  </tr>
+</table>
+
+<h3 align="center">Skip dialog Studio</h3>
+<table>
+  <tr>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/studio-look.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/studio-look.webp" alt="The Look tab with a live preview"></a><br><sub>The Look tab with a live preview</sub></td>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/studio-layout.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/studio-layout.webp" alt="Layout, position and size"></a><br><sub>Layout, position and size</sub></td>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/studio-presets.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/studio-presets.webp" alt="Preset wall: layouts in the Fused Glass and Aeon looks"></a><br><sub>Preset wall: layouts in the Fused Glass and Aeon looks</sub></td>
+  </tr>
+</table>
+
+<h3 align="center">Next episode</h3>
+<table>
+  <tr>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/next-takeover.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/next-takeover.webp" alt="Takeover over the show's fanart"></a><br><sub>Takeover over the show's fanart</sub></td>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/next-cards.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/next-cards.webp" alt="Card forms and button focus styles"></a><br><sub>Card forms and button focus styles</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/next-queue.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/next-queue.webp" alt="Queue forms with the following episodes"></a><br><sub>Queue forms with the following episodes</sub></td>
+    <td width="50%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/next-studio.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/next-studio.webp" alt="Up next Studio: the Look tab with a live preview"></a><br><sub>Up next Studio: the Look tab with a live preview</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2" width="100%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/next-poster.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/next-poster.webp" alt="The poster beside the episode picture"></a><br><sub>The poster beside the episode picture</sub></td>
+  </tr>
+</table>
+
+<h3 align="center">Segment Editor</h3>
+<table>
+  <tr>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/editor.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/editor.webp" alt="Segment list, timeline and tools"></a><br><sub>Segment list, timeline and tools</sub></td>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/editor-saved.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/editor-saved.webp" alt="After adding a segment"></a><br><sub>After adding a segment</sub></td>
+    <td width="33%" align="center" valign="top"><a href="https://jonnypuma.github.io/assets/service.skippy/editor-label.webp"><img src="https://jonnypuma.github.io/assets/service.skippy/editor-label.webp" alt="Choosing a segment label"></a><br><sub>Choosing a segment label</sub></td>
+  </tr>
+</table>
+
+<p align="center"><sub>Click a picture for the full size. More on the <a href="https://jonnypuma.github.io/#/service.skippy">project page</a>.</sub></p>
 
 **Local workflows** stay on disk: Skippy reads and writes those sidecars next to your video files, so you can work entirely offline. 
 
