@@ -499,7 +499,10 @@ class Canvas:
         except Exception:
             pass
         self.look = cv.adjusted(looks.look(options.look, drawing.corners), options)
+        if cv.RULES.get(options.design, {}).get("bare"):
+            self.look = cv.bare_look(self.look, drawing.corners)  # as the design was built
         code, corners = options.look, drawing.corners
+        button_code = self.look.get("button_code", code)  # a light-card look on the video borrows its buttons
         slot_pictures = {
             "plate": cv.picture(code, corners, "plate", self.folder), "plate2": cv.picture(code, corners, "plate", self.folder),
             "box": cv.picture(code, corners, "box", self.folder), "chip": cv.picture(code, corners, "chip", self.folder),
@@ -529,13 +532,13 @@ class Canvas:
                     self.window.setProperty(cv.slot_property(op["slot"], self.offset) + "_c", looks.argb(op["color"])[2:])
             elif kind == "button":
                 pill = op.get("pill")
-                off = cv.picture(code, corners, op.get("off") if op.get("off") in ("tile", "ptile") else
+                off = cv.picture(button_code, corners, op.get("off") if op.get("off") in ("tile", "ptile") else
                                  ("pill" if pill else "btn"), self.folder)
-                on = cv.picture(code, corners, op.get("on") or ("pillfoc" if pill else "foc"), self.folder)
+                on = cv.picture(button_code, corners, op.get("on") or ("pillfoc" if pill else "foc"), self.folder)
                 which = op["which"]
                 style = getattr(options, "focus_style", "Look")
                 if style == "Outline" and not op.get("on"):
-                    on = cv.picture(code, corners, "pillfocl" if pill else "focl", self.folder)
+                    on = cv.picture(button_code, corners, "pillfocl" if pill else "focl", self.folder)
                 if style != "Look" or self.tinted:
                     # Focus style: the plate of the button in focus in the accent colour, or as a line in the
                     # ink of the look. Set back to plain when a drawing before this one had coloured it.

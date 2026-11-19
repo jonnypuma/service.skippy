@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.33.2] - 2026-11-19
+
+### Fixed
+
+- **Paper and Pastel on the designs that lie on the video (Dial, Cinema band, Float, Play ring, Lower third): the buttons were not seen.** Their see-through dark buttons vanished on the picture (Close unseen, Skip a dark smudge). There they now take the buttons of Fused Glass Dark and keep their own accent.
+
 ## [8.33.1] - 2026-11-19
 
 ### Changed

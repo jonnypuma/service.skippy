@@ -1382,7 +1382,7 @@ def draw(options: Options, texts: Texts) -> Drawing:
     look = looks.look(options.look, corners)
     look = adjusted(look, options)
     if rule.get("bare"):
-        look = bare_look(look)
+        look = bare_look(look, corners)
     builder = _BUILDERS.get((options.design, options.size)) or stack_full
     global _TEXT, _PERCENT, _BAR_ROUND
     _BAR_ROUND = getattr(options, "bar_edges", "Straight") == "Rounded"
@@ -1505,12 +1505,22 @@ def draw(options: Options, texts: Texts) -> Drawing:
     return out
 
 
-def bare_look(look) -> dict:
-    """A look for a design that lies on the video: a look with dark ink on a light card writes light there."""
+BARE_BUTTONS = "fgd"  # the buttons a light-card look borrows on the video (see bare_look)
+
+
+def bare_look(look, corners="Skin") -> dict:
+    """A look for a design that lies on the video: a look with dark ink on a light card writes light there.
+    Its buttons too: a light-card look with see-through dark buttons (Paper, Pastel) had them vanish on the video
+    (Close unseen, Skip a dark smudge), so there it takes the buttons of Fused Glass Dark (``button_code``) and
+    keeps its own accent."""
     r, g, b, _a = look["ink"]
     out = dict(look)
     if 0.299 * r + 0.587 * g + 0.114 * b < 128:
         out.update(ink=looks.white(1), ink2=looks.white(.8), ink3=looks.white(.6), track=looks.white(.3))
+        if tuple(look.get("btn") or (0, 0, 0, 0))[3] < 128:
+            dark = looks.look(BARE_BUTTONS, corners)
+            out.update({key: dark[key] for key in ("btn", "btn_ink", "foc", "foc_ink", "foc_acc") if key in dark})
+            out["button_code"] = BARE_BUTTONS
     return out
 
 
