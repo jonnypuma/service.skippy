@@ -141,6 +141,17 @@ class _EditorPlayerListener(xbmc.Player):
         self._dialog._set_pause_state(False)
 
 
+
+def new_segment_source(save_format=None) -> str:
+    """The source a segment made in the editor is listed with: the file it will be saved to. Chapter XML is the
+    preferred sidecar and EDL the fallback, so it is XML unless the editor saves EDL only (it was EDL unless
+    the first segment in the list came from an XML file, so a new segment in an empty list read Local EDL)."""
+    try:
+        chosen = save_format or get_save_format()
+    except Exception:
+        chosen = SAVE_FORMAT_BOTH
+    return "edl" if str(chosen).lower() == "edl" else "xml"
+
 class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         # the look: the List and drawer layout has its own (Fused Glass Dark), the others follow the setting
@@ -153,6 +164,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             super().__init__(*args)
         self._skin_resolution = skin_res
         self.video_path = kwargs.get("video_path")
+        self._small_video = bool(kwargs.get("small_video", False))  # a plain window lies under it: the video is small
         self.segments = kwargs.get("segments", [])
         self.current_time = kwargs.get("current_time", 0)
         self.segments_modified = False
@@ -681,6 +693,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             5007: self._on_exit_clicked,
             5044: self.toggle_dark_overlay,  # the Look row of the List and drawer layout
             5045: self.cycle_panel_style,
+            5046: self.toggle_small_video,
             5026: self.upload_segments_online,
             5009: lambda: self.seek_relative(-5),
             5010: lambda: self.seek_relative(-10),
@@ -859,8 +872,13 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             # the Look row: what its two buttons say now
             self.setProperty("ed_look", bold % self._T(49183, "LOOK"))
             names = {"fg_dark": self._T(49187, "Dark"), "fg_frost": self._T(49188, "Frost"), "fg_clear": self._T(49189, "Clear")}
+            small = segment_editor_layout.small_video(get_addon())
             words = (self._T(49184, "Dark overlay: on") if dark else self._T(49185, "Dark overlay: off"),
-                     self._T(49186, "Panels: %s", names.get(segment_editor_layout.editor_style(self._style), "")))
+                     self._T(49186, "Panels: %s", names.get(segment_editor_layout.editor_style(self._style), "")),
+                     self._T(49235, "Video: small") if small else self._T(49236, "Video: full screen"))
+            # the video window above the timeline shows only over the plain window (else it would show a piece
+            # of the full-screen picture)
+            self.setProperty("ed_video", "true" if self._small_video else "")
             for cid, word in zip(segment_editor_layout.LOOK_BUTTON_IDS, words):
                 try:
                     self._set_button_label_font(self.getControl(cid), word)
@@ -902,6 +920,30 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         except Exception as e:
             log(f"Could not store the dark overlay setting: {e}")
         self._write_editor_words()
+
+    def toggle_small_video(self):
+        """Look row: the video small above the timeline, or full screen behind the editor. It is a setting; the
+        editor opens again so that the plain window under it can open or close first."""
+        addon = get_addon()
+        small = not segment_editor_layout.small_video(addon)
+        try:
+            addon.setSetting(segment_editor_layout.VIDEO_KEY, "true" if small else "false")
+        except Exception as e:
+            log(f"Could not store the editor's video size: {e}")
+            return
+        self._reopen(segment_editor_layout.LOOK_BUTTON_IDS[2])
+
+    def _reopen(self, focus):
+        """Close and open again with the work in hand (the session does it): for what only a new window can do."""
+        self._refresh_selected_index()
+        self._reopen_with = {
+            "segments": list(self.segments), "modified": self.segments_modified, "pending_start": self.pending_start_time,
+            "pending_end": self.pending_end_time, "undo": list(self._undo_stack), "selected": self.selected_index,
+            "focus": focus,
+        }
+        # the session saves on close when this is set: it must not, the editor only changes its clothes
+        self.segments_modified = False
+        self.close()
 
     def cycle_panel_style(self):
         """Look row: the next look of the panels (Dark, Frost, Clear). A window takes its pictures from its
@@ -1649,9 +1691,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
             if label is None:
                 return
 
-            source = "edl"
-            if self.segments and self.segments[0].source == "xml":
-                source = "xml"
+            source = new_segment_source()
 
             new_seg = SegmentItem(start, end, label, source=source)
             self._push_undo()
@@ -1710,9 +1750,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
                 xbmcgui.Dialog().ok(self._T(41000, "Segment Editor"), self._T(41040, "End time must be after start time."))
                 return
 
-            source = "edl"
-            if self.segments and self.segments[0].source == "xml":
-                source = "xml"
+            source = new_segment_source()
 
             new_seg = SegmentItem(start, end, label, source=source)
             self._push_undo()
@@ -2278,9 +2316,7 @@ class SegmentEditorDialog(xbmcgui.WindowXMLDialog):
         if label is None:
             return
 
-        source = "edl"
-        if self.segments and self.segments[0].source == "xml":
-            source = "xml"
+        source = new_segment_source()
 
         new_seg = SegmentItem(
             self.pending_start_time,

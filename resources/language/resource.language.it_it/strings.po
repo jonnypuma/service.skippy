@@ -4598,3 +4598,51 @@ msgstr "Accento"
 msgctxt "#49226"
 msgid "Outline"
 msgstr "Contorno"
+
+msgctxt "#49227"
+msgid "Background"
+msgstr "Sfondo"
+
+msgctxt "#49228"
+msgid "Colour"
+msgstr "Colore"
+
+msgctxt "#49229"
+msgid "Artwork edges"
+msgstr "Bordi delle immagini"
+
+msgctxt "#49230"
+msgid "Progress bar edges"
+msgstr "Estremità della barra di avanzamento"
+
+msgctxt "#49231"
+msgid "Straight"
+msgstr "Dritti"
+
+msgctxt "#49232"
+msgid "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+msgstr "Ciò che riempie tutto lo schermo dietro la finestra: niente (il video resta visibile), il fanart della serie sotto un'ombra scura, o un colore pieno dello stile."
+
+msgctxt "#49233"
+msgid "The ends of the progress line: straight, or rounded."
+msgstr "Le estremità della linea di avanzamento: dritte o arrotondate."
+
+msgctxt "#49234"
+msgid "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+msgstr "Gli angoli delle immagini nella finestra: come li ha lo stile, dritti o arrotondati."
+
+msgctxt "#49235"
+msgid "Video: small"
+msgstr "Video: piccolo"
+
+msgctxt "#49236"
+msgid "Video: full screen"
+msgstr "Video: schermo intero"
+
+msgctxt "#49237"
+msgid "Small video above the timeline"
+msgstr "Video piccolo sopra la linea del tempo"
+
+msgctxt "#49238"
+msgid "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."
+msgstr "Elenco e cassetto: il video scorre in piccolo sopra la linea del tempo, nulla sotto i pannelli. Disattivato: il video riempie lo schermo dietro l'editor."

@@ -843,6 +843,7 @@ DESIGN_DEFAULTS = {
     "skip_canvas_text_size": "100", "skip_canvas_zoom": "100", "skip_canvas_accent": "Auto", "skip_canvas_progress": "Auto",
     "skip_canvas_overlay_gradient": False, "skip_canvas_gradient": "Auto", "skip_canvas_focus": "Skip",
     "skip_canvas_distance": 64, "skip_canvas_place": "",
+    "skip_canvas_background": "None", "skip_canvas_bar_edges": "Straight",
 }
 
 

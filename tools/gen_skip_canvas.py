@@ -213,6 +213,13 @@ def icons() -> dict:
         picture = Image.new("RGBA", mask.size, (255, 255, 255, 0))
         picture.putalpha(mask.resize(mask.size, Image.LANCZOS))
         out[name] = picture.resize((96, 96), Image.LANCZOS) if name != "cv_dot.png" else picture
+    # Progress bar edges Rounded: the two halves of a disc, for the ends of a line (drawn large, then made small)
+    disc = Image.new("L", (256, 256), 0)
+    ImageDraw.Draw(disc).ellipse((0, 0, 255, 255), fill=255)
+    for name, box in (("cv_cap_l.png", (0, 0, 128, 256)), ("cv_cap_r.png", (128, 0, 256, 256))):
+        picture = Image.new("RGBA", (128, 256), (255, 255, 255, 0))
+        picture.putalpha(disc.crop(box))
+        out[name] = picture.resize((32, 64), Image.LANCZOS)
     return out
 
 
@@ -340,7 +347,7 @@ def slots_xml(folder, offset=0, indent="      ") -> str:
         text = '%s<control type="image" id="%d">\n' % (indent, cid)
         text += "%s  <left>0</left>\n%s  <top>0</top>\n%s  <width>1</width>\n%s  <height>1</height>\n" % ((indent,) * 4)
         text += '%s  <texture%s>$INFO[Window.Property(%s)]</texture>\n' % (indent, ' border="%s"' % border if border else "", prop)
-        if slot.startswith("overlay") or slot in ("outline", "fill_c"):
+        if slot.startswith("overlay") or slot in ("outline", "fill_c", "back_shade"):
             text += "%s  <colordiffuse>$INFO[Window.Property(%s_c)]</colordiffuse>\n" % (indent, prop)
         text += "%s  <visible>%s</visible>\n%s</control>\n" % (indent, cond + visible, indent)
         return text
@@ -365,6 +372,10 @@ def slots_xml(folder, offset=0, indent="      ") -> str:
     out += picture("back_shade", 0)
     out += picture("overlay9", borders["overlay"])
     out += picture("overlay", 0)
+    if not offset:
+        # Takeover + video (test): what is playing, small. Kodi draws the video in it only while its full-screen
+        # video window is not the active one (the popup then lies on a plain window, SkipVideoStage.xml).
+        out += video_xml(folder, indent, cv.ID_VIDEO, "String.IsEqual(Window.Property(cv_video),true)")
     # everything but the shade behind the dialog sits in one group, which Size on screen zooms
     width, height = (1280, 720) if folder == "720" else (1920, 1080)
     out += '%s<control type="group" id="%d">\n' % (indent, cv.ID_ZOOM + offset)
@@ -440,6 +451,47 @@ def slots_xml(folder, offset=0, indent="      ") -> str:
     return out + "%s</control>\n" % outer
 
 
+def video_xml(folder, indent, cid=0, visible="", rect=None) -> str:
+    """A video window at ``skip_canvas.VIDEO_RECT`` (a 1080 rectangle, written here in the folder's units)."""
+    unit = 1.0 if folder == "1080" else 2.0 / 3.0
+    x, y, w, h = (int(round(value * unit)) for value in (rect or cv.VIDEO_RECT))
+    text = '%s<control type="videowindow"%s>\n' % (indent, ' id="%d"' % cid if cid else "")
+    text += "%s  <left>%d</left>\n%s  <top>%d</top>\n%s  <width>%d</width>\n%s  <height>%d</height>\n" % (
+        indent, x, indent, y, indent, w, indent, h)
+    if visible:
+        text += "%s  <visible>%s</visible>\n" % (indent, visible)
+    return text + "%s</control>\n" % indent
+
+
+def stage_xml(folder, rect=None) -> str:
+    """The plain window that lies under the popup of Takeover + video: while it is the active window (not Kodi's
+    full-screen video), a video window draws what is playing small. It shows the next episode's fanart (a Home
+    property Skippy sets) on black, so nothing else is seen before the popup is drawn over it."""
+    width, height = (1920, 1080) if folder == "1080" else (1280, 720)
+    return ("""<?xml version='1.0' encoding='utf-8'?>
+<!-- Written by tools/gen_skip_canvas.py: edit that, not this file. -->
+<window>
+  <defaultcontrol>0</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>%d</width>
+      <height>%d</height>
+      <texture colordiffuse="FF000000">sl_white.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>%d</width>
+      <height>%d</height>
+      <texture>$INFO[Window(Home).Property(skippy_stage_fanart)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window(Home).Property(skippy_stage_fanart))</visible>
+    </control>
+""" % (width, height, width, height)) + video_xml(folder, "    ", rect=rect) + "  </controls>\n</window>\n"
+
+
 def skin_xml(folder) -> str:
     width, height = (1920, 1080) if folder == "1080" else (1280, 720)
     probe = cv.PROBE_W if folder == "720" else cv.PROBE_W * 3 // 2
@@ -491,8 +543,16 @@ def skin_xml(folder) -> str:
 
 def skin_files() -> dict:
     # the 1080i file is the 720p one through the converter, like every other pair (it scales the borders too)
-    text = skin_xml("720")
-    return {os.path.join(SKINS, "720p", cv.XML): text, os.path.join(SKINS, "1080i", cv.XML): gen.convert(text)}
+    import segment_editor_layout as editor
+
+    text, stage = skin_xml("720"), stage_xml("720")
+    # the segment editor's: its video window above the timeline (a 720 rectangle there)
+    editor_stage = stage_xml("720", tuple(value * 1.5 for value in editor.VIDEO_RECT))
+    return {os.path.join(SKINS, "720p", cv.XML): text, os.path.join(SKINS, "1080i", cv.XML): gen.convert(text),
+            os.path.join(SKINS, "720p", cv.VIDEO_STAGE_XML): stage,
+            os.path.join(SKINS, "1080i", cv.VIDEO_STAGE_XML): gen.convert(stage),
+            os.path.join(SKINS, "720p", editor.STAGE_XML): editor_stage,
+            os.path.join(SKINS, "1080i", editor.STAGE_XML): gen.convert(editor_stage)}
 
 
 def _png(picture) -> bytes:

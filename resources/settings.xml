@@ -634,6 +634,31 @@
                     </constraints>
                     <control type="spinner" format="string"></control>
                 <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_background" type="string" label="49227" help="49232">
+                    <level>1</level>
+                    <default>None</default>
+                    <constraints>
+                        <options>
+                            <option label="49052">None</option>
+                            <option label="49039">Fanart</option>
+                            <option label="49228">Colour</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
+                <setting id="skip_canvas_bar_edges" type="string" label="49230" help="49233">
+                    <level>1</level>
+                    <default>Straight</default>
+                    <constraints>
+                        <options>
+                            <option label="49231">Straight</option>
+                            <option label="49076">Rounded</option>
+                        </options>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="spinner" format="string"></control>
+                <dependencies><dependency type="visible" setting="skip_dialog_type">Custom</dependency></dependencies></setting>
                 <setting id="skip_canvas_gradient" type="string" label="49118" help="49119">
                     <level>1</level>
                     <default>Auto</default>
@@ -1234,6 +1259,7 @@
                             <option label="Lower third">Band</option>
                             <option label="Float">Float</option>
                             <option label="Takeover">Takeover</option>
+                            <option label="Takeover + video (test)">TakeVideo</option>
                             <option label="Queue">Queue</option>
                             <option label="Side rail">Rail</option>
                             <option label="Poster card">Poster</option>
@@ -1733,6 +1759,51 @@
                 <setting id="next_canvas_focus_style" type="string" label="49041" help="49042">
                     <level>3</level>
                     <default>Look</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_background" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>None</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_art_edges" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Look</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>49041</heading>
+                        <hidden>true</hidden>
+                    </control>
+                    <dependencies>
+                        <dependency type="visible" setting="next_episode_enabled">true</dependency>
+                        <dependency type="visible" setting="next_episode_popup_style">Custom</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="next_canvas_bar_edges" type="string" label="49041" help="49042">
+                    <level>3</level>
+                    <default>Straight</default>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
@@ -2541,6 +2612,14 @@
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="spinner" format="string"></control>
+                    <dependencies>
+                        <dependency type="visible" setting="segment_editor_enabled">true</dependency>
+                    </dependencies>
+                </setting>
+                <setting id="segment_editor_small_video" type="boolean" label="49237" help="49238">
+                    <level>1</level>
+                    <default>true</default>
+                    <control type="toggle"></control>
                     <dependencies>
                         <dependency type="visible" setting="segment_editor_enabled">true</dependency>
                     </dependencies>

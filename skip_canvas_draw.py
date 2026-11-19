@@ -491,7 +491,7 @@ class Canvas:
                 "conditional", "effect=zoom start=%.3f end=%.3f center=%.2f,%.2f time=0 condition=true"
                 % (drawing.zoom, drawing.zoom, ax, ay))] + group_moves)
             behind = ["overlay9", "overlay"]
-            if any(op["t"] == "pic" and op.get("shape") == "back" for op in drawing.ops):
+            if any((op["t"] == "pic" and op.get("shape") == "back") or op.get("slot") == "back_shade" for op in drawing.ops):
                 behind += ["back", "back_shade"]  # Takeover: the picture behind everything comes and goes with the rest
             for slot in behind:
                 self.window.getControl(cv.SLOT_IDS[slot] + self.offset).setAnimations(
@@ -605,14 +605,36 @@ class Canvas:
                 shape = op.get("shape", "r")
                 slot = {"back": "back", "logo": "logo", "s": "pic_s", "h": "pic_h", "r2": "pic2", "r3": "pic3",
                         "p": "pic_po", "ph": "pic_po_h", "card": "pic_card"}.get(shape, "pic")
-                if self.look["ri"] == 0:  # a look with hard corners
+                edges = getattr(options, "art_edges", "Look")
+                if (self.look["ri"] == 0 if edges not in ("Straight", "Rounded") else edges == "Straight"):
+                    # a look with hard corners, or Artwork edges Straight
                     slot = {"pic": "pic_h", "pic_s": "pic_h", "pic2": "pic2_h", "pic3": "pic3_h", "pic_po": "pic_po_h",
                             "pic_card": "pic_card_h"}.get(slot, slot)
                 self._slot(slot, op.get("src") or "", op["rect"])
-                if slot == "back" and op.get("src"):
+                if slot == "back" and op.get("src") and not op.get("own_shade"):
                     self._slot("back_shade", "cv_ov_take.png", op["rect"])
+                    self.window.setProperty(cv.slot_property("back_shade", self.offset) + "_c", "FFFFFFFF")
             elif kind == "para":
                 self._para(op)
+            elif kind == "video":
+                # Takeover + video: the window file's video window shows what is playing (where the window file has
+                # it). The Studio's small screen has no video: a dark stand-in with a play mark takes its place.
+                if self.offset:
+                    import xbmcgui
+
+                    left, top, width, height = self._rect(op["rect"])
+                    control = xbmcgui.ControlImage(left, top + PARK, width, height, self._path("sl_white.png"),
+                                                   colorDiffuse=looks.argb((8, 10, 14, 235)))
+                    self._add(control, at=(left, top))
+                    self._zoom(control)
+                    size = min(width, height) // 4
+                    mark = xbmcgui.ControlImage(left + (width - size) // 2, top + (height - size) // 2 + PARK, size, size,
+                                                self._path("cv_ic_play.png"), colorDiffuse=looks.argb((255, 255, 255, 200)))
+                    self._add(mark, at=(left + (width - size) // 2, top + (height - size) // 2))
+                    self._zoom(mark)
+                else:
+                    self.window.setProperty("cv_video", "true")
+                    self.used.add("cv_video")
         made_ms = int((time.time() - started) * 1000)
         places = len(self.jobs or [])
         place_ms = self._run_jobs()
@@ -783,7 +805,7 @@ class Canvas:
                 except Exception:
                     pass
         share = max(0.0, min(100.0, float(percent))) / 100.0
-        for key in ("playhead", "arc", "now"):
+        for key in ("playhead", "arc", "now", "fillcap"):
             self._follow(key, share)
         found = self.by_key.get("fill")
         if not found:

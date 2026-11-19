@@ -100,9 +100,13 @@ ID_CV_OUTLINE = 4164
 ID_CV_DISTANCE = 4165
 ID_CV_FOCUS = 4166
 ID_CV_TIME = 4167
+ID_CV_BACKGROUND = 4168  # Background: None, Fanart, Colour (the Studio's row; the classic screen has none)
+ID_CV_BAR_EDGES = 4169  # Progress bar edges: Straight, Rounded
 CANVAS_ROW_IDS = (ID_CORNERS, ID_CV_CLOSE, ID_CV_ICONS, ID_CV_KICKER, ID_CV_NESTED, ID_CV_SHADOW, ID_CV_TEXT_SIZE,
                   ID_CV_ZOOM, ID_CV_ACCENT, ID_CV_PROGRESS, ID_CV_GRADIENT, ID_CV_GRADIENT_TYPE, ID_CV_OUTLINE,
-                  ID_CV_DISTANCE, ID_CV_FOCUS, ID_CV_TIME)
+                  ID_CV_DISTANCE, ID_CV_FOCUS, ID_CV_TIME, ID_CV_BACKGROUND, ID_CV_BAR_EDGES)
+BACKGROUND_NAMES = (("None", 49052, "None"), ("Fanart", 49039, "Fanart"), ("Colour", 49228, "Colour"))
+BAR_EDGE_NAMES = (("Straight", 49231, "Straight"), ("Rounded", 49076, "Rounded"))
 FOCUS_NAMES = (("Skip", 40000, "Skip"), ("Close", 40001, "Close"))
 OUTLINE_NAMES = (("Off", 49088, "Off"), ("Light", 49161, "Light"), ("Medium", 49090, "Medium"), ("Strong", 49091, "Strong"))
 DISTANCE_MAX, DISTANCE_STEP = 160, 8  # Distance from the edge, in pixels of a 1080 screen
@@ -122,6 +126,8 @@ CANVAS_CHOICES = {
     ID_CV_GRADIENT_TYPE: ("skip_canvas_gradient", GRADIENT_NAMES, "Auto", 49118, "Gradient direction"),
     ID_CV_FOCUS: ("skip_canvas_focus", FOCUS_NAMES, "Skip", 49130, "Button the focus starts on"),
     ID_CV_OUTLINE: ("skip_canvas_outline", OUTLINE_NAMES, "Medium", 49124, "Text outline"),
+    ID_CV_BACKGROUND: ("skip_canvas_background", BACKGROUND_NAMES, "None", 49227, "Background"),
+    ID_CV_BAR_EDGES: ("skip_canvas_bar_edges", BAR_EDGE_NAMES, "Straight", 49230, "Progress bar edges"),
 }
 TEXT_SHADOW_NAMES = (("Off", 49088, "Off"), ("Mild", 49089, "Mild"), ("Medium", 49090, "Medium"),
                      ("Strong", 49091, "Strong"), ("Heavy", 49092, "Heavy"))
@@ -418,6 +424,8 @@ DRAFT_TEXT_KEYS = (
     "skip_canvas_focus",
     "skip_canvas_outline",
     "skip_canvas_place",
+    "skip_canvas_background",
+    "skip_canvas_bar_edges",
 )
 DRAFT_INT_KEYS = (
     ("skip_canvas_distance", 64, 0, 160),
@@ -454,6 +462,8 @@ _TEXT_DEFAULTS = {
     "skip_canvas_focus": "Skip",
     "skip_canvas_outline": "Medium",
     "skip_canvas_place": "",
+    "skip_canvas_background": "None",
+    "skip_canvas_bar_edges": "Straight",
 }
 _BOOL_DEFAULTS = {
     "hide_ending_text": False,
@@ -999,6 +1009,8 @@ class SkipDialogCustomize(xbmcgui.WindowXMLDialog):
         options = cvd.options_from(settings.get_text, settings.get_bool, layout, code, position,
                                    layout_accent(addon, code, segment, settings=settings))
         texts = cvd.texts_from(found, countdown_mmss(MOCK_INTRO_END - MOCK_PLAYHEAD), nested, duration, percent or 0.0)
+        # Background Fanart in the preview: the Studio's own picture stands in for the show's
+        texts.fanart = os.path.join(addon.getAddonInfo("path") or "", "fanart.png")
         if getattr(self, "_mock_canvas", None) is None:
             resolution = getattr(self, "_skin_resolution", None) or "1080i"
             folder = "720" if str(resolution).startswith("720") else "1080"

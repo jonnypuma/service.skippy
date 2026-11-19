@@ -353,6 +353,8 @@ _MODE_VISIBILITY = {
     "skip_canvas_corners": _ANY,
     "skip_canvas_text_shadow": _ANY,
     "skip_canvas_outline": _ANY,
+    "skip_canvas_background": _ANY,
+    "skip_canvas_bar_edges": _ANY,
     "skip_canvas_time": _ANY,
     "skip_canvas_text_size": _ANY,
     "skip_canvas_zoom": _ANY,
@@ -816,6 +818,10 @@ def main():
     labelenum_setting(g, "skip_canvas_place", 3, "49137", "49137", "",
                       [("49138", "TopLeft"), ("49139", "Top"), ("49140", "TopRight"), ("49141", "Left"), ("49142", "Center"),
                        ("49143", "Right"), ("49144", "BottomLeft"), ("49145", "Bottom"), ("49146", "BottomRight")])
+    labelenum_setting(g, "skip_canvas_background", 1, "49227", "49232", "None",
+                      [("49052", "None"), ("49039", "Fanart"), ("49228", "Colour")])
+    labelenum_setting(g, "skip_canvas_bar_edges", 1, "49230", "49233", "Straight",
+                      [("49231", "Straight"), ("49076", "Rounded")])
     labelenum_setting(g, "skip_canvas_gradient", 1, "49118", "49119", "Auto",
                       [("49120", "Auto"), ("49121", "Vertical"), ("49122", "Horizontal"), ("49123", "Radial")])
     bool_setting(
@@ -1202,6 +1208,9 @@ def main():
     string_setting(g, "next_canvas_follow_skin", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
     string_setting(g, "next_canvas_subtitles", 3, "49041", "49042", "false", hidden=True, vis=_ne_custom)
     string_setting(g, "next_canvas_focus_style", 3, "49041", "49042", "Look", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_background", 3, "49041", "49042", "None", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_art_edges", 3, "49041", "49042", "Look", hidden=True, vis=_ne_custom)
+    string_setting(g, "next_canvas_bar_edges", 3, "49041", "49042", "Straight", hidden=True, vis=_ne_custom)
     labelenum_setting(
         g,
         "next_episode_popup_layout_look",
@@ -1609,6 +1618,8 @@ def main():
     )
     labelenum_setting(g, "segment_editor_style", 1, "49190", "49191", "fg_dark",
                       [("49187", "fg_dark"), ("49188", "fg_frost"), ("49189", "fg_clear")], vis=v_ed)
+    # List and drawer: the video small above the timeline (the user's default, 2026-11-19) or full screen
+    bool_setting(g, "segment_editor_small_video", 1, "49237", "49238", True, vis=v_ed)
     labelenum_setting(
         g, "segment_editor_layout",
         1,

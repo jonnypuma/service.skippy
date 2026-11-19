@@ -29,6 +29,7 @@ DESIGNS = (
     ("Band", "NBand", "Lower third", "D"),
     ("Float", "NFloat", "Float", "E"),
     ("Takeover", "NTake", "Takeover", "F"),
+    ("TakeVideo", "NTake", "Takeover + video (test)", "F"),  # Takeover with what is playing small at the top right
     ("Queue", "NQueue", "Queue", "G"),
     ("Rail", "NRail", "Side rail", "H"),
     ("Poster", "NCard", "Poster card", "A"),  # the Card with the show's poster for its picture
@@ -52,6 +53,8 @@ OPTION_KEYS = {
     "speed": "0",
     # the look of the skin in place of the popup's own, room for the subtitles, and how the button in focus shows
     "follow_skin": "false", "subtitles": "false", "focus_style": "Look",
+    # the whole screen behind the popup, the corners of its pictures and the ends of its progress line
+    "background": "None", "art_edges": "Look", "bar_edges": "Straight",
 }
 
 cv.RULES.update({
@@ -94,6 +97,7 @@ class Texts:
     play_one: str = "Play {ep}"  # the Queue's Play button names the chosen episode
     later: str = "Play a later one"
     credits: str = "Watch credits"
+    now_playing: str = "Now playing"  # under the small video of Takeover + video
     # the Queue: the next episodes, the first is the one that starts by itself. Each ``(episode, title, minutes, picture)``.
     queue: tuple = (("S1 E3", "Fate", "49 min", ""), ("S1 E4", "The Mastermind", "48 min", ""), ("S1 E5", "Specters", "47 min", ""))
     percent: float = 55.0
@@ -665,8 +669,18 @@ def take_full(look, texts, options) -> cv.Drawing:
         bx += _credits(ops, bx, y, 60.0, look, texts, options, on_plate=False) + look["gap"]
     if options.close:
         _cancel(ops, bx, y, 60.0, look, texts, options, on_plate=False)
-    # (No small window with what is playing: under a dialog Kodi keeps the video at full size, so such a
-    # window only shows the piece of the picture that lies behind it. Tried in 8.31.0, taken out again.)
+    if options.video:
+        # Takeover + video (test): what is playing, small, at the top right, in a frame. Kodi draws it there only
+        # while its full-screen video window is not the active one (a plain window lies under the popup then);
+        # over full-screen video a dialog's video window only shows the piece of the picture behind it (8.31.0).
+        vx, vy, vw, vh = cv.VIDEO_RECT
+        frame = 4.0  # four thin sides: what is made in Python lies above the window file's video window
+        for side in ((vx - frame, vy - frame, vw + 2 * frame, frame), (vx - frame, vy + vh, vw + 2 * frame, frame),
+                     (vx - frame, vy, frame, vh), (vx + vw, vy, frame, vh)):
+            ops.append({"t": "rect", "rect": side, "color": looks.white(.9), "abs": True})
+        ops.append({"t": "video", "rect": cv.VIDEO_RECT, "abs": True})  # where the window file has it
+        ops.append({"t": "text", "rect": (vx, vy + vh + 12, vw, 22), "size": 16, "bold": True, "align": "r",
+                    "color": looks.white(.78), "shadow": True, "text": (texts.now_playing or "Now playing").upper(), "abs": True})
     y -= 12 + 16
     if options.plot and texts.plot:
         y -= 102

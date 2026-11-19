@@ -7,6 +7,7 @@ import os
 import threading
 import time
 
+import xbmc
 import xbmcgui
 
 from addon_skin_resolution import (
@@ -479,14 +480,52 @@ def show_next_episode_dialog(
         timed=timed,
         end_action=end_action,
     )
+    stage = _open_video_stage(addon, draft, next_episode, preview)
     try:
         dialog.doModal()
     finally:
         dialog._stop.set()
         dialog._stop_progress_driver()
+        _close_video_stage(stage)
     result = dialog.result
     del dialog
     return result
+
+
+def _wants_video_stage(draft, preview) -> bool:
+    """Takeover + video (test), whole-screen form, while a video plays: it needs the plain window under it."""
+    if preview or not draft:
+        return False
+    try:
+        import next_canvas
+        import next_layouts
+
+        if next_layouts.normalize_layout(draft.get(next_layouts.KEY_LAYOUT)) != next_layouts.LAYOUT_TAKE_VIDEO:
+            return False
+        if next_canvas.form(draft.get(next_canvas.PREFIX + "form")) != "Full":
+            return False
+        return bool(xbmc.Player().isPlayingVideo())
+    except Exception:
+        return False
+
+
+def _open_video_stage(addon, draft, next_episode, preview):
+    """Takeover + video: the plain window that lets Kodi draw the video small (see ``video_stage``), with the
+    next episode's fanart. Returns the window, or None."""
+    if not _wants_video_stage(draft, preview):
+        return None
+    import skip_canvas
+    import video_stage
+
+    episode = next_episode or {}
+    return video_stage.open_stage(addon, skip_canvas.VIDEO_STAGE_XML,
+                                  episode.get("fanart") or episode.get("thumb") or episode.get("poster") or "")
+
+
+def _close_video_stage(stage) -> None:
+    import video_stage
+
+    video_stage.close_stage(stage)
 
 
 def preview_countdown(addon):

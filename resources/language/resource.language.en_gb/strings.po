@@ -4592,3 +4592,51 @@ msgstr "Accent"
 msgctxt "#49226"
 msgid "Outline"
 msgstr "Outline"
+
+msgctxt "#49227"
+msgid "Background"
+msgstr "Background"
+
+msgctxt "#49228"
+msgid "Colour"
+msgstr "Colour"
+
+msgctxt "#49229"
+msgid "Artwork edges"
+msgstr "Artwork edges"
+
+msgctxt "#49230"
+msgid "Progress bar edges"
+msgstr "Progress bar edges"
+
+msgctxt "#49231"
+msgid "Straight"
+msgstr "Straight"
+
+msgctxt "#49232"
+msgid "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+msgstr "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+
+msgctxt "#49233"
+msgid "The ends of the progress line: straight, or rounded."
+msgstr "The ends of the progress line: straight, or rounded."
+
+msgctxt "#49234"
+msgid "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+msgstr "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+
+msgctxt "#49235"
+msgid "Video: small"
+msgstr "Video: small"
+
+msgctxt "#49236"
+msgid "Video: full screen"
+msgstr "Video: full screen"
+
+msgctxt "#49237"
+msgid "Small video above the timeline"
+msgstr "Small video above the timeline"
+
+msgctxt "#49238"
+msgid "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."
+msgstr "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."

@@ -55,6 +55,7 @@
         <width>1</width>
         <height>1</height>
         <texture>$INFO[Window.Property(cv_back_shade)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_back_shade_c)]</colordiffuse>
         <visible>!String.IsEmpty(Window.Property(cv_back_shade))</visible>
       </control>
       <control type="image" id="3301">
@@ -74,6 +75,13 @@
         <texture>$INFO[Window.Property(cv_overlay)]</texture>
         <colordiffuse>$INFO[Window.Property(cv_overlay_c)]</colordiffuse>
         <visible>!String.IsEmpty(Window.Property(cv_overlay))</visible>
+      </control>
+      <control type="videowindow" id="3392">
+        <left>837</left>
+        <top>37</top>
+        <width>405</width>
+        <height>228</height>
+        <visible>String.IsEqual(Window.Property(cv_video),true)</visible>
       </control>
       <control type="group" id="3391">
         <left>0</left>

@@ -20,6 +20,7 @@ KEY_LAYOUT = "next_episode_popup_layout"
 KEY_LAYOUT_LOOK = "next_episode_popup_layout_look"
 
 LAYOUT_CARD = "Card"
+LAYOUT_TAKE_VIDEO = "TakeVideo"
 # (stored value, name shown)
 LAYOUT_NAMES = (
     # the popup of every earlier version, with its own looks and options: it stays the default
@@ -31,12 +32,15 @@ LAYOUT_NAMES = (
     ("Band", "Lower third"),
     ("Float", "Float"),
     ("Takeover", "Takeover"),  # the next episode takes the whole screen
+    # a test (2026-11-19): Takeover with what is playing small at the top right. Kodi draws a video small only
+    # while its full-screen video window is not the active one, so a plain window is opened under the popup.
+    (LAYOUT_TAKE_VIDEO, "Takeover + video (test)"),
     ("Queue", "Queue"),  # the next three episodes side by side
     ("Rail", "Side rail"),
     ("Poster", "Poster card"),  # the Card with the show's poster for its picture
 )
 # the layouts Skippy draws itself: every one but the popup of earlier versions
-DRAWN_LAYOUTS = ("CardA", "Slab", "Ring", "Band", "Float", "Takeover", "Queue", "Rail", "Poster")
+DRAWN_LAYOUTS = ("CardA", "Slab", "Ring", "Band", "Float", "Takeover", LAYOUT_TAKE_VIDEO, "Queue", "Rail", "Poster")
 LAYOUTS = tuple(stored for stored, _name in LAYOUT_NAMES)
 NEW_LAYOUTS = LAYOUTS[1:]
 # What a new installation shows: the drawn Card in Fused Glass Dark (the user's choice, 2026-11-19).
@@ -44,7 +48,7 @@ NEW_LAYOUTS = LAYOUTS[1:]
 DEFAULT_LAYOUT = "CardA"
 DEFAULT_LOOK = sl.DEFAULT_SKIP_LOOK
 # popup layouts whose texts and buttons sit straight on the video
-BARE_LAYOUTS = ("Ring", "Band", "Float", "Takeover")
+BARE_LAYOUTS = ("Ring", "Band", "Float", "Takeover", LAYOUT_TAKE_VIDEO)
 
 # Control ids shared by every layout file.
 ID_ROOT = 5200

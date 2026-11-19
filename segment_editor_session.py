@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Open the segment editor dialog (integrated in Skippy)."""
 import segment_editor_layout
+import video_stage
 import skippy_modal_style
 import copy
 import json
@@ -252,10 +253,20 @@ def open_segment_editor(video_path=None):
         # The editor opens again when its panels are given another look (the Look row): a window takes its
         # pictures from its file, so another look is another file. The work in hand goes with it.
         carried = None
+        stage = None  # the plain window under the editor while its video is small (video_stage)
         while True:
             addon = get_addon()
             layout = segment_editor_layout.current_layout(addon)
             style = segment_editor_layout.style_for(layout, addon)
+            # List and drawer: the video small above the timeline. Kodi draws it there only while a plain
+            # window lies under the editor; it must open before the editor does (a modal dialog keeps Kodi
+            # from activating another window), so the editor reopens when the Video button switches it.
+            small = layout == segment_editor_layout.LAYOUT_SIDE and segment_editor_layout.small_video(addon)
+            if small and stage is None:
+                stage = video_stage.open_stage(addon, segment_editor_layout.STAGE_XML)
+            elif not small and stage is not None:
+                video_stage.close_stage(stage)
+                stage = None
             dialog = SegmentEditorDialog(
                 skippy_modal_style.xml_name(segment_editor_layout.xml_base(layout), style=style, addon=addon),
                 addon.getAddonInfo("path"),
@@ -266,6 +277,7 @@ def open_segment_editor(video_path=None):
                 layout=layout,
                 style=style,
                 carried=carried,
+                small_video=stage is not None,
             )
             try:
                 dialog.doModal()
@@ -279,6 +291,7 @@ def open_segment_editor(video_path=None):
             if not carried:
                 break
             del dialog
+        video_stage.close_stage(stage)
 
         if dialog.segments_modified:
             log("Segments were modified, saving...")

@@ -37,8 +37,8 @@ KICKER = "SKIPPY · CUSTOMIZE"
 # (the mode, the layout, what is switched on); a tab holds at most ``st.ROWS`` of them.
 TAB_ROWS = (
     # Look
-    (base.ID_PRESET, base.ID_LAYOUT, base.ID_MODE, base.ID_PREVIEW_TYPE, base.ID_LOOK, base.ID_CORNERS, base.ID_OVERLAY, base.ID_CV_GRADIENT,
-     base.ID_CV_GRADIENT_TYPE, base.ID_CV_PROGRESS, base.ID_CV_ACCENT, base.ID_BAR_COLOR, base.ID_CARD, base.ID_OPACITY,
+    (base.ID_PRESET, base.ID_LAYOUT, base.ID_MODE, base.ID_PREVIEW_TYPE, base.ID_LOOK, base.ID_CORNERS, base.ID_CV_BACKGROUND, base.ID_OVERLAY, base.ID_CV_GRADIENT,
+     base.ID_CV_GRADIENT_TYPE, base.ID_CV_PROGRESS, base.ID_CV_BAR_EDGES, base.ID_CV_ACCENT, base.ID_BAR_COLOR, base.ID_CARD, base.ID_OPACITY,
      base.ID_PLATE),
     # Layout
     (base.ID_POSITION, base.ID_MIN_POSITION, base.ID_CV_DISTANCE, base.ID_CV_ZOOM, base.ID_CV_KICKER,
@@ -67,6 +67,8 @@ SEG_ROWS = {
     base.ID_CV_ZOOM: ("skip_canvas_zoom", base.ZOOM_NAMES, "100"),
     base.ID_CV_FOCUS: ("skip_canvas_focus", base.FOCUS_NAMES, "Skip"),
     base.ID_CV_OUTLINE: ("skip_canvas_outline", base.OUTLINE_NAMES, "Medium"),
+    base.ID_CV_BACKGROUND: ("skip_canvas_background", base.BACKGROUND_NAMES, "None"),
+    base.ID_CV_BAR_EDGES: ("skip_canvas_bar_edges", base.BAR_EDGE_NAMES, "Straight"),
 }
 # Why a row is dimmed: it belongs to the drawn designs, to the classic card, is not built yet, or
 # does not go with the choices made (the size, a switch).
@@ -115,7 +117,8 @@ ROW_KEYS = {
     base.ID_CV_ZOOM: "skip_canvas_zoom", base.ID_CV_ACCENT: "skip_canvas_accent", base.ID_CV_PROGRESS: "skip_canvas_progress",
     base.ID_CV_GRADIENT: "skip_canvas_overlay_gradient", base.ID_CV_GRADIENT_TYPE: "skip_canvas_gradient",
     base.ID_CV_OUTLINE: "skip_canvas_outline", base.ID_CV_DISTANCE: "skip_canvas_distance",
-    base.ID_CV_FOCUS: "skip_canvas_focus", base.ID_CV_TIME: "skip_canvas_time", base.ID_CARD: "skip_card_style", base.ID_OPACITY: "skip_card_opacity",
+    base.ID_CV_FOCUS: "skip_canvas_focus", base.ID_CV_TIME: "skip_canvas_time",
+    base.ID_CV_BACKGROUND: "skip_canvas_background", base.ID_CV_BAR_EDGES: "skip_canvas_bar_edges", base.ID_CARD: "skip_card_style", base.ID_OPACITY: "skip_card_opacity",
     base.ID_HIDE_ENDING: "hide_ending_text", base.ID_FONT: "skip_dialog_font_color",
     base.ID_OVERLAP: "skip_overlapping_segments", base.ID_ALL_CAPS: "skip_dialog_all_caps",
     base.ID_PROGRESS: "show_progress_bar", base.ID_COUNTDOWN: "progress_bar_countdown",

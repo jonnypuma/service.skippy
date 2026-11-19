@@ -4598,3 +4598,51 @@ msgstr "Accent"
 msgctxt "#49226"
 msgid "Outline"
 msgstr "Kontur"
+
+msgctxt "#49227"
+msgid "Background"
+msgstr "Baggrund"
+
+msgctxt "#49228"
+msgid "Colour"
+msgstr "Farve"
+
+msgctxt "#49229"
+msgid "Artwork edges"
+msgstr "Billedkanter"
+
+msgctxt "#49230"
+msgid "Progress bar edges"
+msgstr "Ender på statuslinjen"
+
+msgctxt "#49231"
+msgid "Straight"
+msgstr "Lige"
+
+msgctxt "#49232"
+msgid "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+msgstr "Det, der fylder hele skærmen bag dialogen: intet (videoen er stadig synlig), seriens fanart under en mørk skygge, eller en ensfarvet farve fra udseendet."
+
+msgctxt "#49233"
+msgid "The ends of the progress line: straight, or rounded."
+msgstr "Enderne på statuslinjen: lige eller afrundede."
+
+msgctxt "#49234"
+msgid "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+msgstr "Hjørnerne på billederne i vinduet: som udseendet har dem, lige eller afrundede."
+
+msgctxt "#49235"
+msgid "Video: small"
+msgstr "Video: lille"
+
+msgctxt "#49236"
+msgid "Video: full screen"
+msgstr "Video: fuld skærm"
+
+msgctxt "#49237"
+msgid "Small video above the timeline"
+msgstr "Lille video over tidslinjen"
+
+msgctxt "#49238"
+msgid "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."
+msgstr "Liste og skuffe: videoen afspilles lille over tidslinjen, intet af den under panelerne. Fra: videoen fylder skærmen bag redigeringen."

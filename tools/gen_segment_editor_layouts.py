@@ -366,13 +366,13 @@ def layout_a():
     # From a segment in the list: Left goes to its nine actions under the list, Right to the timeline's
     # seek and jump controls in the drawer.
     body += a_list(1, 146, pw - 2, 8 * A_ROW_H, {"left": 5037, "right": 5018, "down": lay.LOOK_BUTTON_IDS[0], "up": 5037})
-    # Look: the dark overlay behind the editor, and the look of its panels
+    # Look: the dark overlay behind the editor, the look of its panels, the video small or full screen
     body += label(15, 494, pw - 30, 14, P % "ed_look", "font10", P % "ms_text3", cid=lay.HEAD_LOOK_ID)
     x = 9
-    for index, (cid, wide) in enumerate(zip(lay.LOOK_BUTTON_IDS, (202, 201))):
-        other = lay.LOOK_BUTTON_IDS[1 - index]
-        nav = {"left": 5000 if index == 0 else other, "right": other if index == 0 else 5018, "up": 5000,
-               "down": (5037, 5027)[index]}
+    looks = lay.LOOK_BUTTON_IDS
+    for index, (cid, wide) in enumerate(zip(looks, (133, 134, 133))):
+        nav = {"left": 5000 if index == 0 else looks[index - 1], "right": looks[index + 1] if index < 2 else 5018,
+               "up": 5000, "down": ROW_ACTIONS[index]}
         out = '      <control type="button" id="%d">\n' % cid
         out += tags("        ", [("left", x), ("top", 509), ("width", wide), ("height", A_BUTTON_H), ("label", ""),
                                  ("font", "font10"), ("textcolor", P % "ms_text"), ("focusedcolor", P % "ms_text_focus")])
@@ -387,7 +387,7 @@ def layout_a():
     tops = (556, 588, 620)
     for r, ids in enumerate(grid):
         part, end = a_row(ids, 9, tops[r], (133, 134, 133), 3,
-                          up=(lay.LOOK_BUTTON_IDS[0], lay.LOOK_BUTTON_IDS[0], lay.LOOK_BUTTON_IDS[1]) if r == 0 else grid[r - 1],
+                          up=lay.LOOK_BUTTON_IDS if r == 0 else grid[r - 1],
                           down=5000 if r == 2 else grid[r + 1], right_exit=5018,
                           left_exit=5000)
         assert end == pw - 9, end
@@ -411,6 +411,13 @@ def layout_a():
     drawer = group(dx, dy, dw, dh, d)
     # over the picture: what is behind the editor, and under the panels what the keys do
     extra = '    <control type="group">\n' + tags("      ", [("left", 0), ("top", 0), ("width", 1280), ("height", 720)])
+    # the video small above the timeline: Kodi draws it there only while a plain window lies under the editor
+    # (video_stage); the editor shows it when it has opened over one
+    vx, vy, vw, vh = lay.VIDEO_RECT
+    extra += '      <control type="videowindow" id="%d">\n' % lay.VIDEO_ID
+    extra += tags("        ", [("left", vx), ("top", vy), ("width", vw), ("height", vh),
+                              ("visible", "String.IsEqual(Window.Property(ed_video),true)")])
+    extra += "      </control>\n"
     extra += image(dx + 10, 45, 80, 20, "seg_tag.png", border=6)
     # the label is wider than its tag: it is zoomed down around its middle, and must not be cut before that
     extra += label(dx - 20, 45, 140, 20, P % "ed_live", "font10", "FF101216", cid=lay.TAG_LIVE_ID, align="center").replace(

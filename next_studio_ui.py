@@ -519,6 +519,8 @@ class NextStudio(xbmcgui.WindowXMLDialog):
         why = dict((row.key, reason) for row, reason in self._all).get(item.key, "")
         if why:
             body = get_localized(addon, *ns.WHY[why])
+        elif item.about:
+            body = get_localized(addon, *item.about)
         elif item.kind == "preset":
             body = get_localized(addon, 49217, "A preset is a design in a look. Left and Right step through all of them, your "
                                                "saved ones included; OK opens the list that loads, saves and deletes them.")

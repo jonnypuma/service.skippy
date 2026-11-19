@@ -4598,3 +4598,51 @@ msgstr "Έμφαση"
 msgctxt "#49226"
 msgid "Outline"
 msgstr "Περίγραμμα"
+
+msgctxt "#49227"
+msgid "Background"
+msgstr "Φόντο"
+
+msgctxt "#49228"
+msgid "Colour"
+msgstr "Χρώμα"
+
+msgctxt "#49229"
+msgid "Artwork edges"
+msgstr "Άκρες εικόνων"
+
+msgctxt "#49230"
+msgid "Progress bar edges"
+msgstr "Άκρα γραμμής προόδου"
+
+msgctxt "#49231"
+msgid "Straight"
+msgstr "Ευθείες"
+
+msgctxt "#49232"
+msgid "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+msgstr "Τι γεμίζει όλη την οθόνη πίσω από το παράθυρο: τίποτα (το βίντεο παραμένει ορατό), το fanart της σειράς κάτω από σκούρα σκιά, ή ένα απλό χρώμα της εμφάνισης."
+
+msgctxt "#49233"
+msgid "The ends of the progress line: straight, or rounded."
+msgstr "Τα άκρα της γραμμής προόδου: ευθεία ή στρογγυλεμένα."
+
+msgctxt "#49234"
+msgid "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+msgstr "Οι γωνίες των εικόνων στο παράθυρο: όπως τις έχει η εμφάνιση, ευθείες ή στρογγυλεμένες."
+
+msgctxt "#49235"
+msgid "Video: small"
+msgstr "Βίντεο: μικρό"
+
+msgctxt "#49236"
+msgid "Video: full screen"
+msgstr "Βίντεο: πλήρης οθόνη"
+
+msgctxt "#49237"
+msgid "Small video above the timeline"
+msgstr "Μικρό βίντεο πάνω από τη γραμμή χρόνου"
+
+msgctxt "#49238"
+msgid "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."
+msgstr "Λίστα και συρτάρι: το βίντεο παίζει μικρό πάνω από τη γραμμή χρόνου, τίποτα κάτω από τα πάνελ. Ανενεργό: το βίντεο γεμίζει την οθόνη πίσω από τον επεξεργαστή."

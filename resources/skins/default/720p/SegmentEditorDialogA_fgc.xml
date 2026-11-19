@@ -344,7 +344,7 @@
       <control type="button" id="5044">
         <left>9</left>
         <top>509</top>
-        <width>202</width>
+        <width>133</width>
         <height>29</height>
         <label></label>
         <font>font10</font>
@@ -362,9 +362,9 @@
         <ondown>5037</ondown>
       </control>
       <control type="button" id="5045">
-        <left>214</left>
+        <left>145</left>
         <top>509</top>
-        <width>201</width>
+        <width>134</width>
         <height>29</height>
         <label></label>
         <font>font10</font>
@@ -377,6 +377,26 @@
         <align>center</align>
         <textoffsetx>0</textoffsetx>
         <onleft>5044</onleft>
+        <onright>5046</onright>
+        <onup>5000</onup>
+        <ondown>5038</ondown>
+      </control>
+      <control type="button" id="5046">
+        <left>282</left>
+        <top>509</top>
+        <width>133</width>
+        <height>29</height>
+        <label></label>
+        <font>font10</font>
+        <textcolor>$INFO[Window.Property(ms_text)]</textcolor>
+        <focusedcolor>$INFO[Window.Property(ms_text_focus)]</focusedcolor>
+        <texturenofocus border="14">ms_fgc_row.png</texturenofocus>
+        <texturefocus border="14">ms_fgc_focus.png</texturefocus>
+        <shadowcolor>00000000</shadowcolor>
+        <aligny>center</aligny>
+        <align>center</align>
+        <textoffsetx>0</textoffsetx>
+        <onleft>5045</onleft>
         <onright>5018</onright>
         <onup>5000</onup>
         <ondown>5027</ondown>
@@ -432,7 +452,7 @@
         <textoffsetx>0</textoffsetx>
         <onleft>5037</onleft>
         <onright>5027</onright>
-        <onup>5044</onup>
+        <onup>5045</onup>
         <ondown>5041</ondown>
       </control>
       <control type="button" id="5027">
@@ -452,7 +472,7 @@
         <textoffsetx>0</textoffsetx>
         <onleft>5038</onleft>
         <onright>5018</onright>
-        <onup>5045</onup>
+        <onup>5046</onup>
         <ondown>5042</ondown>
       </control>
       <control type="button" id="5028">
@@ -1960,6 +1980,13 @@
       <top>0</top>
       <width>1280</width>
       <height>720</height>
+      <control type="videowindow" id="5048">
+        <left>562</left>
+        <top>72</top>
+        <width>592</width>
+        <height>333</height>
+        <visible>String.IsEqual(Window.Property(ed_video),true)</visible>
+      </control>
       <control type="image">
         <left>463</left>
         <top>45</top>

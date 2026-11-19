@@ -128,13 +128,13 @@ service.skippy/
 Install ZIPs from GitHub **Download ZIP** / `git archive` omit `tests/`, `tools/`, workspaces, OpenAPI specs, and similar via `.gitattributes` `export-ignore` — keep those for local development only.
 
 ## Supported Kodi versions and platforms
-Tested on **Kodi Omega 21.2** and **Kodi v22 Piers Alpha 2** across:
+Tested on these Kodi versions and platforms:
 
-| Platform | Status |
-| --------------------------- | ------------ |
-| Android (Nvidia Shield) | Tested |
-| Linux (CoreELEC) | Tested |
-| Windows 11 | Tested |
+| Platform | Kodi 21.3 Omega | Kodi 22 Piers RC2 | Kodi 23 Alpha 1 |
+| --------------------------- | --------------- | ----------------- | --------------- |
+| Linux (CoreELEC) | Tested | Tested | Tested |
+| Windows 11 | Tested | Tested | Tested |
+| Android (Nvidia Shield) | Tested | Not tested | Not tested |
 
 **Languages:** Settings and runtime UI strings ship in **English** plus **German, Dutch, French, Spanish, Norwegian (Bokmål), Swedish, Danish, Italian, Greek, and Brazilian Portuguese** (`resources/language/resource.language.*/strings.po`). Kodi picks the matching folder from the interface language; missing strings fall back to English.
 
@@ -502,6 +502,8 @@ Every layout but Card has three forms: **Full** mode shows the large one, **Comp
 
 **Background overlay** puts a shade behind a new layout so it reads on a bright picture: None (the default), Square, Square fading, Rounded, Rounded fading, Band or Corner glow; the shade follows the corner the dialog sits in, and Cinema band (which has its own band) takes none. **Appears** (Fade, Rise, Pop, Slide in) and **Leaves** (Fade, Drop, Shrink) choose how a new layout comes and goes, and **Pulse in the last five seconds** makes it beat once a second at the end of a segment. In the Studio these four rows are on the Layout tab; its preview shows the overlay but does not play the motion. **Bar colour** colours their progress by the kind of segment (gold for an intro, blue for a recap, as in the segment editor) or by the look. They follow **Skip Dialog Position**, **Skip Button Format**, the duration settings and **Progress bar shows remaining**; the options of the card (font colour, card, bar style, focus style and so on) are for the Card layout only.
 
+**Background** (None, Fanart, Colour) fills the whole screen behind a drawn design: the show's fanart under a dark shade, or the look's own dark. **Progress bar edges** (Straight, Rounded) gives the progress line round ends. The Up Next Studio has both, and **Artwork edges** (Look, Straight, Rounded) for the corners of the popup's pictures.
+
 **Text outline** (Off, Light, Medium, Strong) draws a dark line around the letters of texts that lie straight on the video, as in Cinema band and Float, and **Text shadow** (Off, Mild, Medium, Strong, Heavy) sets the shadow under them; the outline with a mild shadow is the default. A layout with an overlay behind it gets the mild shadow alone. **Text size** (Small, Standard, Large, Larger) scales the texts of a drawn layout, and its buttons grow with them. When a layout already names the segment type, its button says **Skip** alone; a Minimal form keeps the full label.
 
 **Size on screen** (Small, Medium, Large) scales a drawn layout as one piece. **Accent colour** sets the colour of its bar, dot and arrow; **Progress style** shows the time left as the layout's own, a line, a circle or a fill of the Skip button; **Overlay gradient** with **Gradient direction** lets a Square or Rounded overlay fade out towards the picture.
@@ -697,7 +699,7 @@ if True:  # triggers skip dialog
 
 ## Segment editor layouts
 
-**Segment Editor > Editor layout** chooses how the editor sits over the video. **List and drawer** (the default) puts the segments in a list at the left and everything else in a drawer along the bottom. Its rows are one line each (from – to, length, source, and a flag when a segment lies inside or runs into another); its timeline shows the stretch of the file around the highlighted segment, with a thin bar over it for the whole file. **Drawer** puts everything in one drawer along the bottom, with the segments as a row of chips. **Classic** is the large panel. Every button is in all three. The two new layouts also show a timeline: a coloured block per segment, the playhead, and a mark under the highlighted segment.
+**Segment Editor > Editor layout** chooses how the editor sits over the video. In **List and drawer** the video plays small above the timeline (the default; the Look row's Video button, or **Small video above the timeline**, puts it back to full screen behind the editor). **List and drawer** (the default) puts the segments in a list at the left and everything else in a drawer along the bottom. Its rows are one line each (from – to, length, source, and a flag when a segment lies inside or runs into another); its timeline shows the stretch of the file around the highlighted segment, with a thin bar over it for the whole file. **Drawer** puts everything in one drawer along the bottom, with the segments as a row of chips. **Classic** is the large panel. Every button is in all three. The two new layouts also show a timeline: a coloured block per segment, the playhead, and a mark under the highlighted segment.
 
 ## Window style
 

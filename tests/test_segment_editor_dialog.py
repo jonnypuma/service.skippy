@@ -391,7 +391,8 @@ class AddEditDeleteTests(_EditorTest):
         with patch.object(d, "get_label_from_user", return_value="credits"):
             d.add_segment()
         self.assertEqual(self.times(d), [(0, 10), (100, 3600)])
-        self.assertEqual(d.segments[1].source, "edl")
+        # listed under the file it will be saved to: the editor saves XML and EDL here (Both), so a chapter file
+        self.assertEqual(d.segments[1].source, "xml")
         self.assertTrue(d.segments_modified)
 
     def test_add_segment_uses_xml_source_when_list_is_xml(self):

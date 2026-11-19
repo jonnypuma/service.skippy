@@ -51,6 +51,13 @@ FALLBACKS = (("Fanart", 49039, "Fanart"), ("Poster", 49037, "Poster"), ("Nothing
 CAPS = (("Look", 49020, "Look"), ("On", 44105, "Yes"), ("Off", 44106, "No"))
 BARS = (("Smooth", 49219, "Smooth"), ("Steps", 49220, "Steps"))
 FOCUS_STYLES = (("Look", 49020, "Look"), ("Accent", 49225, "Accent"), ("Outline", 49226, "Outline"))
+BACKGROUNDS = (("None", 49052, "None"), ("Fanart", 49039, "Fanart"), ("Colour", 49228, "Colour"))
+ART_EDGES = (("Look", 49020, "Look"), ("Straight", 49231, "Straight"), ("Rounded", 49076, "Rounded"))
+BAR_EDGES = (("Straight", 49231, "Straight"), ("Rounded", 49076, "Rounded"))
+ABOUT_BACKGROUND = (49232, "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart "
+                           "of the show under a dark shade, or a plain colour of the look.")
+ABOUT_BAR_EDGES = (49233, "The ends of the progress line: straight, or rounded.")
+ABOUT_ART_EDGES = (49234, "The corners of the pictures in the popup: as the look has them, straight, or rounded.")
 # Skippy's own popup, or Kodi's small notification (then nothing of the look applies)
 STYLES = ((app.STYLE_CUSTOM, 0, "Custom"), (app.STYLE_NATIVE, 0, "Native toast"))
 
@@ -64,7 +71,9 @@ TAB_ROWS = (
         row(P + "corners", "seg", (49072, "Corners"), CORNERS),
         row(P + "overlay", "pick", (49050, "Background overlay"), sl.OVERLAY_NAMES),
         row(P + "overlay_gradient", "toggle", (49116, "Overlay gradient")),
+        row(P + "background", "seg", (49227, "Background"), BACKGROUNDS, about=ABOUT_BACKGROUND),
         row(app.KEY_PROGRESS, "seg", (49154, "Progress"), PROGRESS4),
+        row(P + "bar_edges", "seg", (49230, "Progress bar edges"), BAR_EDGES, about=ABOUT_BAR_EDGES),
         row(P + "fill_on", "seg", (49207, "Fill shows on"), FILL_ON),
         row(P + "accent", "swatch", (49101, "Accent colour")),
         row(P + "same_look", "toggle", (49206, "Same look as the skip dialog")),
@@ -83,6 +92,7 @@ TAB_ROWS = (
     (
         row(P + "picture", "pick", (49035, "Picture"), PICTURES),
         row(P + "fallback", "pick", (49210, "When there is no episode picture"), FALLBACKS),
+        row(P + "art_edges", "seg", (49229, "Artwork edges"), ART_EDGES, about=ABOUT_ART_EDGES),
         row(P + "plot", "toggle", (49201, "Plot")),
         row(P + "kicker", "toggle", (49202, "Episode line")),
         row(P + "time", "toggle", (49211, "Time left")),

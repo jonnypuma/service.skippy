@@ -44,6 +44,8 @@ KEY_NESTED = "skip_canvas_nested"
 KEY_TEXT_SHADOW = "skip_canvas_text_shadow"
 KEY_TEXT_SIZE = "skip_canvas_text_size"
 KEY_TEXT_OUTLINE = "skip_canvas_outline"
+KEY_BACKGROUND = "skip_canvas_background"
+KEY_BAR_EDGES = "skip_canvas_bar_edges"
 KEY_ZOOM = "skip_canvas_zoom"
 KEY_ACCENT = "skip_canvas_accent"
 KEY_PROGRESS = "skip_canvas_progress"
@@ -118,7 +120,21 @@ def options_from(get_text, get_bool, layout, look_code, position, accent_argb=No
         text_shadow=sl.normalize_choice(get_text(KEY_TEXT_SHADOW, "Mild"), cv.TEXT_SHADOWS, "Mild"),
         text_outline=sl.normalize_choice(get_text(KEY_TEXT_OUTLINE, "Medium"), cv.OUTLINES, "Medium"),
         text_size=cv.text_size(get_text(KEY_TEXT_SIZE, "100")),
+        background=sl.normalize_choice(get_text(KEY_BACKGROUND, "None"), cv.BACKGROUNDS, "None"),
+        bar_edges=sl.normalize_choice(get_text(KEY_BAR_EDGES, "Straight"), cv.BAR_EDGES, "Straight"),
     )
+
+
+def playing_fanart() -> str:
+    """The fanart of what is playing, for Background Fanart: the show's, else the item's own."""
+    for label in ("Player.Art(tvshow.fanart)", "Player.Art(fanart)", "VideoPlayer.Art(tvshow.fanart)", "Player.Art(thumb)"):
+        try:
+            found = xbmc.getInfoLabel(label)
+        except Exception:
+            found = ""
+        if found:
+            return found
+    return ""
 
 
 _LEADING_ZERO = re.compile(r"(?<![\d:])0(\d:\d\d)")
@@ -245,6 +261,9 @@ class SkipCanvasDialog(layouts.SkipLayoutDialog):
                 block = ""
         texts = texts_from(found, remaining, nested, self._duration_text(playhead), self._percent_at(playhead) or 0.0,
                            now=sl.clock(playhead), land=sl.clock(land) if land else "", block=block)
+        if options.background == "Fanart":
+            # Background Fanart: the picture of what is playing (a show's own fanart before the episode's)
+            texts.fanart = playing_fanart()
         folder = "720" if str(self._skin_resolution).startswith("720") else "1080"
         media = os.path.join(addon.getAddonInfo("path"), "resources", "skins", "default", "media")
         before_canvas = time.time()

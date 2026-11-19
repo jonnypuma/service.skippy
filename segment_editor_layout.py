@@ -97,7 +97,12 @@ Block = namedtuple("Block", "left width texture index")
 STYLE_KEY = "segment_editor_style"
 EDITOR_STYLES = ("fg_dark", "fg_frost", "fg_clear")
 DEFAULT_STYLE = EDITOR_STYLES[0]
-LOOK_BUTTON_IDS = (5044, 5045)  # the Look row: the dark overlay, the panels
+LOOK_BUTTON_IDS = (5044, 5045, 5046)  # the Look row: the dark overlay, the panels, the video small or full screen
+VIDEO_ID = 5048  # List and drawer: the video window above the timeline (drawn while Window.Property(ed_video) is true)
+# where it is, in pixels of a 720 screen: over the drawer, under the two tags, 16:9
+VIDEO_RECT = (562, 72, 592, 333)
+VIDEO_KEY = "segment_editor_small_video"  # the setting: the video small above the timeline (true) or full screen
+STAGE_XML = "SkipVideoStageEditor.xml"  # the plain window under the editor while the video is small (video_stage)
 
 
 def editor_style(value) -> str:
@@ -136,6 +141,14 @@ def current_layout(addon=None) -> str:
         return normalize(addon.getSetting(SETTING_KEY))
     except Exception:
         return DEFAULT_LAYOUT
+
+
+def small_video(addon) -> bool:
+    """The List and drawer layout shows the video small above the timeline (the default) or full screen."""
+    try:
+        return (addon.getSetting(VIDEO_KEY) or "true").lower() != "false"
+    except Exception:
+        return True
 
 
 def xml_base(layout) -> str:

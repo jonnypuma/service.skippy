@@ -1,5 +1,20 @@
 # Changelog
 
+## [8.33.0] - 2026-11-19
+
+### Added
+
+- **Up Next: Takeover + video (test).** A design of its own beside Takeover (which stays as it was): the next episode's fanart takes the screen and what is playing goes on, small, in a frame at the top right. Kodi draws a video small only while its full-screen video window is not the active one, so Skippy opens a plain window under the popup and closes it again with the popup (a dialog over full-screen video only showed a piece of the full picture, 8.31.0). The Studio shows a stand-in with a play mark. Every look has its preset.
+- **Segment editor, List and drawer: the video small above the timeline**, nothing of it under the panels. On by default; the Look row has a third button, Video: small / full screen (setting Small video above the timeline). Switching it opens the editor again, with the work in hand, as Panels does.
+- **Both Studios: Background** (None, Fanart, Colour): what fills the whole screen behind the dialog. Fanart is the show's (Up Next: the next episode's) under a dark shade; Colour is the look's own dark.
+- **Both Studios: Progress bar edges** (Straight, Rounded): round ends on the progress line, the end of the fill moving with it.
+- **Up Next Studio: Artwork edges** (Look, Straight, Rounded): the corners of the popup's pictures.
+
+### Changed
+
+- **Segment editor: a segment you make is listed under the file it will be saved to.** Chapter file when the editor saves XML or both, Local EDL only when it saves EDL alone; it read Local EDL unless the first segment in the list came from an XML file.
+- README: tested on Kodi 21.3, Kodi 22 RC2 and Kodi 23 Alpha 1 on CoreELEC and Windows, Kodi 21.3 on Android.
+
 ## [8.32.4] - 2026-11-19
 
 ### Fixed

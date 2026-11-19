@@ -27,6 +27,11 @@ SCREEN_W, SCREEN_H = 1920.0, 1080.0
 ID_ROOT = 3300
 ID_PROBE = 3390
 ID_ZOOM = 3391  # the group that holds the card and the buttons: Size on screen zooms it
+ID_VIDEO = 3392  # a video window (Takeover + video): drawn while Window.Property(cv_video) is true
+# Where it is, in pixels of a 1080 screen (16:9). The window file has it at this place: Kodi gives a
+# video window to Python as no control, so it cannot be moved from here.
+VIDEO_RECT = (1256.0, 56.0, 608.0, 342.0)
+VIDEO_STAGE_XML = "SkipVideoStage.xml"  # the plain window under the popup (see next_episode_dialog)
 PROBE_W = 520  # at 720p; the 1080i file has 780
 ID_SKIP = 3210  # the two buttons keep the ids of the other skip dialog files
 ID_CLOSE = 3220
@@ -130,6 +135,10 @@ class Options:
     rise: float = 0.0  # a dialog at the bottom stands this much higher (Keep clear of subtitles)
     focus_style: str = "Look"  # the button in focus: "Look" (the look's own), "Accent" (in the accent colour), "Outline"
     plot: bool = True
+    video: bool = False  # Takeover + video (test): what is playing, small, at the top right
+    background: str = "None"  # the whole screen behind the dialog: "None" (the video), "Fanart", "Colour"
+    art_edges: str = "Look"  # the corners of the pictures: "Look" (as the look has them), "Straight", "Rounded"
+    bar_edges: str = "Straight"  # the ends of the progress line: "Straight" or "Rounded"
 
 
 @dataclass
@@ -156,6 +165,7 @@ class Texts:
     next_word: str = "Next"
     ends_in: str = "ends in"
     seconds: str = "42"  # the short time in a small ring
+    fanart: str = ""  # Background Fanart: the picture of what is playing
     percent: float = 52.0
 
 
@@ -198,6 +208,11 @@ PROGRESS = ("Auto", "Line", "Circle", "Fill", "Off")  # Auto: the design's own
 LINE_DESIGNS = ("Stack", "Slab", "Band", "NCard", "NSlab", "NBand", "NQueue", "NTake")
 _PERCENT = 0.0  # the progress of the drawing that is being built
 _TEXT = 1.0  # the text size factor of the drawing that is being built
+_BAR_ROUND = False  # Progress bar edges Rounded, for the drawing that is being built
+BACKGROUNDS = ("None", "Fanart", "Colour")
+ART_EDGES = ("Look", "Straight", "Rounded")
+BAR_EDGES = ("Straight", "Rounded")
+BACKGROUND_DIM = 0.55  # how dark the shade over a fanart background is
 
 
 def text_size(value) -> int:
@@ -418,9 +433,42 @@ def _nested_text(look, texts) -> str:
 
 
 def _line(ops, track, look, acc, percent):
+    x, y, w, h = track
+    if _BAR_ROUND and w > 2 * h:
+        # Progress bar edges Rounded: half discs at both ends of the track and of the fill, the end of the fill
+        # moving with it (a whole disc would lie twice over the line where they meet: a darker ring)
+        r = h / 2.0
+        inner = (x + r, y, w - 2 * r, h)
+        ops.append({"t": "img", "tex": "cv_cap_l.png", "rect": (x, y, r, h), "color": look["track"]})
+        ops.append({"t": "rect", "rect": inner, "color": look["track"]})
+        ops.append({"t": "img", "tex": "cv_cap_r.png", "rect": (x + w - r, y, r, h), "color": look["track"]})
+        ops.append({"t": "img", "tex": "cv_cap_l.png", "rect": (x, y, r, h), "color": acc})
+        reach = inner[2] * percent / 100.0
+        ops.append({"t": "rect", "rect": (inner[0], y, reach, h), "color": acc, "key": "fill", "track": inner})
+        ops.append({"t": "img", "tex": "cv_cap_r.png", "rect": (inner[0] + reach, y, r, h), "color": acc, "key": "fillcap",
+                    "follow": {"x0": inner[0] + r / 2.0, "span": inner[2], "mode": "centre"}})
+        return
     ops.append({"t": "rect", "rect": track, "color": look["track"]})
     ops.append({"t": "rect", "rect": (track[0], track[1], track[2] * percent / 100.0, track[3]), "color": acc,
                 "key": "fill", "track": track})
+
+
+def background_ops(options, look, texts, found_ops=()) -> list:
+    """Background: what lies on the whole screen behind the dialog. Fanart is the picture of what is playing
+    (Up Next: of the next episode) under a dark shade; Colour is the look's own dark, opaque. A design that
+    has a picture of its own behind everything (Takeover) keeps it."""
+    kind = getattr(options, "background", "None")
+    if kind not in ("Fanart", "Colour") or any(op.get("t") == "pic" and op.get("shape") == "back" for op in found_ops):
+        return []
+    full = (0.0, 0.0, SCREEN_W, SCREEN_H)
+    src = getattr(texts, "fanart", "") or ""
+    if kind == "Fanart" and src:
+        return [{"t": "pic", "shape": "back", "rect": full, "abs": True, "src": src, "own_shade": True},
+                {"t": "slot", "slot": "back_shade", "tex": "sl_white.png", "rect": full, "abs": True,
+                 "color": (0, 0, 0, int(round(255 * BACKGROUND_DIM)))}]
+    plate = tuple(look.get("plate") or (14, 17, 22, 255))[:3]
+    dark = tuple(int(round(channel * 0.55)) for channel in plate)
+    return [{"t": "slot", "slot": "back_shade", "tex": "sl_white.png", "rect": full, "abs": True, "color": dark + (255,)}]
 
 
 def slab_full(look, texts, options) -> Drawing:
@@ -1336,7 +1384,8 @@ def draw(options: Options, texts: Texts) -> Drawing:
     if rule.get("bare"):
         look = bare_look(look)
     builder = _BUILDERS.get((options.design, options.size)) or stack_full
-    global _TEXT, _PERCENT
+    global _TEXT, _PERCENT, _BAR_ROUND
+    _BAR_ROUND = getattr(options, "bar_edges", "Straight") == "Rounded"
     factor = text_size(options.text_size) / 100.0
     _TEXT = factor  # widths that follow a text follow its size
     _PERCENT = float(texts.percent or 0.0)
@@ -1426,6 +1475,10 @@ def draw(options: Options, texts: Texts) -> Drawing:
     shade = overlay_ops(kind, look, found, out.left, out.top, options.place, scale * seen,
                         fade=bool(options.overlay_gradient) and options.overlay != "Auto", direction=options.gradient)
     out.overlaid = bool(shade)
+    behind = background_ops(options, look, texts, found.ops)
+    if behind:
+        out.ops.extend(behind)
+        out.overlaid = True  # the texts lie on the shade or the colour, not on the video
     out.ops.extend(shade)
     for op in extra + found.ops:
         op = dict(op)

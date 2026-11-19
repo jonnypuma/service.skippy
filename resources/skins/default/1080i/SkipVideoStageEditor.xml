@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Written by tools/gen_skip_canvas.py: edit that, not this file. -->
+<window>
+  <defaultcontrol>0</defaultcontrol>
+  <controls>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture colordiffuse="FF000000">sl_white.png</texture>
+    </control>
+    <control type="image">
+      <left>0</left>
+      <top>0</top>
+      <width>1920</width>
+      <height>1080</height>
+      <texture>$INFO[Window(Home).Property(skippy_stage_fanart)]</texture>
+      <aspectratio>scale</aspectratio>
+      <visible>!String.IsEmpty(Window(Home).Property(skippy_stage_fanart))</visible>
+    </control>
+    <control type="videowindow">
+      <left>843</left>
+      <top>108</top>
+      <width>888</width>
+      <height>500</height>
+    </control>
+  </controls>
+</window>

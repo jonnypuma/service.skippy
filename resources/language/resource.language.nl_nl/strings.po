@@ -4598,3 +4598,51 @@ msgstr "Accent"
 msgctxt "#49226"
 msgid "Outline"
 msgstr "Omlijning"
+
+msgctxt "#49227"
+msgid "Background"
+msgstr "Achtergrond"
+
+msgctxt "#49228"
+msgid "Colour"
+msgstr "Kleur"
+
+msgctxt "#49229"
+msgid "Artwork edges"
+msgstr "Randen van afbeeldingen"
+
+msgctxt "#49230"
+msgid "Progress bar edges"
+msgstr "Uiteinden van de voortgangsbalk"
+
+msgctxt "#49231"
+msgid "Straight"
+msgstr "Recht"
+
+msgctxt "#49232"
+msgid "What fills the whole screen behind the dialog: nothing (the video stays seen), the fanart of the show under a dark shade, or a plain colour of the look."
+msgstr "Wat het hele scherm achter het venster vult: niets (de video blijft zichtbaar), de fanart van de serie onder een donkere schaduw, of een effen kleur van de look."
+
+msgctxt "#49233"
+msgid "The ends of the progress line: straight, or rounded."
+msgstr "De uiteinden van de voortgangslijn: recht of afgerond."
+
+msgctxt "#49234"
+msgid "The corners of the pictures in the popup: as the look has them, straight, or rounded."
+msgstr "De hoeken van de afbeeldingen in de pop-up: zoals de look ze heeft, recht of afgerond."
+
+msgctxt "#49235"
+msgid "Video: small"
+msgstr "Video: klein"
+
+msgctxt "#49236"
+msgid "Video: full screen"
+msgstr "Video: volledig scherm"
+
+msgctxt "#49237"
+msgid "Small video above the timeline"
+msgstr "Kleine video boven de tijdlijn"
+
+msgctxt "#49238"
+msgid "List and drawer: the video plays small above the timeline, with nothing of it under the panels. Off: the video fills the screen behind the editor."
+msgstr "Lijst en lade: de video speelt klein boven de tijdlijn, niets ervan ligt onder de panelen. Uit: de video vult het scherm achter de editor."

@@ -412,8 +412,14 @@ class WindowTests(unittest.TestCase):
             for res in ("720p", "1080i"):
                 self.assertTrue(os.path.isfile(os.path.join(SKINS, res, "SegmentEditorDialogA_%s.xml" % code)))
         _root, found = controls("720p", lay.XML_FILES[lay.LAYOUT_SIDE])
-        overlay, panels = (found[str(cid)] for cid in lay.LOOK_BUTTON_IDS)
+        overlay, panels, video = (found[str(cid)] for cid in lay.LOOK_BUTTON_IDS)
         self.assertEqual((overlay.findtext("onright"), panels.findtext("onleft")), (str(lay.LOOK_BUTTON_IDS[1]), str(lay.LOOK_BUTTON_IDS[0])))
+        # the third: the video small above the timeline or full screen; its column of the actions lies under it
+        self.assertEqual((panels.findtext("onright"), video.findtext("onleft"), video.findtext("onright")),
+                         (str(lay.LOOK_BUTTON_IDS[2]), str(lay.LOOK_BUTTON_IDS[1]), "5018"))
+        self.assertEqual(video.findtext("ondown"), "5027")
+        self.assertEqual(found["5027"].findtext("onup"), str(lay.LOOK_BUTTON_IDS[2]))
+        self.assertEqual(found[str(lay.VIDEO_ID)].findtext("visible"), "String.IsEqual(Window.Property(ed_video),true)")
         self.assertEqual((overlay.findtext("onup"), overlay.findtext("ondown")), ("5000", "5037"))
         self.assertEqual(found["5000"].findtext("ondown"), str(lay.LOOK_BUTTON_IDS[0]))
         self.assertEqual(found["5037"].findtext("onup"), str(lay.LOOK_BUTTON_IDS[0]))

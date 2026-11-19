@@ -95,6 +95,11 @@ def options_for(addon, draft, design) -> cv.Options:
         caps=sl.normalize_choice(get("caps"), ("Look", "On", "Off"), "Look"),
         time=_yes(get("time")), credits=_yes(get("credits")), speed=speed,
         focus_style=sl.normalize_choice(get("focus_style"), ("Look", "Accent", "Outline"), "Look"),
+        background=sl.normalize_choice(get("background"), cv.BACKGROUNDS, "None"),
+        art_edges=sl.normalize_choice(get("art_edges"), cv.ART_EDGES, "Look"),
+        bar_edges=sl.normalize_choice(get("bar_edges"), cv.BAR_EDGES, "Straight"),
+        # Takeover + video (test): what is playing small at the top right (the whole-screen form only)
+        video=nl.normalize_layout(draft.get(nl.KEY_LAYOUT)) == nl.LAYOUT_TAKE_VIDEO and nc.form(get("form")) == "Full",
         rise=SUBTITLE_RISE if _yes(get("subtitles")) and (draft.get("_preview") or subtitles_showing()) else 0.0)
 
 

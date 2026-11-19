@@ -77,7 +77,7 @@ class OwnLookTests(unittest.TestCase):
         self.assertEqual(sl.BARE_LAYOUTS, ("Dial", "Band", "Float"))
         self.assertTrue(sl.is_bare("Float"))
         self.assertFalse(sl.is_bare("Slab"))
-        self.assertEqual(nl.BARE_LAYOUTS, ("Ring", "Band", "Float", "Takeover"))
+        self.assertEqual(nl.BARE_LAYOUTS, ("Ring", "Band", "Float", "Takeover", "TakeVideo"))
 
     def test_presets_of_own_looks_keep_their_own_bar(self):
         presets = dict(sp.layout_presets())

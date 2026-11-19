@@ -809,6 +809,7 @@
         <width>2</width>
         <height>2</height>
         <texture>$INFO[Window.Property(cv_back_shade_p)]</texture>
+        <colordiffuse>$INFO[Window.Property(cv_back_shade_p_c)]</colordiffuse>
         <visible>!String.IsEmpty(Window.Property(cv_back_shade_p))</visible>
       </control>
       <control type="image" id="23301">
