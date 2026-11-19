@@ -135,7 +135,7 @@ class Options:
     rise: float = 0.0  # a dialog at the bottom stands this much higher (Keep clear of subtitles)
     focus_style: str = "Look"  # the button in focus: "Look" (the look's own), "Accent" (in the accent colour), "Outline"
     plot: bool = True
-    video: bool = False  # Takeover + video (test): what is playing, small, at the top right
+    video: bool = False  # Takeover + video: what is playing, small, at the top right
     background: str = "None"  # the whole screen behind the dialog: "None" (the video), "Fanart", "Colour"
     art_edges: str = "Look"  # the corners of the pictures: "Look" (as the look has them), "Straight", "Rounded"
     bar_edges: str = "Straight"  # the ends of the progress line: "Straight" or "Rounded"

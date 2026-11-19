@@ -373,7 +373,7 @@ def slots_xml(folder, offset=0, indent="      ") -> str:
     out += picture("overlay9", borders["overlay"])
     out += picture("overlay", 0)
     if not offset:
-        # Takeover + video (test): what is playing, small. Kodi draws the video in it only while its full-screen
+        # Takeover + video: what is playing, small. Kodi draws the video in it only while its full-screen
         # video window is not the active one (the popup then lies on a plain window, SkipVideoStage.xml).
         out += video_xml(folder, indent, cv.ID_VIDEO, "String.IsEqual(Window.Property(cv_video),true)")
     # everything but the shade behind the dialog sits in one group, which Size on screen zooms

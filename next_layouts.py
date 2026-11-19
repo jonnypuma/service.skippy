@@ -32,9 +32,9 @@ LAYOUT_NAMES = (
     ("Band", "Lower third"),
     ("Float", "Float"),
     ("Takeover", "Takeover"),  # the next episode takes the whole screen
-    # a test (2026-11-19): Takeover with what is playing small at the top right. Kodi draws a video small only
+    # Takeover with what is playing small at the top right. Kodi draws a video small only
     # while its full-screen video window is not the active one, so a plain window is opened under the popup.
-    (LAYOUT_TAKE_VIDEO, "Takeover + video (test)"),
+    (LAYOUT_TAKE_VIDEO, "Takeover + video"),
     ("Queue", "Queue"),  # the next three episodes side by side
     ("Rail", "Side rail"),
     ("Poster", "Poster card"),  # the Card with the show's poster for its picture

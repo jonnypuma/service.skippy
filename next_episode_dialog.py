@@ -493,7 +493,7 @@ def show_next_episode_dialog(
 
 
 def _wants_video_stage(draft, preview) -> bool:
-    """Takeover + video (test), whole-screen form, while a video plays: it needs the plain window under it."""
+    """Takeover + video, whole-screen form, while a video plays: it needs the plain window under it."""
     if preview or not draft:
         return False
     try:

@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.33.1] - 2026-11-19
+
+### Changed
+
+- **Up Next: the design Takeover + video is called that**, without "(test)": it is a design like the others.
+
 ## [8.33.0] - 2026-11-19
 
 ### Added

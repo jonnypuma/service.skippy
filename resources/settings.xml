@@ -1259,7 +1259,7 @@
                             <option label="Lower third">Band</option>
                             <option label="Float">Float</option>
                             <option label="Takeover">Takeover</option>
-                            <option label="Takeover + video (test)">TakeVideo</option>
+                            <option label="Takeover + video">TakeVideo</option>
                             <option label="Queue">Queue</option>
                             <option label="Side rail">Rail</option>
                             <option label="Poster card">Poster</option>

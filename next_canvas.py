@@ -29,7 +29,7 @@ DESIGNS = (
     ("Band", "NBand", "Lower third", "D"),
     ("Float", "NFloat", "Float", "E"),
     ("Takeover", "NTake", "Takeover", "F"),
-    ("TakeVideo", "NTake", "Takeover + video (test)", "F"),  # Takeover with what is playing small at the top right
+    ("TakeVideo", "NTake", "Takeover + video", "F"),  # Takeover with what is playing small at the top right
     ("Queue", "NQueue", "Queue", "G"),
     ("Rail", "NRail", "Side rail", "H"),
     ("Poster", "NCard", "Poster card", "A"),  # the Card with the show's poster for its picture
@@ -670,7 +670,7 @@ def take_full(look, texts, options) -> cv.Drawing:
     if options.close:
         _cancel(ops, bx, y, 60.0, look, texts, options, on_plate=False)
     if options.video:
-        # Takeover + video (test): what is playing, small, at the top right, in a frame. Kodi draws it there only
+        # Takeover + video: what is playing, small, at the top right, in a frame. Kodi draws it there only
         # while its full-screen video window is not the active one (a plain window lies under the popup then);
         # over full-screen video a dialog's video window only shows the piece of the picture behind it (8.31.0).
         vx, vy, vw, vh = cv.VIDEO_RECT
