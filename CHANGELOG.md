@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.33.3] - 2026-11-20
+
+### Changed
+
+- **The add-on's own screenshots (the ones Kodi shows on its info page) are the current ones.** All seven (`screenshot01.png` to `screenshot07.png`) replace the old pictures of the earlier dialogs: Takeover, the Up Next card forms, the two Studio tabs, the Up Next Studio, the segment editor and the drawn skip dialogs in their looks.
+
 ## [8.33.2] - 2026-11-19
 
 ### Fixed

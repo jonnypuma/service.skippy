@@ -1,6 +1,6 @@
 <addon id="service.skippy"
        name="Skippy - Video Segment Skipper"
-       version="8.33.2"
+       version="8.33.3"
        provider-name="Skippy-McSkipface">
        
     <requires>
@@ -44,7 +44,8 @@
         <platform>all</platform>
         <license>MIT</license>
         <source>https://github.com/jonnypuma/service.skippy</source>
-        <news>v8.33.2: Paper and Pastel: the buttons show on the designs that lie on the video.
+        <news>v8.33.3: The add-on's screenshots on its info page are the current ones.
+v8.33.2: Paper and Pastel: the buttons show on the designs that lie on the video.
 v8.33.1: Up Next: the design Takeover + video no longer says (test).
 v8.33.0: Up Next Takeover + video (test): the playing video small over the next episode. Segment editor: the video small above the timeline. Studios: Background, Progress bar edges, Artwork edges.
 v8.32.4: The Studios open much faster on a slow box (they filled in row by row over several seconds).
