@@ -1,5 +1,11 @@
 # Changelog
 
+## [8.33.4] - 2026-11-20
+
+### Fixed
+
+- **The README's tested Kodi versions are right.** Kodi 23 Alpha 1 is tested on Windows only: there is no CoreELEC build of Kodi 23 yet (the 8.33.0 entry said CoreELEC too, and says so no longer).
+
 ## [8.33.3] - 2026-11-20
 
 ### Changed
@@ -31,7 +37,7 @@
 ### Changed
 
 - **Segment editor: a segment you make is listed under the file it will be saved to.** Chapter file when the editor saves XML or both, Local EDL only when it saves EDL alone; it read Local EDL unless the first segment in the list came from an XML file.
-- README: tested on Kodi 21.3, Kodi 22 RC2 and Kodi 23 Alpha 1 on CoreELEC and Windows, Kodi 21.3 on Android.
+- README: tested on Kodi 21.3 and Kodi 22 RC2 on CoreELEC and Windows, Kodi 23 Alpha 1 on Windows (there is no CoreELEC build of Kodi 23 yet), Kodi 21.3 on Android.
 
 ## [8.32.4] - 2026-11-19
 

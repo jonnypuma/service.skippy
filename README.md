@@ -132,7 +132,7 @@ Tested on these Kodi versions and platforms:
 
 | Platform | Kodi 21.3 Omega | Kodi 22 Piers RC2 | Kodi 23 Alpha 1 |
 | --------------------------- | --------------- | ----------------- | --------------- |
-| Linux (CoreELEC) | Tested | Tested | Tested |
+| Linux (CoreELEC) | Tested | Tested | Not available (no CoreELEC build of Kodi 23 yet) |
 | Windows 11 | Tested | Tested | Tested |
 | Android (Nvidia Shield) | Tested | Not tested | Not tested |
 
